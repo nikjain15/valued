@@ -21,14 +21,15 @@ Goal: the least AI that works, on the use case that pays back and leaves reusabl
 3. Propose a **first wave of 1 or 2** and a **second wave**. Default stance: start where the human
    stays accountable and nothing reaches the customer unreviewed, and where the assets built are
    needed by the customer-facing wave anyway.
-4. **Stack and cost**, max 6 rows: each component of the first wave with build / buy / partner, the
+4. **Stack and cost**, max 6 rows: each component of the first wave with a **build / buy / partner
+   recommendation and its one-line reason** (build where the client's own content or rules are the
+   moat; buy where the capability is a commodity; partner where speed matters and lock-in is low), the
    routing (deterministic first, small model by default, larger model on low confidence), the latency
    budget per surface, and the unit of cost (per resolved task, not per token).
-5. Ask the client (max 2 cards):
+5. Ask the client (1 card). Build, buy or partner is an **output** of this gate, never a question:
+   the client decides priorities and constraints, the agent makes the sourcing recommendation.
    - **Header "COO": "Which first wave?"** Options: your recommended wave first, then the two
      strongest alternatives, each with its trade-off in the description.
-   - **Header "CTO": "Build, buy or partner for <the component that matters most>?"** Recommend by
-     where the client's own content is the moat.
 6. Finalize `out/2-ai-fit.md`, update `out/state.md`.
 7. **Say it**: why most of the list is not GenAI; why this first wave; the cost, latency and quality
    trade in one sentence.

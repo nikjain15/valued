@@ -8,7 +8,7 @@ case clears six gates, in order:
 | Gate | The question it answers |
 |---|---|
 | **V** Value | Whose decision or work changes, how often, what it costs today, how big the prize is |
-| **A** AI-fit | Is it AI-shaped at all? The least-AI ladder (rules, classic ML, retrieval plus a model, an agent); rank on value, feasibility, risk and reuse; build or buy; the cost, latency and quality trade |
+| **A** AI-fit | Is it AI-shaped at all? The least-AI ladder (rules, classic ML, retrieval plus a model, an agent); rank on value, feasibility, risk and reuse; a build, buy or partner recommendation; the cost, latency and quality trade |
 | **L** Labels | Ground truth before the model: a golden set, the slices that matter, a sealed holdout |
 | **U** User-in-the-loop | Per action: suggest, draft, act with approval, or act. What the AI never does. Escalation wins every race |
 | **E** Evals | Release thresholds set first, metrics by slice, a missed gate blocks the release |

@@ -309,6 +309,40 @@
   .why-quote { margin: 48px auto 0; max-width: 820px; text-align: center; }
   .why-quote p { font-size: var(--text-stat); font-weight: 300; line-height: 1.5; margin: 0; }
   .why-quote cite { display: block; margin-top: 14px; font-style: normal; font-size: var(--text-meta); color: var(--ink-3); }
+
+  /* Governance rail in hero */
+  .govrail { margin: 18px auto 0; max-width: 1080px; display: flex; gap: 14px; align-items: center; justify-content: center; flex-wrap: wrap; border: 1px solid #4a3f9a; background: rgba(74,63,154,0.18); border-radius: var(--radius-lg); padding: 10px 16px; font-size: var(--text-body); color: #dcd8f3; }
+  .govrail b { color: #fff; font-weight: 600; white-space: nowrap; }
+  /* Gate tabs */
+  .gates-ui { padding: 8px 0 72px; }
+  .gtabs { display: grid; grid-template-columns: repeat(6, 1fr); border: 1px solid var(--line-strong); border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden; background: var(--surface); }
+  .gtabs button { all: unset; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-right: 1px solid var(--line); font-size: var(--text-lead); color: var(--ink-2); }
+  .gtabs button:last-child { border-right: 0; }
+  .gtabs button:hover { background: var(--subtle); }
+  .gtabs button[aria-selected="true"] { background: var(--selected); color: var(--ink); font-weight: 600; box-shadow: inset 0 -3px 0 var(--ink); }
+  .gtabs button:focus-visible { outline: 2px solid var(--advisor); outline-offset: -2px; }
+  .tk { width: 28px; height: 28px; border-radius: var(--radius); background: var(--ink); color: var(--surface); display: grid; place-items: center; font-weight: 600; flex: none; }
+  .tk.d { background: var(--positive); }
+  @media (max-width: 900px) { .gtabs { grid-template-columns: repeat(3, 1fr); } .gtabs button { border-bottom: 1px solid var(--line); } }
+  @media (max-width: 520px) { .gtabs .tn { display: none; } .gtabs { grid-template-columns: repeat(6, 1fr); } .gtabs button { justify-content: center; padding: 10px 4px; } }
+  .gpanels { background: var(--surface); border: 1px solid var(--line-strong); border-top: 0; border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: 32px; }
+  @media (max-width: 700px) { .gpanels { padding: 20px 16px; } }
+  .pg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  @media (max-width: 900px) { .pg-grid { grid-template-columns: 1fr; gap: 24px; } }
+  .pg-agent { font-size: var(--text-meta); color: var(--ink-3); }
+  .pg-h { font-size: var(--text-title); font-weight: 300; line-height: 1.2; margin: 6px 0 18px; }
+  .quad { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 520px) { .quad { grid-template-columns: 1fr; } }
+  .quad > div { background: var(--subtle); border-radius: var(--radius); padding: 12px 14px; font-size: var(--text-body); }
+  .quad span { display: block; font-size: var(--text-caption); color: var(--ink-3); margin-bottom: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .quad .prev { background: var(--critical-soft); }
+  .quad .prev span { color: var(--critical); }
+  .govbox { margin-top: 12px; border: 1px solid #c9c2e6; background: var(--agent-soft); border-radius: var(--radius); padding: 12px 14px; font-size: var(--text-body); }
+  .govh { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--agent); }
+  .gk2 { width: 22px; height: 22px; border-radius: var(--radius); background: var(--agent); color: var(--surface); display: grid; place-items: center; font-size: var(--text-caption); }
+  .govbox ul { margin: 8px 0 0; padding-left: 18px; }
+  .govbox li { margin: 3px 0; }
+  .pg-visual .panel { box-shadow: none; }
   /* FAQ, CTA, footer */
   .faq { max-width: 820px; margin: 32px auto 0; }
   details { border-top: 1px solid var(--line); padding: 18px 0; }
@@ -370,6 +404,7 @@
         <div class="end">In production, kept honest</div>
       </div>
       <div class="phase" aria-hidden="true"><span class="blank"></span><span>Decide</span><span>Design and build</span><span>Run</span><span class="blank"></span></div>
+      <div class="govrail"><b>Governed at every gate</b><span>Regulatory exposure, data rights, human accountability, signable evidence, sign-off and audit trail: checked inside each gate, not reviewed at the end.</span></div>
     </div>
   </section>
 
@@ -417,40 +452,51 @@
     <div class="wrap center-head">
       <p class="eyebrow">THE FRAMEWORK</p>
       <h2>Six gates. A use case clears each one before it moves on.</h2>
-      <p class="lede">Each gate asks one question, produces one artifact, and ends with a decision a person makes. Under each gate, three products I built show what it looks like in practice.</p>
+      <p class="lede">Each gate is run by an agent. It asks you a decision, applies one framework, hands you one artifact, and checks the governance questions for that stage. Pick a gate to see it.</p>
     </div>
   </section>
-  <section class="band" style="padding:0">
-    <div class="wrap gblock">
-      <div class="gate-row">
-        <div>
-          <div class="gbadge"><span class="k">V</span><span class="n">Gate 1<b>Value</b></span></div>
-          <h3>Start with the job, not the model.</h3>
-          <p class="why">Before choosing any AI, find the decision or task that happens most often and costs the most, and price it. A use case that cannot name its metric is not ready.</p>
-          <div class="decided"><div class="lbl">What the gate produces</div><ul><li>A value frame: who does the work, how often, what it costs today</li><li>One north-star metric the team already trusts</li></ul></div>
-        </div>
-        <div class="visual"><div class="panel"><div class="ph">The artifact: a value frame</div>
+  <section class="gates-ui band" aria-label="The six gates and the agents that run them">
+    <div class="wrap">
+      <div class="gtabs" role="tablist" aria-label="Gates"><button role="tab" id="t-V" aria-controls="p-V" aria-selected="true" tabindex="0"><span class="tk">V</span><span class="tn">Value</span></button><button role="tab" id="t-A" aria-controls="p-A" aria-selected="false" tabindex="-1"><span class="tk">A</span><span class="tn">AI-fit</span></button><button role="tab" id="t-L" aria-controls="p-L" aria-selected="false" tabindex="-1"><span class="tk">L</span><span class="tn">Labels</span></button><button role="tab" id="t-U" aria-controls="p-U" aria-selected="false" tabindex="-1"><span class="tk">U</span><span class="tn">User-in-the-loop</span></button><button role="tab" id="t-E" aria-controls="p-E" aria-selected="false" tabindex="-1"><span class="tk">E</span><span class="tn">Evals</span></button><button role="tab" id="t-D" aria-controls="p-D" aria-selected="false" tabindex="-1"><span class="tk d">D</span><span class="tn">Deploy and drive</span></button></div>
+      <div class="gpanels">
+      <div class="panelg" role="tabpanel" id="p-V" aria-labelledby="t-V">
+        <div class="pg-grid">
+          <div>
+            <div class="pg-agent">Gate 1 · Value agent</div>
+            <h3 class="pg-h">Price the problem before anyone talks about AI.</h3>
+            <div class="quad">
+              <div><span>Asks you</span>Which outcome must move first? What is the hard constraint?</div>
+              <div><span>Uses</span>A value frame: how often, cost per item, cost of getting it wrong, leading to one north-star metric.</div>
+              <div><span>Gives you</span>Priced problems, twelve candidate use cases, one metric.</div>
+              <div class="prev"><span>Prevents</span>AI nobody can prove paid back.</div>
+            </div>
+            <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Is any part of this a regulated activity?</li><li>What is the exposure if it goes wrong: fines, complaints, conduct?</li><li>Who is the accountable owner?</li></ul></div>
+          </div>
+          <div class="pg-visual"><div class="panel"><div class="ph">The artifact: a value frame</div>
 <table class="vf"><thead><tr><th>Work or decision</th><th>How often</th><th>Cost today</th><th>Cost of getting it wrong</th></tr></thead>
 <tbody><tr><td>Answer a benefit question</td><td>Many times a day</td><td>Minutes per lookup</td><td>A wrong quote, a repeat call</td></tr>
 <tr><td>Spot a complaint</td><td>Daily</td><td>Often missed</td><td>A missed regulatory deadline</td></tr>
 <tr><td>Reset a password</td><td>Daily</td><td>Seconds</td><td>Low</td></tr></tbody></table>
 <div class="north"><span>North-star metric</span><b>One number the team already trusts, e.g. cost per resolved request</b></div>
 <p class="caption" style="margin:10px 0 0">Illustrative rows. In a real case every figure is measured or marked assumed.</p></div></div>
-      </div>
-      <div class="inpractice">IN PRACTICE</div>
-      <div class="practice"><div class="pc"><div class="top"><span class="nm">Relay</span><span class="built">built</span></div><p>Built for the step after an insight: turning one flagged client opportunity into an action an advisor can approve.</p></div><div class="pc"><div class="top"><span class="nm">CureCue</span><span class="built">built</span></div><p>Mapped <b class="n">12</b> stages of an advocate's shift before choosing any AI; 11 are on the desk.</p></div><div class="pc"><div class="top"><span class="nm">Conduit</span><span class="built">built</span></div><p>Four copies of the same routing and guardrail code were drifting apart across products.</p></div></div>
-    </div>
-  </section>
-  <section class="" style="padding:0">
-    <div class="wrap gblock">
-      <div class="gate-row">
-        <div>
-          <div class="gbadge"><span class="k">A</span><span class="n">Gate 2<b>AI-fit</b></span></div>
-          <h3>Use the least AI that works.</h3>
-          <p class="why">Most work is rules, then classic models, and only then a language model or an agent. Climb only when the rung below fails, and decide the cost, speed and quality trade per use case.</p>
-          <div class="decided"><div class="lbl">What the gate produces</div><ul><li>Every idea placed on the least-AI ladder and ranked</li><li>A first wave, and build, buy or partner for each part</li></ul></div>
         </div>
-        <div class="visual"><div class="panel"><div class="ph">The artifact: every idea placed on the least-AI ladder</div>
+        <div class="inpractice">IN PRACTICE</div>
+        <div class="practice"><div class="pc"><div class="top"><span class="nm">Relay</span><span class="built">built</span></div><p>Built for the step after an insight: turning one flagged client opportunity into an action an advisor can approve.</p></div><div class="pc"><div class="top"><span class="nm">CureCue</span><span class="built">built</span></div><p>Mapped <b class="n">12</b> stages of an advocate's shift before choosing any AI; 11 are on the desk.</p></div><div class="pc"><div class="top"><span class="nm">Conduit</span><span class="built">built</span></div><p>Four copies of the same routing and guardrail code were drifting apart across products.</p></div></div>
+      </div>
+      <div class="panelg" role="tabpanel" id="p-A" aria-labelledby="t-A" hidden>
+        <div class="pg-grid">
+          <div>
+            <div class="pg-agent">Gate 2 · AI-fit agent</div>
+            <h3 class="pg-h">Use the least AI that works.</h3>
+            <div class="quad">
+              <div><span>Asks you</span>Which ideas go first, given your priorities?</div>
+              <div><span>Uses</span>The least-AI ladder, plus three scorers working in parallel on value, feasibility and risk.</div>
+              <div><span>Gives you</span>A first wave, a build, buy or partner call for each part with its reason, and the cost per task.</div>
+              <div class="prev"><span>Prevents</span>A model where a rule would do.</div>
+            </div>
+            <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Does a regulation require human judgement for this decision?</li><li>Is it in model-risk scope, and at what tier?</li><li>Can we explain the outcome to a customer and a regulator?</li></ul></div>
+          </div>
+          <div class="pg-visual"><div class="panel"><div class="ph">The artifact: every idea placed on the least-AI ladder</div>
 <div class="ladder">
 <div class="rung r1"><b>1 · Rules</b><span>Deadlines, eligibility, arithmetic. Exact and auditable.</span></div>
 <div class="rung r2"><b>2 · Classic ML</b><span>Scoring and ranking on structured data.</span></div>
@@ -458,89 +504,104 @@
 <div class="rung r4"><b>4 · An agent</b><span>Multi-step work, only with a person at the gate.</span></div>
 </div>
 <div class="climb">Climb only when the rung below fails. Then trade cost, speed and quality per use case.</div></div></div>
-      </div>
-      <div class="inpractice">IN PRACTICE</div>
-      <div class="practice"><div class="pc"><div class="top"><span class="nm">Relay</span><span class="built">built</span></div><p>The model never decides: eligibility, ranking and every compliance verdict are code.</p></div><div class="pc"><div class="top"><span class="nm">CureCue</span><span class="built">built</span></div><p>Rules first, no model in the prototype. Plan rules held as a graph, so answers follow every exception. <b class="n">0</b> off-path figures in 66 checked answers.</p></div><div class="pc"><div class="top"><span class="nm">Conduit</span><span class="built">built</span></div><p>Routes each use case to the cheapest model tier that clears its bar. Costs are modelled, not measured.</p></div></div>
-    </div>
-  </section>
-  <section class="band" style="padding:0">
-    <div class="wrap gblock">
-      <div class="gate-row">
-        <div>
-          <div class="gbadge"><span class="k">L</span><span class="n">Gate 3<b>Labels</b></span></div>
-          <h3>Write the answer key before you build.</h3>
-          <p class="why">Label what the right outcome is, by what the person meant, before the system exists. Cover the groups that are easy to miss, or you will never see them fail.</p>
-          <div class="decided"><div class="lbl">What the gate produces</div><ul><li>A labelled test set, split by the groups that matter</li><li>A sealed holdout the builder never sees</li></ul></div>
         </div>
-        <div class="visual"><div class="panel"><div class="ph">The artifact: an answer key, written before the build</div>
+        <div class="inpractice">IN PRACTICE</div>
+        <div class="practice"><div class="pc"><div class="top"><span class="nm">Relay</span><span class="built">built</span></div><p>The model never decides: eligibility, ranking and every compliance verdict are code.</p></div><div class="pc"><div class="top"><span class="nm">CureCue</span><span class="built">built</span></div><p>Rules first, no model in the prototype. Plan rules held as a graph, so answers follow every exception. <b class="n">0</b> off-path figures in 66 checked answers.</p></div><div class="pc"><div class="top"><span class="nm">Conduit</span><span class="built">built</span></div><p>Routes each use case to the cheapest model tier that clears its bar. Costs are modelled, not measured.</p></div></div>
+      </div>
+      <div class="panelg" role="tabpanel" id="p-L" aria-labelledby="t-L" hidden>
+        <div class="pg-grid">
+          <div>
+            <div class="pg-agent">Gate 3 · Labels agent</div>
+            <h3 class="pg-h">Write the answer key before anything is built.</h3>
+            <div class="quad">
+              <div><span>Asks you</span>Which group worries you most? What can we label from?</div>
+              <div><span>Uses</span>An answer key labelled by intent, split by group, with a sealed holdout.</div>
+              <div><span>Gives you</span>A golden set, a holdout, and a data and privacy table.</div>
+              <div class="prev"><span>Prevents</span>The system grading itself.</div>
+            </div>
+            <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Are we allowed to use this data for this purpose?</li><li>Is personal or health data minimised and protected?</li><li>Do the labels check fairness across groups?</li></ul></div>
+          </div>
+          <div class="pg-visual"><div class="panel"><div class="ph">The artifact: an answer key, written before the build</div>
 <div class="key"><div class="dev"><b>Development set</b><span>The builder learns from these, and fixes against them.</span></div><div class="hold"><b>Sealed holdout</b><span>Never shown to the builder. Scores every fix honestly.</span></div></div>
 <div class="ph" style="margin:16px 0 8px">Split by the groups that are easy to miss</div>
 <div class="chips"><span>Each language served</span><span>Calm, angry, implied</span><span>Edge and adversarial cases</span><span>Each customer segment</span></div>
 <p class="caption" style="margin:12px 0 0">Labels record what the person meant, never what the system said.</p></div></div>
-      </div>
-      <div class="inpractice">IN PRACTICE</div>
-      <div class="practice"><div class="pc"><div class="top"><span class="nm">Relay</span><span class="built">built</span></div><p>300 test households and 585 messages; the answer key is computed without importing any of the code it tests.</p></div><div class="pc"><div class="top"><span class="nm">CureCue</span><span class="built">built</span></div><p><b class="n">195</b> labelled call turns across English, Spanish and interpreter calls, including complaints made without the word.</p></div><div class="pc"><div class="top"><span class="nm">Conduit</span><span class="built">built</span></div><p>Three hand-written test sets: guardrails 42, model contract 12, judge validation 30.</p></div></div>
-    </div>
-  </section>
-  <section class="" style="padding:0">
-    <div class="wrap gblock">
-      <div class="gate-row">
-        <div>
-          <div class="gbadge"><span class="k">U</span><span class="n">Gate 4<b>User-in-the-loop</b></span></div>
-          <h3>Decide where a person decides, and what AI never does.</h3>
-          <p class="why">For every action, choose: suggest, draft, act with approval, or act. Write down what the system must never do, and make escalation win every race.</p>
-          <div class="decided"><div class="lbl">What the gate produces</div><ul><li>Autonomy for each action, and who approves</li><li>A never list and the triggers that stop the system</li></ul></div>
         </div>
-        <div class="visual"><div class="panel"><div class="ph">The artifact: autonomy for every action</div>
+        <div class="inpractice">IN PRACTICE</div>
+        <div class="practice"><div class="pc"><div class="top"><span class="nm">Relay</span><span class="built">built</span></div><p>300 test households and 585 messages; the answer key is computed without importing any of the code it tests.</p></div><div class="pc"><div class="top"><span class="nm">CureCue</span><span class="built">built</span></div><p><b class="n">195</b> labelled call turns across English, Spanish and interpreter calls, including complaints made without the word.</p></div><div class="pc"><div class="top"><span class="nm">Conduit</span><span class="built">built</span></div><p>Three hand-written test sets: guardrails 42, model contract 12, judge validation 30.</p></div></div>
+      </div>
+      <div class="panelg" role="tabpanel" id="p-U" aria-labelledby="t-U" hidden>
+        <div class="pg-grid">
+          <div>
+            <div class="pg-agent">Gate 4 · User-in-the-loop agent</div>
+            <h3 class="pg-h">Decide where a person decides, and what AI never does.</h3>
+            <div class="quad">
+              <div><span>Asks you</span>How much autonomy in the first 90 days? Who owns an escalation?</div>
+              <div><span>Uses</span>The autonomy ladder (suggest, draft, act with approval, act), a never list, and escalation that wins every race.</div>
+              <div><span>Gives you</span>Who approves what, the stop triggers and their owners.</div>
+              <div class="prev"><span>Prevents</span>AI doing more than anyone agreed.</div>
+            </div>
+            <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Which decisions must an accountable person make?</li><li>What do we disclose to the customer?</li><li>Is every action logged with who approved it?</li></ul></div>
+          </div>
+          <div class="pg-visual"><div class="panel"><div class="ph">The artifact: autonomy for every action</div>
 <div class="scale"><div class="st"><b>Suggest</b><span>Shows, person acts</span></div><div class="st on"><b>Draft</b><span>Prepares, person approves</span></div><div class="st"><b>Act with approval</b><span>Acts after a yes</span></div><div class="st"><b>Act</b><span>Low risk only</span></div></div>
 <div class="never"><b>Never list</b><ul><li>Speak for the business where a mistake is costly</li><li>Make the regulated decision</li><li>Send without a person's approval</li></ul></div>
 <div class="esc">Escalation wins every race: if a stop fires, nothing else is drafted.</div></div></div>
-      </div>
-      <div class="inpractice">IN PRACTICE</div>
-      <div class="practice"><div class="pc"><div class="top"><span class="nm">Relay</span><span class="built">built</span></div><p>It never sends, and nothing clears its own findings: an agent prepares, a person accepts.</p></div><div class="pc"><div class="top"><span class="nm">CureCue</span><span class="built">built</span></div><p>Never speaks to the member or decides coverage. A care or coverage dispute stops it and brings in a supervisor.</p></div><div class="pc"><div class="top"><span class="nm">Conduit</span><span class="built">built</span></div><p>Agents refuse any action that changes something unless it is explicitly allowed.</p></div></div>
-    </div>
-  </section>
-  <section class="band" style="padding:0">
-    <div class="wrap gblock">
-      <div class="gate-row">
-        <div>
-          <div class="gbadge"><span class="k">E</span><span class="n">Gate 5<b>Evals</b></span></div>
-          <h3>Let a number decide the release, group by group.</h3>
-          <p class="why">Set the bars before the build. Check every bar for each group, not just on average, and block the release when one fails. A fix is then checked on cases it never saw.</p>
-          <div class="decided"><div class="lbl">What the gate produces</div><ul><li>Release gates with bars, per group</li><li>A run that releases or blocks, and a list of every remaining miss</li></ul></div>
         </div>
-        <div class="visual"><div class="panel"><div class="ph">The artifact: release gates, checked group by group</div>
+        <div class="inpractice">IN PRACTICE</div>
+        <div class="practice"><div class="pc"><div class="top"><span class="nm">Relay</span><span class="built">built</span></div><p>It never sends, and nothing clears its own findings: an agent prepares, a person accepts.</p></div><div class="pc"><div class="top"><span class="nm">CureCue</span><span class="built">built</span></div><p>Never speaks to the member or decides coverage. A care or coverage dispute stops it and brings in a supervisor.</p></div><div class="pc"><div class="top"><span class="nm">Conduit</span><span class="built">built</span></div><p>Agents refuse any action that changes something unless it is explicitly allowed.</p></div></div>
+      </div>
+      <div class="panelg" role="tabpanel" id="p-E" aria-labelledby="t-E" hidden>
+        <div class="pg-grid">
+          <div>
+            <div class="pg-agent">Gate 5 · Evals agent</div>
+            <h3 class="pg-h">Let a number decide the release.</h3>
+            <div class="quad">
+              <div><span>Asks you</span>Which miss stops the release? Ship anyway, or fix first?</div>
+              <div><span>Uses</span>Gates set before the build and checked per group; a builder that cannot see the answers; a sealed holdout for every fix.</div>
+              <div><span>Gives you</span>A prototype, a pass or a block, and every remaining miss listed.</div>
+              <div class="prev"><span>Prevents</span>An average hiding the group that breaks.</div>
+            </div>
+            <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Do the tests cover fairness and safety, not just accuracy?</li><li>Can risk, compliance and audit reproduce the evidence?</li><li>Who signs the release?</li></ul></div>
+          </div>
+          <div class="pg-visual"><div class="panel"><div class="ph">The artifact: release gates, checked group by group</div>
 <table class="gt"><thead><tr><th>Gate</th><th>Overall</th><th>Group A</th><th>Group B</th><th>Bar</th></tr></thead>
 <tbody><tr><td>Escalations caught</td><td>0.91</td><td class="ok">0.98</td><td class="bad">0.00</td><td>0.97</td></tr>
 <tr><td>Answers with a source</td><td>1.00</td><td class="ok">1.00</td><td class="ok">1.00</td><td>1.00</td></tr>
 <tr><td>Gap between groups</td><td colspan="3" class="bad">0.98</td><td>under 0.05</td></tr></tbody></table>
 <div class="blocked">Release blocked. The average looked close; one group was broken.</div>
 <p class="caption" style="margin:10px 0 0">Illustrative numbers. The bars are set before anything is built.</p></div></div>
-      </div>
-      <div class="inpractice">IN PRACTICE</div>
-      <div class="practice"><div class="pc"><div class="top"><span class="nm">Relay</span><span class="built">built</span></div><p>The eval caught <b class="n">53 of 85</b> retirement opportunities being missed, before the fix.</p></div><div class="pc"><div class="top"><span class="nm">CureCue</span><span class="built">built</span></div><p>Adding Spanish calls showed release 2 escalated none of the Spanish calls that needed it. Release 3 passes <b class="n">8 of 8</b> gates.</p></div><div class="pc"><div class="top"><span class="nm">Conduit</span><span class="built">built</span></div><p>The guardrail gate runs on every change: <b class="n">1.00</b> of harmful requests caught, 0.92 precision.</p></div></div>
-    </div>
-  </section>
-  <section class="" style="padding:0">
-    <div class="wrap gblock">
-      <div class="gate-row">
-        <div>
-          <div class="gbadge"><span class="k d">D</span><span class="n">Gate 6<b>Deploy and drive</b></span></div>
-          <h3>Plan the launch, and the life after it.</h3>
-          <p class="why">Prove it in shadow before anyone relies on it, widen it in steps, and watch it by group once it is live. What production gets wrong becomes new labels.</p>
-          <div class="decided"><div class="lbl">What the gate produces</div><ul><li>Shadow, pilot and sign-off steps, with a kill switch</li><li>What to watch after launch, and when to pause</li></ul></div>
         </div>
-        <div class="visual"><div class="panel"><div class="ph">The artifact: a rollout that earns trust in steps</div><ol class="timeline">
+        <div class="inpractice">IN PRACTICE</div>
+        <div class="practice"><div class="pc"><div class="top"><span class="nm">Relay</span><span class="built">built</span></div><p>The eval caught <b class="n">53 of 85</b> retirement opportunities being missed, before the fix.</p></div><div class="pc"><div class="top"><span class="nm">CureCue</span><span class="built">built</span></div><p>Adding Spanish calls showed release 2 escalated none of the Spanish calls that needed it. Release 3 passes <b class="n">8 of 8</b> gates.</p></div><div class="pc"><div class="top"><span class="nm">Conduit</span><span class="built">built</span></div><p>The guardrail gate runs on every change: <b class="n">1.00</b> of harmful requests caught, 0.92 precision.</p></div></div>
+      </div>
+      <div class="panelg" role="tabpanel" id="p-D" aria-labelledby="t-D" hidden>
+        <div class="pg-grid">
+          <div>
+            <div class="pg-agent">Gate 6 · Deploy and drive agent</div>
+            <h3 class="pg-h">Plan the launch, and the life after it.</h3>
+            <div class="quad">
+              <div><span>Asks you</span>What is the pilot scope? What would make you stop?</div>
+              <div><span>Uses</span>Shadow, then canary, then signed promotion, then watch: drift by group, edit rate, a kill switch.</div>
+              <div><span>Gives you</span>A rollout plan, what to watch after launch, and the one-page brief.</div>
+              <div class="prev"><span>Prevents</span>Quiet decay after launch.</div>
+            </div>
+            <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Who signs each stage of the rollout?</li><li>Is there an audit trail, and a kill switch with a named owner?</li><li>How are incidents, complaints and model changes reported?</li></ul></div>
+          </div>
+          <div class="pg-visual"><div class="panel"><div class="ph">The artifact: a rollout that earns trust in steps</div><ol class="timeline">
 <li><span class="dot">1</span><div><b>Shadow</b><span>Runs on real traffic; nobody sees it. Scored against labels.</span></div></li>
 <li><span class="dot">2</span><div><b>Canary</b><span>A small share of users, compared with everyone else.</span></div></li>
 <li><span class="dot">3</span><div><b>Signed promotion</b><span>Widens only on a signed checklist, with a kill switch per behaviour.</span></div></li>
 <li><span class="dot">4</span><div><b>Watch and learn</b><span>Drift by group, edit rate, pause rules. Misses become new labels.</span></div></li></ol>
 <div class="loopback">↺ Back to gate 3: what production gets wrong becomes new labels.</div></div></div>
+        </div>
+        <div class="inpractice">IN PRACTICE</div>
+        <div class="practice"><div class="pc"><div class="top"><span class="nm">Relay</span><span class="built">built</span></div><p>Its learning loop can only propose stricter rules on its own; loosening one needs a person.</p></div><div class="pc"><div class="top"><span class="nm">CureCue</span><span class="designed">designed</span></div><p>Shadow mode, a 5% canary for three days, signed promotion, a kill switch per behaviour.</p></div><div class="pc"><div class="top"><span class="nm">Conduit</span><span class="designed">designed</span></div><p>Latency and cost targets exist in configuration, with no live data yet.</p></div></div>
       </div>
-      <div class="inpractice">IN PRACTICE</div>
-      <div class="practice"><div class="pc"><div class="top"><span class="nm">Relay</span><span class="built">built</span></div><p>Its learning loop can only propose stricter rules on its own; loosening one needs a person.</p></div><div class="pc"><div class="top"><span class="nm">CureCue</span><span class="designed">designed</span></div><p>Shadow mode, a 5% canary for three days, signed promotion, a kill switch per behaviour.</p></div><div class="pc"><div class="top"><span class="nm">Conduit</span><span class="designed">designed</span></div><p>Latency and cost targets exist in configuration, with no live data yet.</p></div></div>
+      </div>
     </div>
   </section>
+
   <!-- THREE PRODUCTS -->
   <section id="examples" class="band">
     <div class="wrap">
@@ -635,5 +696,12 @@
     <span>Design tokens from <a href="https://github.com/nikjain15/relay">Relay</a></span>
   </div>
 </footer>
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.gtabs [role="tab"]'));
+  function show(i,focus){tabs.forEach(function(t,j){var on=j===i;t.setAttribute('aria-selected',on);t.tabIndex=on?0:-1;document.getElementById(t.getAttribute('aria-controls')).hidden=!on;});if(focus)tabs[i].focus();}
+  tabs.forEach(function(t,i){t.addEventListener('click',function(){show(i)});t.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();show((i+1)%tabs.length,true)}if(e.key==='ArrowLeft'){e.preventDefault();show((i+tabs.length-1)%tabs.length,true)}});});
+})();
+</script>
 </body>
 </html>
