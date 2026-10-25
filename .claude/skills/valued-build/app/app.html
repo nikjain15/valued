@@ -42,6 +42,15 @@
   .step.guard .n { background: var(--error); } .step.person .n { background: var(--brand); }
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--dark); color: var(--white); padding: 10px 18px; border-radius: var(--r-pill); font-size: var(--fs-label); opacity: 0; transition: all var(--dur-base) var(--ease-out); z-index: 60; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .intro { margin-top: 24px; padding: 22px 24px; }
+  .intro-grid { display: grid; grid-template-columns: 1.2fr 1fr 1.3fr; gap: 24px; margin-top: 14px; }
+  .intro h3 { font-size: 16px; margin-bottom: 6px; }
+  .intro .outcome { display: flex; gap: 10px; align-items: flex-start; margin: 6px 0; font-size: var(--fs-label); }
+  .intro .outcome .pill { flex: none; margin-top: 1px; }
+  .tour { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line-2); }
+  .tour .n { width: 22px; height: 22px; border-radius: 50%; background: var(--brand); color: var(--white); display: inline-grid; place-items: center; font-size: 12px; font-weight: 600; }
+  .intro-close { background: none; border: 0; color: var(--ink-4); cursor: pointer; font: 500 var(--fs-label) var(--font-sans); }
+  @media (max-width: 900px) { .intro-grid { grid-template-columns: 1fr; } }
   footer { padding: 32px 0 48px; color: var(--ink-4); font-size: var(--fs-micro); }
   @media (max-width: 900px) { .hero, .grid { grid-template-columns: 1fr; } .flow { grid-template-columns: 1fr 1fr; } .kpis { grid-template-columns: repeat(2, 1fr); } }
 </style>
@@ -59,6 +68,19 @@
 </nav>
 
 <main class="wrap">
+  <section class="card emph intro" id="intro" aria-label="What you are looking at">
+    <div class="row" style="justify-content:space-between">
+      <div class="eyebrow brand">What you are looking at</div>
+      <button class="intro-close" id="introClose">Hide</button>
+    </div>
+    <div class="intro-grid">
+      <div><h3>The situation</h3><p class="small muted" id="iScenario"></p></div>
+      <div><h3>Who uses this screen</h3><p class="small muted" id="iUser"></p></div>
+      <div><h3>What it decides, every time</h3><div id="iOutcomes"></div></div>
+    </div>
+    <div class="tour" id="iTour"><strong class="small">Try it in 3 clicks</strong></div>
+  </section>
+  <button class="btn ghost sm" id="introOpen" hidden style="margin-top:16px">What am I looking at?</button>
   <section class="hero">
     <div>
       <div class="eyebrow brand" id="eyebrow">VALUED prototype</div>
@@ -184,8 +206,25 @@ async function boot() {
   $("#modelPill").className = "pill " + (status.engine !== "rules" && status.modelReady ? "ok" : "plain");
   $("#howDraft").textContent = status.engine === "rules" ? "Assembled from the cited source by rule." : "Model writes from the cited source only; no source, no draft.";
   $("#foot").textContent = `${c.title || "Prototype"} · version ${c.version || "proto-0.1"} · synthetic data, not for production use. Built with VALUED.`;
+  $("#iScenario").textContent = c.scenario || c.promise || "";
+  $("#iUser").textContent = c.userIntro || `A ${c.user || "front-line employee"} sees each incoming request here. The AI decides what kind of request it is and prepares a draft; the ${c.user || "employee"} decides what is sent.`;
+  $("#iOutcomes").innerHTML = ["answer", "human", "escalate"].filter((k) => (c.verdicts || {})[k]).map((k) => `<div class="outcome"><span class="pill ${VERDICT_STYLE[k]}">${esc(k)}</span><span><strong>${esc(c.verdicts[k].label)}.</strong> ${esc(c.verdicts[k].desc)}</span></div>`).join("");
+  const samples = c.samples || [];
+  const pick = (v, fallback) => { const i = samples.findIndex((x) => x.expect === v); return i >= 0 ? i : fallback; };
+  const iAns = pick("answer", 0), iEsc = pick("escalate", samples.length - 2);
+  $("#iTour").innerHTML += [
+    samples[iAns] && `<button class="chip" data-tour="${iAns}"><span class="n">1</span>&nbsp; Run "${esc(samples[iAns].label)}", then Approve</button>`,
+    samples[iEsc] && `<button class="chip" data-tour="${iEsc}"><span class="n">2</span>&nbsp; Run "${esc(samples[iEsc].label)}": watch it escalate</button>`,
+    `<button class="chip" data-tour="audit"><span class="n">3</span>&nbsp; Open the audit log</button>`,
+  ].filter(Boolean).join("");
+  try { if (localStorage.getItem("introHidden") === "1") toggleIntro(false); } catch {}
   $("#gateRows").innerHTML = Object.entries(gates || {}).filter(([k]) => !k.startsWith("_")).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="mono">${esc(typeof v === "object" ? JSON.stringify(v) : v)}</td></tr>`).join("");
   $("#sourceRows").innerHTML = (Array.isArray(sources) ? sources : []).map((s) => `<tr><td class="mono">${esc(s.id)}</td><td>${esc(s.text)}</td></tr>`).join("");
+}
+
+function toggleIntro(show) {
+  $("#intro").hidden = !show; $("#introOpen").hidden = show;
+  try { localStorage.setItem("introHidden", show ? "0" : "1"); } catch {}
 }
 
 async function run() {
@@ -261,6 +300,13 @@ async function loadLog() {
 
 document.addEventListener("click", async (e) => {
   const t = e.target.closest("button"); if (!t) return;
+  if (t.id === "introClose") return toggleIntro(false);
+  if (t.id === "introOpen") return toggleIntro(true);
+  if (t.dataset.tour !== undefined) {
+    if (t.dataset.tour === "audit") { document.querySelector('[data-tab="audit"]').click(); $("#audit").scrollIntoView({ behavior: "smooth" }); return; }
+    document.querySelector('[data-tab="work"]').click();
+    $("#input").value = CASE.samples[t.dataset.tour].text; await run(); $("#result").scrollIntoView({ behavior: "smooth", block: "center" }); return;
+  }
   if (t.dataset.tab) {
     document.querySelectorAll(".tab").forEach((b) => b.setAttribute("aria-selected", b === t));
     document.querySelectorAll(".panel").forEach((p) => (p.hidden = p.id !== t.dataset.tab));

@@ -24,6 +24,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
 body { background: var(--paper); color: var(--ink); font: 400 var(--fs-body)/1.55 var(--font-sans); -webkit-font-smoothing: antialiased; }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: var(--ls-tight); color: var(--ink); margin: 0; line-height: 1.15; }

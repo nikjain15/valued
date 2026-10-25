@@ -25,11 +25,14 @@ This step must finish in about 3 minutes. Do the app first (it is mechanical), t
      decision in `out/state.md` (default `rules` if none was recorded).
    - Write `out/proto/case.json` from the gate files. Fields, all strings unless noted:
      `title` (use case name, 2 to 5 words), `client`, `useCase`, `headline` (an outcome in under 9 words),
-     `promise` (one sentence: who it helps and what a person still decides), `user` (who reviews drafts),
+     `promise` (one sentence: who it helps and what a person still decides), `scenario` (two plain
+     sentences a stranger understands cold: the client and their problem, then what this screen does),
+     `user` (who reviews drafts),
      `inputLabel`, `draftOpener` (one polite opening line in the client's voice), `approverRole`,
      `escalationOwner`, `escalationSla`, `autonomy`, `disclosure` (from gate U), `version` ("proto-0.1"),
      `neverList` (array, from gate U), `verdicts` (object keyed `answer`, `human`, `escalate`, each
-     `{ "label", "desc" }` in plain words), `samples` (array of 6 `{ "label", "text" }`: two that
+     `{ "label", "desc" }` in plain words), `samples` (array of 6 `{ "label", "text", "expect" }`, where `expect` is the golden verdict, which
+     drives the "Try it in 3 clicks" guide: two that
      answer, one that needs a person, two that escalate including one implied complaint, one in the
      second language; take them **from `golden.json` only, never from `holdout.json`**).
    - Make sure `router.js` exports with `module.exports = { decide }`. If it uses `export`, convert it.
