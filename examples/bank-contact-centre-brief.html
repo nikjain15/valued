@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Regional bank · VALUED</title>
+<style>
+  /* Relay design tokens, verbatim from relay/app/tokens.css (docs/DESIGN-SYSTEM.md v1.0). */
+  :root {
+    --ink: #1a1a1a; --ink-2: #5c5c5c; --ink-3: #686868;
+    --line: #e4e2dd; --line-strong: #bcb9b2;
+    --surface: #ffffff; --subtle: #f6f5f2; --selected: #ecebe6; --accent: #1a1a1a;
+    --critical: #b3121f; --critical-soft: #fbecec;
+    --positive: #2d6a4f; --positive-soft: #e9f2ed;
+    --caution: #7a5200; --caution-soft: #faf3e1;
+    --agent: #4a3f9a; --agent-soft: #edeaf7;
+    --advisor: #0f5a8a; --advisor-soft: #e6f0f7;
+    --client: #0e6b5e; --client-soft: #e4f1ee;
+    --font: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+    --radius: 2px; --radius-lg: 8px;
+    --text-caption: 11px; --text-meta: 12px; --text-body: 13px; --text-lead: 14px; --text-brief: 15px;
+    --text-heading: 16px; --text-brand: 17px; --text-figure: 18px; --text-stat: 20px; --text-stat-lg: 24px;
+    --text-title: 28px; --text-display: 30px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--surface); color: var(--ink); font-family: var(--font); font-size: var(--text-lead); line-height: 1.5; }
+  a { color: var(--ink); }
+
+  .topbar { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; border-bottom: 1px solid var(--line); }
+  .brand { font-size: var(--text-brand); font-weight: 600; letter-spacing: 0.01em; }
+  .disclosure { font-size: var(--text-meta); color: var(--ink-3); }
+  .legend { display: flex; gap: 16px; font-size: var(--text-meta); }
+
+  main { max-width: 1200px; margin: 0 auto; padding: 40px; }
+  h1 { font-size: var(--text-title); font-weight: 300; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .purpose { color: var(--ink-2); font-size: var(--text-lead); margin: 0; }
+
+  /* Brief: the agent speaks first. The one rounder shape (--radius-lg). */
+  .brief { margin-top: 24px; background: var(--subtle); border-radius: var(--radius-lg); padding: 20px; border-left: 3px solid var(--agent); }
+  .brief .who { margin-bottom: 6px; }
+  .brief p { margin: 0; font-size: var(--text-brief); }
+  .brief .next { margin-top: 10px; font-size: var(--text-body); color: var(--ink-2); }
+  .brief .next b { color: var(--ink); font-weight: 600; }
+
+  .stats { display: flex; gap: 48px; margin-top: 32px; flex-wrap: wrap; }
+  .stat .n { font-size: var(--text-display); font-weight: 300; font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: var(--text-meta); color: var(--ink-2); }
+
+  section { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); }
+  h2 { font-size: var(--text-brief); font-weight: 600; margin: 0 0 12px; }
+  .gates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; }
+  @media (max-width: 860px) { .gates { grid-template-columns: 1fr; } main, .topbar { padding-left: 16px; padding-right: 16px; } .legend { display: none; } }
+  .gate { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .gate h3 { font-size: var(--text-lead); font-weight: 600; margin: 0 0 6px; display: flex; gap: 10px; align-items: baseline; }
+  .gate h3 .k { font-size: var(--text-figure); font-weight: 300; color: var(--ink-3); width: 18px; }
+  .gate ul { margin: 0; padding-left: 28px; font-size: var(--text-body); color: var(--ink); }
+  .gate li { margin: 3px 0; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  @media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; font-size: var(--text-body); font-variant-numeric: tabular-nums; }
+  th { text-align: left; font-weight: 400; font-size: var(--text-meta); color: var(--ink-2); padding: 8px 8px 8px 0; border-bottom: 1px solid var(--line-strong); }
+  td { padding: 12px 8px 12px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+
+  .pill { display: inline-block; font-size: var(--text-meta); padding: 1px 8px; border-radius: var(--radius); background: var(--subtle); color: var(--ink); }
+  .pill.pass { background: var(--positive-soft); color: var(--positive); }
+  .pill.fail { background: var(--critical-soft); color: var(--critical); }
+  .who-word { font-size: var(--text-meta); font-weight: 600; }
+  .who-agent { color: var(--agent); } .who-client { color: var(--client); } .who-advisor { color: var(--advisor); }
+  .row-client { border-left: 3px solid var(--client); padding-left: 10px; }
+  ul.decisions, ul.risks { list-style: none; padding: 0; margin: 0; font-size: var(--text-body); }
+  ul.decisions li, ul.risks li { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  ul.decisions li { border-left: 3px solid var(--client); padding-left: 10px; }
+  .caption { font-size: var(--text-caption); color: var(--ink-3); }
+  footer { margin-top: 40px; font-size: var(--text-caption); color: var(--ink-3); }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">VALUED</div>
+  <div class="legend" aria-label="Who">
+    <span class="who-word who-agent">Agent</span><span class="caption">prepared it</span>
+    <span class="who-word who-advisor">Product lead</span><span class="caption">recommended it</span>
+    <span class="who-word who-client">Client</span><span class="caption">decided it</span>
+  </div>
+  <div class="disclosure">Case workspace · synthetic data</div>
+</div>
+
+<main>
+  <h1>Regional bank: where AI should go first in the contact centre</h1>
+  <p class="purpose">Assessed through six gates: value, AI-fit, labels, user-in-the-loop, evals, deploy and drive.</p>
+
+  <!-- The agent speaks first, in one sentence with the figures in it, then one next step. -->
+  <div class="brief">
+    <div class="who"><span class="who-word who-agent">Agent</span></div>
+    <p>I scored 12 use cases on three lenses, put 7 below GenAI, and the prototype passed 6 of 6 release gates after one fix, from escalation recall 0.69 on its first run.</p>
+    <div class="next"><b>Recommendation.</b> Start with agent-assist, not a chatbot: six weeks to a shadow-mode pilot with gates risk has signed.</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n">12</div><div class="l">use cases scored (assumed list)</div></div>
+    <div class="stat"><div class="n">7</div><div class="l">should not be GenAI</div></div>
+    <div class="stat"><div class="n">6 of 6</div><div class="l">release gates passed after one fix</div></div>
+  </div>
+
+  <section>
+    <h2>Six gates</h2>
+    <div class="gates">
+      <div class="gate"><h3><span class="k">V</span>Value</h3><ul><li>Cost sits in 4 contact reasons (assumed)</li><li>North-star: cost per resolved contact</li><li>Constraint: nothing customer-facing this year</li></ul></div>
+      <div class="gate"><h3><span class="k">A</span>AI-fit</h3><ul><li>First wave: agent-assist, policy answers with sources</li><li>Second wave: customer chatbot on the same knowledge base</li><li>Buy the summary; build the grounded answers</li></ul></div>
+      <div class="gate"><h3><span class="k">L</span>Labels</h3><ul><li>40 rows labelled before any system existed</li><li>Slices: language, implicit complaint, adversarial</li><li>10 rows sealed as holdout</li></ul></div>
+      <div class="gate"><h3><span class="k">U</span>User-in-the-loop</h3><ul><li>Draft with approval for 90 days</li><li>Never decides a dispute or speaks to the customer</li><li>Escalation wins every race</li></ul></div>
+      <div class="gate"><h3><span class="k">E</span>Evals</h3><ul><li>Escalation recall bar 0.97, set before the build</li><li>First run blocked: English recall 0.58</li><li>One fix to the router, golden set untouched</li></ul></div>
+      <div class="gate"><h3><span class="k">D</span>Deploy and drive</h3><ul><li>Shadow mode, then one pilot team</li><li>Edit rate on approved drafts</li><li>Production misses become new labels</li></ul></div>
+    </div>
+  </section>
+
+  <section class="two">
+    <div>
+      <h2>Release gates, prototype run</h2>
+      <table>
+        <thead><tr><th>Gate</th><th>Value</th><th>Bar</th><th>Result</th></tr></thead>
+        <!-- Result cell: <span class="pill pass">Passed</span> or <span class="pill fail">Blocked</span>. Always the word. -->
+        <tbody><tr><td>Escalation recall</td><td>1.00</td><td>0.97 or more</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Escalation precision</td><td>1.00</td><td>0.85 or more</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Answers without a source</td><td>0</td><td>none</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Routing accuracy</td><td>1.00</td><td>0.90 or more</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Recall gap across languages</td><td>0.00</td><td>under 0.05</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Verdicts outside the set</td><td>0</td><td>none</td><td><span class="pill pass">Passed</span></td></tr></tbody>
+      </table>
+      <p class="caption">Dev set after one fix. First run: blocked, escalation recall 0.69, routing 0.72, language gap 0.42.</p>
+    </div>
+    <div>
+      <h2>Plan: six weeks</h2>
+      <table>
+        <thead><tr><th>When</th><th>What</th><th>Exit criterion</th></tr></thead>
+        <tbody><tr><td>Week 1</td><td>Real contact data replaces assumptions</td><td>Top 4 reasons confirmed</td></tr><tr><td>Week 2</td><td>Label 300 transcripts, two labellers</td><td>Agreement measured</td></tr><tr><td>Week 3 to 4</td><td>Build, gates in CI</td><td>All gates pass on holdout</td></tr><tr><td>Week 5</td><td>Shadow mode, one team</td><td>Risk sign-off</td></tr><tr><td>Week 6</td><td>Readout to the COO</td><td>Go or no-go for pilot</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="two">
+    <div>
+      <h2>What the client decided</h2>
+      <!-- One li per card: "<b>Role</b> chose X. <span class="caption">Recommended: Y</span>" -->
+      <ul class="decisions"><li><b>Sponsor</b> chose cost per resolved contact. <span class="caption">Recommended</span></li><li><b>COO</b> chose agent-assist first. <span class="caption">Recommended</span></li><li><b>Risk</b> chose draft with approval. <span class="caption">Recommended</span></li><li><b>Risk</b> set escalation recall at 0.97. <span class="caption">Recommended</span></li></ul>
+    </div>
+    <div>
+      <h2>Risks and how they are held</h2>
+      <ul class="risks"><li>Fix fitted to seen rows: held by the sealed holdout</li><li>Approval fatigue: held by edit rate</li><li>Second language breaks silently: held by the per-slice gate</li></ul>
+    </div>
+  </section>
+
+  <footer>Example output. Gate E figures come from a real prototype run; V, A, L, U, D content is illustrative. Figures marked assumed are placeholders, replaced with client data in week one. Synthetic data only. The system drafts; the client decides.</footer>
+</main>
+</body>
+</html>
