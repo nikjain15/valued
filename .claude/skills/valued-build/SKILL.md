@@ -1,6 +1,6 @@
 ---
 name: valued-build
-description: VALUED build step, after gate D. Turns the six gate files into a detailed, AI-build-ready PRD (out/prd.md and out/prd.html) and a working prototype app (workbench, evals, audit log) running on localhost, both in the founderfirst.one design system. Called by /valued; not for direct use.
+description: VALUED build step, after gate D. Completes the live PRD (summary, requirements, NFRs, risks, dependencies, and the plan for a coding agent), writes the prototype's FAQ, checks the prototype runs, and renders a standalone PRD. Both use the founderfirst.one design system. Called by /valued; not for direct use.
 ---
 
 # B: Build agent
@@ -12,50 +12,44 @@ client can click.
 | | |
 |---|---|
 | **Asks the client** | Nothing. Every input is already a recorded decision. |
-| **Uses** | The six gate files, `out/state.md`, `out/proto/` (router, eval, golden set), the engine chosen at gate A. |
-| **Gives** | A working prototype on `http://localhost:4317` and a PRD with requirement IDs, acceptance criteria and a task-by-task build plan for a coding agent. |
+| **Uses** | The six gate files, `out/state.md`, the PRD sections the gates already filled, `out/proto/`. |
+| **Gives** | A complete PRD (live at `localhost:4317/prd`, standalone in `out/prd.html`) and a working prototype with Workbench, Evals, Audit log, How it works and FAQ. |
 
-This step must finish in about 3 minutes. Do the app first (it is mechanical), then the PRD.
+The gates have already filled most of the PRD and the prototype as they went (see the live-outputs rule
+in the orchestrator). This step fills what needs every gate at once. Target: 3 minutes.
 
 ## Steps
 
-1. **App (under 1 minute).** Copy `app/app.html`, `app/server.js` and `app/ff.css` from this skill's
-   folder into `out/proto/`. Do not restyle them; the design system is founderfirst.one.
-   - Write `out/proto/build.json`: `{ "engine": "rules" | "rules+model" | "model-first" }` from the engine
-     decision in `out/state.md` (default `rules` if none was recorded).
-   - Write `out/proto/case.json` from the gate files. Fields, all strings unless noted:
-     `title` (use case name, 2 to 5 words), `client`, `useCase`, `headline` (an outcome in under 9 words),
-     `promise` (one sentence: who it helps and what a person still decides), `scenario` (two plain
-     sentences a stranger understands cold: the client and their problem, then what this screen does),
-     `user` (who reviews drafts),
-     `inputLabel`, `draftOpener` (one polite opening line in the client's voice), `approverRole`,
-     `escalationOwner`, `escalationSla`, `autonomy`, `disclosure` (from gate U), `version` ("proto-0.1"),
-     `neverList` (array, from gate U), `verdicts` (object keyed `answer`, `human`, `escalate`, each
-     `{ "label", "desc" }` in plain words), `samples` (array of 6 `{ "label", "text", "expect" }`, where `expect` is the golden verdict, which
-     drives the "Try it in 3 clicks" guide: two that
-     answer, one that needs a person, two that escalate including one implied complaint, one in the
-     second language; take them **from `golden.json` only, never from `holdout.json`**).
-   - Make sure `router.js` exports with `module.exports = { decide }`. If it uses `export`, convert it.
-   - Start it in the background: `node out/proto/server.js` (run in background), then `open
-     http://localhost:4317` (skip `open` under `--no-open`). If port 4317 is busy, stop the old server
-     first. The server also serves the PRD at `http://localhost:4317/prd` once it exists.
-2. **PRD (about 2 minutes).** Write `out/prd.md` following `prd-template.md` in this skill's folder:
-   every heading, in order, every table shape. Fill it only from the gate files, `out/state.md` and
-   the eval output. Rules:
-   - Requirement IDs everywhere (G-, M-, FR-, NFR-, R-, Q-, T-). Each FR has a testable acceptance
-     criterion, written Given / When / Then where it fits.
-   - Every number either comes from a gate file or is marked (assumed). Never invent client facts.
-   - Section 11 shows the real latest dev and holdout results, including any gate that is still red.
-     Quote holdout misses by id only, never their text. Row counts are the current counts (the dev set
-     grows when harder rows are added).
-   - Section 17 is written for a coding agent: concrete tasks in order, each with the requirement it
-     implements and a command that proves it is done. Fill the kickoff prompt with the real use case.
+1. **Check the prototype.** `curl -s localhost:4317/api/status` must show `"ready":true`. If the server
+   is not running, start it in the background: `node out/proto/server.js`. If `router.js` uses `export`,
+   convert it to `module.exports = { decide }`. Fill any `case.json` field a gate left empty (fields
+   listed in the orchestrator's table).
+2. **Write the FAQ** into `case.json` as `faq`: 7 to 8 `{ "q", "a" }` pairs, each answer two sentences
+   at most, written from this run's decisions, not generic. Cover: why this first (and not the obvious
+   alternative); what it never does; what happens when it is unsure; how we know it is safe to launch
+   (the client's bar and the latest result); whether it uses a model, and what happens if the model is
+   down or declines; who approves and what is logged; what data it uses and what is masked; what would
+   make us stop. Set `version` to `proto-0.1`.
+3. **Complete the PRD** in `out/prd.md`, following `prd-template.md`: replace every remaining
+   `> Pending: fills at gate B.` line (sections 1, 7, 12, 15, 16, 17 and the appendix), add the
+   Recommendation and Decision-asked quote under the meta line, and update `Version` to `0.1, draft for
+   client review`. Rules:
+   - Requirement IDs everywhere (G-, M-, US-, FR-, NFR-, R-, Q-, T-). Each FR has a testable acceptance
+     criterion, Given / When / Then where it fits, and names the user story it serves.
+   - Every number comes from a gate file or is marked (assumed). Never invent client facts.
+   - Re-read sections the gates wrote; fix contradictions with later decisions (for example a bar
+     changed at E). The PRD must agree with itself and with the prototype.
+   - Section 11 shows the real latest dev and holdout results, including any gate still red. Holdout
+     misses by id only, never their text. Row counts are current counts.
+   - Section 17 is for a coding agent: concrete tasks in order, each with the requirement it implements
+     and a command that proves it is done. Fill the kickoff prompt with the real use case.
    - Tables at most 12 rows. Telegraphic, verb-first. No em-dashes.
-3. **Render:** `node .claude/skills/valued-build/render-prd.js out/prd.md out/prd.html`, then
-   `open http://localhost:4317/prd` (skip under `--no-open`).
-4. Write `out/proto/CLAUDE.md` with three lines: read `../prd.md` first; work from section 17; never
+4. **Render the standalone copy:** `node .claude/skills/valued-build/render-prd.js out/prd.md
+   out/prd.html`.
+5. Write `out/proto/CLAUDE.md` with three lines: read `../prd.md` first; work from section 17; never
    edit `golden.json` or read `holdout.json`.
-5. Append to `out/state.md`: `Build: prototype on http://localhost:4317 (engine <x>); PRD out/prd.md`.
-6. **Say it** (three lines): this is the decisions turned into a spec a team or a coding agent can build
+6. Append to `out/state.md`: `Build: PRD complete (localhost:4317/prd, out/prd.html); prototype on
+   localhost:4317 (engine <x>)`. Then `open http://localhost:4317` (skip under `--no-open`).
+7. **Say it** (three lines): this is the decisions turned into a spec a team or a coding agent can build
    from; every requirement has a test, and the evals are the definition of done; the prototype is the
    same rules, clickable, with every action logged.

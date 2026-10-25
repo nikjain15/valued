@@ -21,16 +21,24 @@ run without asking: take the recommended option at every card and log it as "(au
 
 ## Run
 
-1. **Set up (under 30 seconds).** Create `out/`. Write `out/state.md` with four sections: the case
-   line, "Client decisions", "Assumptions", and "Governance log". Print one line:
-   `VALUED · 6 gates · governed at every gate · the system drafts, the client decides`.
+1. **Set up (under 30 seconds).** Create `out/` and `out/proto/`. Write `out/state.md` with four
+   sections: the case line, "Client decisions", "Assumptions", and "Governance log". Then start the
+   live outputs, so the client watches the PRD and the prototype take shape gate by gate:
+   ```bash
+   B=.claude/skills/valued-build
+   cp $B/app/app.html $B/app/server.js $B/app/ff.css $B/prd-viewer.html out/proto/
+   echo '{}' > out/proto/case.json
+   node $B/prd-skeleton.js "<the case line>" out/prd.md
+   pkill -f "out/proto/server.js"; node out/proto/server.js   # run in the background
+   ```
+   Then `open http://localhost:4317/prd` (skip under `--no-open`). Print one line:
+   `VALUED · 6 gates · governed at every gate · the system drafts, the client decides · live PRD: localhost:4317/prd`.
 2. **Run the gates in order**, each by invoking its skill and waiting for it to finish:
    `valued-value`, `valued-ai-fit`, `valued-labels`, `valued-user-loop`, `valued-evals`,
    `valued-deploy`. Before each, print a single header line:
    `[V] Value · target 6 min` (A 8, L 6, U 5, E 9, D 6).
    After D, run the build step the same way: `[B] Build: PRD and prototype · target 3 min`, invoking
-   `valued-build`. It writes `out/prd.md`, `out/prd.html`, and starts the prototype app on
-   `http://localhost:4317`.
+   `valued-build`. It completes the PRD, writes the prototype's FAQ, and renders `out/prd.html`.
 3. **Between gates**, print nothing but the gate header. No recaps.
 4. **After B**, build the brief: copy `brief-template.html` from this skill's folder to
    `out/brief.html` and replace every `{{...}}` placeholder from `out/state.md` and the gate files.
@@ -56,7 +64,23 @@ run without asking: take the recommended option at every card and log it as "(au
 - **Every gate ends with its governance check** (question, answer, status) and adds open items to the
   "Governance log".
 - After the cards, finalize the gate file `out/<n>-<gate>.md`, append the choices to "Client decisions"
-  in `out/state.md`, and print a **"Say it"** block: three lines the product lead can say out loud, in
-  first person, plain, no em-dashes.
+  in `out/state.md`, then **update the live outputs** (next rule), and print a **"Say it"** block: three
+  lines the product lead can say out loud, in first person, plain, no em-dashes.
+- **Live outputs: every answer lands in the PRD and the prototype before the next gate starts.** In
+  `out/prd.md`, replace the `> Pending: fills at gate <X>.` line under each section the gate owns with
+  that section's content, following `.claude/skills/valued-build/prd-template.md` for its tables. In
+  `out/proto/case.json`, merge the gate's fields (keep the others), and append one entry per client
+  decision to `decisions`: `{ "gate", "decision", "by", "effect" }`, where `effect` says in a few words
+  what the decision changed in the prototype or the PRD. The viewer and the app refresh on their own.
+
+  | Gate | PRD sections it fills | Prototype fields it writes |
+  |---|---|---|
+  | V | 2, 3, 4, and `Client:` in the meta line | `title`, `client`, `useCase`, `headline`, `scenario`, `user`, `inputLabel` |
+  | A | 5, 6 | `out/proto/build.json` engine; `promise` |
+  | L | 10 | `verdicts`, `samples` (6, from `golden.json` only, each with `expect`) |
+  | U | 8, 9 | `neverList`, `escalationOwner`, `escalationSla`, `autonomy`, `disclosure`, `approverRole`, `draftOpener` |
+  | E | 11 | `gates.json`, `router.js`, `eval.js` (the Workbench and Evals tabs come alive) |
+  | D | 13, 14 | none |
+  | B | 1, 7, 12, 15, 16, 17, the appendix, and the recommendation at the top | `faq`, `version` |
 - Never exceed 12 table rows. Mark assumed numbers (assumed). Synthetic data only.
 - If a step is taking too long, cut scope and say so in one line. Never stall the room.

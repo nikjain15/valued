@@ -30,6 +30,11 @@
 |---|---|---|---|
 | <primary user> | <job> | <pain> | <with the product> |
 
+| ID | As a | I want to | So that |
+|---|---|---|---|
+| US-01 | <primary user> | <capability> | <outcome> |
+| US-02 | <approver or escalation owner> | <capability> | <outcome> |
+
 **Journey, future state:** <request arrives> → <escalation check> → <route> → <draft> → <person decides> → <logged>.
 
 ## 4. Goals, non-goals and success metrics
@@ -72,18 +77,24 @@ request ─▶ escalation guard ─▶ router (one source?) ─▶ draft (cited 
         <escalation owner>       person handles
 ```
 
+**Alternatives considered**
+
+| Alternative | Why not now | When we would revisit |
+|---|---|---|
+| <the obvious alternative, e.g. customer chatbot> | <reason tied to risk or value> | <trigger> |
+
 **Latency budget:** <per surface>. **Unit of cost:** cost per resolved task, <estimate (assumed)>.
 
 ## 7. Functional requirements
 
-| ID | Requirement | Priority | Acceptance criteria |
-|---|---|---|---|
-| FR-01 | Check every request against escalation triggers before anything else | Must | Given a request matching any trigger, when it is processed, then verdict is `escalate` and no draft is produced |
-| FR-02 | Answer only when exactly one source clearly matches | Must | Given a request matching zero or two sources, then verdict is `human` |
-| FR-03 | Every draft cites its source | Must | Answers without a source = 0 on the golden set |
-| FR-04 | A person approves, edits or hands off every draft | Must | No output leaves without an approver recorded in the audit log |
-| FR-05 | Log input, source, output, approver, time, version for every action | Must | Every action in the workbench creates one audit row |
-| FR-06 | <case-specific requirement> | <Must/Should> | <testable criterion> |
+| ID | Requirement | Story | Priority | Acceptance criteria |
+|---|---|---|---|---|
+| FR-01 | Check every request against escalation triggers before anything else | US-02 | Must | Given a request matching any trigger, when it is processed, then verdict is `escalate` and no draft is produced |
+| FR-02 | Answer only when exactly one source clearly matches | US-01 | Must | Given a request matching zero or two sources, then verdict is `human` |
+| FR-03 | Every draft cites its source | US-01 | Must | Answers without a source = 0 on the golden set |
+| FR-04 | A person approves, edits or hands off every draft | US-01 | Must | No output leaves without an approver recorded in the audit log |
+| FR-05 | Log input, source, output, approver, time, version for every action | US-02 | Must | Every action in the workbench creates one audit row |
+| FR-06 | <case-specific requirement> | <US id> | <Must/Should> | <testable criterion> |
 
 ## 8. AI behaviour specification
 
@@ -155,6 +166,10 @@ request ─▶ escalation guard ─▶ router (one source?) ─▶ draft (cited 
 
 ## 14. Governance and sign-offs
 
+| Approver | Role | Signs off on |
+|---|---|---|
+| <name to confirm> | <role> | <stage or artifact> |
+
 | Gate | Question | Answer | Status | Closes it |
 |---|---|---|---|---|
 | <gate> | <question> | <answer> | <answered / assumed / client to confirm> | <role> |
@@ -165,7 +180,11 @@ request ─▶ escalation guard ─▶ router (one source?) ─▶ draft (cited 
 |---|---|---|---|---|
 | R-01 | <risk> | <L/M/H> | <L/M/H> | <mitigation, tied to a gate> |
 
-## 16. Open questions and assumptions
+## 16. Dependencies, open questions and assumptions
+
+| Dependency | Owner | Needed for | Status |
+|---|---|---|---|
+| <e.g. policy content export, vendor approval, CRM integration> | <role> | <milestone> | <status> |
 
 | ID | Question or assumption | Owner | Needed by |
 |---|---|---|---|

@@ -51,6 +51,12 @@
   .tour .n { width: 22px; height: 22px; border-radius: 50%; background: var(--brand); color: var(--white); display: inline-grid; place-items: center; font-size: 12px; font-weight: 600; }
   .intro-close { background: none; border: 0; color: var(--ink-4); cursor: pointer; font: 500 var(--fs-label) var(--font-sans); }
   @media (max-width: 900px) { .intro-grid { grid-template-columns: 1fr; } }
+  .faq details { border-bottom: 1px solid var(--line-2); padding: 14px 0; }
+  .faq summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  .faq summary::after { content: "+"; color: var(--ink-4); font-weight: 400; }
+  .faq details[open] summary::after { content: "–"; }
+  .faq details p { margin-top: 8px; color: var(--ink-2); font-size: var(--fs-label); max-width: 75ch; }
+  .building { display: flex; gap: 10px; align-items: center; }
   footer { padding: 32px 0 48px; color: var(--ink-4); font-size: var(--fs-micro); }
   @media (max-width: 900px) { .hero, .grid { grid-template-columns: 1fr; } .flow { grid-template-columns: 1fr 1fr; } .kpis { grid-template-columns: repeat(2, 1fr); } }
 </style>
@@ -100,6 +106,7 @@
     <button class="tab" role="tab" aria-selected="false" data-tab="evals">Evals</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="audit">Audit log</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="how">How it works</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="faq">FAQ</button>
   </div>
 
   <section class="panel" id="work">
@@ -165,6 +172,14 @@
         <div class="card"><div class="eyebrow">Release gates</div><table style="margin-top:8px"><tbody id="gateRows"></tbody></table></div>
         <div class="card"><div class="eyebrow">Knowledge sources</div><table style="margin-top:8px"><tbody id="sourceRows"></tbody></table></div>
       </div>
+      <div class="card"><div class="eyebrow">Decisions that shaped it</div><p class="small muted" style="margin-top:4px">Every choice made during the run, who made it, and what it changed in this prototype.</p><table style="margin-top:8px"><thead><tr><th>Gate</th><th>Decision</th><th>Chosen by</th><th>What it changed here</th></tr></thead><tbody id="decisionRows"></tbody></table></div>
+    </div>
+  </section>
+
+  <section class="panel" id="faq" hidden>
+    <div class="card emph">
+      <div class="eyebrow">Questions people ask</div><h2 style="margin-top:6px">FAQ</h2>
+      <div id="faqList" style="margin-top:12px"></div>
     </div>
   </section>
 </main>
@@ -174,7 +189,7 @@
 <script>
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-let CASE = {}, current = null, stats = { decisions: 0, approved: 0, edited: 0, escalated: 0 };
+let CASE = {}, READY = false, current = null, stats = { decisions: 0, approved: 0, edited: 0, escalated: 0 };
 
 const VERDICT_STYLE = { answer: "ok", human: "warn", escalate: "bad" };
 const ENGINE_LABEL = { rules: "Rules only", "rules+model": "Rules decide, model drafts", "model-first": "Model proposes, rules guard" };
@@ -212,12 +227,20 @@ async function boot() {
   const samples = c.samples || [];
   const pick = (v, fallback) => { const i = samples.findIndex((x) => x.expect === v); return i >= 0 ? i : fallback; };
   const iAns = pick("answer", 0), iEsc = pick("escalate", samples.length - 2);
-  $("#iTour").innerHTML += [
+  $("#iTour").innerHTML = `<strong class="small">Try it in 3 clicks</strong>` + [
     samples[iAns] && `<button class="chip" data-tour="${iAns}"><span class="n">1</span>&nbsp; Run "${esc(samples[iAns].label)}", then Approve</button>`,
     samples[iEsc] && `<button class="chip" data-tour="${iEsc}"><span class="n">2</span>&nbsp; Run "${esc(samples[iEsc].label)}": watch it escalate</button>`,
     `<button class="chip" data-tour="audit"><span class="n">3</span>&nbsp; Open the audit log</button>`,
   ].filter(Boolean).join("");
   try { if (localStorage.getItem("introHidden") === "1") toggleIntro(false); } catch {}
+  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(d.gate)}</span></td><td>${esc(d.decision)}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("")
+    || `<tr><td colspan="4" class="muted">Decisions appear here as each gate is decided.</td></tr>`;
+  $("#faqList").innerHTML = `<div class="faq">${(c.faq || []).map((f) => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("")}</div>`
+    || "";
+  if (!(c.faq || []).length) $("#faqList").innerHTML = `<p class="muted small">The FAQ is written at the build step, from the decisions in this run.</p>`;
+  READY = Boolean(status.ready);
+  if (!READY && !current) $("#result").innerHTML = `<div class="empty"><div class="ring">·</div><p class="building" style="justify-content:center">The router is built at gate E, from the labels and the never list you decide. Until then, follow the PRD as it fills in.</p><p style="margin-top:12px"><a class="btn ghost sm" href="/prd">Open the live PRD</a></p></div>`;
+  $("#run").disabled = !READY;
   $("#gateRows").innerHTML = Object.entries(gates || {}).filter(([k]) => !k.startsWith("_")).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="mono">${esc(typeof v === "object" ? JSON.stringify(v) : v)}</td></tr>`).join("");
   $("#sourceRows").innerHTML = (Array.isArray(sources) ? sources : []).map((s) => `<tr><td class="mono">${esc(s.id)}</td><td>${esc(s.text)}</td></tr>`).join("");
 }
@@ -323,7 +346,14 @@ document.addEventListener("click", async (e) => {
   } else if (t.id === "refreshLog") loadLog();
 });
 $("#input").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) run(); });
-boot();
+let lastSig = "";
+async function watch() {
+  try {
+    const sig = await Promise.all(["/case.json", "/api/status", "/gates.json"].map((u) => fetch(u, { cache: "no-store" }).then((r) => r.text()))).then((a) => a.join("|"));
+    if (sig !== lastSig) { const first = !lastSig; lastSig = sig; await boot(); if (!first) toast("Updated from the latest gate"); }
+  } catch {}
+}
+watch(); setInterval(watch, 4000);
 </script>
 </body>
 </html>

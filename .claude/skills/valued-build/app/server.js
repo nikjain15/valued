@@ -15,10 +15,20 @@ const LOG = path.join(DIR, "audit.jsonl");
 const readJson = (f, fallback) => {
   try { return JSON.parse(fs.readFileSync(path.join(DIR, f), "utf8")); } catch { return fallback; }
 };
-const router = require(path.join(DIR, "router.js"));
-const sources = readJson("sources.json", []);
-const build = readJson("build.json", { engine: "rules" });
-const caseInfo = readJson("case.json", {});
+// Everything is read fresh on each request: the server starts at setup, before the router exists,
+// and the router changes when a failing gate is fixed.
+let sources = [], build = { engine: "rules" }, caseInfo = {};
+function loadRouter() {
+  const file = path.join(DIR, "router.js");
+  if (!fs.existsSync(file)) return null;
+  delete require.cache[require.resolve(file)];
+  return require(file);
+}
+function refresh() {
+  sources = readJson("sources.json", []);
+  build = readJson("build.json", { engine: "rules" });
+  caseInfo = readJson("case.json", {});
+}
 
 const sourceText = (id) => (sources.find((s) => s.id === id) || {}).text || "";
 
@@ -80,6 +90,9 @@ async function modelPropose(input) {
 }
 
 async function decide(input) {
+  refresh();
+  const router = loadRouter();
+  if (!router) return { verdict: "human", source: null, reason: "The router is not built yet (it is built at gate E).", notes: [] };
   const rules = router.decide(input);
   let result = { ...rules, engine: build.engine, proposedBy: "rules" };
   let notes = [];
@@ -155,18 +168,24 @@ http.createServer(async (req, res) => {
       const rows = fs.existsSync(LOG) ? fs.readFileSync(LOG, "utf8").trim().split("\n").filter(Boolean).map((l) => JSON.parse(l)) : [];
       return send(res, 200, rows.reverse());
     }
-    if (url.pathname === "/api/status") return send(res, 200, { engine: build.engine, model: MODEL, modelReady: Boolean(KEY) });
-    if (url.pathname === "/prd" || url.pathname === "/prd.md") {
-      const file = path.join(DIR, "..", url.pathname === "/prd" ? "prd.html" : "prd.md");
-      if (!fs.existsSync(file)) return send(res, 404, { error: "PRD not built yet" });
-      return send(res, 200, fs.readFileSync(file), url.pathname === "/prd" ? TYPES[".html"] : TYPES[".md"]);
+    if (url.pathname === "/api/status") {
+      refresh();
+      const ready = fs.existsSync(path.join(DIR, "router.js")) && fs.existsSync(path.join(DIR, "case.json"));
+      return send(res, 200, { ready, engine: build.engine, model: MODEL, modelReady: Boolean(KEY) });
     }
+    if (url.pathname === "/prd.md") {
+      const file = path.join(DIR, "..", "prd.md");
+      return send(res, 200, fs.existsSync(file) ? fs.readFileSync(file) : "# PRD\n\n> Pending: the PRD starts when the run starts.", TYPES[".md"]);
+    }
+    if (url.pathname === "/prd") return send(res, 200, fs.readFileSync(path.join(DIR, "prd-viewer.html")), TYPES[".html"]);
     const name = url.pathname === "/" ? "app.html" : url.pathname.slice(1);
     if (!PUBLIC.has(name)) return send(res, 404, { error: "not found" });
+    if (!fs.existsSync(path.join(DIR, name))) return send(res, 200, name === "sources.json" ? "[]" : "{}");
     return send(res, 200, fs.readFileSync(path.join(DIR, name)), TYPES[path.extname(name)] || "text/plain");
   } catch (e) {
     return send(res, 500, { error: e.message });
   }
 }).listen(PORT, () => {
-  console.log(`Prototype: http://localhost:${PORT}  engine=${build.engine}  model=${KEY ? MODEL : "off (no key, template drafts)"}`);
+  refresh();
+  console.log(`PRD: http://localhost:${PORT}/prd  Prototype: http://localhost:${PORT}  model=${KEY ? MODEL : "off (no key, template drafts)"}`);
 });
