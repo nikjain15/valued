@@ -43,6 +43,8 @@ Production misses become new labels, so D loops back to L.
 ## Principles
 
 - **The system drafts, the client decides.** No gate makes a judgement call on the client's behalf.
+- **Ask only what the client owns.** Priorities, risk appetite and facts only they know are questions. Everything else (sourcing, architecture, thresholds) is a recommendation: the options, their trade-offs, our preference, why, and what would change our mind.
+- **Governed at every gate.** Each gate answers its own governance questions (regulatory exposure, data rights, human accountability, signable evidence, sign-off and audit trail), and open items appear in the brief.
 - **Least AI that works.** Deterministic first; a model only where the rung below fails.
 - **Labels before the model.** Otherwise you grade the system against itself.
 - **The builder never sees the holdout.** A fix is scored on the rows it learned from and on ten it never

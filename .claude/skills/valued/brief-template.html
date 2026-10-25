@@ -137,13 +137,22 @@
   <section class="two">
     <div>
       <h2>What the client decided</h2>
-      <!-- One li per card: "<b>Role</b> chose X. <span class="caption">Recommended: Y</span>" -->
+      <!-- One li per card: "<b>Role</b> chose X. <span class="caption">We recommended Y because Z; trade-off: T</span>" -->
       <ul class="decisions">{{CLIENT_DECISIONS_LI}}</ul>
     </div>
     <div>
       <h2>Risks and how they are held</h2>
       <ul class="risks">{{RISKS_LI}}</ul>
     </div>
+  </section>
+
+  <section>
+    <h2>Governed at every gate</h2>
+    <table>
+      <thead><tr><th>Gate</th><th>Governance question</th><th>Answer</th><th>Status</th><th>Owner</th></tr></thead>
+      <!-- One row per governance item from the Governance log, open items first. Status cell: <span class="pill pass">Answered</span>, <span class="pill">Assumed</span>, or <span class="pill fail">Client to confirm</span>. Always the word. -->
+      <tbody>{{GOVERNANCE_ROWS_TR}}</tbody>
+    </table>
   </section>
 
   <footer>Figures marked assumed are placeholders, replaced with client data in week one. Synthetic data only. The system drafts; the client decides.</footer>

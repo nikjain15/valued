@@ -467,7 +467,7 @@
             <div class="quad">
               <div><span>Asks you</span>Which outcome must move first? What is the hard constraint?</div>
               <div><span>Uses</span>A value frame: how often, cost per item, cost of getting it wrong, leading to one north-star metric.</div>
-              <div><span>Gives you</span>Priced problems, twelve candidate use cases, one metric.</div>
+              <div><span>Gives you</span>Priced problems, twelve candidate use cases, and a north-star metric recommended with its trade-offs.</div>
               <div class="prev"><span>Prevents</span>AI nobody can prove paid back.</div>
             </div>
             <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Is any part of this a regulated activity?</li><li>What is the exposure if it goes wrong: fines, complaints, conduct?</li><li>Who is the accountable owner?</li></ul></div>
@@ -491,7 +491,7 @@
             <div class="quad">
               <div><span>Asks you</span>Which ideas go first, given your priorities?</div>
               <div><span>Uses</span>The least-AI ladder, plus three scorers working in parallel on value, feasibility and risk.</div>
-              <div><span>Gives you</span>A first wave, a build, buy or partner call for each part with its reason, and the cost per task.</div>
+              <div><span>Gives you</span>A recommended first wave, and a build, buy or partner call for each part: the options, their trade-offs, our preference and why.</div>
               <div class="prev"><span>Prevents</span>A model where a rule would do.</div>
             </div>
             <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Does a regulation require human judgement for this decision?</li><li>Is it in model-risk scope, and at what tier?</li><li>Can we explain the outcome to a customer and a regulator?</li></ul></div>
@@ -516,7 +516,7 @@
             <div class="quad">
               <div><span>Asks you</span>Which group worries you most? What can we label from?</div>
               <div><span>Uses</span>An answer key labelled by intent, split by group, with a sealed holdout.</div>
-              <div><span>Gives you</span>A golden set, a holdout, and a data and privacy table.</div>
+              <div><span>Gives you</span>A golden set, a sealed holdout, a data and privacy table, and a labelling approach recommended with its trade-offs.</div>
               <div class="prev"><span>Prevents</span>The system grading itself.</div>
             </div>
             <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Are we allowed to use this data for this purpose?</li><li>Is personal or health data minimised and protected?</li><li>Do the labels check fairness across groups?</li></ul></div>
@@ -538,7 +538,7 @@
             <div class="quad">
               <div><span>Asks you</span>How much autonomy in the first 90 days? Who owns an escalation?</div>
               <div><span>Uses</span>The autonomy ladder (suggest, draft, act with approval, act), a never list, and escalation that wins every race.</div>
-              <div><span>Gives you</span>Who approves what, the stop triggers and their owners.</div>
+              <div><span>Gives you</span>An autonomy level recommended with its trade-offs, who approves what, stop triggers, and a logging spec.</div>
               <div class="prev"><span>Prevents</span>AI doing more than anyone agreed.</div>
             </div>
             <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Which decisions must an accountable person make?</li><li>What do we disclose to the customer?</li><li>Is every action logged with who approved it?</li></ul></div>
@@ -559,7 +559,7 @@
             <div class="quad">
               <div><span>Asks you</span>Which miss stops the release? Ship anyway, or fix first?</div>
               <div><span>Uses</span>Gates set before the build and checked per group; a builder that cannot see the answers; a sealed holdout for every fix.</div>
-              <div><span>Gives you</span>A prototype, a pass or a block, and every remaining miss listed.</div>
+              <div><span>Gives you</span>Proposed gates with reasons, a prototype, a pass or a block, and an evidence pack audit can rerun.</div>
               <div class="prev"><span>Prevents</span>An average hiding the group that breaks.</div>
             </div>
             <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Do the tests cover fairness and safety, not just accuracy?</li><li>Can risk, compliance and audit reproduce the evidence?</li><li>Who signs the release?</li></ul></div>
@@ -583,7 +583,7 @@
             <div class="quad">
               <div><span>Asks you</span>What is the pilot scope? What would make you stop?</div>
               <div><span>Uses</span>Shadow, then canary, then signed promotion, then watch: drift by group, edit rate, a kill switch.</div>
-              <div><span>Gives you</span>A rollout plan, what to watch after launch, and the one-page brief.</div>
+              <div><span>Gives you</span>Pilot scope and stop rule recommended with trade-offs, a rollout plan with named sign-offs, and the one-page brief.</div>
               <div class="prev"><span>Prevents</span>Quiet decay after launch.</div>
             </div>
             <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Who signs each stage of the rollout?</li><li>Is there an audit trail, and a kill switch with a named owner?</li><li>How are incidents, complaints and model changes reported?</li></ul></div>
@@ -639,7 +639,7 @@
         <div>
           <p class="eyebrow">RUN IT ON YOUR CASE</p>
           <h2>The method, packaged as an agent workflow.</h2>
-          <p class="lede">Describe a case in one line. The workflow runs the six gates in order. At each one it drafts a table, then asks you at most two questions, with a recommendation and its reason. You decide; it records the decision and moves on.</p>
+          <p class="lede">Describe a case in one line. The workflow runs the six gates in order. At each one it drafts a table, then asks you at most two questions, and only ones you own: priorities, risk appetite, facts only you know. Everything else comes back as a recommendation: the options, their trade-offs, our preference and why. You make the call; it records it and moves on.</p>
           <ol>
             <li><div><b>Describe the case</b><p>Who, what problem, what constraint. Anything it assumes is marked as assumed.</p></div></li>
             <li><div><b>Review each gate's draft</b><p>At AI-fit, three scorers rate value, feasibility and risk in parallel.</p></div></li>
@@ -672,7 +672,7 @@
         <details><summary>Is the data real?</summary><p>No. CureCue's plan and members, Relay's clients and the example case are all synthetic. The numbers are real results of running the code on that data.</p></details>
         <details><summary>Do the products use a language model?</summary><p>Not yet, on purpose. They prove the rules, the gates and the evals first; a model would sit behind them, and would have to pass the same gates. Conduit is the layer a model call would come through.</p></details>
         <details><summary>Did you design VALUED first and then build these?</summary><p>No. I built the products first. VALUED names the gates I kept using, so the next product can start from them.</p></details>
-        <details><summary>Does the workflow make decisions for me?</summary><p>No. It drafts and recommends. Every judgement goes to you as a question, and the brief records who decided what.</p></details>
+        <details><summary>Does the workflow make decisions for me?</summary><p>No. It recommends, showing the options, their trade-offs, its preference and what would change its mind. Decisions that are yours (priorities, risk appetite) come to you as a question; the brief records who decided what, and every governance item still open.</p></details>
       </div>
     </div>
   </section>

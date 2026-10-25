@@ -1,39 +1,58 @@
 ---
 name: valued-evals
-description: VALUED gate E. Set release thresholds, build a small prototype in the background, and run it against the golden set so a missed gate blocks the release. Called by /valued; not for direct use.
+description: VALUED gate E. Propose release gates with reasons, put the riskiest-miss bar to the client with trade-offs, build a prototype in the background, run it per group with a sealed holdout, and produce evidence risk and audit can reproduce. Called by /valued; not for direct use.
 ---
 
-# E: Evals
+# E: Evals agent
 
-Goal: evals decide the release, not opinions. Thresholds first, then the build.
+**Job:** let a number decide the release.
+**Prevents:** an average hiding the group that breaks.
 
-1. Draft the **gates table** (max 7 rows): gate, metric, threshold, why that bar. Always include:
-   escalation recall (high, for example 0.97), escalation precision, answers without a source (must
-   be 0), routing accuracy, the **recall gap across the riskiest slice** (for example across
-   languages, under 0.05), and verdicts outside the allowed set (0). Note which metrics may ever use
-   an LLM judge (only after it is validated against human labels) and which never do (escalation).
-2. Ask the client (1 card):
-   - **Header "Risk": "Escalation recall bar for release?"** Options 0.99 / 0.97 / 0.95 with the cost of
-     each in the description (higher bar, more over-escalation to humans). Recommend 0.97.
-3. Write the chosen thresholds to `out/proto/gates.json`.
-4. **Launch the `prototype-builder` subagent in the background** with: the use case, the verdicts,
-   `out/proto/sources.json`, `out/proto/gates.json`, and the escalation triggers from
-   `out/4-user-loop.md`. Print one line: `Building the prototype in the background; golden set is
-   sealed until the router exists`.
+| | |
+|---|---|
+| **Asks the client** | What is the bar for the riskiest miss? Ship anyway, or fix first? (Risk appetite, and a release decision only they can make.) |
+| **Uses** | Gates set before the build and checked per group; a builder agent that cannot see the answers; a sealed holdout for every fix. |
+| **Gives** | Proposed gates with reasons, a prototype, a pass or a block, every remaining miss listed, and an evidence pack. |
+| **Governance asks** | Do the tests cover fairness and safety, not just accuracy? Can risk, compliance and audit reproduce the evidence? Who signs the release? |
+
+The agent **proposes** every gate and threshold with its reason. Only the bar for the riskiest miss and
+the ship-or-fix decision go to the client, because they trade customer harm against cost.
+
+## Steps
+
+1. **Propose the gates** (max 8 rows): gate, metric, proposed threshold, why that bar. Always include:
+   escalation recall (the riskiest miss), escalation precision, answers without a source (0), routing
+   accuracy, the **recall gap across groups** (under 0.05), a **fairness gate** (no group below the
+   bar), a **safety gate** (no answer on a never-list topic), and verdicts outside the allowed set (0).
+   Note which metrics may ever use an LLM judge (only after it is validated against labels) and which
+   never do (escalation).
+2. **Ask the client (1 card):** **"Risk": "Bar for the riskiest miss?"** Options 0.99 / 0.97 / 0.95, each
+   with its trade-off (a higher bar sends more cases to people and costs more; a lower one misses more).
+   Our preference first, with why and what would change our mind.
+3. Write all thresholds to `out/proto/gates.json`.
+4. **Launch the `prototype-builder` subagent in the background** with the use case, the verdicts,
+   `out/proto/sources.json`, `out/proto/gates.json`, and the escalation triggers and never list from
+   `out/4-user-loop.md`. Print: `Building the prototype in the background; the answer key is sealed
+   until the router exists`.
 5. **While it builds**, print the **"Say it while it builds"** block: route first, deterministic first;
-   where a small model and a larger model would sit; the latency budget per surface; cost per resolved
-   task. Five lines.
-6. When the builder returns, run `node out/proto/eval.js` and show its output as is.
-   - **If a gate fails**: print `Release blocked.` and the failing slice. Then ask the client one card,
-     **Header "COO": "Ship anyway or fix first?"** with "Fix first (Recommended)" and "Ship with a
-     human reviewing every <slice> case". Then ask the builder to fix the failure **without editing
-     golden.json**, and rerun the eval.
-   - **Then run the sealed holdout yourself**: `node out/proto/eval.js holdout.json`. Show both results
-     side by side: dev set after fix, holdout never seen. If the holdout is lower, say so plainly: that
-     gap is how much the fix was fitted to the rows it saw, and it is the honest number.
-   - **If all gates pass**: say it is a smoke test on 40 rows, not a release, and add 4 harder rows
-     (implicit complaints without the keyword) to `golden.json` through the builder, then rerun.
-7. Finalize `out/5-evals.md` with the gates table, the eval output before and after, and what
-   changed. Update `out/state.md`.
-8. **Say it**: thresholds before the build; metrics by slice because an average hides a broken
-   segment; a missed gate blocks the release.
+   where a small and a larger model would sit; the latency budget per surface; cost per resolved task.
+6. When the builder returns, run `node out/proto/eval.js` and show the output as is.
+   - **If a gate fails:** print `Release blocked.` and the failing group. Ask **"COO": "Ship anyway, or
+     fix first?"** with "Fix first (Recommended)" and its trade-off (time) and "Ship with a person
+     reviewing every case in <group>" and its trade-off (cost and review load). Have the builder fix the
+     router **without editing golden.json**, rerun, then run the sealed holdout yourself:
+     `node out/proto/eval.js holdout.json`. Show both; if the holdout is lower, say so: that gap is how
+     much the fix was fitted.
+   - **If all gates pass:** say it is a smoke test on 30 rows, not a release; have the builder add four
+     harder rows to the dev set and rerun.
+7. **Evidence pack** in `out/5-evals.md`: gates and reasons, the client's bar, every run's output, the
+   holdout result, the remaining misses, and **how to reproduce** (exact commands, file names, the
+   version of `golden.json`).
+8. **Governance check** (question, answer, status):
+   - Fairness and safety: which gates cover them, and the per-group results.
+   - Reproducibility: can someone outside the team rerun it from the evidence pack alone?
+   - Release sign-off: the signer we propose (for example the product owner plus risk); status "client
+     to confirm".
+   Add open items to the "Governance log" in `out/state.md`.
+9. **Say it** (three lines): bars before the build; metrics per group because an average hides a broken
+   one; the holdout is the honest number.
