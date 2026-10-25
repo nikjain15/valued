@@ -551,7 +551,7 @@
             <div class="pg-agent">Gate 2 · AI-fit agent</div>
             <h3 class="pg-h">Use the least AI that works.</h3>
             <div class="quad">
-              <div><span>Asks you</span>Which ideas go first, given your priorities?</div>
+              <div><span>Asks you</span>Which ideas go first, given your priorities? May the prototype call a hosted model?</div>
               <div><span>Uses</span>The least-AI ladder, plus three scorers working in parallel on value, feasibility and risk.</div>
               <div><span>Gives you</span>A recommended first wave, and a build, buy or partner call for each part: the options, their trade-offs, our preference and why.</div>
               <div class="prev"><span>Prevents</span>A model where a rule would do.</div>
@@ -645,7 +645,7 @@
             <div class="quad">
               <div><span>Asks you</span>What is the pilot scope? What would make you stop?</div>
               <div><span>Uses</span>Shadow, then canary, then signed promotion, then watch: drift by group, edit rate, a kill switch.</div>
-              <div><span>Gives you</span>Pilot scope and stop rule recommended with trade-offs, a rollout plan with named sign-offs, and the one-page brief.</div>
+              <div><span>Gives you</span>Pilot scope and stop rule recommended with trade-offs, a rollout plan with named sign-offs, feeding the PRD and the one-page brief.</div>
               <div class="prev"><span>Prevents</span>Quiet decay after launch.</div>
             </div>
             <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Who signs each stage of the rollout?</li><li>Is there an audit trail, and a kill switch with a named owner?</li><li>How are incidents, complaints and model changes reported?</li></ul></div>
@@ -769,12 +769,13 @@
         <div>
           <p class="eyebrow">RUN IT ON YOUR CASE</p>
           <h2>The method, packaged as an agent workflow.</h2>
-          <p class="lede">Describe a case in one line. The workflow runs the six gates in order. At each one it drafts a table, then asks you at most two questions, and only ones you own: priorities, risk appetite, facts only you know. Everything else comes back as a recommendation: the options, their trade-offs, our preference and why. You make the call; it records it and moves on.</p>
+          <p class="lede">Describe a case in one line. The workflow runs the six gates in order, then a build step that turns your decisions into a PRD and a working prototype. At each one it drafts a table, then asks you at most two questions, and only ones you own: priorities, risk appetite, facts only you know. Everything else comes back as a recommendation: the options, their trade-offs, our preference and why. You make the call; it records it and moves on.</p>
           <ol>
             <li><div><b>Describe the case</b><p>Who, what problem, what constraint. Anything it assumes is marked as assumed.</p></div></li>
             <li><div><b>Review each gate's draft</b><p>At AI-fit, three scorers rate value, feasibility and risk in parallel.</p></div></li>
             <li><div><b>Decide on each card</b><p>At most two questions per gate, recommendation first.</p></div></li>
-            <li><div><b>Get a brief and a tested prototype</b><p>Its evals release it or block it, and a sealed holdout checks every fix.</p></div></li>
+            <li><div><b>Click a working prototype</b><p>Decision, cited source, a draft to approve, and an audit log. Its evals release or block it.</p></div></li>
+            <li><div><b>Hand the PRD to a coding agent</b><p>Every requirement has a test; the evals define done. Plus a one-page brief.</p></div></li>
           </ol>
         </div>
         <div>
@@ -802,6 +803,7 @@
         <details><summary>Is the data real?</summary><p>No. CureCue's plan and members, Relay's clients and the example case are all synthetic. The numbers are real results of running the code on that data.</p></details>
         <details><summary>Do the products use a language model?</summary><p>Not yet, on purpose. They prove the rules, the gates and the evals first; a model would sit behind them, and would have to pass the same gates. Conduit is the layer a model call would come through.</p></details>
         <details><summary>Did you design VALUED first and then build these?</summary><p>No. I built the products first. VALUED names the gates I kept using, so the next product can start from them.</p></details>
+        <details><summary>What do I get at the end of a run?</summary><p>Six gate files with every decision and who made it; a PRD with goals, metrics, requirements and acceptance tests, the AI behaviour spec, release gates with real results, rollout and governance, and a build plan written for a coding agent; a prototype you can click, gated by its own evals; and a one-page brief. Whether the prototype calls a model is your call at AI-fit: rules only, rules decide and a model drafts from the cited source, or a model proposes and rules guard escalation.</p></details>
         <details><summary>Does the workflow make decisions for me?</summary><p>No. It recommends, showing the options, their trade-offs, its preference and what would change its mind. Decisions that are yours (priorities, risk appetite) come to you as a question; the brief records who decided what, and every governance item still open.</p></details>
       </div>
     </div>
