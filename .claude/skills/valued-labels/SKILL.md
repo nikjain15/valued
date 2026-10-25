@@ -30,6 +30,9 @@ description: VALUED gate L. Define ground truth before any model is built, recom
    `{ "id", "text", "expected": "answer|human|escalate", "source": "<id or null>", "slices": {...} }`.
    At least 8 rows in a second language the client serves, at least 6 implied complaints or distress
    without the obvious keyword, at least 5 adversarial rows. Hand-written variety.
+   Each row's `slices` uses short keys the eval can group by, for example
+   `{ "lang": "es", "register": "implied", "adversarial": "yes" }`. Rows asking for something on the
+   never list carry `"never": true`; at least 3 of them.
    Then **split it**: move 10 rows covering every group into `out/proto/holdout.json`. The builder may
    learn from the 30 dev rows; the holdout is never shown to it, not even while fixing.
 5. **Data and privacy table** (max 6 rows): data needed, owner, purpose, personal or health data

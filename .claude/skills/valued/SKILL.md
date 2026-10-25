@@ -7,7 +7,8 @@ description: Run a client AI case end to end through the six VALUED gates (Value
 
 The argument is a one-line case, for example `/valued regional bank, 2M customers, contact centre
 cost pressure, 30 GenAI ideas, COO wants a plan in six weeks`. If the argument ends with `--auto`,
-run without asking: take the recommended option at every card and log it as "(auto)".
+run without asking: take the recommended option at every card and log it as "(auto)". If it contains
+`--no-open`, skip every `open` command (here and in `valued-build`) and print the paths instead.
 
 ## Roles on screen
 
@@ -27,8 +28,11 @@ run without asking: take the recommended option at every card and log it as "(au
    `valued-value`, `valued-ai-fit`, `valued-labels`, `valued-user-loop`, `valued-evals`,
    `valued-deploy`. Before each, print a single header line:
    `[V] Value · target 6 min` (A 8, L 6, U 5, E 9, D 6).
+   After D, run the build step the same way: `[B] Build: PRD and prototype · target 3 min`, invoking
+   `valued-build`. It writes `out/prd.md`, `out/prd.html`, and starts the prototype app on
+   `http://localhost:4317`.
 3. **Between gates**, print nothing but the gate header. No recaps.
-4. **After D**, build the brief: copy `brief-template.html` from this skill's folder to
+4. **After B**, build the brief: copy `brief-template.html` from this skill's folder to
    `out/brief.html` and replace every `{{...}}` placeholder from `out/state.md` and the gate files.
    Keep each cell to one line. Then run `open out/brief.html`.
    The template follows the **Relay design system**; do not restyle it. Keep the tokens and classes as
@@ -37,7 +41,7 @@ run without asking: take the recommended option at every card and log it as "(au
    Each client decision says which role chose what, with our recommendation in the caption. The
    governance section lists each gate's open items from the "Governance log" with the role to close
    them; if none are open, say so.
-5. Print the closing line, nothing else: `Brief: out/brief.html · Prototype: out/proto/ (node out/proto/eval.js)`.
+5. Print the closing line, nothing else: `Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Evals: node out/proto/eval.js`.
 
 ## Rules for every gate (pass these on)
 

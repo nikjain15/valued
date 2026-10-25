@@ -10,7 +10,7 @@ description: VALUED gate A. Decide which candidates need AI at all, rank them, r
 
 | | |
 |---|---|
-| **Asks the client** | Which ideas go first, given your priorities? (A value, speed and risk trade-off the client owns.) |
+| **Asks the client** | Which ideas go first, given your priorities? May the prototype call a hosted model? (A value, speed and risk trade-off, and a data and vendor fact, both the client's.) |
 | **Uses** | The least-AI ladder (rules, classic ML, retrieval and a model, an agent) and three scorers working in parallel on value and reuse, feasibility, and risk. |
 | **Gives** | A ranked list with each idea's rung; first and second wave; a **build, buy or partner recommendation per component, with trade-offs**; the stack and the cost per task. |
 | **Governance asks** | Does a regulation require human judgement for this decision? Is it in model-risk scope, and at what tier? Can we explain the outcome to a customer and a regulator? |
@@ -39,8 +39,21 @@ client to accept or overrule.
      and what would change our mind.
    - Routing: deterministic first, a small model by default, a larger one on low confidence.
    - Latency budget per surface, and the unit of cost (per resolved task, not per token).
-5. **Ask the client (1 card):** **"COO": "Which ideas go first?"** The wave options from step 3, our
-   preference first "(Recommended)", each with its trade-off.
+   - End the table with one line, `Numbers to quote:` latency budget per surface and cost per resolved
+     task (assumed where assumed). Gate E's "Say it while it builds" reads from this line.
+5. **Ask the client (2 cards):**
+   - **"COO": "Which ideas go first?"** The wave options from step 3, our preference first
+     "(Recommended)", each with its trade-off.
+   - **"IT and risk": "May the prototype call a hosted model?"** This sets the build engine; the client
+     owns it because it is a data and vendor-approval fact. Options, our preference first, chosen from
+     the ladder in step 2 (a model on rung 3 or above means "Yes, on synthetic data"):
+     - "Yes, on synthetic data": rules decide, the model drafts from the cited source only. Better
+       drafts; real data needs vendor approval later. Engine `rules+model`.
+     - "Not yet": rules only, template drafts, model slot stubbed. Nothing leaves the client; drafts read
+       stiff. Engine `rules`.
+     - "Yes, and let it lead": the model proposes the verdict, rules guard escalation. Handles varied
+       phrasing; harder to explain, and needs its own eval before release. Engine `model-first`.
+     Record `Build engine: <engine> (chosen by IT and risk)` under "Client decisions" in `out/state.md`.
 6. **Governance check** in `out/2-ai-fit.md` (question, answer, status):
    - Human judgement required: decisions in scope that a regulation or policy reserves for a person
      (for example coverage, credit, suitability, clinical). They stay **off AI**: the AI may prepare,
@@ -51,4 +64,4 @@ client to accept or overrule.
    Add open items to the "Governance log" in `out/state.md`.
 7. **Finalize** `out/2-ai-fit.md`, update `out/state.md`.
 8. **Say it** (three lines): why most of the list is not GenAI; why this first wave; the build, buy or
-   partner call and its main trade-off.
+   partner call and its main trade-off, and what the engine choice means for the prototype.

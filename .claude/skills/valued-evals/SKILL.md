@@ -30,7 +30,9 @@ the ship-or-fix decision go to the client, because they trade customer harm agai
    with its trade-off (a higher bar sends more cases to people and costs more; a lower one misses more).
    Our preference first, with why and what would change our mind.
 3. Write all thresholds to `out/proto/gates.json`.
-4. **Launch the `prototype-builder` subagent in the background** with the use case, the verdicts,
+4. **Launch the `prototype-builder` subagent in the background** (always a separate subagent: the seal on
+   the golden set and holdout only means something if the builder is not the agent that wrote them; if
+   you ever build it in the same context, say "holdout not independent" in the evidence pack) with the use case, the verdicts,
    `out/proto/sources.json`, `out/proto/gates.json`, and the escalation triggers and never list from
    `out/4-user-loop.md`. Print: `Building the prototype in the background; the answer key is sealed
    until the router exists`.

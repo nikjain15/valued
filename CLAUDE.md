@@ -17,6 +17,7 @@ by one agent (a skill).
 | **U** User-in-the-loop | Decide where a person decides, and what AI never does | AI doing more than anyone agreed |
 | **E** Evals | Let a number decide the release, group by group | An average hiding the group that breaks |
 | **D** Deploy and drive | Plan the launch and the life after it | Quiet decay after launch |
+| **B** Build (after D) | Turn the decisions into a PRD a coding agent can build from, and a working prototype app | A strategy that stops at slides |
 
 **Governed at every gate.** Each gate answers three governance questions in its output (regulatory
 exposure, data rights, human accountability, signable evidence, sign-off and audit trail). Governance is
@@ -54,3 +55,4 @@ A table at the end of each gate file: **question · answer · status**, where st
 - Tables over prose, at most 12 rows. Telegraphic, verb-first bullets. No em-dashes, ever.
 - All files under `./out/`. Never read or write outside this folder.
 - Synthetic data only. No real company, customer or person data.
+- Prototype and PRD use the founderfirst.one design system shipped in `.claude/skills/valued-build/app/ff.css`. Never restyle.

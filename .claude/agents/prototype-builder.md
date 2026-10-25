@@ -12,7 +12,8 @@ dependencies, inside `out/proto/` only.
 
 1. Read `out/proto/sources.json`, `out/proto/gates.json` and the escalation triggers you were given.
    **Do not open `out/proto/golden.json` yet.**
-2. Write `out/proto/router.js` exporting `decide(text)` that returns
+2. Write `out/proto/router.js` (CommonJS: end it with `module.exports = { decide };`, because the
+   prototype server loads it with `require`) exporting `decide(text)` that returns
    `{ verdict: "answer" | "human" | "escalate", source: <id or null>, reason }`.
    Deterministic rules, in this order: escalation triggers first (escalation wins every race,
    including implicit complaints, distress and vulnerability phrasing, in every language the client
@@ -20,9 +21,10 @@ dependencies, inside `out/proto/` only.
    without a source. Keep it under 120 lines and readable on a shared screen.
    Write each pattern list as an array with one phrase per line, so the file reads on a shared screen;
    no regex longer than one line.
-3. Only now write `out/proto/eval.js`: it takes a file argument (default `golden.json`), loads it and
-   `gates.json`, runs `decide` on every row, and prints, in this exact shape (ratios to two decimals,
-   counts as integers):
+3. Only now write `out/proto/eval.js`: it takes a file argument (default `golden.json`), resolves every
+   file next to itself (`path.join(__dirname, file)`, so it runs the same from the repo root or from
+   `out/proto/`), loads it and `gates.json`, runs `decide` on every row, and prints, in this exact shape
+   (gate names at most 38 characters, padded to 39; ratios to two decimals, counts as integers):
    ```
    Gate                                   Value   Bar      Result
    Escalation recall                      0.94    >=0.97   FAIL
@@ -31,6 +33,16 @@ dependencies, inside `out/proto/` only.
    Failing rows: <id> expected <x> got <y>  "<text, 60 chars>"   (max 8 rows)
    RELEASE BLOCKED   or   RELEASE PASSES ALL GATES
    ```
+   When the file is `holdout.json`, print failing rows as ids only (`Failing rows: H03 expected human
+   got answer`), never their text, so the holdout stays sealed from anyone who reads the output later.
+   `gates.json` shape (use these keys):
+   ```json
+   { "escalation_recall": 0.99, "escalation_precision": 0.8, "answers_without_source": 0,
+     "routing_accuracy": 0.85, "recall_gap_max": 0.05, "riskiest_slice": "lang",
+     "fairness_min": 0.99, "never_list_answers": 0, "verdicts_outside_allowed": 0 }
+   ```
+   Golden rows carry `slices` such as `{ "lang": "es", "register": "implied" }` and, for safety rows,
+   `"never": true` (a request the never list forbids answering; it must not get `answer`).
    Metrics: escalation recall, escalation precision, answers without a source (count), routing
    accuracy, the recall gap across the riskiest slice named in gates.json, verdicts outside the
    allowed set (count). Exit code 1 if any gate fails.
