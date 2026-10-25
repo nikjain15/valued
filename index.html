@@ -343,6 +343,33 @@
   .govbox ul { margin: 8px 0 0; padding-left: 18px; }
   .govbox li { margin: 3px 0; }
   .pg-visual .panel { box-shadow: none; }
+
+  /* Outputs */
+  .otabs { display: flex; gap: 0; border: 1px solid var(--line-strong); border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden; margin-top: 36px; background: var(--surface); }
+  .otabs button { all: unset; cursor: pointer; flex: 1; text-align: center; padding: 14px; font-size: var(--text-brief); color: var(--ink-2); border-right: 1px solid var(--line); }
+  .otabs button:last-child { border-right: 0; }
+  .otabs button[aria-selected="true"] { background: var(--selected); color: var(--ink); font-weight: 600; box-shadow: inset 0 -3px 0 var(--ink); }
+  .otabs button:focus-visible { outline: 2px solid var(--advisor); outline-offset: -2px; }
+  .opanels { border: 1px solid var(--line-strong); border-top: 0; border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: 28px; background: var(--surface); }
+  @media (max-width: 700px) { .opanels { padding: 18px 14px; } }
+  .ohead { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .ocount { font-size: var(--text-body); color: var(--ink-2); margin-bottom: 10px; }
+  .ocount b { color: var(--ink); font-weight: 600; }
+  .otable { border-top: 1px solid var(--line-strong); }
+  .orow { display: grid; grid-template-columns: 150px 1.2fr 1.1fr 1fr 1.1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: var(--text-body); align-items: start; }
+  .og { display: flex; gap: 10px; align-items: center; }
+  .og b { font-size: var(--text-lead); }
+  .oc span { display: block; font-size: var(--text-caption); color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px; }
+  .oc.alt { color: var(--ink-2); }
+  .st { font-style: normal; font-size: var(--text-caption); font-weight: 600; padding: 1px 6px; border-radius: var(--radius); margin-right: 4px; white-space: nowrap; }
+  .st.ans { background: var(--positive-soft); color: var(--positive); }
+  .st.des { background: var(--caution-soft); color: var(--caution); }
+  .st.open { background: var(--critical-soft); color: var(--critical); }
+  @media (max-width: 1000px) { .orow { grid-template-columns: 1fr 1fr; } .og { grid-column: 1 / -1; } }
+  @media (max-width: 560px) { .orow { grid-template-columns: 1fr; } }
+  .opanel .brief { background: var(--subtle); border-left: 3px solid var(--agent); border-radius: var(--radius-lg); padding: 14px 18px; }
+  .opanel .brief p { margin: 4px 0 0; font-size: var(--text-brief); }
+  .opanel .who { font-size: var(--text-meta); font-weight: 600; color: var(--agent); }
   /* FAQ, CTA, footer */
   .faq { max-width: 820px; margin: 32px auto 0; }
   details { border-top: 1px solid var(--line); padding: 18px 0; }
@@ -614,11 +641,11 @@
         <article class="prod"><div class="media zoom"><img src="assets/relay-hero.png" alt="Relay overview: flagged for today, meetings, agent findings open, and what needs a decision" loading="lazy" width="1400" height="831"></div>
           <div class="body"><span class="status">Prototype · no model calls</span><h3>Relay</h3><p class="what">Agents that prepare a financial advisor's next actions. They read the client book, cite every claim, and stop at the human gate.</p>
           <div class="kpis"><div><b>22</b><span>agents</span></div><div><b>406/406</b><span>opportunities found</span></div><div><b>369</b><span>tests passing</span></div></div>
-          <div class="go"><a href="https://nikjain15.github.io/relay/">Visit</a><a href="https://github.com/nikjain15/relay">Code</a><a href="examples/relay-brief.html">Brief</a></div></div></article>
+          <div class="go"><a href="https://nikjain15.github.io/relay/">Visit</a><a href="https://github.com/nikjain15/relay">Code</a><a href="#outputs" data-out="Relay">VALUED output</a></div></div></article>
         <article class="prod"><div class="media fit"><img src="assets/curecue-hear.png" alt="Cue to the advocate: she said third time, which counts as a grievance even without the word. Log it?" loading="lazy" width="768" height="916"></div>
           <div class="body"><span class="status">Working prototype · no model called</span><h3>CureCue</h3><p class="what">An assistant beside a Medicare Advantage member-service advocate on a live call. It suggests; the advocate decides. It never speaks to the member.</p>
           <div class="kpis"><div><b>195</b><span>labelled call turns</span></div><div><b>8 of 8</b><span>release gates pass</span></div><div><b>3</b><span>languages tested</span></div></div>
-          <div class="go"><a href="https://nikjain15.github.io/CureCue/">Visit</a><a href="https://github.com/nikjain15/CureCue">Code</a><a href="examples/curecue-brief.html">Brief</a></div></div></article>
+          <div class="go"><a href="https://nikjain15.github.io/CureCue/">Visit</a><a href="https://github.com/nikjain15/CureCue">Code</a><a href="#outputs" data-out="CureCue">VALUED output</a></div></div></article>
         <article class="prod"><div class="media">
             <div class="route" style="height:100%">
               <div class="rr"><b>Chat</b><span>→</span><span class="tier">Small model<small>fast and cheap</small></span></div>
@@ -627,7 +654,72 @@
             </div></div>
           <div class="body"><span class="status">Platform · calls models · not run as a service</span><h3>Conduit</h3><p class="what">The shared AI platform under four of my products: model routing, guardrails, retrieval, agents and tool connections.</p>
           <div class="kpis"><div><b>10</b><span>packages</span></div><div><b>327</b><span>tests passing</span></div><div><b>4</b><span>products on it</span></div></div>
-          <div class="go"><a href="https://github.com/nikjain15/conduit">Code</a></div></div></article>
+          <div class="go"><a href="https://github.com/nikjain15/conduit">Code</a><a href="#outputs" data-out="Conduit">VALUED output</a></div></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUTPUTS -->
+  <section id="outputs">
+    <div class="wrap">
+      <div class="center-head">
+        <p class="eyebrow">WHAT VALUED PRODUCES</p>
+        <h2>Each product, in VALUED's output format.</h2>
+        <p class="lede">For every gate: the decision we preferred, the alternative not taken and why, the evidence, and the governance status. These are each product's real decisions, recorded in the format the workflow produces.</p>
+      </div>
+      <div class="otabs" role="tablist" aria-label="Product"><button role="tab" id="ot-Relay" aria-controls="op-Relay" aria-selected="true" tabindex="0">Relay</button><button role="tab" id="ot-CureCue" aria-controls="op-CureCue" aria-selected="false" tabindex="-1">CureCue</button><button role="tab" id="ot-Conduit" aria-controls="op-Conduit" aria-selected="false" tabindex="-1">Conduit</button></div>
+      <div class="opanels">
+      <div class="opanel" role="tabpanel" id="op-Relay" aria-labelledby="ot-Relay">
+        <div class="ohead"><div><div class="pg-agent">VALUED output · Relay</div><h3 class="pg-h" style="margin-bottom:8px">Relay: an agent layer for financial advisors</h3></div><div class="ocount"><b>6</b> gates · <b>1</b> open or designed</div></div>
+        <div class="brief" style="margin:0 0 18px"><div class="who who-agent">Agent</div><p>The step after an insight engine: one flagged opportunity becomes an action an advisor can approve. 22 agents, no model calls, 406 of 406 opportunities found on a synthetic 300-household book.</p></div>
+        <div class="otable"><div class="orow"><div class="og"><span class="tk">V</span><b>Value</b></div>
+<div class="oc"><span>Decided (our preference)</span>Build for the step after the insight: turning a flagged opportunity into an approved action.</div><div class="oc alt"><span>Alternative not taken</span>Another insight engine. Insights were already cheap; the action an advisor can sign was the gap.</div><div class="oc"><span>Evidence</span>Detection coverage measured on 300 households. Conversion is what a pilot would establish.</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> Regulated activity named: communications, suitability, marketing, senior investors.</div></div><div class="orow"><div class="og"><span class="tk">A</span><b>AI-fit</b></div>
+<div class="oc"><span>Decided (our preference)</span>The model never decides. Eligibility, ranking and every rule verdict are code; templates where a model would write.</div><div class="oc alt"><span>Alternative not taken</span>Model-ranked recommendations: faster to build, but not reproducible or explainable to a supervisor.</div><div class="oc"><span>Evidence</span>22 agents, 8 of them compliance review desks; no model calls.</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> Every regulated verdict is deterministic and cites its rule.</div></div><div class="orow"><div class="og"><span class="tk">L</span><b>Labels</b></div>
+<div class="oc"><span>Decided (our preference)</span>The answer key is computed from the raw files without importing any engine code.</div><div class="oc alt"><span>Alternative not taken</span>Grading against the engine's own output, which would only prove it agrees with itself.</div><div class="oc"><span>Evidence</span>300 households, 585 messages, each label with its reason.</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> Synthetic data only; vendor names imply no affiliation.</div></div><div class="orow"><div class="og"><span class="tk">U</span><b>User-in-the-loop</b></div>
+<div class="oc"><span>Decided (our preference)</span>Relay never sends, and nothing clears its own findings. An agent prepares; a person accepts.</div><div class="oc alt"><span>Alternative not taken</span>Auto-sending low-risk follow-ups: saves time, but the advisor stops owning what clients receive.</div><div class="oc"><span>Evidence</span>Guarantees enforced by import rules and asserted in tests.</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> A principal dispositions every finding; loosening a desk needs a principal.</div></div><div class="orow"><div class="og"><span class="tk">E</span><b>Evals</b></div>
+<div class="oc"><span>Decided (our preference)</span>Six FINRA and SEC rules gated at 100% precision and recall; missing data reported as "cannot evaluate", never clear.</div><div class="oc alt"><span>Alternative not taken</span>Treating missing data as clear: cleaner numbers, hidden risk.</div><div class="oc"><span>Evidence</span>406 of 406 opportunities. The eval caught 53 of 85 retirement candidates missed before the fix. 369 tests.</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> Each rule carries its citation and status; the build fails without them.</div></div><div class="orow"><div class="og"><span class="tk d">D</span><b>Deploy and drive</b></div>
+<div class="oc"><span>Decided (our preference)</span>A learning loop that can only propose stricter rules, from 90 days of findings.</div><div class="oc alt"><span>Alternative not taken</span>Self-tuning rules: adapts faster, but can quietly loosen a control.</div><div class="oc"><span>Evidence</span>Built: the rule-change proposer. Not in scope: persistence, CRM write-back, a production rollout.</div>
+<div class="oc gov"><span>Governance</span><i class="st des">Designed</i> Rollout sign-offs not designed yet; loosening always needs a person.</div></div></div>
+      </div>
+      <div class="opanel" role="tabpanel" id="op-CureCue" aria-labelledby="ot-CureCue" hidden>
+        <div class="ohead"><div><div class="pg-agent">VALUED output · CureCue</div><h3 class="pg-h" style="margin-bottom:8px">CureCue: an assistant beside a member-service advocate</h3></div><div class="ocount"><b>6</b> gates · <b>2</b> open or designed</div></div>
+        <div class="brief" style="margin:0 0 18px"><div class="who who-agent">Agent</div><p>Designed around one advocate's whole shift at a Medicare Advantage plan. Release 3 passes 8 of 8 gates on 195 labelled call turns across three language paths. No model is called.</p></div>
+        <div class="otable"><div class="orow"><div class="og"><span class="tk">V</span><b>Value</b></div>
+<div class="oc"><span>Decided (our preference)</span>Design for the advocate's full shift, measured in the metrics the desk already uses: handle time, note completeness, repeat calls.</div><div class="oc alt"><span>Alternative not taken</span>A single feature such as call summaries: quicker, but leaves grievances and lookups untouched.</div><div class="oc"><span>Evidence</span>12 stages of a shift mapped; 11 built on the desk, 1 designed.</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> Grievances and appeals carry regulatory clocks; missing one is a compliance event.</div></div><div class="orow"><div class="og"><span class="tk">A</span><b>AI-fit</b></div>
+<div class="oc"><span>Decided (our preference)</span>Help the advocate first; rules first with no model; plan rules held as a graph.</div><div class="oc alt"><span>Alternative not taken</span>A member-facing chatbot, a model on every turn, and document search: each faster to demo, each harder to prove safe.</div><div class="oc"><span>Evidence</span>0 figures off the cited rule path in 66 drafted answers.</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> Coverage decisions, prior authorization and clinical advice stay with people.</div></div><div class="orow"><div class="og"><span class="tk">L</span><b>Labels</b></div>
+<div class="oc"><span>Decided (our preference)</span>Label every call turn by intent, across English, Spanish and interpreter-mediated calls, with a hard set.</div><div class="oc alt"><span>Alternative not taken</span>An English-only answer key, which is what the earlier release was tested on.</div><div class="oc"><span>Evidence</span>195 turns: English 143, Spanish 31, interpreter 21.</div>
+<div class="oc gov"><span>Governance</span><i class="st open">Open</i> Synthetic only; real calls would need consent and personal-data minimisation.</div></div><div class="orow"><div class="og"><span class="tk">U</span><b>User-in-the-loop</b></div>
+<div class="oc"><span>Decided (our preference)</span>Cue never speaks to the member; the advocate confirms identity; a care or coverage dispute stops Cue and brings in a supervisor.</div><div class="oc alt"><span>Alternative not taken</span>Auto-verifying identity from speech: faster, but identity is a human decision in this industry.</div><div class="oc"><span>Evidence</span>3 independent safeguards before any coverage decision.</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> The advocate is accountable for every word.</div></div><div class="orow"><div class="og"><span class="tk">E</span><b>Evals</b></div>
+<div class="oc"><span>Decided (our preference)</span>Every gate checked per language, and a gap between languages is itself a gate.</div><div class="oc alt"><span>Alternative not taken</span>A single average, which hid the earlier release's miss.</div><div class="oc"><span>Evidence</span>Release 3: 8 of 8 gates. Release 2, re-scored: 0.00 of Spanish escalations caught, blocked.</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> A stand-in judge is refused where it scores under its bar; anyone can rerun the eval.</div></div><div class="orow"><div class="og"><span class="tk d">D</span><b>Deploy and drive</b></div>
+<div class="oc"><span>Decided (our preference)</span>Shadow mode, then a 5% canary for three days, then signed promotion; a kill switch per behaviour.</div><div class="oc alt"><span>Alternative not taken</span>A direct launch: faster, but nobody would know how it behaves on real calls.</div><div class="oc"><span>Evidence</span>Designed, not built: the prototype runs on synthetic data.</div>
+<div class="oc gov"><span>Governance</span><i class="st des">Designed</i> Two named people sign every change.</div></div></div>
+      </div>
+      <div class="opanel" role="tabpanel" id="op-Conduit" aria-labelledby="ot-Conduit" hidden>
+        <div class="ohead"><div><div class="pg-agent">VALUED output · Conduit</div><h3 class="pg-h" style="margin-bottom:8px">Conduit: the shared ai platform under four products</h3></div><div class="ocount"><b>6</b> gates · <b>2</b> open or designed</div></div>
+        <div class="brief" style="margin:0 0 18px"><div class="who who-agent">Agent</div><p>One platform for model routing, guardrails, retrieval, agents and tool connections, used by Pulse, RoleOS, FounderFirst and Rally. 10 packages, 327 tests passing. It calls models; it is not run as a service.</p></div>
+        <div class="otable"><div class="orow"><div class="og"><span class="tk">V</span><b>Value</b></div>
+<div class="oc"><span>Decided (our preference)</span>Replace four copies of routing and guardrail code with one platform.</div><div class="oc alt"><span>Alternative not taken</span>Keep a copy per product: no migration, but the copies kept drifting apart.</div><div class="oc"><span>Evidence</span>Four products run on it.</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> Not a regulated use; each product carries its own obligations.</div></div><div class="orow"><div class="og"><span class="tk">A</span><b>AI-fit</b></div>
+<div class="oc"><span>Decided (our preference)</span>Route each use case to the cheapest model tier that clears its bar.</div><div class="oc alt"><span>Alternative not taken</span>Everything on one mid-size model: simpler, about twice the cost.</div><div class="oc"><span>Evidence</span>$66.30 against $128.47 per customer per month (modelled, not measured).</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> Model choices live in configuration and a reviewed catalogue.</div></div><div class="orow"><div class="og"><span class="tk">L</span><b>Labels</b></div>
+<div class="oc"><span>Decided (our preference)</span>Hand-written test sets for guardrails, the model contract, and judge validation.</div><div class="oc alt"><span>Alternative not taken</span>No fixed sets, so behaviour changes go unnoticed.</div><div class="oc"><span>Evidence</span>Sets of 42, 12 and 30 cases.</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> Synthetic cases only.</div></div><div class="orow"><div class="og"><span class="tk">U</span><b>User-in-the-loop</b></div>
+<div class="oc"><span>Decided (our preference)</span>Agents refuse any tool that changes something unless it is explicitly allowed; guardrails can escalate to a person.</div><div class="oc alt"><span>Alternative not taken</span>Tools allowed by default: more capable agents, larger blast radius.</div><div class="oc"><span>Evidence</span>Default deny, enforced in the agent loop.</div>
+<div class="oc gov"><span>Governance</span><i class="st ans">Answered</i> Escalation to a person is a guardrail outcome.</div></div><div class="orow"><div class="og"><span class="tk">E</span><b>Evals</b></div>
+<div class="oc"><span>Decided (our preference)</span>A guardrail gate on every change, with floors; known gaps kept as failing tests in the open.</div><div class="oc alt"><span>Alternative not taken</span>Hiding known gaps: greener dashboards, false confidence.</div><div class="oc"><span>Evidence</span>Guardrail recall 1.00, precision 0.92, false blocks 0.11. Dependency audit clean.</div>
+<div class="oc gov"><span>Governance</span><i class="st open">Open</i> Weekly judge re-validation is failing; its score is not quoted until it passes again.</div></div><div class="orow"><div class="og"><span class="tk d">D</span><b>Deploy and drive</b></div>
+<div class="oc"><span>Decided (our preference)</span>Latency, cost and block-rate targets defined per use case in configuration.</div><div class="oc alt"><span>Alternative not taken</span>Run without targets, and learn about cost from the bill.</div><div class="oc"><span>Evidence</span>Designed: no live data, because no gateway runs as a service.</div>
+<div class="oc gov"><span>Governance</span><i class="st des">Designed</i> Targets defined; live monitoring not yet operated.</div></div></div>
+      </div>
       </div>
     </div>
   </section>
@@ -701,6 +793,14 @@
   var tabs=[].slice.call(document.querySelectorAll('.gtabs [role="tab"]'));
   function show(i,focus){tabs.forEach(function(t,j){var on=j===i;t.setAttribute('aria-selected',on);t.tabIndex=on?0:-1;document.getElementById(t.getAttribute('aria-controls')).hidden=!on;});if(focus)tabs[i].focus();}
   tabs.forEach(function(t,i){t.addEventListener('click',function(){show(i)});t.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();show((i+1)%tabs.length,true)}if(e.key==='ArrowLeft'){e.preventDefault();show((i+tabs.length-1)%tabs.length,true)}});});
+})();
+</script>
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.otabs [role="tab"]'));
+  function show(i,focus){tabs.forEach(function(t,j){var on=j===i;t.setAttribute('aria-selected',on);t.tabIndex=on?0:-1;document.getElementById(t.getAttribute('aria-controls')).hidden=!on;});if(focus)tabs[i].focus();}
+  tabs.forEach(function(t,i){t.addEventListener('click',function(){show(i)});t.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();show((i+1)%tabs.length,true)}if(e.key==='ArrowLeft'){e.preventDefault();show((i+tabs.length-1)%tabs.length,true)}});});
+  [].slice.call(document.querySelectorAll('a[data-out]')).forEach(function(a){a.addEventListener('click',function(){var k=a.getAttribute('data-out');tabs.forEach(function(t,i){if(t.textContent===k)show(i)});});});
 })();
 </script>
 </body>
