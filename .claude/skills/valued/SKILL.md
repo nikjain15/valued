@@ -1,6 +1,6 @@
 ---
 name: valued
-description: Run a client AI case end to end through the six VALUED gates (Value, AI-fit, Labels, User-in-the-loop, Evals, Deploy and drive), governed at every gate. Each gate's agent drafts first, recommends with trade-offs, asks the client only what the client owns, answers its governance questions, and the run ends with a one-page brief and an eval-gated prototype. Use when the user types /valued followed by a case.
+description: Run a client AI case end to end through the six VALUED gates (Value, AI-fit, Labels, User-in-the-loop, Evals, Deploy and drive), governed at every gate. Each gate's agent drafts first, recommends with trade-offs, asks the client only what the client owns, answers its governance questions, and the run ends with a build step: a PRD a coding agent can build from, a working eval-gated prototype app, and a one-page brief. Use when the user types /valued followed by a case.
 ---
 
 # /valued: the orchestrator

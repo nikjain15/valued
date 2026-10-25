@@ -12,7 +12,7 @@ description: VALUED gate D. Plan the launch and the life after it, recommend pil
 |---|---|
 | **Asks the client** | What is the pilot scope? What would make you stop? (Their appetite for exposure, and their own red line.) |
 | **Uses** | Shadow, then canary, then signed promotion, then watch: drift by group, edit rate, a kill switch per behaviour. |
-| **Gives** | A rollout plan, pilot and stop-rule recommendations with trade-offs, what to watch after launch, a week-by-week plan, and the one-page brief. |
+| **Gives** | A rollout plan, pilot and stop-rule recommendations with trade-offs, what to watch after launch, and a week-by-week plan that feeds the PRD and the one-page brief. |
 | **Governance asks** | Who signs each stage of the rollout? Is there an audit trail, and a kill switch with a named owner? How are incidents, complaints and model changes reported? |
 
 ## Steps

@@ -30,12 +30,18 @@ Production misses become new labels, so D loops back to L.
    ├─ E  valued-evals       thresholds first, then prototype-builder in the
    │                        background; eval blocks or releases; holdout last    → card to the client
    ├─ D  valued-deploy      launch steps, drive metrics, the plan               → card to the client
+   ├─ B  valued-build       a PRD a coding agent can build from, and the
+   │                        prototype as a working app on localhost:4317         (no questions)
    └─ brief                 one page, out/brief.html
 ```
 
-- **Seven skills** (`.claude/skills/`): the orchestrator and one per gate.
+- **Eight skills** (`.claude/skills/`): the orchestrator, one per gate, and the build step after D.
 - **Two agents** (`.claude/agents/`): `use-case-scorer`, run three at once on different lenses so no
-  single lens dominates; `prototype-builder`, which writes a deterministic router and an eval runner.
+  single lens dominates; `prototype-builder`, which writes the router and an eval runner without
+  seeing the answer key.
+- **The engine is the client's call.** Gate A asks whether the prototype may call a hosted model (a data
+  and vendor fact only the client knows). The answer sets how it thinks: rules only, rules decide and a
+  model drafts from the cited source, or a model proposes and rules guard escalation.
 - **Option cards, recommendation first.** Every gate shows a concrete draft before it asks anything, and
   asks at most two questions, each with the product lead's recommendation first. The person in the room
   plays the client and chooses.
@@ -50,6 +56,8 @@ Production misses become new labels, so D loops back to L.
 - **The builder never sees the holdout.** A fix is scored on the rows it learned from and on ten it never
   saw. The second number is the honest one.
 - **Metrics by slice.** An average hides a broken language or customer segment; a slice gate does not.
+- **Decisions become a spec.** The run ends in a PRD where every requirement has an acceptance test and
+  the evals are the definition of done, so a team or a coding agent can build from it task by task.
 
 ## VALUED in practice
 
@@ -79,12 +87,24 @@ git clone https://github.com/nikjain15/valued && cd valued && claude
 /valued Medicare Advantage plan, member-service advocates take 40 to 60 calls a shift from members 65+, grievances get missed, the plan wants AI support for advocates
 ```
 
-Add `--auto` to the end to run without questions (every card takes the recommendation). Output lands in
-`out/`: one file per gate, `state.md` with every client decision, `proto/` with the router, golden set,
-holdout and eval, and `brief.html`.
+Add `--auto` to the end to run without questions (every card takes the recommendation), and
+`--no-open` to skip opening the browser. Output lands in `out/`:
+
+| File | What it is |
+|---|---|
+| `1-value.md` to `6-deploy.md` | One file per gate, each ending in its governance check |
+| `state.md` | Every client decision, assumption and open governance item |
+| `prd.md`, `prd.html` | The PRD: goals and metrics, requirements with acceptance criteria, AI behaviour spec, human-in-the-loop, data and labels, release gates with real results, rollout, governance, risks, and "Build it with AI" (a kickoff prompt and tasks for a coding agent) |
+| `proto/` | Router, golden set, sealed holdout, gates, eval runner, and the app: a workbench (decision, cited source, draft, approve or edit or hand off), the evals tab, and an audit log of every action with its approver |
+| `brief.html` | One page for the sponsor |
+
+The prototype runs with `node out/proto/server.js` on `http://localhost:4317`; the PRD is also served at
+`/prd`. Model drafting needs `ANTHROPIC_API_KEY` in the environment; without it the app says so and drafts
+from the cited source by template.
 
 ## Status
 
-A method harness, not a product. Synthetic data only; no real client, customer or person. The
-prototype it builds is deterministic by design: it proves the gates and the evals, and a model would sit
-behind them.
+A method harness, not a product. Synthetic data only; no real client, customer or person. The release
+gates evaluate the deterministic decision layer; a model, when the client allows one, drafts behind it
+and never overrides an escalation. A model that leads the decision needs its own eval before release,
+and the PRD says so.
