@@ -49,15 +49,21 @@ Production misses become new labels, so D loops back to L.
   saw. The second number is the honest one.
 - **Metrics by slice.** An average hides a broken language or customer segment; a slice gate does not.
 
-## What a run looks like
+## VALUED in practice
 
-From a dry run on a synthetic bank contact-centre case: the prototype's first eval **blocked the
-release** (escalation recall 0.69 against a 0.97 bar; English recall 0.58 against Spanish 1.00). One fix
-to the router, never to the golden set, passed every gate on the dev set. That pass is exactly why the
-sealed holdout exists: the fix had seen the failures.
+Two products were built this way, and each gate points at something real in their repos:
 
-Example output: [`examples/bank-contact-centre-brief.html`](examples/bank-contact-centre-brief.html).
-The brief uses the design tokens of [Relay](https://github.com/nikjain15/relay).
+| Gate | [CureCue](https://github.com/nikjain15/CureCue): beside a member-service advocate | [Relay](https://github.com/nikjain15/relay): the step after the insight, for advisors |
+|---|---|---|
+| **V** | One advocate's whole shift studied before any AI was picked | One flagged opportunity to a signed, documented action |
+| **A** | Advocate-side first; rules as a graph over vector search; three verdicts by type | The model never decides: verdicts, ranking and refusal are code |
+| **L** | 195 turns labelled before the rules ran; English, Spanish, interpreter | 300 households, hand-reviewed labels; the expected side imports no engine code |
+| **U** | Never speaks to the member; fails closed to a person | Never sends; nothing clears its own findings |
+| **E** | Release 2 blocked in CI for missing every Spanish-language escalation | Caught 53 of 85 retirement candidates missed before the fix |
+| **D** | Designed: shadow, 5% canary, a kill switch per skill | Tighten-only learning loop; loosening needs a person |
+
+One-page briefs in the workflow's own format: [`examples/curecue-brief.html`](examples/curecue-brief.html),
+[`examples/relay-brief.html`](examples/relay-brief.html). They use the design tokens of Relay.
 
 ## Use it
 
@@ -68,7 +74,7 @@ git clone https://github.com/nikjain15/valued && cd valued && claude
 ```
 
 ```
-/valued regional bank, ~2M retail customers, contact centre under cost pressure, ~30 GenAI ideas, plan in 6 weeks
+/valued Medicare Advantage plan, member-service advocates take 40 to 60 calls a shift from members 65+, grievances get missed, the plan wants AI support for advocates
 ```
 
 Add `--auto` to the end to run without questions (every card takes the recommendation). Output lands in

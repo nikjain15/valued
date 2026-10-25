@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Regional bank · VALUED</title>
+<title>Relay · VALUED</title>
 <style>
   /* Relay design tokens, verbatim from relay/app/tokens.css (docs/DESIGN-SYSTEM.md v1.0). */
   :root {
@@ -70,7 +70,7 @@
   .row-client { border-left: 3px solid var(--client); padding-left: 10px; }
   ul.decisions, ul.risks { list-style: none; padding: 0; margin: 0; font-size: var(--text-body); }
   ul.decisions li, ul.risks li { padding: 10px 0; border-bottom: 1px solid var(--line); }
-  ul.decisions li { border-left: 3px solid var(--client); padding-left: 10px; }
+  ul.decisions li { border-left: 3px solid var(--advisor); padding-left: 10px; }
   .caption { font-size: var(--text-caption); color: var(--ink-3); }
   footer { margin-top: 40px; font-size: var(--text-caption); color: var(--ink-3); }
 </style>
@@ -87,31 +87,31 @@
 </div>
 
 <main>
-  <h1>Regional bank: where AI should go first in the contact centre</h1>
+  <h1>Relay: the step after the insight, for financial advisors</h1>
   <p class="purpose">Assessed through six gates: value, AI-fit, labels, user-in-the-loop, evals, deploy and drive.</p>
 
   <!-- The agent speaks first, in one sentence with the figures in it, then one next step. -->
   <div class="brief">
     <div class="who"><span class="who-word who-agent">Agent</span></div>
-    <p>I scored 12 use cases on three lenses, put 7 below GenAI, and the prototype passed 6 of 6 release gates after one fix, from escalation recall 0.69 on its first run.</p>
-    <div class="next"><b>Recommendation.</b> Start with agent-assist, not a chatbot: six weeks to a shadow-mode pilot with gates risk has signed.</div>
+    <p>I found 406 of 406 expected opportunities on a 300-household book, held six FINRA and SEC rules at 100% precision and recall, and before that fix I was missing 53 of 85 retirement candidates.</p>
+    <div class="next"><b>Recommendation.</b> Agents read, cite and prepare; code decides; a person accepts every action and nothing clears its own findings.</div>
   </div>
 
   <div class="stats">
-    <div class="stat"><div class="n">12</div><div class="l">use cases scored (assumed list)</div></div>
-    <div class="stat"><div class="n">7</div><div class="l">should not be GenAI</div></div>
-    <div class="stat"><div class="n">6 of 6</div><div class="l">release gates passed after one fix</div></div>
+    <div class="stat"><div class="n">22</div><div class="l">agents, 8 of them compliance review desks</div></div>
+    <div class="stat"><div class="n">406 of 406</div><div class="l">opportunities found, every claim cited</div></div>
+    <div class="stat"><div class="n">369</div><div class="l">tests passing</div></div>
   </div>
 
   <section>
     <h2>Six gates</h2>
     <div class="gates">
-      <div class="gate"><h3><span class="k">V</span>Value</h3><ul><li>Cost sits in 4 contact reasons (assumed)</li><li>North-star: cost per resolved contact</li><li>Constraint: nothing customer-facing this year</li></ul></div>
-      <div class="gate"><h3><span class="k">A</span>AI-fit</h3><ul><li>First wave: agent-assist, policy answers with sources</li><li>Second wave: customer chatbot on the same knowledge base</li><li>Buy the summary; build the grounded answers</li></ul></div>
-      <div class="gate"><h3><span class="k">L</span>Labels</h3><ul><li>40 rows labelled before any system existed</li><li>Slices: language, implicit complaint, adversarial</li><li>10 rows sealed as holdout</li></ul></div>
-      <div class="gate"><h3><span class="k">U</span>User-in-the-loop</h3><ul><li>Draft with approval for 90 days</li><li>Never decides a dispute or speaks to the customer</li><li>Escalation wins every race</li></ul></div>
-      <div class="gate"><h3><span class="k">E</span>Evals</h3><ul><li>Escalation recall bar 0.97, set before the build</li><li>First run blocked: English recall 0.58</li><li>One fix to the router, golden set untouched</li></ul></div>
-      <div class="gate"><h3><span class="k">D</span>Deploy and drive</h3><ul><li>Shadow mode, then one pilot team</li><li>Edit rate on approved drafts</li><li>Production misses become new labels</li></ul></div>
+      <div class="gate"><h3><span class="k">V</span>Value</h3><ul><li>The step after an insight engine</li><li>One flagged opportunity to a signed, documented action</li><li>Impact measured on a 300-household book</li></ul></div>
+      <div class="gate"><h3><span class="k">A</span>AI-fit</h3><ul><li>The model never decides: verdicts, ranking, refusal are code</li><li>Template fragments where a model would compose</li><li>Read-only connectors; replaces none of the tools</li></ul></div>
+      <div class="gate"><h3><span class="k">L</span>Labels</h3><ul><li>300 households, 585 captured messages</li><li>Hand-reviewed sentence labels</li><li>The expected side imports no engine code</li></ul></div>
+      <div class="gate"><h3><span class="k">U</span>User-in-the-loop</h3><ul><li>Relay never sends</li><li>Nothing clears its own findings</li><li>Loosening a desk waits for a principal</li></ul></div>
+      <div class="gate"><h3><span class="k">E</span>Evals</h3><ul><li>Cannot evaluate is reported, never clear</li><li>Every guard seen failing before it was trusted</li><li>New phrasings go into labels first</li></ul></div>
+      <div class="gate"><h3><span class="k">D</span>Deploy and drive</h3><ul><li>Rule-change proposer reads 90 days of findings</li><li>It can only propose tighter rules</li><li>Out of scope, said openly: persistence, CRM write-back</li></ul></div>
     </div>
   </section>
 
@@ -121,32 +121,32 @@
       <table>
         <thead><tr><th>Gate</th><th>Value</th><th>Bar</th><th>Result</th></tr></thead>
         <!-- Result cell: <span class="pill pass">Passed</span> or <span class="pill fail">Blocked</span>. Always the word. -->
-        <tbody><tr><td>Escalation recall</td><td>1.00</td><td>0.97 or more</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Escalation precision</td><td>1.00</td><td>0.85 or more</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Answers without a source</td><td>0</td><td>none</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Routing accuracy</td><td>1.00</td><td>0.90 or more</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Recall gap across languages</td><td>0.00</td><td>under 0.05</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Verdicts outside the set</td><td>0</td><td>none</td><td><span class="pill pass">Passed</span></td></tr></tbody>
+        <tbody><tr><td>Opportunities on import</td><td>406 of 406</td><td>all expected</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Suitability, FINRA 2111</td><td>78 of 78</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Correspondence, FINRA 3110</td><td>64 of 64</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Complaints, FINRA 4513</td><td>48 of 48</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Senior investor, FINRA 2165</td><td>23 of 23</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Marketing, SEC 206(4)-1</td><td>40 of 40</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Claims without a citation</td><td>0</td><td>none</td><td><span class="pill pass">Passed</span></td></tr></tbody>
       </table>
-      <p class="caption">Dev set after one fix. First run: blocked, escalation recall 0.69, routing 0.72, language gap 0.42.</p>
+      <p class="caption">Run 2026-10-25 on synthetic data: the engines match the spec, not every way a client says it. The eval caught 53 of 85 retirement candidates missed before the fix.</p>
     </div>
     <div>
-      <h2>Plan: six weeks</h2>
+      <h2>Plan: what the eval has caught</h2>
       <table>
         <thead><tr><th>When</th><th>What</th><th>Exit criterion</th></tr></thead>
-        <tbody><tr><td>Week 1</td><td>Real contact data replaces assumptions</td><td>Top 4 reasons confirmed</td></tr><tr><td>Week 2</td><td>Label 300 transcripts, two labellers</td><td>Agreement measured</td></tr><tr><td>Week 3 to 4</td><td>Build, gates in CI</td><td>All gates pass on holdout</td></tr><tr><td>Week 5</td><td>Shadow mode, one team</td><td>Risk sign-off</td></tr><tr><td>Week 6</td><td>Readout to the COO</td><td>Go or no-go for pilot</td></tr></tbody>
+        <tbody><tr><td>Discovery</td><td>53 of 85 retirement candidates missed</td><td>Pension requests read as decisions</td></tr><tr><td>Import</td><td>53 households below their own minimum</td><td>Target never below the minimum</td></tr><tr><td>Import</td><td>A negative concentration</td><td>History floored above zero</td></tr><tr><td>Guards</td><td>Four deliberate breaks</td><td>Each seen failing first</td></tr></tbody>
       </table>
     </div>
   </section>
 
   <section class="two">
     <div>
-      <h2>What the client decided</h2>
+      <h2>Decisions, and the alternative not taken</h2>
       <!-- One li per card: "<b>Role</b> chose X. <span class="caption">Recommended: Y</span>" -->
-      <ul class="decisions"><li><b>Sponsor</b> chose cost per resolved contact. <span class="caption">Recommended</span></li><li><b>COO</b> chose agent-assist first. <span class="caption">Recommended</span></li><li><b>Risk</b> chose draft with approval. <span class="caption">Recommended</span></li><li><b>Risk</b> set escalation recall at 0.97. <span class="caption">Recommended</span></li></ul>
+      <ul class="decisions"><li><b>Deterministic decisions</b> over model judgement. <span class="caption">Eligibility, ranking and refusal are reproducible.</span></li><li><b>Prepare, never send</b> over automation end to end. <span class="caption">No outbound path exists in the code.</span></li><li><b>Tighten-only learning</b> over self-tuning rules. <span class="caption">Loosening needs a principal.</span></li></ul>
     </div>
     <div>
       <h2>Risks and how they are held</h2>
-      <ul class="risks"><li>Fix fitted to seen rows: held by the sealed holdout</li><li>Approval fatigue: held by edit rate</li><li>Second language breaks silently: held by the per-slice gate</li></ul>
+      <ul class="risks"><li>Synthetic phrasing too narrow: held by labels first, then the fix</li><li>An agent clearing itself: held by requiresHuman in the engine</li><li>A rule stated as current when it is not: validate() fails the build</li></ul>
     </div>
   </section>
 
-  <footer>Example output. Gate E figures come from a real prototype run; V, A, L, U, D content is illustrative. Figures marked assumed are placeholders, replaced with client data in week one. Synthetic data only. The system drafts; the client decides.</footer>
+  <footer>Prototype. Every client, advisor, document and message is invented; no model calls; no users. Vendor names in the connector catalogue are for demonstration and imply no affiliation.</footer>
 </main>
 </body>
 </html>
