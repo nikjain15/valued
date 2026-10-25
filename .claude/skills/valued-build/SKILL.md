@@ -46,10 +46,15 @@ in the orchestrator). This step fills what needs every gate at once. Target: 3 m
    - Tables at most 12 rows. Telegraphic, verb-first. No em-dashes.
 4. **Render the standalone copy:** `node .claude/skills/valued-build/render-prd.js out/prd.md
    out/prd.html`.
-5. Write `out/proto/CLAUDE.md` with three lines: read `../prd.md` first; work from section 17; never
+5. **Publish the hosted version** (about 30 seconds): `node .claude/skills/valued-build/build-hosted.js out`,
+   then publish `out/hosted/index.html` with the Artifact tool, `capabilities: {"sample": {}}`, a short
+   name as its title, and one sentence as its description. It runs the same router in the browser and
+   uses real Claude for drafts and for the "Run with real AI" eval, with no API key. Print the link
+   and add it to `out/state.md`. If publishing is unavailable, say so in one line and keep localhost.
+6. Write `out/proto/CLAUDE.md` with three lines: read `../prd.md` first; work from section 17; never
    edit `golden.json` or read `holdout.json`.
-6. Append to `out/state.md`: `Build: PRD complete (localhost:4317/prd, out/prd.html); prototype on
+7. Append to `out/state.md`: `Build: PRD complete (localhost:4317/prd, out/prd.html); prototype on
    localhost:4317 (engine <x>)`. Then `open http://localhost:4317` (skip under `--no-open`).
-7. **Say it** (three lines): this is the decisions turned into a spec a team or a coding agent can build
+8. **Say it** (three lines): this is the decisions turned into a spec a team or a coding agent can build
    from; every requirement has a test, and the evals are the definition of done; the prototype is the
    same rules, clickable, with every action logged.

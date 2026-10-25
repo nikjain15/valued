@@ -11,12 +11,22 @@ run without asking: take the recommended option at every card and log it as "(au
 `--no-open`, skip every `open` command (here and in `valued-build`) and print the paths instead.
 
 **No case given, or only a rough one.** In a live session the client describes the case out loud and the
-product lead may type nothing, or a few words. If the argument is empty or missing who, what problem, or
-what deadline, ask once, in one message, with up to three short cards before setup (each with 3 to 4
-typical options and room for the client's own words): **"Who is the client?"** (industry and size),
-**"What hurts today?"** (the work that is slow, costly or risky), **"What does done look like, and by
-when?"** Build the case line from the answers, print it, and go. Never ask more than this before
-gate V; gate V's draft marks everything else (assumed).
+product lead may type nothing, or a few words. If the argument is empty or missing the client, the
+business problem, or the success measure and deadline, open with one short framing message ("Before we
+start, three questions to frame the engagement") and up to three cards, each with 3 to 4 typical options
+and room for the client's own words:
+- **"Client context": "Which organization and business area are we working with?"** (industry, size,
+  the unit that owns the problem)
+- **"Business problem": "Which process or decision is underperforming today, and how does it show up?"**
+  (cost, cycle time, error rate, risk or customer impact)
+- **"Success and timeline": "What outcome would the sponsor call success, and by when?"** (the metric
+  that must move, the deadline, the decision this work feeds)
+Each ends with its own-words format: client context "industry, size, and the unit that owns it
+(e.g. 'P&C insurer, 40k claims a month, claims operations')"; business problem "the process, how it
+shows up, and a rough number (e.g. 'FNOL setup, 20 fields re-keyed, 18 minutes a claim')"; success and
+timeline "a metric, a target and a date (e.g. 'setup under 10 minutes, pilot in 8 weeks')".
+Build the case line from the answers, print it as `Engagement: <case line>`, and go. Never ask more than
+this before gate V; gate V's draft marks everything else (assumed).
 
 ## Roles on screen
 
@@ -63,6 +73,12 @@ gate V; gate V's draft marks everything else (assumed).
 
 - **Draft first, then ask.** A gate shows its draft table **before** its cards, so the client is choosing
   between concrete things, never answering a blank question.
+- **Every card says how to answer in your own words.** The question text ends with one line,
+  `If none fits, answer with: <format>`, naming the shape that lets the agent use the answer at once,
+  with a short example. For instance: a metric, a target and a date ("claim setup under 10 minutes by
+  Q2"); a ranked pair ("speed first, accuracy second"); a role and a team ("claims team lead, Midwest
+  hub"); a threshold ("no lower than 0.97"). A free answer that misses the shape is restated in that
+  shape and confirmed in one line before the gate continues.
 - **Ask only what the client owns:** a priority, a risk appetite, or a fact only they know. **At most 2
   cards per gate, 2 to 4 options each**, answerable in 10 seconds. Never ask the client to choose
   something the agent can reason about (sourcing, architecture, tooling, which metric is better on

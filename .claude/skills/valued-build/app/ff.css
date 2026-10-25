@@ -40,7 +40,7 @@ code, pre, .mono { font-family: var(--font-mono); font-size: 13px; }
 .small { font-size: var(--fs-label); }
 
 /* Nav */
-.site-nav { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.site-nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 40; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
 .nav-inner { display: flex; align-items: center; gap: 16px; height: 60px; }
 .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--ink); text-decoration: none; }
 .logo .mark { width: 28px; height: 28px; border-radius: 8px; background: var(--dark); color: var(--white); display: grid; place-items: center; font-size: 12px; font-weight: 700; }

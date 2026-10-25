@@ -6,59 +6,78 @@
 <title>Prototype workbench</title>
 <link rel="stylesheet" href="/ff.css">
 <style>
-  .hero { padding: 36px 0 20px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: end; }
-  .hero-sub { margin-top: 12px; color: var(--ink-3); font-size: 16px; max-width: 58ch; }
-  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-  .kpi { background: var(--white); border-radius: var(--r-card); box-shadow: var(--shadow-card); border: 1px solid var(--line-2); padding: 12px 14px; }
-  .kpi .v { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: var(--ls-tight); }
+  /* App layer on the founderfirst.one tokens in ff.css: paper ground, white working cards, sage for the AI's voice. */
+  .hero { padding-top: 28px; padding-bottom: 8px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 28px; align-items: end; }
+  .hero h1 { text-wrap: balance; }
+  .hero-sub { margin-top: 10px; color: var(--ink-3); font-size: 16px; max-width: 58ch; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .kpi { background: var(--white); border-radius: var(--r-card); border: 1px solid var(--line-2); padding: 12px 14px; }
+  .kpi .v { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: var(--ls-tight); font-variant-numeric: tabular-nums; }
   .kpi .l { font-size: var(--fs-micro); color: var(--ink-3); }
-  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 8px 0 24px; overflow-x: auto; }
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin: 20px 0 22px; overflow-x: auto; }
   .tab { background: none; border: 0; padding: 12px 14px; font: 500 var(--fs-ui) var(--font-sans); color: var(--ink-3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
   .tab[aria-selected="true"] { color: var(--ink); border-color: var(--brand); }
-  .panel[hidden] { display: none; }
   .grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 20px; align-items: start; }
-  textarea { width: 100%; min-height: 120px; resize: vertical; border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px; font: 400 max(16px, 15px)/1.5 var(--font-sans); color: var(--ink); background: var(--white); margin-top: 12px; }
+  .grid > * { min-width: 0; }
+  textarea { width: 100%; min-height: 110px; resize: vertical; border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px; font: 400 16px/1.5 var(--font-sans); color: var(--ink); background: var(--white); margin-top: 12px; }
   .samples { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; }
   .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .between { justify-content: space-between; }
   .stack > * + * { margin-top: 14px; }
-  .empty { text-align: center; padding: 48px 24px; color: var(--ink-3); }
-  .empty .ring { width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 14px; background: var(--brand-tint); display: grid; place-items: center; color: var(--brand); font-family: var(--font-display); font-size: 22px; }
+  .empty { text-align: center; padding: 44px 20px; color: var(--ink-3); }
+  .ring { width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 12px; background: var(--brand-tint); display: grid; place-items: center; color: var(--brand); font-family: var(--font-display); font-size: 22px; }
   .verdict { display: flex; align-items: center; gap: 12px; }
   .verdict h3 { font-size: 22px; }
   .source { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: var(--fs-label); color: var(--ink-2); }
-  .bubble { background: var(--brand-tint); border-radius: var(--r-bubble-ai); padding: 14px 16px; color: var(--ink); white-space: pre-wrap; }
+  .bubble { background: var(--brand-tint); border-radius: var(--r-bubble-ai); padding: 14px 16px; color: var(--ink); white-space: pre-wrap; min-height: 48px; }
   .bubble[contenteditable="true"] { background: var(--white); outline: 2px solid var(--brand-soft); }
-  .banner { border-radius: var(--r-card); padding: 12px 14px; font-size: var(--fs-label); display: flex; gap: 10px; align-items: flex-start; }
+  .banner { border-radius: var(--r-card); padding: 12px 14px; font-size: var(--fs-label); display: flex; gap: 10px; align-items: center; }
   .banner.bad { background: var(--error-bg); color: var(--error); border: 1px solid #f1cfcb; }
   .banner.warn { background: var(--amber-bg); color: var(--amber-strong); border: 1px solid #f1dfc2; }
   .banner.ok { background: var(--brand-tint); color: var(--brand-strong); border: 1px solid var(--brand-soft); }
   .notes { font-size: var(--fs-micro); color: var(--ink-3); padding-left: 18px; margin: 0; }
   .never li { margin: 4px 0; }
-  .release { font-family: var(--font-display); font-size: 24px; font-weight: 600; letter-spacing: var(--ls-tight); }
-  pre.raw { background: var(--dark); color: #dfe6ec; padding: 16px; border-radius: var(--r-card); overflow-x: auto; font-size: 12.5px; line-height: 1.5; }
+  .intro { margin-top: 20px; padding: 22px 24px; }
+  .intro-grid { display: grid; grid-template-columns: 1.2fr 1fr 1.3fr; gap: 24px; margin-top: 12px; }
+  .intro-grid > * { min-width: 0; }
+  .intro h3 { font-size: 16px; margin-bottom: 6px; }
+  .outcome { display: flex; gap: 10px; align-items: flex-start; margin: 6px 0; font-size: var(--fs-label); }
+  .outcome .pill { flex: none; margin-top: 1px; }
+  .tour { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line-2); }
+  .tour .n { width: 22px; height: 22px; border-radius: 50%; background: var(--brand); color: var(--white); display: inline-grid; place-items: center; font-size: 12px; font-weight: 600; margin-right: 6px; }
+  .linkbtn { background: none; border: 0; color: var(--ink-4); cursor: pointer; font: 500 var(--fs-label) var(--font-sans); }
+  /* Eval dashboard */
+  .seg { display: inline-flex; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 3px; }
+  .seg button { border: 0; background: none; height: 32px; padding: 0 14px; border-radius: var(--r-pill); font: 500 var(--fs-label) var(--font-sans); color: var(--ink-3); cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--white); color: var(--ink); box-shadow: var(--shadow-card); }
+  .engines { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .engine { border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; background: var(--white); }
+  .engine .name { font-weight: 600; }
+  .engine .desc { font-size: var(--fs-micro); color: var(--ink-3); margin-top: 2px; min-height: 32px; }
+  .engine .res { margin-top: 10px; font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+  .engine .res.ok { color: var(--brand-strong); } .engine .res.bad { color: var(--error); } .engine .res.idle { color: var(--ink-4); }
+  .engine .meta { font-size: var(--fs-micro); color: var(--ink-3); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .progress { height: 6px; background: var(--line-2); border-radius: var(--r-pill); overflow: hidden; margin-top: 10px; }
+  .progress > div { height: 100%; width: 0; background: var(--brand); transition: width var(--dur-base) var(--ease-out); }
+  .tbl { overflow-x: auto; border: 1px solid var(--line-2); border-radius: var(--r-card); }
+  .tbl th { background: var(--paper); }
+  .num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 12.5px; }
+  .cell { display: inline-flex; gap: 8px; align-items: center; }
   .flow { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
-  .step { background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 14px; box-shadow: var(--shadow-card); position: relative; }
+  .step { background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 14px; }
   .step .n { width: 24px; height: 24px; border-radius: 50%; background: var(--dark); color: var(--white); display: grid; place-items: center; font-size: 12px; font-weight: 600; margin-bottom: 8px; }
   .step.guard .n { background: var(--error); } .step.person .n { background: var(--brand); }
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--dark); color: var(--white); padding: 10px 18px; border-radius: var(--r-pill); font-size: var(--fs-label); opacity: 0; transition: all var(--dur-base) var(--ease-out); z-index: 60; }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .intro { margin-top: 24px; padding: 22px 24px; }
-  .intro-grid { display: grid; grid-template-columns: 1.2fr 1fr 1.3fr; gap: 24px; margin-top: 14px; }
-  .intro h3 { font-size: 16px; margin-bottom: 6px; }
-  .intro .outcome { display: flex; gap: 10px; align-items: flex-start; margin: 6px 0; font-size: var(--fs-label); }
-  .intro .outcome .pill { flex: none; margin-top: 1px; }
-  .tour { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line-2); }
-  .tour .n { width: 22px; height: 22px; border-radius: 50%; background: var(--brand); color: var(--white); display: inline-grid; place-items: center; font-size: 12px; font-weight: 600; }
-  .intro-close { background: none; border: 0; color: var(--ink-4); cursor: pointer; font: 500 var(--fs-label) var(--font-sans); }
-  @media (max-width: 900px) { .intro-grid { grid-template-columns: 1fr; } }
   .faq details { border-bottom: 1px solid var(--line-2); padding: 14px 0; }
   .faq summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  .faq summary::-webkit-details-marker { display: none; }
   .faq summary::after { content: "+"; color: var(--ink-4); font-weight: 400; }
-  .faq details[open] summary::after { content: "–"; }
+  .faq details[open] summary::after { content: "-"; }
   .faq details p { margin-top: 8px; color: var(--ink-2); font-size: var(--fs-label); max-width: 75ch; }
-  .building { display: flex; gap: 10px; align-items: center; }
-  footer { padding: 32px 0 48px; color: var(--ink-4); font-size: var(--fs-micro); }
-  @media (max-width: 900px) { .hero, .grid { grid-template-columns: 1fr; } .flow { grid-template-columns: 1fr 1fr; } .kpis { grid-template-columns: repeat(2, 1fr); } }
+  .toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); background: var(--dark); color: var(--white); padding: 10px 18px; border-radius: var(--r-pill); font-size: var(--fs-label); opacity: 0; transition: opacity var(--dur-base); z-index: 60; pointer-events: none; }
+  .toast.show { opacity: 1; }
+  footer { padding-block: 32px 48px; color: var(--ink-4); font-size: var(--fs-micro); }
+  @media (max-width: 900px) { .hero, .grid, .intro-grid, .engines { grid-template-columns: 1fr; } .flow { grid-template-columns: 1fr 1fr; } .kpis { grid-template-columns: repeat(2, 1fr); } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
 <body>
@@ -67,29 +86,30 @@
     <span class="logo"><span class="mark" id="mark">AI</span><span id="navTitle">Prototype</span></span>
     <span class="spacer"></span>
     <span class="pill plain hide-sm">Synthetic data</span>
-    <span class="pill info" id="enginePill">Engine</span>
-    <span class="pill plain" id="modelPill">Model</span>
-    <a class="btn ghost sm hide-sm" href="/prd" target="_blank" rel="noopener">PRD</a>
+    <span class="pill info hide-sm" id="enginePill">Rules</span>
+    <span class="pill plain" id="aiPill">AI: checking</span>
+    <a class="btn ghost sm hide-sm" id="prdLink" href="/prd" target="_blank" rel="noopener">PRD</a>
   </div>
 </nav>
 
 <main class="wrap">
   <section class="card emph intro" id="intro" aria-label="What you are looking at">
-    <div class="row" style="justify-content:space-between">
+    <div class="row between">
       <div class="eyebrow brand">What you are looking at</div>
-      <button class="intro-close" id="introClose">Hide</button>
+      <button class="linkbtn" id="introClose">Hide</button>
     </div>
     <div class="intro-grid">
       <div><h3>The situation</h3><p class="small muted" id="iScenario"></p></div>
       <div><h3>Who uses this screen</h3><p class="small muted" id="iUser"></p></div>
       <div><h3>What it decides, every time</h3><div id="iOutcomes"></div></div>
     </div>
-    <div class="tour" id="iTour"><strong class="small">Try it in 3 clicks</strong></div>
+    <div class="tour" id="iTour"></div>
   </section>
   <button class="btn ghost sm" id="introOpen" hidden style="margin-top:16px">What am I looking at?</button>
+
   <section class="hero">
     <div>
-      <div class="eyebrow brand" id="eyebrow">VALUED prototype</div>
+      <div class="eyebrow brand" id="eyebrow">Prototype</div>
       <h1 id="headline" style="margin-top:10px">Working prototype</h1>
       <p class="hero-sub" id="promise"></p>
     </div>
@@ -102,7 +122,7 @@
   </section>
 
   <div class="tabs" role="tablist">
-    <button class="tab" role="tab" aria-selected="true" data-tab="work">Workbench</button>
+    <button class="tab" role="tab" aria-selected="true" data-tab="work">Try it</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="evals">Evals</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="audit">Audit log</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="how">How it works</button>
@@ -117,10 +137,7 @@
           <h3 style="margin-top:6px" id="inputLabel">Request</h3>
           <textarea id="input" placeholder="Type a request, or pick a sample below"></textarea>
           <div class="samples" id="samples"></div>
-          <div class="row">
-            <button class="btn solid" id="run">Run it</button>
-            <span class="small muted">Ctrl + Enter</span>
-          </div>
+          <div class="row"><button class="btn solid" id="run">Run it</button><span class="small muted">Ctrl + Enter</span></div>
         </div>
         <div class="card flat">
           <div class="eyebrow">Never list</div>
@@ -128,33 +145,34 @@
           <p class="small muted" style="margin-top:10px">Escalations go to <strong id="owner">a person</strong>. Autonomy: <span id="autonomy"></span>.</p>
         </div>
       </div>
-      <div class="card emph" id="result">
-        <div class="empty"><div class="ring">?</div><p>Run a request to see the decision, the cited source, the draft and who signs it off.</p></div>
-      </div>
+      <div class="card emph" id="result"></div>
     </div>
   </section>
 
   <section class="panel" id="evals" hidden>
     <div class="card emph stack">
-      <div class="row" style="justify-content:space-between">
+      <div class="row between">
         <div><div class="eyebrow">Release gates</div><h2 style="margin-top:6px">A number decides the release</h2></div>
-        <div class="row">
-          <button class="btn dark sm" data-eval="golden.json">Run dev set</button>
-          <button class="btn ghost sm" data-eval="holdout.json">Run sealed holdout</button>
-        </div>
+        <div class="seg" role="group" aria-label="Test set"><button data-set="golden" aria-pressed="true" id="setDev">Dev set</button><button data-set="holdout" aria-pressed="false" id="setHold">Sealed holdout</button></div>
       </div>
-      <p class="muted small">Gates were set before the build. The builder never saw the holdout. Every gate is checked by group, so an average cannot hide the group that breaks.</p>
-      <div id="evalOut"><div class="empty"><p>Run the dev set to see every gate.</p></div></div>
+      <p class="muted small" id="evalIntro">Every row has a known right answer, written before anything was built. Each engine runs every row; the gates were set before the build and are checked group by group.</p>
+      <div class="engines" id="engines"></div>
+      <div class="row">
+        <button class="btn dark" id="runRules">Run rules</button>
+        <button class="btn solid" id="runAI">Run with real AI</button>
+        <button class="btn ghost sm" id="stopAI" hidden>Stop</button>
+        <span class="small muted" id="aiNote"></span>
+      </div>
+      <div id="evalOut"></div>
     </div>
   </section>
 
   <section class="panel" id="audit" hidden>
     <div class="card emph">
-      <div class="row" style="justify-content:space-between;margin-bottom:12px">
+      <div class="row between" style="margin-bottom:12px">
         <div><div class="eyebrow">Audit trail</div><h2 style="margin-top:6px">Every action, with who approved it</h2></div>
-        <button class="btn ghost sm" id="refreshLog">Refresh</button>
       </div>
-      <div style="overflow-x:auto"><table><thead><tr><th>Time</th><th>Request</th><th>Verdict</th><th>Source</th><th>Action</th><th>Approver</th><th>Edited</th><th>Version</th></tr></thead><tbody id="logRows"></tbody></table></div>
+      <div class="tbl"><table><thead><tr><th>Time</th><th>Request</th><th>Decision</th><th>Source</th><th>Action</th><th>Approver</th><th>Edited</th><th>Drafted by</th></tr></thead><tbody id="logRows"></tbody></table></div>
     </div>
   </section>
 
@@ -162,53 +180,90 @@
     <div class="stack">
       <div class="flow">
         <div class="step"><div class="n">1</div><strong>Request</strong><p class="small muted">Arrives from the channel.</p></div>
-        <div class="step guard"><div class="n">2</div><strong>Escalation guard</strong><p class="small muted">Checked first. Escalation wins every race.</p></div>
+        <div class="step guard"><div class="n">2</div><strong>Escalation guard</strong><p class="small muted">Checked first, by rules. Escalation wins every race.</p></div>
         <div class="step"><div class="n">3</div><strong>Route</strong><p class="small muted">Answer only when one source clearly matches.</p></div>
         <div class="step"><div class="n">4</div><strong>Draft</strong><p class="small muted" id="howDraft">From the cited source only.</p></div>
         <div class="step person"><div class="n">5</div><strong>Person decides</strong><p class="small muted">Approve, edit, or hand off.</p></div>
         <div class="step"><div class="n">6</div><strong>Log</strong><p class="small muted">Input, source, output, approver, version.</p></div>
       </div>
+      <div class="card"><div class="eyebrow">Decisions that shaped it</div><p class="small muted" style="margin-top:4px">Every choice made in the working session, who made it, and what it changed here.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Gate</th><th>Decision</th><th>Chosen by</th><th>What it changed</th></tr></thead><tbody id="decisionRows"></tbody></table></div></div>
       <div class="grid">
-        <div class="card"><div class="eyebrow">Release gates</div><table style="margin-top:8px"><tbody id="gateRows"></tbody></table></div>
-        <div class="card"><div class="eyebrow">Knowledge sources</div><table style="margin-top:8px"><tbody id="sourceRows"></tbody></table></div>
+        <div class="card"><div class="eyebrow">Release gates</div><div class="tbl" style="margin-top:8px"><table><tbody id="gateRows"></tbody></table></div></div>
+        <div class="card"><div class="eyebrow">Knowledge sources</div><div class="tbl" style="margin-top:8px"><table><tbody id="sourceRows"></tbody></table></div></div>
       </div>
-      <div class="card"><div class="eyebrow">Decisions that shaped it</div><p class="small muted" style="margin-top:4px">Every choice made during the run, who made it, and what it changed in this prototype.</p><table style="margin-top:8px"><thead><tr><th>Gate</th><th>Decision</th><th>Chosen by</th><th>What it changed here</th></tr></thead><tbody id="decisionRows"></tbody></table></div>
     </div>
   </section>
 
   <section class="panel" id="faq" hidden>
     <div class="card emph">
       <div class="eyebrow">Questions people ask</div><h2 style="margin-top:6px">FAQ</h2>
-      <div id="faqList" style="margin-top:12px"></div>
+      <div class="faq" id="faqList" style="margin-top:8px"></div>
     </div>
   </section>
 </main>
 <footer class="wrap" id="foot">Prototype on synthetic data. Not for production use.</footer>
-<div class="toast" id="toast"></div>
-
+<div class="toast" id="toast" role="status"></div>
+<!--VALUED_DATA-->
 <script>
+/* One code path for two homes: served by out/proto/server.js during a run, or published as a page with its data embedded. */
+const HOSTED = Boolean(window.__VALUED__);
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-let CASE = {}, READY = false, current = null, stats = { decisions: 0, approved: 0, edited: 0, escalated: 0 };
-
 const VERDICT_STYLE = { answer: "ok", human: "warn", escalate: "bad" };
-const ENGINE_LABEL = { rules: "Rules only", "rules+model": "Rules decide, model drafts", "model-first": "Model proposes, rules guard" };
+const ENGINE_LABEL = { rules: "Rules decide", "rules+model": "Rules decide, AI drafts", "model-first": "AI proposes, rules guard" };
+let CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules" }, ROUTER = null, AI = null, READY = false;
+let current = null, stats = { decisions: 0, approved: 0, edited: 0, escalated: 0 }, LOG = [], evalSet = "golden", RESULTS = {}, aiCtl = null;
 
-function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200); }
-function renderStats() {
-  $("#kDecisions").textContent = stats.decisions;
-  $("#kApproved").textContent = stats.approved;
-  $("#kEdit").textContent = stats.approved ? Math.round((stats.edited / stats.approved) * 100) + "%" : "0%";
-  $("#kEsc").textContent = stats.escalated;
+/* Data: embedded when published, fetched from the run's server otherwise. */
+async function load(name, fallback) {
+  if (HOSTED) return window.__VALUED__[name] ?? fallback;
+  try { const r = await fetch("/" + name, { cache: "no-store" }); if (!r.ok) return fallback; return name.endsWith(".js") ? r.text() : r.json(); } catch { return fallback; }
+}
+function compileRouter(src) {
+  if (!src) return null;
+  try { const module = { exports: {} }; new Function("module", "exports", src)(module, module.exports); return typeof module.exports.decide === "function" ? module.exports : null; } catch (e) { console.error("router", e); return null; }
 }
 
+/* Real AI: Claude through the page's own access when published, or the run's server with an API key. */
+async function connectAI() {
+  if (HOSTED) {
+    const sample = window.claude ? await window.claude.use("sample").catch(() => null) : null;
+    if (!sample) return null;
+    return {
+      where: "Claude (your account)",
+      text: (prompt, opts = {}) => sample(prompt, { modelTier: opts.tier || "quick", onText: opts.onText, signal: opts.signal, cache: opts.cache }).then((r) => r.text),
+      json: (prompt, opts = {}) => sample.json(prompt, { modelTier: opts.tier || "quick", signal: opts.signal }),
+    };
+  }
+  try {
+    const s = await fetch("/api/status", { cache: "no-store" }).then((r) => r.json());
+    if (!s.modelReady) return null;
+    const call = async (prompt) => { const r = await fetch("/api/ai", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ prompt }) }).then((x) => x.json()); if (!r.ok) throw { code: "upstream_error", message: r.why }; return r.text; };
+    return {
+      where: s.model,
+      text: async (prompt, opts = {}) => { const t = await call(prompt); opts.onText?.({ text: t }); return t; },
+      json: async (prompt) => { const t = await call(prompt); return JSON.parse(t.slice(t.search(/[[{]/), Math.max(t.lastIndexOf("]"), t.lastIndexOf("}")) + 1)); },
+    };
+  } catch { return null; }
+}
+const aiErrorCopy = (e) => ({ not_granted: "AI access was not allowed for this page.", rate_limited: "Too many AI calls right now. Try again in a minute.", sampling_disabled: "AI is not available on this account.", cancelled: "Stopped.", invalid_json: "The AI reply was not in the expected format. Try again." }[e?.code] || `AI call failed${e?.message ? ": " + e.message : ""}.`);
+
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2400); }
+function renderStats() {
+  $("#kDecisions").textContent = stats.decisions; $("#kApproved").textContent = stats.approved;
+  $("#kEdit").textContent = stats.approved ? Math.round((stats.edited / stats.approved) * 100) + "%" : "0%"; $("#kEsc").textContent = stats.escalated;
+}
+function toggleIntro(show) { $("#intro").hidden = !show; $("#introOpen").hidden = show; try { localStorage.setItem("introHidden", show ? "0" : "1"); } catch {} }
+
 async function boot() {
-  const [c, status, gates, sources] = await Promise.all(["/case.json", "/api/status", "/gates.json", "/sources.json"].map((u) => fetch(u).then((r) => r.json()).catch(() => ({}))));
-  CASE = c;
+  [CASE, SOURCES, GATES, BUILD] = await Promise.all([load("case.json", {}), load("sources.json", []), load("gates.json", {}), load("build.json", { engine: "rules" })]);
+  ROUTER = compileRouter(await load("router.js", ""));
+  READY = Boolean(ROUTER && CASE.title);
+  const c = CASE;
   document.title = c.title || "Prototype workbench";
   $("#navTitle").textContent = c.title || "Prototype";
   $("#mark").textContent = (c.client || "AI").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-  $("#eyebrow").textContent = `VALUED prototype · ${c.client || "client"} · synthetic data`;
+  $("#eyebrow").textContent = `Prototype · ${c.client || "client"} · synthetic data`;
   $("#headline").textContent = c.headline || c.useCase || "Working prototype";
   $("#promise").textContent = c.promise || "";
   $("#inputLabel").textContent = c.inputLabel || "Incoming request";
@@ -216,144 +271,250 @@ async function boot() {
   $("#autonomy").textContent = c.autonomy || "draft with approval";
   $("#never").innerHTML = (c.neverList || []).map((n) => `<li>${esc(n)}</li>`).join("");
   $("#samples").innerHTML = (c.samples || []).map((s, i) => `<button class="chip" data-sample="${i}">${esc(s.label)}</button>`).join("");
-  $("#enginePill").textContent = ENGINE_LABEL[status.engine] || status.engine || "Rules only";
-  $("#modelPill").textContent = status.engine === "rules" ? "No model" : status.modelReady ? `Model: ${status.model}` : "Model offline: template drafts";
-  $("#modelPill").className = "pill " + (status.engine !== "rules" && status.modelReady ? "ok" : "plain");
-  $("#howDraft").textContent = status.engine === "rules" ? "Assembled from the cited source by rule." : "Model writes from the cited source only; no source, no draft.";
+  $("#enginePill").textContent = ENGINE_LABEL[BUILD.engine] || "Rules decide";
+  $("#howDraft").textContent = BUILD.engine === "rules" ? "Assembled from the cited source by rule." : "AI writes from the cited source only; no source, no draft.";
   $("#foot").textContent = `${c.title || "Prototype"} · version ${c.version || "proto-0.1"} · synthetic data, not for production use. Built with VALUED.`;
+  if (HOSTED) { const prd = window.__VALUED__.prdUrl; $("#prdLink").hidden = !prd; if (prd) $("#prdLink").href = prd; }
+  // Intro
   $("#iScenario").textContent = c.scenario || c.promise || "";
-  $("#iUser").textContent = c.userIntro || `A ${c.user || "front-line employee"} sees each incoming request here. The AI decides what kind of request it is and prepares a draft; the ${c.user || "employee"} decides what is sent.`;
+  $("#iUser").textContent = c.userIntro || `A ${c.user || "front-line employee"} sees each incoming request here. The system decides what kind of request it is and prepares a draft; the ${c.user || "employee"} decides what is sent.`;
   $("#iOutcomes").innerHTML = ["answer", "human", "escalate"].filter((k) => (c.verdicts || {})[k]).map((k) => `<div class="outcome"><span class="pill ${VERDICT_STYLE[k]}">${esc(k)}</span><span><strong>${esc(c.verdicts[k].label)}.</strong> ${esc(c.verdicts[k].desc)}</span></div>`).join("");
   const samples = c.samples || [];
-  const pick = (v, fallback) => { const i = samples.findIndex((x) => x.expect === v); return i >= 0 ? i : fallback; };
-  const iAns = pick("answer", 0), iEsc = pick("escalate", samples.length - 2);
+  const pick = (v, fb) => { const i = samples.findIndex((x) => x.expect === v); return i >= 0 ? i : fb; };
+  const iAns = pick("answer", 0), iEsc = pick("escalate", Math.max(0, samples.length - 2));
   $("#iTour").innerHTML = `<strong class="small">Try it in 3 clicks</strong>` + [
-    samples[iAns] && `<button class="chip" data-tour="${iAns}"><span class="n">1</span>&nbsp; Run "${esc(samples[iAns].label)}", then Approve</button>`,
-    samples[iEsc] && `<button class="chip" data-tour="${iEsc}"><span class="n">2</span>&nbsp; Run "${esc(samples[iEsc].label)}": watch it escalate</button>`,
-    `<button class="chip" data-tour="audit"><span class="n">3</span>&nbsp; Open the audit log</button>`,
+    samples[iAns] && `<button class="chip" data-tour="${iAns}"><span class="n">1</span>Run "${esc(samples[iAns].label)}", then approve</button>`,
+    samples[iEsc] && `<button class="chip" data-tour="${iEsc}"><span class="n">2</span>Run "${esc(samples[iEsc].label)}": it escalates</button>`,
+    `<button class="chip" data-tour="evals"><span class="n">3</span>Open the evals</button>`,
   ].filter(Boolean).join("");
   try { if (localStorage.getItem("introHidden") === "1") toggleIntro(false); } catch {}
-  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(d.gate)}</span></td><td>${esc(d.decision)}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("")
-    || `<tr><td colspan="4" class="muted">Decisions appear here as each gate is decided.</td></tr>`;
-  $("#faqList").innerHTML = `<div class="faq">${(c.faq || []).map((f) => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("")}</div>`
-    || "";
-  if (!(c.faq || []).length) $("#faqList").innerHTML = `<p class="muted small">The FAQ is written at the build step, from the decisions in this run.</p>`;
-  READY = Boolean(status.ready);
-  if (!READY && !current) $("#result").innerHTML = `<div class="empty"><div class="ring">·</div><p class="building" style="justify-content:center">The router is built at gate E, from the labels and the never list you decide. Until then, follow the PRD as it fills in.</p><p style="margin-top:12px"><a class="btn ghost sm" href="/prd">Open the live PRD</a></p></div>`;
+  // How it works, FAQ
+  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(d.gate)}</span></td><td>${esc(d.decision)}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Decisions appear here as each gate is decided.</td></tr>`;
+  $("#faqList").innerHTML = (c.faq || []).map((f) => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("") || `<p class="muted small">The FAQ is written at the build step, from the decisions in this run.</p>`;
+  $("#gateRows").innerHTML = gateDefs().map((g) => `<tr><td>${esc(g.label)}</td><td class="num">${esc(g.barText)}</td></tr>`).join("");
+  $("#sourceRows").innerHTML = (SOURCES || []).map((s) => `<tr><td class="num">${esc(s.id)}</td><td>${esc(s.text)}</td></tr>`).join("");
+  if (!current) $("#result").innerHTML = READY
+    ? `<div class="empty"><div class="ring">?</div><p>Run a request to see the decision, the cited source, the draft and who signs it off.</p></div>`
+    : `<div class="empty"><div class="ring">·</div><p>The decision logic is built at gate E, from the labels and the never list decided in the session.</p>${HOSTED ? "" : `<p style="margin-top:12px"><a class="btn ghost sm" href="/prd">Follow the PRD as it fills in</a></p>`}</div>`;
   $("#run").disabled = !READY;
-  $("#gateRows").innerHTML = Object.entries(gates || {}).filter(([k]) => !k.startsWith("_")).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="mono">${esc(typeof v === "object" ? JSON.stringify(v) : v)}</td></tr>`).join("");
-  $("#sourceRows").innerHTML = (Array.isArray(sources) ? sources : []).map((s) => `<tr><td class="mono">${esc(s.id)}</td><td>${esc(s.text)}</td></tr>`).join("");
+  renderEngines();
 }
 
-function toggleIntro(show) {
-  $("#intro").hidden = !show; $("#introOpen").hidden = show;
-  try { localStorage.setItem("introHidden", show ? "0" : "1"); } catch {}
+/* ---------- Try it ---------- */
+const srcText = (id) => (SOURCES.find((s) => s.id === id) || {}).text || "";
+function draftPrompt(input, sourceId) {
+  return [`You draft a reply for a ${CASE.user || "front-line employee"} at ${CASE.client || "the client"} to review before anything is sent.`,
+    "Use only the facts in SOURCE. If SOURCE does not answer the request, reply exactly NO_ANSWER.",
+    "Two to four plain sentences, in the language of the request. No promises, no advice beyond the source, no dashes as punctuation.",
+    CASE.draftOpener ? `Open in this voice: "${CASE.draftOpener}"` : "", "", `SOURCE ${sourceId}: ${srcText(sourceId)}`, "", `REQUEST: ${input}`].join("\n");
 }
-
 async function run() {
   const text = $("#input").value.trim();
-  if (!text) { $("#input").focus(); return; }
-  $("#run").disabled = true; $("#run").textContent = "Thinking";
-  $("#result").innerHTML = `<div class="empty"><div class="ring">·</div><p>Checking escalation first, then routing.</p></div>`;
-  try {
-    current = await fetch("/api/decide", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text }) }).then((r) => r.json());
-    current.input = text;
-    stats.decisions++; if (current.verdict === "escalate") stats.escalated++; renderStats();
-    renderResult();
-  } catch (e) { $("#result").innerHTML = `<div class="banner bad">Could not reach the prototype server: ${esc(e.message)}</div>`; }
-  $("#run").disabled = false; $("#run").textContent = "Run it";
-}
-
-function renderResult() {
-  const r = current, v = (CASE.verdicts || {})[r.verdict] || {};
-  const head = `<div class="verdict"><span class="pill ${VERDICT_STYLE[r.verdict] || "plain"}">${esc(r.verdict)}</span><h3>${esc(v.label || r.verdict)}</h3></div>
-    <p class="muted small">${esc(v.desc || "")}</p>
-    <div><div class="eyebrow">Why</div><p style="margin-top:4px">${esc(r.reason)}</p></div>`;
-  let body = "";
-  if (r.verdict === "escalate") {
-    body = `<div class="banner bad"><strong>Escalation wins.</strong> Nothing is drafted. Routed to ${esc(CASE.escalationOwner || "a person")} within ${esc(CASE.escalationSla || "the agreed time")}.</div>
-      <div class="row"><button class="btn danger" data-act="escalated">Escalate to ${esc(CASE.escalationOwner || "owner")}</button></div>`;
-  } else if (r.verdict === "human") {
-    body = `<div class="banner warn">No single source answers this clearly, so a person handles it. The system never guesses.</div>
-      <div class="row"><button class="btn dark" data-act="assigned">Assign to a person</button></div>`;
-  } else {
-    body = `<div><div class="eyebrow">Cited source · ${esc(r.source)}</div><div class="source" style="margin-top:6px">${esc(r.sourceText)}</div></div>
-      <div><div class="eyebrow">Draft for review · ${esc(r.drafter)}</div><div class="bubble" id="draft" style="margin-top:6px">${esc(r.draft)}</div>
-      ${CASE.disclosure ? `<p class="small muted" style="margin-top:6px">${esc(CASE.disclosure)}</p>` : ""}</div>
-      <div class="row"><button class="btn solid" data-act="approved">Approve and send</button><button class="btn ghost" id="editBtn">Edit</button><button class="btn ghost" data-act="handed-off">Send to a person</button></div>`;
+  if (!text || !READY) { $("#input").focus(); return; }
+  const r = { ...ROUTER.decide(text), input: text, notes: [] };
+  current = r; stats.decisions++; if (r.verdict === "escalate") stats.escalated++; renderStats();
+  if (r.verdict === "answer") {
+    r.sourceText = srcText(r.source);
+    if (BUILD.engine !== "rules" && AI) { r.drafter = "AI"; r.draft = ""; renderResult(true); await aiDraft(r); return; }
+    r.drafter = "template"; r.draft = `${CASE.draftOpener || "Thanks for reaching out."} ${r.sourceText}`;
+    r.notes.push(BUILD.engine === "rules" ? "Rules engine: the draft is assembled from the cited source." : "AI is not connected here, so the draft is assembled from the cited source.");
   }
-  const notes = (r.notes || []).length ? `<ul class="notes">${r.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>` : "";
-  $("#result").innerHTML = `<div class="stack">${head}${body}${notes}</div>`;
+  renderResult(false);
 }
-
+async function aiDraft(r) {
+  const el = () => $("#draft");
+  try {
+    const t = await AI.text(draftPrompt(r.input, r.source), { tier: "quick", cache: false, onText: ({ text }) => { if (current === r && el()) el().textContent = text; } });
+    if (current !== r) return;
+    if (/NO_ANSWER/.test(t)) { r.verdict = "human"; r.source = null; r.notes.push("The AI found no answer in the source, so a person handles it."); renderResult(false); return; }
+    r.draft = t.trim(); r.notes.push(`Drafted by ${AI.where} from the cited source only.`);
+  } catch (e) {
+    r.drafter = "template"; r.draft = `${CASE.draftOpener || ""} ${r.sourceText}`.trim(); r.notes.push(`${aiErrorCopy(e)} Showing a template draft from the cited source.`);
+  }
+  if (current === r) renderResult(false);
+}
+function renderResult(drafting) {
+  const r = current, v = (CASE.verdicts || {})[r.verdict] || {};
+  let body = "";
+  if (r.verdict === "escalate") body = `<div class="banner bad"><strong>Escalation wins.</strong> Nothing is drafted. Routed to ${esc(CASE.escalationOwner || "a person")} within ${esc(CASE.escalationSla || "the agreed time")}.</div><div class="row"><button class="btn danger" data-act="escalated">Escalate to ${esc(CASE.escalationOwner || "owner")}</button></div>`;
+  else if (r.verdict === "human") body = `<div class="banner warn">No single source answers this clearly, so a person handles it. The system never guesses.</div><div class="row"><button class="btn dark" data-act="assigned">Assign to a person</button></div>`;
+  else body = `<div><div class="eyebrow">Cited source · ${esc(r.source)}</div><div class="source" style="margin-top:6px">${esc(r.sourceText)}</div></div>
+    <div><div class="eyebrow">Draft for review · ${drafting ? "AI is writing" : esc(r.drafter)}</div><div class="bubble" id="draft" style="margin-top:6px">${drafting ? "Thinking..." : esc(r.draft)}</div>${CASE.disclosure ? `<p class="small muted" style="margin-top:6px">${esc(CASE.disclosure)}</p>` : ""}</div>
+    <div class="row"><button class="btn solid" data-act="approved" ${drafting ? "disabled" : ""}>Approve and send</button><button class="btn ghost" id="editBtn" ${drafting ? "disabled" : ""}>Edit</button><button class="btn ghost" data-act="handed-off">Send to a person</button></div>`;
+  const notes = r.notes.length ? `<ul class="notes">${r.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>` : "";
+  $("#result").innerHTML = `<div class="stack"><div class="verdict"><span class="pill ${VERDICT_STYLE[r.verdict] || "plain"}">${esc(r.verdict)}</span><h3>${esc(v.label || r.verdict)}</h3></div><p class="muted small">${esc(v.desc || "")}</p><div><div class="eyebrow">Why</div><p style="margin-top:4px">${esc(r.reason)}</p></div>${body}${notes}</div>`;
+}
 async function act(action) {
-  const draftEl = $("#draft");
-  const edited = Boolean(draftEl && draftEl.dataset.original !== undefined && draftEl.innerText.trim() !== draftEl.dataset.original.trim());
+  const d = $("#draft");
+  const edited = Boolean(d && d.dataset.original !== undefined && d.innerText.trim() !== d.dataset.original.trim());
   if (action === "approved") { stats.approved++; if (edited) stats.edited++; renderStats(); }
-  await fetch("/api/log", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({
-    input: current.input.slice(0, 120), verdict: current.verdict, source: current.source, action, edited,
-    approver: CASE.approverRole || "Reviewer (demo)", drafter: current.drafter || null, output: draftEl ? draftEl.innerText.slice(0, 400) : null,
-  }) });
-  toast(`Logged: ${action}${edited ? " (edited)" : ""} by ${CASE.approverRole || "reviewer"}`);
+  const entry = { at: new Date().toISOString(), input: current.input.slice(0, 120), verdict: current.verdict, source: current.source, action, edited, approver: CASE.approverRole || "Reviewer (demo)", drafter: current.drafter || "none" };
+  LOG.unshift(entry);
+  if (!HOSTED) fetch("/api/log", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(entry) }).catch(() => {});
+  toast(`Logged: ${action}${edited ? " (edited)" : ""} by ${entry.approver}`);
   $("#result").querySelectorAll("button").forEach((b) => (b.disabled = true));
 }
+function renderLog() {
+  $("#logRows").innerHTML = LOG.length ? LOG.map((r) => `<tr><td class="num">${esc(new Date(r.at).toLocaleTimeString())}</td><td>${esc(r.input)}</td><td><span class="pill ${VERDICT_STYLE[r.verdict] || "plain"}">${esc(r.verdict)}</span></td><td class="num">${esc(r.source || "none")}</td><td>${esc(r.action)}</td><td>${esc(r.approver)}</td><td>${r.edited ? "Yes" : "No"}</td><td>${esc(r.drafter)}</td></tr>`).join("")
+    : `<tr><td colspan="8" class="muted">No actions yet. Approve, edit or escalate something in Try it.</td></tr>`;
+}
 
-function renderEval(out) {
-  const lines = out.output.split("\n");
-  const rows = lines.map((l) => l.match(/^(.*\S)\s+(\S+)\s+(\S+)\s+(PASS|FAIL)\s*$/)).filter((m) => m && m[1].trim() !== "Gate");
-  const slices = lines.find((l) => l.startsWith("By slice")) || "";
-  const fails = lines.filter((l) => l.trim().startsWith("Failing rows") || /^\s+\S+ expected/.test(l) || /expected \S+ got/.test(l));
-  const passed = /RELEASE PASSES/.test(out.output);
-  const label = out.file === "holdout.json" ? "Sealed holdout" : "Dev set";
+/* ---------- Evals: three engines, the same gates ---------- */
+const norm = (g) => Object.fromEntries(Object.entries(g || {}).map(([k, v]) => [k.replace(/_/g, "").toLowerCase(), v]));
+function gateDefs() {
+  const g = norm(GATES), defs = [];
+  const add = (key, label, kind, bar) => { if (bar !== undefined && bar !== null) defs.push({ key, label, kind, bar, barText: (kind === "min" ? ">= " : kind === "zero" ? "= " : "<= ") + bar }); };
+  add("escRecall", "Escalation recall (riskiest miss)", "min", g.escalationrecall);
+  add("escPrecision", "Escalation precision", "min", g.escalationprecision);
+  add("noSource", "Answers without a source", "zero", g.answerswithoutsource);
+  add("routing", "Routing accuracy", "min", g.routingaccuracy);
+  add("gap", `Recall gap across ${g.riskiestslice || "groups"}`, "max", g.recallgapmax);
+  add("fairness", "Worst group escalation recall", "min", g.fairnessmingrouprecall ?? g.fairnessmin);
+  add("never", "Answers on a never-list topic", "zero", g.neverlistanswers);
+  add("outside", "Verdicts outside the allowed set", "zero", g.verdictsoutsideallowed);
+  return defs;
+}
+function score(rows, preds) {
+  const g = norm(GATES), allowed = g.allowedverdicts || ["answer", "human", "escalate"], ids = new Set(SOURCES.map((s) => s.id));
+  const isNever = (r) => r.never === true || (r.slices || {}).never === "yes";
+  const P = (r) => preds[r.id] || { verdict: "missing" };
+  const expEsc = rows.filter((r) => r.expected === "escalate"), predEsc = rows.filter((r) => P(r).verdict === "escalate");
+  const tp = expEsc.filter((r) => P(r).verdict === "escalate").length;
+  const ratio = (a, b) => (b ? a / b : 1);
+  const recallOf = (set) => ratio(set.filter((r) => P(r).verdict === "escalate").length, set.length);
+  const groups = {};
+  for (const r of expEsc) for (const [k, v] of Object.entries(r.slices || {})) (groups[`${k}=${v}`] ||= []).push(r);
+  const slice = g.riskiestslice;
+  const sliceRecalls = Object.entries(groups).filter(([k]) => k.startsWith(slice + "=")).map(([k, set]) => ({ k, v: recallOf(set), n: set.length }));
+  const allGroups = Object.entries(groups).map(([k, set]) => ({ k, v: recallOf(set), n: set.length }));
+  const worst = allGroups.reduce((a, b) => (b.v < a.v ? b : a), { k: "none", v: 1, n: 0 });
+  const correct = rows.filter((r) => P(r).verdict === r.expected && (r.expected !== "answer" || P(r).source === r.source)).length;
+  const m = {
+    escRecall: ratio(tp, expEsc.length), escPrecision: ratio(tp, predEsc.length),
+    noSource: rows.filter((r) => P(r).verdict === "answer" && !ids.has(P(r).source)).length,
+    routing: ratio(correct, rows.length),
+    gap: sliceRecalls.length ? Math.max(...sliceRecalls.map((s) => s.v)) - Math.min(...sliceRecalls.map((s) => s.v)) : 0,
+    fairness: worst.v, never: rows.filter((r) => isNever(r) && P(r).verdict === "answer").length,
+    outside: rows.filter((r) => !allowed.includes(P(r).verdict)).length,
+  };
+  const gates = gateDefs().map((d) => ({ ...d, value: m[d.key], pass: d.kind === "min" ? m[d.key] >= d.bar : m[d.key] <= d.bar }));
+  const misses = rows.filter((r) => P(r).verdict !== r.expected || (r.expected === "answer" && P(r).source !== r.source)).map((r) => ({ id: r.id, text: r.text, expected: r.expected, got: P(r).verdict, src: P(r).source }));
+  return { gates, pass: gates.every((x) => x.pass), misses, groups: allGroups.sort((a, b) => a.k.localeCompare(b.k)), worst, n: rows.length };
+}
+const ENGINES = [
+  { id: "rules", name: "Rules only", desc: "Deterministic triggers and source matching. Instant, explainable." },
+  { id: "ai", name: "AI only", desc: "Claude reads each request and decides, with no rules in front." },
+  { id: "guard", name: "AI + rules guard", desc: "Claude decides; the rules' escalation check overrides it, and no answer ships without a valid source." },
+];
+function renderEngines(progress) {
+  const R = RESULTS[evalSet] || {};
+  $("#engines").innerHTML = ENGINES.map((e) => {
+    const r = R[e.id];
+    const res = r ? `<div class="res ${r.pass ? "ok" : "bad"}">${r.pass ? "Passes all gates" : "Release blocked"}</div><div class="meta">${r.gates.filter((g) => g.pass).length} of ${r.gates.length} gates · ${r.n} rows${r.secs != null ? ` · ${r.secs.toFixed(1)} s` : ""}</div>`
+      : `<div class="res idle">Not run yet</div><div class="meta">${e.id === "rules" ? "Click Run rules" : AI ? "Click Run with real AI" : "Needs AI access"}</div>`;
+    const bar = e.id !== "rules" && progress != null ? `<div class="progress"><div style="width:${progress}%"></div></div>` : "";
+    return `<div class="engine"><div class="name">${e.name}</div><div class="desc">${e.desc}</div>${res}${bar}</div>`;
+  }).join("");
+}
+function renderComparison() {
+  const R = RESULTS[evalSet] || {}, ran = ENGINES.filter((e) => R[e.id]);
+  if (!ran.length) { $("#evalOut").innerHTML = ""; return; }
+  const defs = gateDefs(), sealed = evalSet === "holdout";
+  const cell = (r, i) => { const g = r.gates[i]; const v = g.kind === "min" || g.key === "gap" ? g.value.toFixed(2) : String(g.value); return `<span class="cell"><span class="num">${v}</span><span class="pill ${g.pass ? "ok" : "bad"}">${g.pass ? "Pass" : "Fail"}</span></span>`; };
+  const groupKeys = [...new Set(ran.flatMap((e) => R[e.id].groups.map((g) => g.k)))];
+  const gv = (r, k) => { const g = r.groups.find((x) => x.k === k); return g ? `<span class="num" style="color:${g.v < 1 ? "var(--error)" : "inherit"}">${g.v.toFixed(2)}</span> <span class="muted small">(${g.n})</span>` : "-"; };
+  const misses = ran.map((e) => { const ms = R[e.id].misses; return `<div><div class="eyebrow">${e.name} · ${ms.length} miss${ms.length === 1 ? "" : "es"}</div>${ms.length ? `<ul class="small" style="margin:6px 0 0;padding-left:18px">${ms.slice(0, 8).map((m) => `<li><span class="num">${esc(m.id)}</span> expected <strong>${esc(m.expected)}</strong>, got <strong>${esc(m.got)}</strong>${sealed ? "" : ` · <span class="muted">${esc(m.text.slice(0, 70))}</span>`}</li>`).join("")}</ul>` : `<p class="small muted" style="margin-top:4px">None.</p>`}</div>`; }).join("");
   $("#evalOut").innerHTML = `<div class="stack">
-    <div class="banner ${passed ? "ok" : "bad"}"><span class="release">${passed ? "Release passes all gates" : "Release blocked"}</span><span class="pill plain" style="margin-left:auto">${label}</span></div>
-    <table><thead><tr><th>Gate</th><th>Value</th><th>Bar</th><th>Result</th></tr></thead><tbody>
-    ${rows.map((m) => `<tr><td>${esc(m[1].trim())}</td><td class="mono">${esc(m[2])}</td><td class="mono">${esc(m[3])}</td><td><span class="pill ${m[4] === "PASS" ? "ok" : "bad"}">${m[4] === "PASS" ? "Passed" : "Blocked"}</span></td></tr>`).join("")}
-    </tbody></table>
-    ${slices ? `<p class="small"><strong>By group.</strong> <span class="mono">${esc(slices.replace("By slice:", "").trim())}</span></p>` : ""}
-    ${fails.length ? `<div><div class="eyebrow">Remaining misses</div><pre class="raw">${esc(fails.join("\n"))}</pre></div>` : ""}
-    <details><summary class="small muted">Raw output, reproducible with <code>node eval.js ${esc(out.file)}</code></summary><pre class="raw">${esc(out.output)}</pre></details></div>`;
+    <div class="tbl"><table><thead><tr><th>Gate</th><th>Bar</th>${ran.map((e) => `<th>${e.name}</th>`).join("")}</tr></thead><tbody>
+      ${defs.map((d, i) => `<tr><td>${esc(d.label)}</td><td class="num">${esc(d.barText)}</td>${ran.map((e) => `<td>${cell(R[e.id], i)}</td>`).join("")}</tr>`).join("")}
+    </tbody></table></div>
+    <div><div class="eyebrow">Escalation recall by group</div><p class="small muted" style="margin-top:2px">Number of escalation rows in each group in brackets. An average can hide a group that breaks; this table cannot.</p>
+    <div class="tbl" style="margin-top:8px"><table><thead><tr><th>Group</th>${ran.map((e) => `<th>${e.name}</th>`).join("")}</tr></thead><tbody>${groupKeys.map((k) => `<tr><td class="num">${esc(k)}</td>${ran.map((e) => `<td>${gv(R[e.id], k)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>
+    <div class="grid" style="grid-template-columns:repeat(${ran.length},1fr)">${misses}</div>
+    ${sealed ? `<p class="small muted">Sealed holdout: misses are shown by id only, so the rows stay unseen by anyone tuning the system.</p>` : ""}
+  </div>`;
+}
+async function rowsFor(set) { return load(set + ".json", []); }
+async function runRules() {
+  const rows = await rowsFor(evalSet), t = performance.now();
+  const preds = Object.fromEntries(rows.map((r) => [r.id, ROUTER.decide(r.text)]));
+  (RESULTS[evalSet] ||= {}).rules = { ...score(rows, preds), secs: (performance.now() - t) / 1000, preds };
+  renderEngines(); renderComparison();
+}
+function classifyPrompt(batch) {
+  const v = CASE.verdicts || {};
+  return [`Route each request for "${CASE.title || "this service"}" at ${CASE.client || "the client"}. The reader is a ${CASE.user || "front-line employee"}.`,
+    `Verdicts: "answer" = ${v.answer?.desc || "exactly one source answers it"} (give that source id). "human" = ${v.human?.desc || "no single source answers it"}. "escalate" = ${v.escalate?.desc || "complaint, fraud, vulnerability or risk"}.`,
+    `Never list: ${(CASE.neverList || []).join(" ")}`, "", "SOURCES:", ...SOURCES.map((s) => `${s.id}: ${s.text}`), "",
+    "REQUESTS (JSON):", JSON.stringify(batch.map((r) => ({ id: r.id, text: r.text }))), "",
+    'Reply with only a JSON array, one object per request, in order: [{"id": "...", "verdict": "answer|human|escalate", "source": "<source id or null>"}]'].join("\n");
+}
+async function runAI() {
+  if (!AI) return;
+  if (!RESULTS[evalSet]?.rules) await runRules();
+  const rows = await rowsFor(evalSet), size = 10, batches = [];
+  for (let i = 0; i < rows.length; i += size) batches.push(rows.slice(i, i + size));
+  aiCtl = new AbortController(); $("#runAI").disabled = true; $("#stopAI").hidden = false; $("#aiNote").textContent = `Sending ${rows.length} rows to ${AI.where} in ${batches.length} batches...`;
+  const preds = {}, t = performance.now(); let done = 0;
+  renderEngines(0);
+  try {
+    for (let i = 0; i < batches.length; i += 2) {
+      await Promise.all(batches.slice(i, i + 2).map(async (b) => {
+        const out = await AI.json(classifyPrompt(b), { tier: "quick", signal: aiCtl.signal });
+        for (const p of Array.isArray(out) ? out : []) if (p && p.id) preds[p.id] = { verdict: String(p.verdict || "").toLowerCase(), source: p.source || null };
+        done += b.length; renderEngines(Math.round((done / rows.length) * 100)); $("#aiNote").textContent = `${done} of ${rows.length} rows scored by ${AI.where}`;
+      }));
+    }
+    const secs = (performance.now() - t) / 1000, rules = RESULTS[evalSet].rules.preds;
+    const guarded = Object.fromEntries(rows.map((r) => {
+      const a = preds[r.id] || { verdict: "human", source: null };
+      if (rules[r.id].verdict === "escalate") return [r.id, { verdict: "escalate", source: null }];
+      if (a.verdict === "answer" && !SOURCES.some((s) => s.id === a.source)) return [r.id, { verdict: "human", source: null }];
+      return [r.id, a];
+    }));
+    RESULTS[evalSet].ai = { ...score(rows, preds), secs };
+    RESULTS[evalSet].guard = { ...score(rows, guarded), secs };
+    $("#aiNote").textContent = `Scored by ${AI.where} in ${secs.toFixed(0)} s. Repeat runs within 5 minutes replay the same answers.`;
+  } catch (e) { $("#aiNote").textContent = aiErrorCopy(e); }
+  $("#runAI").disabled = false; $("#stopAI").hidden = true; renderEngines(); renderComparison();
 }
 
-async function loadLog() {
-  const rows = await fetch("/api/log").then((r) => r.json());
-  $("#logRows").innerHTML = rows.length ? rows.map((r) => `<tr><td class="mono">${esc(new Date(r.at).toLocaleTimeString())}</td><td>${esc(r.input)}</td><td><span class="pill ${VERDICT_STYLE[r.verdict] || "plain"}">${esc(r.verdict)}</span></td><td class="mono">${esc(r.source || "none")}</td><td>${esc(r.action)}</td><td>${esc(r.approver)}</td><td>${r.edited ? "Yes" : "No"}</td><td class="mono">${esc(r.version)}</td></tr>`).join("")
-    : `<tr><td colspan="8" class="muted">No actions yet. Approve, edit or escalate something on the workbench.</td></tr>`;
+/* ---------- Events ---------- */
+function showTab(name) {
+  document.querySelectorAll(".tab").forEach((b) => b.setAttribute("aria-selected", b.dataset.tab === name));
+  document.querySelectorAll(".panel").forEach((p) => (p.hidden = p.id !== name));
+  if (name === "audit") renderLog();
 }
-
 document.addEventListener("click", async (e) => {
   const t = e.target.closest("button"); if (!t) return;
   if (t.id === "introClose") return toggleIntro(false);
   if (t.id === "introOpen") return toggleIntro(true);
   if (t.dataset.tour !== undefined) {
-    if (t.dataset.tour === "audit") { document.querySelector('[data-tab="audit"]').click(); $("#audit").scrollIntoView({ behavior: "smooth" }); return; }
-    document.querySelector('[data-tab="work"]').click();
-    $("#input").value = CASE.samples[t.dataset.tour].text; await run(); $("#result").scrollIntoView({ behavior: "smooth", block: "center" }); return;
+    if (t.dataset.tour === "evals") { showTab("evals"); $("#evals").scrollIntoView({ behavior: "smooth" }); return; }
+    showTab("work"); $("#input").value = CASE.samples[t.dataset.tour].text; await run(); $("#result").scrollIntoView({ behavior: "smooth", block: "center" }); return;
   }
-  if (t.dataset.tab) {
-    document.querySelectorAll(".tab").forEach((b) => b.setAttribute("aria-selected", b === t));
-    document.querySelectorAll(".panel").forEach((p) => (p.hidden = p.id !== t.dataset.tab));
-    if (t.dataset.tab === "audit") loadLog();
-  } else if (t.dataset.sample !== undefined) {
-    $("#input").value = CASE.samples[t.dataset.sample].text; run();
-  } else if (t.id === "run") run();
-  else if (t.id === "editBtn") {
-    const d = $("#draft"); d.dataset.original = d.dataset.original ?? d.innerText; d.contentEditable = "true"; d.focus(); t.textContent = "Editing";
-  } else if (t.dataset.act) act(t.dataset.act);
-  else if (t.dataset.eval) {
-    t.disabled = true; $("#evalOut").innerHTML = `<div class="empty"><p>Running every row against the gates.</p></div>`;
-    renderEval(await fetch(`/api/eval?file=${t.dataset.eval}`).then((r) => r.json())); t.disabled = false;
-  } else if (t.id === "refreshLog") loadLog();
+  if (t.dataset.tab) return showTab(t.dataset.tab);
+  if (t.dataset.sample !== undefined) { $("#input").value = CASE.samples[t.dataset.sample].text; return run(); }
+  if (t.id === "run") return run();
+  if (t.id === "editBtn") { const d = $("#draft"); d.dataset.original = d.dataset.original ?? d.innerText; d.contentEditable = "true"; d.focus(); t.textContent = "Editing"; return; }
+  if (t.dataset.act) return act(t.dataset.act);
+  if (t.dataset.set) { evalSet = t.dataset.set; $("#setDev").setAttribute("aria-pressed", evalSet === "golden"); $("#setHold").setAttribute("aria-pressed", evalSet === "holdout"); renderEngines(); renderComparison(); return; }
+  if (t.id === "runRules") return runRules();
+  if (t.id === "runAI") return runAI();
+  if (t.id === "stopAI") return aiCtl?.abort();
 });
 $("#input").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) run(); });
-let lastSig = "";
-async function watch() {
-  try {
-    const sig = await Promise.all(["/case.json", "/api/status", "/gates.json"].map((u) => fetch(u, { cache: "no-store" }).then((r) => r.text()))).then((a) => a.join("|"));
-    if (sig !== lastSig) { const first = !lastSig; lastSig = sig; await boot(); if (!first) toast("Updated from the latest gate"); }
-  } catch {}
-}
-watch(); setInterval(watch, 4000);
+
+(async () => {
+  await boot();
+  AI = await connectAI();
+  $("#aiPill").textContent = AI ? `AI: live (${HOSTED ? "Claude" : AI.where})` : "AI: off";
+  $("#aiPill").className = "pill " + (AI ? "ok" : "plain");
+  $("#runAI").disabled = !AI;
+  $("#aiNote").textContent = AI ? "" : HOSTED ? "Real AI needs this page opened in Claude." : "Real AI runs in the published version, or here with an API key.";
+  renderEngines();
+  if (!HOSTED) { let sig = ""; setInterval(async () => { try { const s = await Promise.all(["/case.json", "/gates.json", "/router.js"].map((u) => fetch(u, { cache: "no-store" }).then((r) => r.text()))).then((a) => a.join("|")); if (sig && s !== sig) { await boot(); toast("Updated from the latest gate"); } sig = s; } catch {} }, 4000); }
+})();
 </script>
 </body>
 </html>

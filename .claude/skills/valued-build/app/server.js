@@ -52,7 +52,7 @@ async function callModel(system, user) {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 1024,
+        max_tokens: 4096,
         output_config: { effort: "low" },
         fallbacks: "default",
         system,
@@ -136,7 +136,7 @@ function runEval(file) {
 }
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".md": "text/markdown; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml" };
-const PUBLIC = new Set(["app.html", "ff.css", "case.json", "build.json", "sources.json", "gates.json"]);
+const PUBLIC = new Set(["app.html", "ff.css", "case.json", "build.json", "sources.json", "gates.json", "router.js", "golden.json", "holdout.json"]);
 
 function send(res, code, body, type = "application/json") {
   res.writeHead(code, { "content-type": type, "cache-control": "no-store" });
@@ -157,6 +157,11 @@ http.createServer(async (req, res) => {
       const { text } = await readBody(req);
       if (!text || !String(text).trim()) return send(res, 400, { error: "empty input" });
       return send(res, 200, await decide(String(text).slice(0, 2000)));
+    }
+    if (req.method === "POST" && url.pathname === "/api/ai") {
+      const { prompt } = await readBody(req);
+      if (!prompt) return send(res, 400, { ok: false, why: "empty prompt" });
+      return send(res, 200, await callModel("You are a careful assistant inside a prototype. Follow the user's format exactly.", String(prompt).slice(0, 60000)));
     }
     if (url.pathname === "/api/eval") return send(res, 200, await runEval(url.searchParams.get("file")));
     if (req.method === "POST" && url.pathname === "/api/log") {
@@ -180,7 +185,7 @@ http.createServer(async (req, res) => {
     if (url.pathname === "/prd") return send(res, 200, fs.readFileSync(path.join(DIR, "prd-viewer.html")), TYPES[".html"]);
     const name = url.pathname === "/" ? "app.html" : url.pathname.slice(1);
     if (!PUBLIC.has(name)) return send(res, 404, { error: "not found" });
-    if (!fs.existsSync(path.join(DIR, name))) return send(res, 200, name === "sources.json" ? "[]" : "{}");
+    if (!fs.existsSync(path.join(DIR, name))) return send(res, 200, name.endsWith(".js") ? "" : /sources|golden|holdout/.test(name) ? "[]" : "{}");
     return send(res, 200, fs.readFileSync(path.join(DIR, name)), TYPES[path.extname(name)] || "text/plain");
   } catch (e) {
     return send(res, 500, { error: e.message });
