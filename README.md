@@ -51,15 +51,15 @@ Production misses become new labels, so D loops back to L.
 
 ## VALUED in practice
 
-Two products were built this way, and each gate points at something real in their repos:
+The gates came out of how these two products were built. Each gate points at something real in their repos:
 
 | Gate | [CureCue](https://github.com/nikjain15/CureCue): beside a member-service advocate | [Relay](https://github.com/nikjain15/relay): the step after the insight, for advisors |
 |---|---|---|
-| **V** | One advocate's whole shift studied before any AI was picked | One flagged opportunity to a signed, documented action |
+| **V** | One advocate's whole shift studied before any AI was picked | One flagged opportunity to a signed, documented action; detection coverage measured |
 | **A** | Advocate-side first; rules as a graph over vector search; three verdicts by type | The model never decides: verdicts, ranking and refusal are code |
-| **L** | 195 turns labelled before the rules ran; English, Spanish, interpreter | 300 households, hand-reviewed labels; the expected side imports no engine code |
-| **U** | Never speaks to the member; fails closed to a person | Never sends; nothing clears its own findings |
-| **E** | Release 2 blocked in CI for missing every Spanish-language escalation | Caught 53 of 85 retirement candidates missed before the fix |
+| **L** | 195 turns labelled by intent, independent of the rules; English, Spanish, interpreter | 300 households, hand-reviewed labels; the expected side imports no engine code |
+| **U** | Never speaks to the member; anything no rule covers goes to a person | Never sends; nothing clears its own findings |
+| **E** | The first golden set was English only; adding Spanish exposed a release that missed every Spanish-language escalation | Caught 53 of 85 retirement candidates missed before the fix |
 | **D** | Designed: shadow, 5% canary, a kill switch per skill | Tighten-only learning loop; loosening needs a person |
 
 One-page briefs in the workflow's own format: [`examples/curecue-brief.html`](examples/curecue-brief.html),

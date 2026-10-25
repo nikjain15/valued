@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VALUED · AI product lifecycle</title>
+<meta name="description" content="Six gates every AI use case clears, from whether AI belongs at all to how it is run after launch, packaged as an agent workflow.">
+<style>
+  /* Design tokens from Relay (github.com/nikjain15/relay, app/tokens.css). */
+  :root {
+    --ink: #1a1a1a; --ink-2: #5c5c5c; --ink-3: #686868;
+    --line: #e4e2dd; --line-strong: #bcb9b2;
+    --surface: #ffffff; --subtle: #f6f5f2; --selected: #ecebe6; --accent: #1a1a1a;
+    --critical: #b3121f; --critical-soft: #fbecec;
+    --positive: #2d6a4f; --positive-soft: #e9f2ed;
+    --caution: #7a5200; --caution-soft: #faf3e1;
+    --agent: #4a3f9a; --agent-soft: #edeaf7;
+    --advisor: #0f5a8a; --advisor-soft: #e6f0f7;
+    --client: #0e6b5e; --client-soft: #e4f1ee;
+    --font: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+    --radius: 2px; --radius-lg: 8px;
+    --text-caption: 11px; --text-meta: 12px; --text-body: 13px; --text-lead: 14px; --text-brief: 15px;
+    --text-heading: 16px; --text-brand: 17px; --text-figure: 18px; --text-stat: 20px; --text-stat-lg: 24px;
+    --text-title: 28px; --text-display: 30px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--surface); color: var(--ink); font-family: var(--font); font-size: var(--text-lead); line-height: 1.55; }
+  a { color: var(--ink); }
+  .skip { position: absolute; left: -999px; } .skip:focus { left: 16px; top: 12px; background: var(--surface); padding: 4px 8px; }
+
+  .topbar { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; border-bottom: 1px solid var(--line); gap: 16px; }
+  .brand { font-size: var(--text-brand); font-weight: 600; text-decoration: none; }
+  .topnav { display: flex; gap: 20px; font-size: var(--text-body); }
+  .topnav a { text-decoration: none; color: var(--ink-2); }
+  .topnav a:hover { color: var(--ink); text-decoration: underline; }
+
+  main { max-width: 1200px; margin: 0 auto; padding: 40px; }
+  h1 { font-size: var(--text-title); font-weight: 300; margin: 0 0 8px; letter-spacing: -0.01em; max-width: 820px; }
+  .purpose { color: var(--ink-2); margin: 0; max-width: 760px; font-size: var(--text-brief); }
+
+  .brief { margin-top: 28px; background: var(--subtle); border-radius: var(--radius-lg); padding: 20px; border-left: 3px solid var(--agent); max-width: 900px; }
+  .brief p { margin: 0; font-size: var(--text-brief); }
+  .who { font-size: var(--text-meta); font-weight: 600; }
+  .who-agent { color: var(--agent); } .who-lead { color: var(--advisor); } .who-client { color: var(--client); }
+
+  section { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); }
+  h2 { font-size: var(--text-heading); font-weight: 600; margin: 0 0 6px; }
+  .lede { color: var(--ink-2); margin: 0 0 20px; font-size: var(--text-body); max-width: 760px; }
+
+  /* The six gates as a strip */
+  .strip { display: grid; grid-template-columns: repeat(6, 1fr); border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); }
+  .strip button { all: unset; cursor: pointer; padding: 16px 14px; border-right: 1px solid var(--line); display: block; }
+  .strip button:last-child { border-right: 0; }
+  .strip button:hover { background: var(--subtle); }
+  .strip button[aria-selected="true"] { background: var(--selected); box-shadow: inset 0 -2px 0 var(--ink); }
+  .strip button:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+  .strip .k { font-size: var(--text-display); font-weight: 300; line-height: 1; display: block; }
+  .strip .n { font-size: var(--text-lead); font-weight: 600; display: block; margin-top: 6px; }
+  .strip .q { font-size: var(--text-meta); color: var(--ink-2); display: block; margin-top: 4px; }
+  .loop { font-size: var(--text-meta); color: var(--ink-3); margin-top: 8px; }
+  @media (max-width: 900px) { .strip { grid-template-columns: repeat(3, 1fr); } .strip button:nth-child(3) { border-right: 0; } .strip button:nth-child(-n+3) { border-bottom: 1px solid var(--line); } }
+  @media (max-width: 520px) { .strip { grid-template-columns: repeat(2, 1fr); } .strip button { border-right: 1px solid var(--line) !important; border-bottom: 1px solid var(--line); } .strip button:nth-child(2n) { border-right: 0 !important; } }
+
+  .gate-detail { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; margin-top: 24px; }
+  @media (max-width: 900px) { .gate-detail { grid-template-columns: 1fr; gap: 24px; } }
+  .gate-detail h3 { font-size: var(--text-brief); font-weight: 600; margin: 0 0 8px; }
+  .gate-detail ul { margin: 0; padding-left: 18px; font-size: var(--text-body); }
+  .gate-detail li { margin: 4px 0; }
+  .label { font-size: var(--text-meta); color: var(--ink-2); margin: 16px 0 4px; }
+  .card { border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 12px 14px; font-size: var(--text-body); background: var(--surface); }
+  .card .hdr { font-size: var(--text-meta); }
+  .card ol { margin: 6px 0 0; padding-left: 18px; }
+  .card .rec { font-weight: 600; }
+
+  .proof-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line-strong); margin-bottom: 12px; flex-wrap: wrap; }
+  .proof-tabs button { all: unset; cursor: pointer; padding: 8px 14px; font-size: var(--text-body); color: var(--ink-2); }
+  .proof-tabs button[aria-selected="true"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--ink); font-weight: 600; }
+  .proof-tabs button:focus-visible { outline: 2px solid var(--ink); }
+  .proof { font-size: var(--text-body); }
+  .proof .what { font-size: var(--text-brief); margin: 0 0 8px; }
+  .status { display: inline-block; font-size: var(--text-meta); padding: 1px 8px; border-radius: var(--radius); background: var(--subtle); }
+  .status.built { background: var(--positive-soft); color: var(--positive); }
+  .status.designed { background: var(--caution-soft); color: var(--caution); }
+  .proof .src { font-size: var(--text-caption); color: var(--ink-3); margin-top: 8px; }
+
+  /* How it runs */
+  .flow { display: grid; grid-template-columns: 220px 1fr; gap: 0; border-top: 1px solid var(--line-strong); }
+  .flow > div { padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line); font-size: var(--text-body); }
+  .flow .step { font-weight: 600; }
+  @media (max-width: 700px) { .flow { grid-template-columns: 1fr; } .flow .step { border-bottom: 0; padding-bottom: 0; } }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; background: var(--subtle); padding: 1px 4px; border-radius: var(--radius); }
+  pre { background: var(--subtle); padding: 14px 16px; border-radius: var(--radius); overflow-x: auto; font-size: 12px; margin: 0; }
+
+  .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; }
+  @media (max-width: 900px) { .principles { grid-template-columns: 1fr; } }
+  .principles div { padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .principles b { display: block; font-size: var(--text-lead); margin-bottom: 2px; }
+  .principles span { font-size: var(--text-body); color: var(--ink-2); }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: var(--text-meta); margin-bottom: 14px; }
+  .legend span.c { color: var(--ink-3); font-weight: 400; }
+  .roles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; }
+  @media (max-width: 900px) { .roles { grid-template-columns: 1fr; } }
+  .roles div { padding: 12px 0 12px 12px; border-bottom: 1px solid var(--line); font-size: var(--text-body); }
+  .roles .r-agent { border-left: 3px solid var(--agent); } .roles .r-lead { border-left: 3px solid var(--advisor); } .roles .r-client { border-left: 3px solid var(--client); }
+
+  footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); font-size: var(--text-caption); color: var(--ink-3); }
+  @media (max-width: 700px) { main, .topbar { padding-left: 16px; padding-right: 16px; } .topnav { display: none; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<div class="topbar">
+  <a class="brand" href="#">VALUED</a>
+  <nav class="topnav" aria-label="Sections">
+    <a href="#gates">Six gates</a>
+    <a href="#runs">How it runs</a>
+    <a href="#principles">Principles</a>
+    <a href="https://github.com/nikjain15/valued">Repository</a>
+  </nav>
+</div>
+
+<main id="content">
+  <h1>Every AI use case clears six gates, before and after the model.</h1>
+  <p class="purpose">VALUED is a product lifecycle for AI: value, AI-fit, labels, user-in-the-loop, evals, deploy and drive. It starts before AI is chosen and ends long after launch. It is packaged as an agent workflow: the system drafts, the client decides.</p>
+
+  <div class="brief">
+    <div class="who who-agent">Agent</div>
+    <p>I run one gate at a time. At each gate I draft something concrete, then ask the client at most two questions, with the product lead's recommendation first. Nothing moves to the next gate until the client has decided.</p>
+  </div>
+
+  <section id="gates">
+    <h2>Six gates</h2>
+    <p class="lede">Select a gate to see what it asks, what it produces, the question the client answers, and where it shows up in a built product.</p>
+
+    <div class="strip" role="tablist" aria-label="VALUED gates" id="strip"></div>
+    <div class="loop">Production misses become new labels: D loops back to L.</div>
+
+    <div class="gate-detail" id="detail" role="tabpanel" aria-live="polite">
+      <div>
+        <h3 id="d-title"></h3>
+        <p id="d-q" style="margin:0 0 8px;font-size:var(--text-brief)"></p>
+        <div class="label">What the gate produces</div>
+        <ul id="d-out"></ul>
+        <div class="label">The question the client answers</div>
+        <div class="card" id="d-card"></div>
+      </div>
+      <div>
+        <div class="label" style="margin-top:0">Where it shows up in a built product</div>
+        <div class="proof-tabs" role="tablist" aria-label="Products" id="ptabs"></div>
+        <div class="proof" id="d-proof"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="runs">
+    <h2>How it runs</h2>
+    <p class="lede">One command, one line describing the case. An orchestrator calls one skill per gate; two agents do the work that benefits from separation.</p>
+    <div class="legend">
+      <span class="who who-agent">Agent</span><span class="c">prepared it</span>
+      <span class="who who-lead">Product lead</span><span class="c">recommended it</span>
+      <span class="who who-client">Client</span><span class="c">decided it</span>
+    </div>
+    <div class="roles">
+      <div class="r-agent"><b>Orchestrator and six gate skills.</b> Draft the table for each gate, ask the cards, write the gate file and the running record of decisions.</div>
+      <div class="r-lead"><b>The product lead.</b> Frames the case, puts a recommendation first on every card with the reason, and says what the table means.</div>
+      <div class="r-client"><b>The client.</b> Chooses on every card. The final brief lists each decision and who made it.</div>
+    </div>
+    <div style="height:20px"></div>
+    <div class="flow">
+      <div class="step"><code>/valued &lt;case&gt;</code></div><div>Sets up the record of client decisions and assumptions, then runs the gates in order.</div>
+      <div class="step">A: three scorers in parallel</div><div><code>use-case-scorer</code> runs three times at once, on value and reuse, feasibility and data, and risk, so no single lens wins by accident. Each also names the lowest rung of the ladder that would work.</div>
+      <div class="step">L: the sealed holdout</div><div>The golden set is written before any system exists. Ten rows are moved to a holdout that the builder never sees.</div>
+      <div class="step">E: the background build</div><div><code>prototype-builder</code> writes a deterministic router before it may open the golden set, then an eval runner. A missed gate blocks the release. A fix may change the router, never the labels, and is then scored on the holdout.</div>
+      <div class="step">Brief</div><div>One page: the recommendation, six gates, release gates, the plan, and every decision the client made.</div>
+    </div>
+  </section>
+
+  <section id="principles">
+    <h2>Principles</h2>
+    <div class="principles">
+      <div><b>The system drafts, the client decides.</b><span>No gate makes a judgement call on the client's behalf.</span></div>
+      <div><b>Least AI that works.</b><span>Rules, then classic ML, then retrieval and a model, then an agent. Climb only when the rung below fails.</span></div>
+      <div><b>Labels before the model.</b><span>Otherwise the system is graded against itself.</span></div>
+      <div><b>Metrics by slice.</b><span>An average hides a broken language or segment. A slice gate does not.</span></div>
+      <div><b>The builder never sees the holdout.</b><span>A fix is scored on rows it learned from and on rows it never saw. The second number is the honest one.</span></div>
+      <div><b>Escalation wins every race.</b><span>If a stop condition fires, nothing else is drafted.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Run it</h2>
+    <p class="lede">Runs in Claude Code; the skills and agents load from <code>.claude/</code> in the repository.</p>
+    <pre>git clone https://github.com/nikjain15/valued &amp;&amp; cd valued &amp;&amp; claude
+/valued &lt;one line describing the case&gt;</pre>
+    <p class="lede" style="margin-top:12px">Example briefs: <a href="examples/curecue-brief.html">CureCue</a> · <a href="examples/relay-brief.html">Relay</a></p>
+  </section>
+
+  <footer>A method and its harness, not a product. The gates were named after the products were built, from how they were built. CureCue and Relay are prototypes on synthetic data with no users and no model calls; Conduit calls models and is not run as a service. Each status label says whether a stage is built or designed. Design tokens from Relay.</footer>
+</main>
+
+<script>
+const GATES = [
+  { k: "V", name: "Value", q: "Whose decision or work changes, how often, what it costs today, and how big the prize is.",
+    out: ["A value frame: work items, volume, cost, the cost of a bad outcome", "Twelve candidate use cases, deliberately mixed", "One north-star metric"],
+    card: { hdr: "Sponsor", q: "Which outcome does this have to move first?", opts: ["The metric tied to the most costly work (recommended)", "Handle time", "Resolution", "Satisfaction"] } },
+  { k: "A", name: "AI-fit", q: "Is it AI-shaped at all, what goes first, and at what cost, latency and quality.",
+    out: ["Every candidate on the least-AI ladder", "Scores on value, feasibility, risk and reuse, from three scorers", "A first and second wave; build, buy or partner; the stack and its cost unit"],
+    card: { hdr: "COO", q: "Which first wave?", opts: ["Where the human stays accountable and the assets are reusable (recommended)", "The fastest visible win", "The highest regulatory value"] } },
+  { k: "L", name: "Labels", q: "What right looks like, before anything is built.",
+    out: ["Verdicts and what each requires", "The slices that matter", "A golden set, with a sealed holdout"],
+    card: { hdr: "Ops lead", q: "Which slice worries you most?", opts: ["The one whose silent failure hurts most (recommended)", "Implicit complaints", "Vulnerable customers"] } },
+  { k: "U", name: "User-in-the-loop", q: "Where the person sits for every action, and what the AI never does.",
+    out: ["Autonomy per action: suggest, draft, act with approval, act", "The never list", "Escalation triggers and owners"],
+    card: { hdr: "Risk", q: "How much autonomy in the first 90 days?", opts: ["Draft with approval (recommended)", "Suggest only", "Act on low-risk actions"] } },
+  { k: "E", name: "Evals", q: "Release thresholds set first; a missed gate blocks the release.",
+    out: ["Gates with bars, by slice", "A prototype built in the background", "The run: blocked or released, then the holdout"],
+    card: { hdr: "Risk", q: "Escalation recall bar for release?", opts: ["0.97 (recommended)", "0.99, with more escalations", "0.95, cheaper, more misses"] } },
+  { k: "D", name: "Deploy and drive", q: "How it is launched, and how it is kept honest after launch.",
+    out: ["Shadow, pilot, sign-off, rollback, a kill switch", "Drive metrics: drift by slice, adoption, edit rate", "The scale, fix or retire review"],
+    card: { hdr: "COO", q: "Pilot scope?", opts: ["The smallest scope that covers the riskiest slice (recommended)", "One site", "One channel"] } },
+];
+
+// Proof per product per gate. Status: built or designed. Every line traces to the product's public repository.
+const PROOF = {
+  CureCue: { url: "https://github.com/nikjain15/CureCue", site: "https://nikjain15.github.io/CureCue/",
+    about: "An assistant beside a Medicare Advantage member-service advocate. Working prototype, synthetic plan and members, no model called.",
+    V: { s: "built", t: "One advocate's whole shift studied before any AI was chosen: twelve stages, eleven on the desk.", src: "approach.html, The journey" },
+    A: { s: "built", t: "Advocate-side first, not a member chat. Rules as a graph over vector search, because a chunk returns the ER copay and stops. Only three verdicts can be returned, and a gate checks it, so a coverage decision has nowhere to go.", src: "approach.html, rules.js" },
+    L: { s: "built", t: "195 turns labelled by intent, independent of the rules, across English, Spanish and interpreter-mediated calls. The first golden set was English only; adding Spanish is what exposed a release that had passed.", src: "eval/golden.js, git history" },
+    U: { s: "built", t: "Never speaks to the member. The advocate ticks identity. The line not crossed: coverage decisions, prior authorization, length of stay, clinical advice. Anything no rule covers goes to a person.", src: "approach.html, architecture.html" },
+    E: { s: "built", t: "Release 3 passes 8 of 8 gates in CI, on bars reset when a hard set was added; ten failing turns are listed. Re-scored on the current set, release 2 misses every Spanish-language escalation. A stand-in judge is refused for answer correctness at 0.84 against a 0.85 bar.", src: "node eval/run.mjs" },
+    D: { s: "designed", t: "Shadow mode, a 5% canary for three days against control, a kill switch per skill with a named owner, and an improvement loop where nothing changes itself: two people sign.", src: "architecture.html, How it gets better" } },
+  Relay: { url: "https://github.com/nikjain15/relay", site: "https://nikjain15.github.io/relay/",
+    about: "An agent layer for financial advisors. Prototype, invented clients, no model calls.",
+    V: { s: "built", t: "The step after an insight engine: one flagged opportunity turned into a documented, approved, client-facing action. Detection coverage is measured on a 300-household book; conversion is what a pilot would establish.", src: "README, impact page" },
+    A: { s: "built", t: "22 agents, and the model never decides: eligibility, ranking, rule verdicts, the retrieval floor and refusal are deterministic code.", src: "README, Three invariants" },
+    L: { s: "built", t: "300 households and 585 captured messages with hand-reviewed sentence labels. The expected side of the eval imports no engine code.", src: "evals/" },
+    U: { s: "built", t: "Relay never sends. Nothing clears its own findings: an agent prepares, a person accepts, a principal dispositions. Enforced by import rules in the build and asserted in tests.", src: "README, Three invariants" },
+    E: { s: "built", t: "406 of 406 opportunities; six FINRA and SEC rules at 100% precision and recall on synthetic data. The eval caught 53 of 85 retirement candidates being missed before the fix.", src: "npm run eval, evals/README.md" },
+    D: { s: "built", t: "A rule-change proposer reads 90 days of findings and proposes tighten-only changes for a person to approve; loosening is refused in code.", src: "lib/compliance/propose.ts" } },
+  Conduit: { url: "https://github.com/nikjain15/conduit", site: "https://nikjain15.github.io/conduit/",
+    about: "The shared AI platform under three of my products. Unlike the two above, it calls models. Not operated as a service.",
+    V: { s: "built", t: "Four copies of routing and guardrail code were drifting across products. One platform replaced them.", src: "docs/PRD.md" },
+    A: { s: "built", t: "Each use case routes to the cheapest model tier that clears the bar. A modelled cost: $66.30 per tenant per month as routed, against $128.47 on a single tier.", src: "scripts/cost-model.mjs" },
+    L: { s: "built", t: "Three hand-written synthetic golden sets: guardrails 42, model contract 12, judge validation 30.", src: "evals/" },
+    U: { s: "built", t: "Agents refuse side-effecting tools unless explicitly allowed. Guardrails allow, redact, block, or escalate to a person.", src: "packages/agent, packages/guardrails" },
+    E: { s: "built", t: "A guardrail gate in CI: recall 1.00, precision 0.92, false-block 0.11, against floors of 0.95, 0.90 and 0.15. A known gap stays as a failing test in the open.", src: "evals/README.md" },
+    D: { s: "designed", t: "SLO fields for p95 latency, cost per answer and block rate exist, but there is no live data: the gateway is not run as a service.", src: "README" } },
+};
+
+const strip = document.getElementById("strip");
+const ptabs = document.getElementById("ptabs");
+let gi = 0, prod = "CureCue";
+
+GATES.forEach((g, i) => {
+  const b = document.createElement("button");
+  b.setAttribute("role", "tab"); b.id = "tab-" + g.k;
+  b.innerHTML = `<span class="k">${g.k}</span><span class="n">${g.name}</span><span class="q">${g.q.split(",")[0].split(";")[0]}</span>`;
+  b.addEventListener("click", () => { gi = i; render(); });
+  b.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight") { gi = (gi + 1) % GATES.length; render(); strip.children[gi].focus(); }
+    if (e.key === "ArrowLeft") { gi = (gi + GATES.length - 1) % GATES.length; render(); strip.children[gi].focus(); }
+  });
+  strip.appendChild(b);
+});
+Object.keys(PROOF).forEach(p => {
+  const b = document.createElement("button");
+  b.setAttribute("role", "tab"); b.textContent = p;
+  b.addEventListener("click", () => { prod = p; render(); });
+  ptabs.appendChild(b);
+});
+
+function render() {
+  const g = GATES[gi];
+  [...strip.children].forEach((b, i) => b.setAttribute("aria-selected", i === gi));
+  [...ptabs.children].forEach(b => b.setAttribute("aria-selected", b.textContent === prod));
+  document.getElementById("d-title").textContent = `${g.k} · ${g.name}`;
+  document.getElementById("d-q").textContent = g.q;
+  document.getElementById("d-out").innerHTML = g.out.map(x => `<li>${x}</li>`).join("");
+  document.getElementById("d-card").innerHTML =
+    `<div class="hdr"><span class="who who-client">${g.card.hdr}</span></div><div>${g.card.q}</div><ol>` +
+    g.card.opts.map((o, i) => `<li${i === 0 ? ' class="rec"' : ""}>${o}</li>`).join("") + `</ol>`;
+  const P = PROOF[prod], x = P[g.k];
+  document.getElementById("d-proof").innerHTML = x
+    ? `<p class="what">${x.t}</p><span class="status ${x.s}">${x.s === "built" ? "Built" : "Designed, not built"}</span>
+       <div class="src">${P.about} Source: <a href="${P.url}">${P.url.replace("https://", "")}</a>, ${x.src}.</div>`
+    : `<p class="what">Nothing at this gate in ${prod}.</p>`;
+}
+render();
+</script>
+</body>
+</html>

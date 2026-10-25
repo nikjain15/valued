@@ -106,11 +106,11 @@
   <section>
     <h2>Six gates</h2>
     <div class="gates">
-      <div class="gate"><h3><span class="k">V</span>Value</h3><ul><li>The step after an insight engine</li><li>One flagged opportunity to a signed, documented action</li><li>Impact measured on a 300-household book</li></ul></div>
+      <div class="gate"><h3><span class="k">V</span>Value</h3><ul><li>The step after an insight engine</li><li>One flagged opportunity to a signed, documented action</li><li>Detection coverage measured on a 300-household book</li></ul></div>
       <div class="gate"><h3><span class="k">A</span>AI-fit</h3><ul><li>The model never decides: verdicts, ranking, refusal are code</li><li>Template fragments where a model would compose</li><li>Read-only connectors; replaces none of the tools</li></ul></div>
       <div class="gate"><h3><span class="k">L</span>Labels</h3><ul><li>300 households, 585 captured messages</li><li>Hand-reviewed sentence labels</li><li>The expected side imports no engine code</li></ul></div>
       <div class="gate"><h3><span class="k">U</span>User-in-the-loop</h3><ul><li>Relay never sends</li><li>Nothing clears its own findings</li><li>Loosening a desk waits for a principal</li></ul></div>
-      <div class="gate"><h3><span class="k">E</span>Evals</h3><ul><li>Cannot evaluate is reported, never clear</li><li>Every guard seen failing before it was trusted</li><li>New phrasings go into labels first</li></ul></div>
+      <div class="gate"><h3><span class="k">E</span>Evals</h3><ul><li>Cannot evaluate is reported, never clear</li><li>Eval seen failing on four deliberate breaks first</li><li>New phrasings go into labels first</li></ul></div>
       <div class="gate"><h3><span class="k">D</span>Deploy and drive</h3><ul><li>Rule-change proposer reads 90 days of findings</li><li>It can only propose tighter rules</li><li>Out of scope, said openly: persistence, CRM write-back</li></ul></div>
     </div>
   </section>
@@ -121,7 +121,7 @@
       <table>
         <thead><tr><th>Gate</th><th>Value</th><th>Bar</th><th>Result</th></tr></thead>
         <!-- Result cell: <span class="pill pass">Passed</span> or <span class="pill fail">Blocked</span>. Always the word. -->
-        <tbody><tr><td>Opportunities on import</td><td>406 of 406</td><td>all expected</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Suitability, FINRA 2111</td><td>78 of 78</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Correspondence, FINRA 3110</td><td>64 of 64</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Complaints, FINRA 4513</td><td>48 of 48</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Senior investor, FINRA 2165</td><td>23 of 23</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Marketing, SEC 206(4)-1</td><td>40 of 40</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Claims without a citation</td><td>0</td><td>none</td><td><span class="pill pass">Passed</span></td></tr></tbody>
+        <tbody><tr><td>Opportunities on import</td><td>406 of 406</td><td>all expected</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Drift, FINRA 2111</td><td>44 of 44</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Suitability, FINRA 2111</td><td>78 of 78</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Correspondence, FINRA 3110</td><td>64 of 64</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Complaints, FINRA 4513</td><td>48 of 48</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Senior investor, FINRA 2165</td><td>23 of 23</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Marketing, SEC 206(4)-1</td><td>40 of 40</td><td>100% P and R</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Claims without a citation</td><td>0</td><td>none</td><td><span class="pill pass">Passed</span></td></tr></tbody>
       </table>
       <p class="caption">Run 2026-10-25 on synthetic data: the engines match the spec, not every way a client says it. The eval caught 53 of 85 retirement candidates missed before the fix.</p>
     </div>
@@ -142,7 +142,7 @@
     </div>
     <div>
       <h2>Risks and how they are held</h2>
-      <ul class="risks"><li>Synthetic phrasing too narrow: held by labels first, then the fix</li><li>An agent clearing itself: held by requiresHuman in the engine</li><li>A rule stated as current when it is not: validate() fails the build</li></ul>
+      <ul class="risks"><li>Synthetic phrasing too narrow: held by labels first, then the fix</li><li>An agent clearing itself: held by requiresHuman in the engine, asserted in a test</li><li>A rule stated as current when it is not: validate() fails the build</li></ul>
     </div>
   </section>
 

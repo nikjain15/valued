@@ -93,24 +93,24 @@
   <!-- The agent speaks first, in one sentence with the figures in it, then one next step. -->
   <div class="brief">
     <div class="who"><span class="who-word who-agent">Agent</span></div>
-    <p>I scored 195 labelled turns across English, Spanish and interpreter-mediated calls: release 3 passes 8 of 8 gates with escalation recall 0.98, and release 2 stayed blocked for missing every Spanish-language escalation.</p>
+    <p>I scored 195 labelled turns across English, Spanish and interpreter-mediated calls: release 3 passes 8 of 8 gates with escalation recall 0.98. The first golden set was English only; adding Spanish showed release 2 missed every Spanish-language escalation.</p>
     <div class="next"><b>Recommendation.</b> Advocate-side first, rules first, the advocate accountable for every word; a model goes behind the gates only where the eval says it may.</div>
   </div>
 
   <div class="stats">
     <div class="stat"><div class="n">195</div><div class="l">turns labelled before the rules ran</div></div>
     <div class="stat"><div class="n">8 of 8</div><div class="l">release gates passed, release 3</div></div>
-    <div class="stat"><div class="n">1.00</div><div class="l">language recall gap that blocked release 2</div></div>
+    <div class="stat"><div class="n">1.00</div><div class="l">language recall gap release 2 shows on this set</div></div>
   </div>
 
   <section>
     <h2>Six gates</h2>
     <div class="gates">
       <div class="gate"><h3><span class="k">V</span>Value</h3><ul><li>Studied one advocate across a whole shift: 12 stages</li><li>40 to 60 calls a shift, members 65 and older</li><li>Moves handle time, note completeness, repeat contacts</li></ul></div>
-      <div class="gate"><h3><span class="k">A</span>AI-fit</h3><ul><li>Advocate-side first, not a member chat</li><li>Rules as a graph: the path is the citation</li><li>Three verdicts by type: no coverage decision can be emitted</li></ul></div>
-      <div class="gate"><h3><span class="k">L</span>Labels</h3><ul><li>Labelled by intent before the rules ran</li><li>English 143, Spanish 31, interpreter 21</li><li>Two labellers agreed 0.27 before adjudication</li></ul></div>
-      <div class="gate"><h3><span class="k">U</span>User-in-the-loop</h3><ul><li>Never speaks to the member</li><li>Never crosses: coverage, prior auth, length of stay, clinical</li><li>Fails closed to a person; abstention 0.39</li></ul></div>
-      <div class="gate"><h3><span class="k">E</span>Evals</h3><ul><li>Every gate by slice, in CI</li><li>Judge refused for answer correctness at 0.84</li><li>Escalation is never given to a judge</li></ul></div>
+      <div class="gate"><h3><span class="k">A</span>AI-fit</h3><ul><li>Advocate-side first, not a member chat</li><li>Rules as a graph: the path is the citation</li><li>Three verdicts by construction, checked by a gate</li></ul></div>
+      <div class="gate"><h3><span class="k">L</span>Labels</h3><ul><li>Labelled by intent, independent of the rules</li><li>English 143, Spanish 31, interpreter 21</li><li>An adjudicated subset, simulated in the prototype</li></ul></div>
+      <div class="gate"><h3><span class="k">U</span>User-in-the-loop</h3><ul><li>Never speaks to the member</li><li>Never crosses: coverage, prior auth, length of stay, clinical</li><li>Anything no rule covers goes to a person</li></ul></div>
+      <div class="gate"><h3><span class="k">E</span>Evals</h3><ul><li>Every gate by slice, in CI</li><li>Stand-in judge refused for answer correctness at 0.84</li><li>Escalation is never given to a judge</li></ul></div>
       <div class="gate"><h3><span class="k">D</span>Deploy and drive</h3><ul><li>Designed: shadow, then 5% canary for 3 days</li><li>Designed: kill switch per skill, named owner</li><li>Designed: nothing changes itself, two people sign</li></ul></div>
     </div>
   </section>
@@ -123,7 +123,7 @@
         <!-- Result cell: <span class="pill pass">Passed</span> or <span class="pill fail">Blocked</span>. Always the word. -->
         <tbody><tr><td>Escalations caught</td><td>0.98</td><td>0.97 or more</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Escalations that were real</td><td>0.94</td><td>0.85 or more</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Figures off the cited path</td><td>0</td><td>none</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Right rule cited</td><td>0.93</td><td>0.92 or more</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Right owner for the turn</td><td>0.97</td><td>0.95 or more</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Dissatisfaction heard, worst register</td><td>0.90</td><td>0.88 or more</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Recall gap across languages</td><td>0.03</td><td>under 0.05</td><td><span class="pill pass">Passed</span></td></tr><tr><td>Verdicts outside the set</td><td>0</td><td>none</td><td><span class="pill pass">Passed</span></td></tr></tbody>
       </table>
-      <p class="caption">Release 3 on 195 turns, run 2026-10-25. Release 2: escalations caught 0.56, language gap 1.00, blocked.</p>
+      <p class="caption">Release 3 on 195 turns, run 2026-10-25, on bars reset when a 17-turn hard set was added; 10 turns still fail and are listed. Release 2 re-scored on this set: escalations caught 0.56, language gap 1.00, fails three gates.</p>
     </div>
     <div>
       <h2>Plan: what comes next, in order</h2>
@@ -142,7 +142,7 @@
     </div>
     <div>
       <h2>Risks and how they are held</h2>
-      <ul class="risks"><li>Coverage advice: held by type, order and the person, independently</li><li>A language failing silently: held by the per-slice gate</li><li>A judge drifting: held by validation against people, refused below the bar</li></ul>
+      <ul class="risks"><li>Coverage advice: held by type, order and the person, independently</li><li>A language failing silently: held by labelling every language and gating by slice</li><li>A judge drifting: held by validation against labels, refused below the bar</li></ul>
     </div>
   </section>
 
