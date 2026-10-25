@@ -1,6 +1,6 @@
 ---
 name: valued
-description: Run a client AI case end to end through the six VALUED gates (Value, AI-fit, Labels, User-in-the-loop, Evals, Deploy and drive), governed at every gate. Each gate's agent drafts first, recommends with trade-offs, asks the client only what the client owns, answers its governance questions, and the run ends with a build step: a PRD a coding agent can build from, a working eval-gated prototype app, and a one-page brief. Use when the user types /valued followed by a case.
+description: Run a client AI case end to end through the six VALUED gates (Value, AI-fit, Labels, User-in-the-loop, Evals, Deploy and drive), governed at every gate. Each gate's agent drafts first, recommends with trade-offs, asks the client only what the client owns, answers its governance questions, and the run ends with a build step: a PRD a coding agent can build from, a working eval-gated prototype app, and a one-page brief. Use when the user types /valued, with or without a case.
 ---
 
 # /valued: the orchestrator
@@ -9,6 +9,14 @@ The argument is a one-line case, for example `/valued regional bank, 2M customer
 cost pressure, 30 GenAI ideas, COO wants a plan in six weeks`. If the argument ends with `--auto`,
 run without asking: take the recommended option at every card and log it as "(auto)". If it contains
 `--no-open`, skip every `open` command (here and in `valued-build`) and print the paths instead.
+
+**No case given, or only a rough one.** In a live session the client describes the case out loud and the
+product lead may type nothing, or a few words. If the argument is empty or missing who, what problem, or
+what deadline, ask once, in one message, with up to three short cards before setup (each with 3 to 4
+typical options and room for the client's own words): **"Who is the client?"** (industry and size),
+**"What hurts today?"** (the work that is slow, costly or risky), **"What does done look like, and by
+when?"** Build the case line from the answers, print it, and go. Never ask more than this before
+gate V; gate V's draft marks everything else (assumed).
 
 ## Roles on screen
 
