@@ -3,10 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VALUED · AI product lifecycle</title>
-<meta name="description" content="Six gates every AI use case clears, from whether AI belongs at all to how it is run after launch, packaged as an agent workflow.">
+<title>VALUED · Ship AI that earns its place</title>
+<meta name="description" content="VALUED is a six-gate product lifecycle for AI, from whether a use case needs AI at all to how it is run after launch. Packaged as an agent workflow: it drafts, you decide.">
+<meta property="og:title" content="VALUED · Ship AI that earns its place">
+<meta property="og:description" content="A six-gate product lifecycle for AI, packaged as an agent workflow. It drafts; you decide.">
 <style>
-  /* Design tokens from Relay (github.com/nikjain15/relay, app/tokens.css). */
+  /* Design tokens from Relay (github.com/nikjain15/relay, app/tokens.css), verbatim. */
   :root {
     --ink: #1a1a1a; --ink-2: #5c5c5c; --ink-3: #686868;
     --line: #e4e2dd; --line-strong: #bcb9b2;
@@ -24,270 +26,450 @@
     --text-title: 28px; --text-display: 30px;
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   html, body { margin: 0; background: var(--surface); color: var(--ink); font-family: var(--font); font-size: var(--text-lead); line-height: 1.55; }
   a { color: var(--ink); }
-  .skip { position: absolute; left: -999px; } .skip:focus { left: 16px; top: 12px; background: var(--surface); padding: 4px 8px; }
+  .skip { position: absolute; left: -999px; } .skip:focus { left: 16px; top: 12px; background: var(--surface); padding: 4px 8px; z-index: 10; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 40px; }
+  @media (max-width: 700px) { .wrap { padding: 0 16px; } }
 
-  .topbar { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; border-bottom: 1px solid var(--line); gap: 16px; }
-  .brand { font-size: var(--text-brand); font-weight: 600; text-decoration: none; }
-  .topnav { display: flex; gap: 20px; font-size: var(--text-body); }
-  .topnav a { text-decoration: none; color: var(--ink-2); }
-  .topnav a:hover { color: var(--ink); text-decoration: underline; }
+  /* Nav */
+  .nav { position: sticky; top: 0; background: var(--surface); border-bottom: 1px solid var(--line); z-index: 5; }
+  .nav .wrap { height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { font-size: var(--text-brand); font-weight: 600; text-decoration: none; letter-spacing: 0.02em; }
+  .links { display: flex; gap: 24px; align-items: center; font-size: var(--text-body); }
+  .links a { text-decoration: none; color: var(--ink-2); }
+  .links a:hover { color: var(--ink); text-decoration: underline; }
+  @media (max-width: 760px) { .links a.hide-sm { display: none; } }
 
-  main { max-width: 1200px; margin: 0 auto; padding: 40px; }
-  h1 { font-size: var(--text-title); font-weight: 300; margin: 0 0 8px; letter-spacing: -0.01em; max-width: 820px; }
-  .purpose { color: var(--ink-2); margin: 0; max-width: 760px; font-size: var(--text-brief); }
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 1px solid var(--ink); border-radius: var(--radius); font-size: var(--text-body); font-weight: 600; text-decoration: none; color: var(--ink); background: var(--surface); }
+  .btn.primary { background: var(--ink); color: var(--surface); }
+  .btn:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .links .btn { height: 32px; color: var(--surface); }
 
-  .brief { margin-top: 28px; background: var(--subtle); border-radius: var(--radius-lg); padding: 20px; border-left: 3px solid var(--agent); max-width: 900px; }
-  .brief p { margin: 0; font-size: var(--text-brief); }
-  .who { font-size: var(--text-meta); font-weight: 600; }
-  .who-agent { color: var(--agent); } .who-lead { color: var(--advisor); } .who-client { color: var(--client); }
+  /* Sections */
+  section { padding: 72px 0; border-top: 1px solid var(--line); }
+  section.first { border-top: 0; padding-top: 64px; }
+  .eyebrow { font-size: var(--text-meta); color: var(--ink-3); margin: 0 0 8px; }
+  h1 { font-size: var(--text-display); font-weight: 300; line-height: 1.2; margin: 0; letter-spacing: -0.01em; }
+  h2 { font-size: var(--text-title); font-weight: 300; line-height: 1.25; margin: 0 0 12px; letter-spacing: -0.01em; max-width: 760px; }
+  h3 { font-size: var(--text-heading); font-weight: 600; margin: 0 0 6px; }
+  .lede { font-size: var(--text-brief); color: var(--ink-2); max-width: 680px; margin: 0; }
+  .muted { color: var(--ink-2); }
+  .caption { font-size: var(--text-caption); color: var(--ink-3); }
 
-  section { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); }
-  h2 { font-size: var(--text-heading); font-weight: 600; margin: 0 0 6px; }
-  .lede { color: var(--ink-2); margin: 0 0 20px; font-size: var(--text-body); max-width: 760px; }
+  /* Hero */
+  .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; }
+  @media (max-width: 900px) { .hero { grid-template-columns: 1fr; gap: 32px; } }
+  .hero .lede { margin-top: 16px; }
+  .ctas { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+  .hero-note { margin-top: 16px; font-size: var(--text-meta); color: var(--ink-3); }
 
-  /* The six gates as a strip */
-  .strip { display: grid; grid-template-columns: repeat(6, 1fr); border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); }
-  .strip button { all: unset; cursor: pointer; padding: 16px 14px; border-right: 1px solid var(--line); display: block; }
-  .strip button:last-child { border-right: 0; }
-  .strip button:hover { background: var(--subtle); }
-  .strip button[aria-selected="true"] { background: var(--selected); box-shadow: inset 0 -2px 0 var(--ink); }
-  .strip button:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
-  .strip .k { font-size: var(--text-display); font-weight: 300; line-height: 1; display: block; }
-  .strip .n { font-size: var(--text-lead); font-weight: 600; display: block; margin-top: 6px; }
-  .strip .q { font-size: var(--text-meta); color: var(--ink-2); display: block; margin-top: 4px; }
-  .loop { font-size: var(--text-meta); color: var(--ink-3); margin-top: 8px; }
-  @media (max-width: 900px) { .strip { grid-template-columns: repeat(3, 1fr); } .strip button:nth-child(3) { border-right: 0; } .strip button:nth-child(-n+3) { border-bottom: 1px solid var(--line); } }
-  @media (max-width: 520px) { .strip { grid-template-columns: repeat(2, 1fr); } .strip button { border-right: 1px solid var(--line) !important; border-bottom: 1px solid var(--line); } .strip button:nth-child(2n) { border-right: 0 !important; } }
-
-  .gate-detail { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; margin-top: 24px; }
-  @media (max-width: 900px) { .gate-detail { grid-template-columns: 1fr; gap: 24px; } }
-  .gate-detail h3 { font-size: var(--text-brief); font-weight: 600; margin: 0 0 8px; }
-  .gate-detail ul { margin: 0; padding-left: 18px; font-size: var(--text-body); }
-  .gate-detail li { margin: 4px 0; }
-  .label { font-size: var(--text-meta); color: var(--ink-2); margin: 16px 0 4px; }
-  .card { border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 12px 14px; font-size: var(--text-body); background: var(--surface); }
-  .card .hdr { font-size: var(--text-meta); }
+  /* Product shot: a session on screen */
+  .shot { border: 1px solid var(--line-strong); border-radius: var(--radius-lg); overflow: hidden; background: var(--surface); }
+  .shot .bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--subtle); border-bottom: 1px solid var(--line); font-size: var(--text-meta); color: var(--ink-3); }
+  .shot .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); }
+  .shot .body { padding: 16px; font-size: var(--text-body); }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; }
+  .cmd { color: var(--ink); }
+  .gate-line { color: var(--ink-3); margin: 10px 0 6px; }
+  .card { border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 12px 14px; background: var(--surface); }
+  .card .who { font-size: var(--text-meta); font-weight: 600; color: var(--client); }
   .card ol { margin: 6px 0 0; padding-left: 18px; }
-  .card .rec { font-weight: 600; }
+  .card li { margin: 2px 0; }
+  .card li.rec { font-weight: 600; }
+  .card li .why { font-weight: 400; color: var(--ink-2); }
 
-  .proof-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line-strong); margin-bottom: 12px; flex-wrap: wrap; }
-  .proof-tabs button { all: unset; cursor: pointer; padding: 8px 14px; font-size: var(--text-body); color: var(--ink-2); }
-  .proof-tabs button[aria-selected="true"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--ink); font-weight: 600; }
-  .proof-tabs button:focus-visible { outline: 2px solid var(--ink); }
-  .proof { font-size: var(--text-body); }
-  .proof .what { font-size: var(--text-brief); margin: 0 0 8px; }
-  .status { display: inline-block; font-size: var(--text-meta); padding: 1px 8px; border-radius: var(--radius); background: var(--subtle); }
-  .status.built { background: var(--positive-soft); color: var(--positive); }
-  .status.designed { background: var(--caution-soft); color: var(--caution); }
-  .proof .src { font-size: var(--text-caption); color: var(--ink-3); margin-top: 8px; }
+  /* Proof strip */
+  .proof { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); margin-top: 56px; }
+  .proof div { padding: 20px 20px 20px 0; }
+  .proof div + div { padding-left: 20px; border-left: 1px solid var(--line); }
+  .proof .n { font-size: var(--text-display); font-weight: 300; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .proof .l { font-size: var(--text-body); color: var(--ink-2); margin-top: 4px; }
+  .proof .s { font-size: var(--text-caption); color: var(--ink-3); margin-top: 6px; }
+  @media (max-width: 760px) { .proof { grid-template-columns: 1fr; } .proof div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); } }
 
-  /* How it runs */
-  .flow { display: grid; grid-template-columns: 220px 1fr; gap: 0; border-top: 1px solid var(--line-strong); }
-  .flow > div { padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line); font-size: var(--text-body); }
-  .flow .step { font-weight: 600; }
-  @media (max-width: 700px) { .flow { grid-template-columns: 1fr; } .flow .step { border-bottom: 0; padding-bottom: 0; } }
-  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; background: var(--subtle); padding: 1px 4px; border-radius: var(--radius); }
-  pre { background: var(--subtle); padding: 14px 16px; border-radius: var(--radius); overflow-x: auto; font-size: 12px; margin: 0; }
+  /* Statement */
+  .statement { text-align: left; }
+  .statement h2 { max-width: 860px; }
+  .two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 28px; }
+  @media (max-width: 760px) { .two-up { grid-template-columns: 1fr; gap: 20px; } }
+  .two-up p { margin: 6px 0 0; color: var(--ink-2); font-size: var(--text-lead); }
 
-  .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; }
-  @media (max-width: 900px) { .principles { grid-template-columns: 1fr; } }
-  .principles div { padding: 14px 0; border-bottom: 1px solid var(--line); }
-  .principles b { display: block; font-size: var(--text-lead); margin-bottom: 2px; }
-  .principles span { font-size: var(--text-body); color: var(--ink-2); }
+  /* Gates */
+  .gates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; margin-top: 36px; }
+  @media (max-width: 900px) { .gates { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .gates { grid-template-columns: 1fr; } }
+  .gate { padding: 24px 0; border-top: 1px solid var(--line-strong); }
+  .gate .k { font-size: var(--text-display); font-weight: 300; color: var(--ink-3); line-height: 1; }
+  .gate h3 { margin-top: 10px; }
+  .gate .q { margin: 0 0 12px; }
+  .gate dl { margin: 0; font-size: var(--text-body); }
+  .gate dt { font-size: var(--text-meta); color: var(--ink-3); margin-top: 10px; }
+  .gate dd { margin: 2px 0 0; }
+  .loopnote { margin-top: 20px; font-size: var(--text-body); color: var(--ink-2); }
 
-  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: var(--text-meta); margin-bottom: 14px; }
-  .legend span.c { color: var(--ink-3); font-weight: 400; }
-  .roles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; }
-  @media (max-width: 900px) { .roles { grid-template-columns: 1fr; } }
-  .roles div { padding: 12px 0 12px 12px; border-bottom: 1px solid var(--line); font-size: var(--text-body); }
-  .roles .r-agent { border-left: 3px solid var(--agent); } .roles .r-lead { border-left: 3px solid var(--advisor); } .roles .r-client { border-left: 3px solid var(--client); }
+  /* Steps (showcase) */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0 32px; margin-top: 36px; counter-reset: s; }
+  @media (max-width: 900px) { .steps { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .steps { grid-template-columns: 1fr; } }
+  .step { padding: 20px 0; border-top: 2px solid var(--ink); }
+  .step .num { font-size: var(--text-meta); color: var(--ink-3); }
+  .step h3 { margin-top: 6px; }
+  .step p { margin: 0; font-size: var(--text-body); color: var(--ink-2); }
+  .who-agent { color: var(--agent); } .who-lead { color: var(--advisor); } .who-client { color: var(--client); }
+  .roles { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; font-size: var(--text-meta); }
+  .roles b { font-weight: 600; }
 
-  footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); font-size: var(--text-caption); color: var(--ink-3); }
-  @media (max-width: 700px) { main, .topbar { padding-left: 16px; padding-right: 16px; } .topnav { display: none; } }
+  .evalshot { margin-top: 36px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+  @media (max-width: 900px) { .evalshot { grid-template-columns: 1fr; } }
+  pre { margin: 0; white-space: pre; overflow-x: auto; }
+  .fail { color: var(--critical); font-weight: 600; } .pass { color: var(--positive); font-weight: 600; }
+
+  /* Comparison */
+  table { width: 100%; border-collapse: collapse; font-size: var(--text-body); margin-top: 28px; }
+  th { text-align: left; font-weight: 400; font-size: var(--text-meta); color: var(--ink-2); padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-strong); }
+  td { padding: 14px 12px 14px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td:first-child { color: var(--ink-2); width: 22%; }
+  td.v { font-weight: 600; }
+  @media (max-width: 700px) { table, thead, tbody, tr, td, th { display: block; } thead { display: none; } tr { padding: 12px 0; border-bottom: 1px solid var(--line); } td { border: 0; padding: 4px 0; width: auto !important; } td:first-child { font-size: var(--text-meta); } td:nth-child(2)::before { content: "Model-first: "; color: var(--ink-3); } td:nth-child(3)::before { content: "VALUED: "; color: var(--ink-3); font-weight: 400; } }
+
+  /* Case studies */
+  .cases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 36px; }
+  @media (max-width: 900px) { .cases { grid-template-columns: 1fr; } }
+  .case { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; }
+  .case .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .status { display: inline-block; font-size: var(--text-meta); padding: 1px 8px; border-radius: var(--radius); background: var(--subtle); color: var(--ink); white-space: nowrap; }
+  .case p.what { margin: 8px 0 16px; color: var(--ink-2); font-size: var(--text-body); }
+  .case .nums { display: grid; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .case .nums div { display: grid; grid-template-columns: 76px 1fr; gap: 10px; align-items: baseline; }
+  .case .nums b { font-size: var(--text-stat); font-weight: 300; font-variant-numeric: tabular-nums; }
+  .case .nums span { font-size: var(--text-body); color: var(--ink-2); }
+  .case h4 { font-size: var(--text-meta); font-weight: 400; color: var(--ink-3); margin: 14px 0 6px; }
+  .case ul { margin: 0; padding-left: 16px; font-size: var(--text-body); }
+  .case li { margin: 4px 0; }
+  .case li b { font-weight: 600; }
+  .case .go { margin-top: auto; padding-top: 16px; display: flex; gap: 16px; flex-wrap: wrap; font-size: var(--text-body); }
+  .tag { font-size: var(--text-caption); color: var(--caution); background: var(--caution-soft); padding: 0 6px; border-radius: var(--radius); margin-left: 4px; }
+
+  /* Trust */
+  .trust { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; margin-top: 28px; }
+  @media (max-width: 900px) { .trust { grid-template-columns: 1fr; } }
+  .trust div { padding: 18px 0; border-top: 1px solid var(--line); }
+  .trust b { display: block; margin-bottom: 4px; }
+  .trust span { font-size: var(--text-body); color: var(--ink-2); }
+
+  /* Use it */
+  .use { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 28px; align-items: start; }
+  @media (max-width: 900px) { .use { grid-template-columns: 1fr; } }
+  .code { background: var(--subtle); border-radius: var(--radius); padding: 16px; }
+  .use ol { margin: 0; padding-left: 18px; }
+  .use li { margin: 0 0 12px; }
+
+  /* FAQ */
+  details { border-top: 1px solid var(--line); padding: 16px 0; max-width: 820px; }
+  details:last-of-type { border-bottom: 1px solid var(--line); }
+  summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--ink-3); font-weight: 400; }
+  details[open] summary::after { content: "\2212"; }
+  details p { margin: 10px 0 0; color: var(--ink-2); font-size: var(--text-lead); }
+
+  /* CTA + footer */
+  .cta { background: var(--subtle); border-top: 0; }
+  .cta .ctas { margin-top: 20px; }
+  footer { padding: 32px 0 48px; font-size: var(--text-caption); color: var(--ink-3); border-top: 1px solid var(--line); }
+  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  footer a { color: var(--ink-3); }
 </style>
 </head>
 <body>
 <a class="skip" href="#content">Skip to content</a>
-<div class="topbar">
-  <a class="brand" href="#">VALUED</a>
-  <nav class="topnav" aria-label="Sections">
-    <a href="#gates">Six gates</a>
-    <a href="#runs">How it runs</a>
-    <a href="#principles">Principles</a>
-    <a href="https://github.com/nikjain15/valued">Repository</a>
-  </nav>
-</div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#">VALUED</a>
+    <nav class="links" aria-label="Sections">
+      <a class="hide-sm" href="#method">The method</a>
+      <a class="hide-sm" href="#how">How it runs</a>
+      <a class="hide-sm" href="#proof">Proof</a>
+      <a class="hide-sm" href="#faq">FAQ</a>
+      <a class="btn primary" href="https://github.com/nikjain15/valued">GitHub</a>
+    </nav>
+  </div>
+</header>
 
 <main id="content">
-  <h1>Every AI use case clears six gates, before and after the model.</h1>
-  <p class="purpose">VALUED is a product lifecycle for AI: value, AI-fit, labels, user-in-the-loop, evals, deploy and drive. It starts before AI is chosen and ends long after launch. It is packaged as an agent workflow: the system drafts, the client decides.</p>
 
-  <div class="brief">
-    <div class="who who-agent">Agent</div>
-    <p>I run one gate at a time. At each gate I draft something concrete, then ask the client at most two questions, with the product lead's recommendation first. Nothing moves to the next gate until the client has decided.</p>
-  </div>
+  <!-- HERO -->
+  <section class="first">
+    <div class="wrap">
+      <div class="hero">
+        <div>
+          <p class="eyebrow">An AI product lifecycle</p>
+          <h1>Ship AI that earns its place.</h1>
+          <p class="lede">VALUED takes an AI use case through six gates, from whether it needs AI at all to how it is run after launch. It is packaged as an agent workflow: at every gate it drafts something concrete, and a person decides.</p>
+          <div class="ctas">
+            <a class="btn primary" href="#method">See the six gates</a>
+            <a class="btn" href="#proof">See it on real products</a>
+          </div>
+          <p class="hero-note">Value · AI-fit · Labels · User-in-the-loop · Evals · Deploy and drive</p>
+        </div>
 
-  <section id="gates">
-    <h2>Six gates</h2>
-    <p class="lede">Select a gate to see what it asks, what it produces, the question the client answers, and where it shows up in a built product.</p>
-
-    <div class="strip" role="tablist" aria-label="VALUED gates" id="strip"></div>
-    <div class="loop">Production misses become new labels: D loops back to L.</div>
-
-    <div class="gate-detail" id="detail" role="tabpanel" aria-live="polite">
-      <div>
-        <h3 id="d-title"></h3>
-        <p id="d-q" style="margin:0 0 8px;font-size:var(--text-brief)"></p>
-        <div class="label">What the gate produces</div>
-        <ul id="d-out"></ul>
-        <div class="label">The question the client answers</div>
-        <div class="card" id="d-card"></div>
+        <div class="shot" aria-label="Example of a VALUED session">
+          <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span style="margin-left:8px">A session, gate A</span></div>
+          <div class="body">
+            <div class="mono cmd">/valued regional bank, contact centre under cost pressure, 30 AI ideas, plan in 6 weeks</div>
+            <div class="mono gate-line">[V] Value · done · [A] AI-fit · scoring 12 use cases on 3 lenses in parallel</div>
+            <div class="card">
+              <div class="who">COO</div>
+              <div>Which first wave?</div>
+              <ol>
+                <li class="rec">Agent-assist with sources <span class="why">(recommended: a person stays accountable, and it builds the knowledge base a chatbot needs anyway)</span></li>
+                <li>Customer chatbot first</li>
+                <li>Complaint detection first</li>
+              </ol>
+            </div>
+            <p class="caption" style="margin:10px 0 0">Illustrative case. The client picks; the recommendation is always first, with its reason.</p>
+          </div>
+        </div>
       </div>
-      <div>
-        <div class="label" style="margin-top:0">Where it shows up in a built product</div>
-        <div class="proof-tabs" role="tablist" aria-label="Products" id="ptabs"></div>
-        <div class="proof" id="d-proof"></div>
+
+      <div class="proof" aria-label="From products built this way">
+        <div><div class="n">195</div><div class="l">labelled turns across English, Spanish and interpreter-mediated calls</div><div class="s">CureCue</div></div>
+        <div><div class="n">406 of 406</div><div class="l">expected opportunities found on a 300-household synthetic book</div><div class="s">Relay</div></div>
+        <div><div class="n">327</div><div class="l">tests passing across 10 packages of a shared AI platform</div><div class="s">Conduit</div></div>
       </div>
     </div>
   </section>
 
-  <section id="runs">
-    <h2>How it runs</h2>
-    <p class="lede">One command, one line describing the case. An orchestrator calls one skill per gate; two agents do the work that benefits from separation.</p>
-    <div class="legend">
-      <span class="who who-agent">Agent</span><span class="c">prepared it</span>
-      <span class="who who-lead">Product lead</span><span class="c">recommended it</span>
-      <span class="who who-client">Client</span><span class="c">decided it</span>
-    </div>
-    <div class="roles">
-      <div class="r-agent"><b>Orchestrator and six gate skills.</b> Draft the table for each gate, ask the cards, write the gate file and the running record of decisions.</div>
-      <div class="r-lead"><b>The product lead.</b> Frames the case, puts a recommendation first on every card with the reason, and says what the table means.</div>
-      <div class="r-client"><b>The client.</b> Chooses on every card. The final brief lists each decision and who made it.</div>
-    </div>
-    <div style="height:20px"></div>
-    <div class="flow">
-      <div class="step"><code>/valued &lt;case&gt;</code></div><div>Sets up the record of client decisions and assumptions, then runs the gates in order.</div>
-      <div class="step">A: three scorers in parallel</div><div><code>use-case-scorer</code> runs three times at once, on value and reuse, feasibility and data, and risk, so no single lens wins by accident. Each also names the lowest rung of the ladder that would work.</div>
-      <div class="step">L: the sealed holdout</div><div>The golden set is written before any system exists. Ten rows are moved to a holdout that the builder never sees.</div>
-      <div class="step">E: the background build</div><div><code>prototype-builder</code> writes a deterministic router before it may open the golden set, then an eval runner. A missed gate blocks the release. A fix may change the router, never the labels, and is then scored on the holdout.</div>
-      <div class="step">Brief</div><div>One page: the recommendation, six gates, release gates, the plan, and every decision the client made.</div>
+  <!-- STATEMENT -->
+  <section class="statement">
+    <div class="wrap">
+      <p class="eyebrow">Why it exists</p>
+      <h2>Most AI work starts at the model. Most AI failures start before it, or after the demo.</h2>
+      <div class="two-up">
+        <div><h3>Before the model</h3><p>A use case is picked because a model can do it, not because the work needs it. Nobody prices the problem, so nobody can say later whether it paid back. Many of these ideas are rules or self-service, not AI.</p></div>
+        <div><h3>After the demo</h3><p>There is no agreed answer key, so quality is an opinion. Averages hide the language or customer group that breaks. Nobody decides in advance what stops a release, and nothing watches it once it ships.</p></div>
+      </div>
     </div>
   </section>
 
-  <section id="principles">
-    <h2>Principles</h2>
-    <div class="principles">
-      <div><b>The system drafts, the client decides.</b><span>No gate makes a judgement call on the client's behalf.</span></div>
-      <div><b>Least AI that works.</b><span>Rules, then classic ML, then retrieval and a model, then an agent. Climb only when the rung below fails.</span></div>
-      <div><b>Labels before the model.</b><span>Otherwise the system is graded against itself.</span></div>
-      <div><b>Metrics by slice.</b><span>An average hides a broken language or segment. A slice gate does not.</span></div>
-      <div><b>The builder never sees the holdout.</b><span>A fix is scored on rows it learned from and on rows it never saw. The second number is the honest one.</span></div>
-      <div><b>Escalation wins every race.</b><span>If a stop condition fires, nothing else is drafted.</span></div>
+  <!-- FEATURES: THE SIX GATES -->
+  <section id="method">
+    <div class="wrap">
+      <p class="eyebrow">The method</p>
+      <h2>Six gates. A use case clears each one before it moves on.</h2>
+      <p class="lede">Each gate answers one question, produces one artifact, and ends with one decision the client makes.</p>
+      <div class="gates">
+        <div class="gate"><div class="k">V</div><h3>Value</h3><p class="q muted">Whose work or decision changes, how often, and what does it cost today?</p>
+          <dl><dt>Produces</dt><dd>A value frame and one north-star metric</dd><dt>Client decides</dt><dd>Which outcome this has to move first</dd></dl></div>
+        <div class="gate"><div class="k">A</div><h3>AI-fit</h3><p class="q muted">Is it AI-shaped at all, what goes first, and at what cost, latency and quality?</p>
+          <dl><dt>Produces</dt><dd>Every idea on the least-AI ladder (rules, classic ML, retrieval and a model, an agent), ranked</dd><dt>Client decides</dt><dd>The first wave; build, buy or partner</dd></dl></div>
+        <div class="gate"><div class="k">L</div><h3>Labels</h3><p class="q muted">What does right look like, written down before anything is built?</p>
+          <dl><dt>Produces</dt><dd>A golden set by slice, with a holdout the builder never sees</dd><dt>Client decides</dt><dd>Which slice worries them most</dd></dl></div>
+        <div class="gate"><div class="k">U</div><h3>User-in-the-loop</h3><p class="q muted">Where does a person sit for every action, and what does the AI never do?</p>
+          <dl><dt>Produces</dt><dd>Autonomy per action, a never list, escalation triggers</dd><dt>Client decides</dt><dd>How much autonomy in the first 90 days</dd></dl></div>
+        <div class="gate"><div class="k">E</div><h3>Evals</h3><p class="q muted">What number stops the release, set before the build?</p>
+          <dl><dt>Produces</dt><dd>Release gates by slice, a prototype, and a run that passes or blocks</dd><dt>Client decides</dt><dd>The bar for the riskiest miss; ship or fix</dd></dl></div>
+        <div class="gate"><div class="k">D</div><h3>Deploy and drive</h3><p class="q muted">How is it launched, and how is it kept honest after launch?</p>
+          <dl><dt>Produces</dt><dd>Shadow, pilot and sign-off steps; drift, adoption and edit-rate metrics</dd><dt>Client decides</dt><dd>Pilot scope and what would make them stop</dd></dl></div>
+      </div>
+      <p class="loopnote">The loop: what production gets wrong becomes new labels. D feeds back into L.</p>
     </div>
   </section>
 
+  <!-- SHOWCASE: HOW IT RUNS -->
+  <section id="how">
+    <div class="wrap">
+      <p class="eyebrow">How it runs</p>
+      <h2>One line in. A decision record and a tested prototype out.</h2>
+      <div class="steps">
+        <div class="step"><div class="num">Step 1</div><h3>Describe the case</h3><p>Type one line: who, what problem, what constraint. Every number the workflow assumes is marked as assumed.</p></div>
+        <div class="step"><div class="num">Step 2</div><h3>Each gate drafts</h3><p>A table first, never a blank question. At AI-fit, three scorers rate value, feasibility and risk in parallel, so no single lens wins by accident.</p></div>
+        <div class="step"><div class="num">Step 3</div><h3>The client decides</h3><p>At most two questions per gate, two to four options each, the recommendation first with its reason.</p></div>
+        <div class="step"><div class="num">Step 4</div><h3>Brief and prototype</h3><p>A builder writes a small prototype before it may see the answer key; the evals release it or block it. A one-page brief lists every decision.</p></div>
+      </div>
+      <div class="roles" aria-label="Who does what">
+        <span><b class="who-agent">Agent</b> prepares</span>
+        <span><b class="who-lead">Product lead</b> recommends</span>
+        <span><b class="who-client">Client</b> decides</span>
+      </div>
+
+      <div class="evalshot">
+        <div>
+          <h3>What a blocked release looks like</h3>
+          <p class="muted" style="margin:0 0 12px">From a real run of the workflow's prototype step, on a synthetic bank case. The first build missed complaints that never use the word "complaint". The gate caught it; the fix changed the router, never the labels.</p>
+          <p class="muted" style="margin:0">One fix passed every gate, but the builder had seen those failures. That is why the workflow now seals a holdout the builder never sees, and scores every fix on it too. That second number is the honest one.</p>
+        </div>
+        <div class="shot">
+          <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span style="margin-left:8px">First run</span></div>
+          <div class="body"><pre class="mono">Gate                          Value  Bar     Result
+Escalation recall             0.69   ≥0.97   <span class="fail">FAIL</span>
+Escalation precision          0.92   ≥0.85   <span class="pass">PASS</span>
+Answers without a source      0      0       <span class="pass">PASS</span>
+Routing accuracy              0.72   ≥0.90   <span class="fail">FAIL</span>
+Recall gap across languages   0.42   &lt;0.05   <span class="fail">FAIL</span>
+By slice: en 0.58  es 1.00
+<span class="fail">RELEASE BLOCKED</span></pre></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON -->
   <section>
-    <h2>Run it</h2>
-    <p class="lede">Runs in Claude Code; the skills and agents load from <code>.claude/</code> in the repository.</p>
-    <pre>git clone https://github.com/nikjain15/valued &amp;&amp; cd valued &amp;&amp; claude
-/valued &lt;one line describing the case&gt;</pre>
-    <p class="lede" style="margin-top:12px">Example briefs: <a href="examples/curecue-brief.html">CureCue</a> · <a href="examples/relay-brief.html">Relay</a></p>
+    <div class="wrap">
+      <p class="eyebrow">The difference</p>
+      <h2>Model-first, compared with VALUED.</h2>
+      <table>
+        <thead><tr><th></th><th>Model-first</th><th>VALUED</th></tr></thead>
+        <tbody>
+          <tr><td>Where it starts</td><td>What the model can do</td><td class="v">What the work costs today</td></tr>
+          <tr><td>Which ideas get built</td><td>The most impressive demo</td><td class="v">The least AI that works, where a person stays accountable</td></tr>
+          <tr><td>What "right" means</td><td>It looked good in the demo</td><td class="v">A golden set written before the build, by slice</td></tr>
+          <tr><td>Who decides</td><td>Whoever built it</td><td class="v">The client, on a recorded card, every gate</td></tr>
+          <tr><td>What stops a release</td><td>Nothing agreed in advance</td><td class="v">Gates set first; a miss blocks the release</td></tr>
+          <tr><td>After launch</td><td>A dashboard nobody owns</td><td class="v">Drift by slice, edit rate, and misses turned into new labels</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
-  <footer>A method and its harness, not a product. The gates were named after the products were built, from how they were built. CureCue and Relay are prototypes on synthetic data with no users and no model calls; Conduit calls models and is not run as a service. Each status label says whether a stage is built or designed. Design tokens from Relay.</footer>
+  <!-- PROOF: CASE STUDIES -->
+  <section id="proof">
+    <div class="wrap">
+      <p class="eyebrow">Proof</p>
+      <h2>Three products, built the way the gates describe.</h2>
+      <p class="lede">The gates were named after these were built, from how they were built. Every number below comes from running their code. All are prototypes or platforms on synthetic data, with no users.</p>
+      <div class="cases">
+
+        <article class="case">
+          <div class="top"><h3>CureCue</h3><span class="status">Working prototype</span></div>
+          <p class="what">An assistant beside a Medicare Advantage member-service advocate. It never speaks to the member; the advocate is accountable for every word. No model is called.</p>
+          <div class="nums">
+            <div><b>195</b><span>labelled turns: English 143, Spanish 31, interpreter 21</span></div>
+            <div><b>8 of 8</b><span>release gates passed by release 3</span></div>
+            <div><b>0.98</b><span>escalations caught, against a 0.97 bar</span></div>
+          </div>
+          <h4>Strongest gates</h4>
+          <ul>
+            <li><b>V</b> One advocate's whole shift studied before any AI was picked.</li>
+            <li><b>L</b> The first golden set was English only. Adding Spanish showed release 2 missed every Spanish-language escalation; release 3 fixed it.</li>
+            <li><b>U</b> Never crosses into coverage decisions, prior authorization or clinical advice.</li>
+            <li><b>D</b> Shadow mode, canary and kill switch <span class="tag">designed</span></li>
+          </ul>
+          <div class="go"><a href="https://nikjain15.github.io/CureCue/">Site</a><a href="https://github.com/nikjain15/CureCue">Repository</a><a href="examples/curecue-brief.html">Brief</a></div>
+        </article>
+
+        <article class="case">
+          <div class="top"><h3>Relay</h3><span class="status">Prototype</span></div>
+          <p class="what">An agent layer for financial advisors. Agents read the book, cite every claim and prepare every action short of the human gate. No model calls; invented clients.</p>
+          <div class="nums">
+            <div><b>22</b><span>agents, 8 of them compliance review desks</span></div>
+            <div><b>406/406</b><span>expected opportunities found, every one cited</span></div>
+            <div><b>369</b><span>tests passing</span></div>
+          </div>
+          <h4>Strongest gates</h4>
+          <ul>
+            <li><b>A</b> The model never decides: eligibility, ranking and every rule verdict are code.</li>
+            <li><b>U</b> Never sends. Nothing clears its own findings; a person accepts each action.</li>
+            <li><b>E</b> The eval caught 53 of 85 retirement candidates being missed before the fix.</li>
+            <li><b>D</b> Its learning loop can only propose stricter rules; loosening needs a person.</li>
+          </ul>
+          <div class="go"><a href="https://nikjain15.github.io/relay/">Site</a><a href="https://github.com/nikjain15/relay">Repository</a><a href="examples/relay-brief.html">Brief</a></div>
+        </article>
+
+        <article class="case">
+          <div class="top"><h3>Conduit</h3><span class="status">Platform, not run as a service</span></div>
+          <p class="what">The shared AI platform under four of my products: model routing, guardrails, retrieval, agents and MCP. Unlike the two above, it calls models.</p>
+          <div class="nums">
+            <div><b>10</b><span>packages</span></div>
+            <div><b>327</b><span>tests passing</span></div>
+            <div><b>1.00</b><span>guardrail recall in CI, precision 0.92</span></div>
+          </div>
+          <h4>Strongest gates</h4>
+          <ul>
+            <li><b>V</b> Four copies of the same routing and guardrail code were drifting apart.</li>
+            <li><b>A</b> Each use case routes to the cheapest model tier that clears the bar <span class="tag">cost modelled</span></li>
+            <li><b>U</b> Agents refuse any tool that acts unless explicitly allowed.</li>
+            <li><b>D</b> Latency and cost targets exist as config, with no live data yet <span class="tag">designed</span></li>
+          </ul>
+          <div class="go"><a href="https://nikjain15.github.io/conduit/">Console</a><a href="https://github.com/nikjain15/conduit">Repository</a></div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section>
+    <div class="wrap">
+      <p class="eyebrow">Honest by design</p>
+      <h2>The rules that keep the numbers true.</h2>
+      <div class="trust">
+        <div><b>Labels before the model</b><span>The answer key is written by intent, not by what the system outputs. Otherwise you grade the system against itself.</span></div>
+        <div><b>The builder never sees the holdout</b><span>A fix is scored twice: on the rows it learned from, and on rows it never saw.</span></div>
+        <div><b>Metrics by slice</b><span>An average hides the broken language or customer group. Every gate is checked per slice.</span></div>
+        <div><b>Built or designed, always labelled</b><span>Anything not running is marked designed, here and in the products.</span></div>
+        <div><b>Assumptions marked</b><span>Every figure the workflow assumes says so, to be replaced with real data in week one.</span></div>
+        <div><b>Escalation wins every race</b><span>If a stop condition fires, nothing else is drafted.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEPS: USE IT -->
+  <section>
+    <div class="wrap">
+      <p class="eyebrow">Use it</p>
+      <h2>Run it on your own case.</h2>
+      <div class="use">
+        <ol>
+          <li><b>Clone the repository.</b> Seven skills (an orchestrator and one per gate) and two agents live in <span class="mono">.claude/</span>.</li>
+          <li><b>Open it in Claude Code.</b> The skills and agents load from the repository.</li>
+          <li><b>Type one line.</b> <span class="mono">/valued</span> followed by your case. Add <span class="mono">--auto</span> to accept every recommendation without questions.</li>
+        </ol>
+        <div class="code"><pre class="mono">git clone https://github.com/nikjain15/valued
+cd valued &amp;&amp; claude
+
+/valued &lt;one line describing your case&gt;</pre></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <p class="eyebrow">Questions</p>
+      <h2>What people ask.</h2>
+      <details><summary>Is VALUED a product?</summary><p>No. It is a method and the harness that runs it. The products it points to are prototypes and a platform, on synthetic data, with no users.</p></details>
+      <details><summary>Does the workflow make the decisions?</summary><p>No. It drafts tables and recommends. Every judgement call goes to the client as a card, and the brief records who chose what.</p></details>
+      <details><summary>Which model does the prototype use?</summary><p>None. The prototype it builds is deterministic on purpose: it proves the gates and the evals, and a model would sit behind them. Conduit shows the routing layer a model would come through.</p></details>
+      <details><summary>Is any of the data real?</summary><p>No. Cases, customers, members and clients are synthetic. Figures marked assumed are placeholders.</p></details>
+      <details><summary>What if my case is not a list of AI ideas?</summary><p>Start at the gate that fits. For a live AI feature that is underperforming, start at Deploy and drive and work backwards.</p></details>
+      <details><summary>Why "VALUED"?</summary><p>Value, AI-fit, Labels, User-in-the-loop, Evals, Deploy and drive. The order is the point: value and fit come before any model, and the work does not end at launch.</p></details>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="wrap">
+      <h2>Six gates, before and after the model.</h2>
+      <p class="lede">Read the method, open a brief, or run it on your own case.</p>
+      <div class="ctas">
+        <a class="btn primary" href="https://github.com/nikjain15/valued">Get it on GitHub</a>
+        <a class="btn" href="examples/curecue-brief.html">Open an example brief</a>
+      </div>
+    </div>
+  </section>
 </main>
 
-<script>
-const GATES = [
-  { k: "V", name: "Value", q: "Whose decision or work changes, how often, what it costs today, and how big the prize is.",
-    out: ["A value frame: work items, volume, cost, the cost of a bad outcome", "Twelve candidate use cases, deliberately mixed", "One north-star metric"],
-    card: { hdr: "Sponsor", q: "Which outcome does this have to move first?", opts: ["The metric tied to the most costly work (recommended)", "Handle time", "Resolution", "Satisfaction"] } },
-  { k: "A", name: "AI-fit", q: "Is it AI-shaped at all, what goes first, and at what cost, latency and quality.",
-    out: ["Every candidate on the least-AI ladder", "Scores on value, feasibility, risk and reuse, from three scorers", "A first and second wave; build, buy or partner; the stack and its cost unit"],
-    card: { hdr: "COO", q: "Which first wave?", opts: ["Where the human stays accountable and the assets are reusable (recommended)", "The fastest visible win", "The highest regulatory value"] } },
-  { k: "L", name: "Labels", q: "What right looks like, before anything is built.",
-    out: ["Verdicts and what each requires", "The slices that matter", "A golden set, with a sealed holdout"],
-    card: { hdr: "Ops lead", q: "Which slice worries you most?", opts: ["The one whose silent failure hurts most (recommended)", "Implicit complaints", "Vulnerable customers"] } },
-  { k: "U", name: "User-in-the-loop", q: "Where the person sits for every action, and what the AI never does.",
-    out: ["Autonomy per action: suggest, draft, act with approval, act", "The never list", "Escalation triggers and owners"],
-    card: { hdr: "Risk", q: "How much autonomy in the first 90 days?", opts: ["Draft with approval (recommended)", "Suggest only", "Act on low-risk actions"] } },
-  { k: "E", name: "Evals", q: "Release thresholds set first; a missed gate blocks the release.",
-    out: ["Gates with bars, by slice", "A prototype built in the background", "The run: blocked or released, then the holdout"],
-    card: { hdr: "Risk", q: "Escalation recall bar for release?", opts: ["0.97 (recommended)", "0.99, with more escalations", "0.95, cheaper, more misses"] } },
-  { k: "D", name: "Deploy and drive", q: "How it is launched, and how it is kept honest after launch.",
-    out: ["Shadow, pilot, sign-off, rollback, a kill switch", "Drive metrics: drift by slice, adoption, edit rate", "The scale, fix or retire review"],
-    card: { hdr: "COO", q: "Pilot scope?", opts: ["The smallest scope that covers the riskiest slice (recommended)", "One site", "One channel"] } },
-];
-
-// Proof per product per gate. Status: built or designed. Every line traces to the product's public repository.
-const PROOF = {
-  CureCue: { url: "https://github.com/nikjain15/CureCue", site: "https://nikjain15.github.io/CureCue/",
-    about: "An assistant beside a Medicare Advantage member-service advocate. Working prototype, synthetic plan and members, no model called.",
-    V: { s: "built", t: "One advocate's whole shift studied before any AI was chosen: twelve stages, eleven on the desk.", src: "approach.html, The journey" },
-    A: { s: "built", t: "Advocate-side first, not a member chat. Rules as a graph over vector search, because a chunk returns the ER copay and stops. Only three verdicts can be returned, and a gate checks it, so a coverage decision has nowhere to go.", src: "approach.html, rules.js" },
-    L: { s: "built", t: "195 turns labelled by intent, independent of the rules, across English, Spanish and interpreter-mediated calls. The first golden set was English only; adding Spanish is what exposed a release that had passed.", src: "eval/golden.js, git history" },
-    U: { s: "built", t: "Never speaks to the member. The advocate ticks identity. The line not crossed: coverage decisions, prior authorization, length of stay, clinical advice. Anything no rule covers goes to a person.", src: "approach.html, architecture.html" },
-    E: { s: "built", t: "Release 3 passes 8 of 8 gates in CI, on bars reset when a hard set was added; ten failing turns are listed. Re-scored on the current set, release 2 misses every Spanish-language escalation. A stand-in judge is refused for answer correctness at 0.84 against a 0.85 bar.", src: "node eval/run.mjs" },
-    D: { s: "designed", t: "Shadow mode, a 5% canary for three days against control, a kill switch per skill with a named owner, and an improvement loop where nothing changes itself: two people sign.", src: "architecture.html, How it gets better" } },
-  Relay: { url: "https://github.com/nikjain15/relay", site: "https://nikjain15.github.io/relay/",
-    about: "An agent layer for financial advisors. Prototype, invented clients, no model calls.",
-    V: { s: "built", t: "The step after an insight engine: one flagged opportunity turned into a documented, approved, client-facing action. Detection coverage is measured on a 300-household book; conversion is what a pilot would establish.", src: "README, impact page" },
-    A: { s: "built", t: "22 agents, and the model never decides: eligibility, ranking, rule verdicts, the retrieval floor and refusal are deterministic code.", src: "README, Three invariants" },
-    L: { s: "built", t: "300 households and 585 captured messages with hand-reviewed sentence labels. The expected side of the eval imports no engine code.", src: "evals/" },
-    U: { s: "built", t: "Relay never sends. Nothing clears its own findings: an agent prepares, a person accepts, a principal dispositions. Enforced by import rules in the build and asserted in tests.", src: "README, Three invariants" },
-    E: { s: "built", t: "406 of 406 opportunities; six FINRA and SEC rules at 100% precision and recall on synthetic data. The eval caught 53 of 85 retirement candidates being missed before the fix.", src: "npm run eval, evals/README.md" },
-    D: { s: "built", t: "A rule-change proposer reads 90 days of findings and proposes tighten-only changes for a person to approve; loosening is refused in code.", src: "lib/compliance/propose.ts" } },
-  Conduit: { url: "https://github.com/nikjain15/conduit", site: "https://nikjain15.github.io/conduit/",
-    about: "The shared AI platform under three of my products. Unlike the two above, it calls models. Not operated as a service.",
-    V: { s: "built", t: "Four copies of routing and guardrail code were drifting across products. One platform replaced them.", src: "docs/PRD.md" },
-    A: { s: "built", t: "Each use case routes to the cheapest model tier that clears the bar. A modelled cost: $66.30 per tenant per month as routed, against $128.47 on a single tier.", src: "scripts/cost-model.mjs" },
-    L: { s: "built", t: "Three hand-written synthetic golden sets: guardrails 42, model contract 12, judge validation 30.", src: "evals/" },
-    U: { s: "built", t: "Agents refuse side-effecting tools unless explicitly allowed. Guardrails allow, redact, block, or escalate to a person.", src: "packages/agent, packages/guardrails" },
-    E: { s: "built", t: "A guardrail gate in CI: recall 1.00, precision 0.92, false-block 0.11, against floors of 0.95, 0.90 and 0.15. A known gap stays as a failing test in the open.", src: "evals/README.md" },
-    D: { s: "designed", t: "SLO fields for p95 latency, cost per answer and block rate exist, but there is no live data: the gateway is not run as a service.", src: "README" } },
-};
-
-const strip = document.getElementById("strip");
-const ptabs = document.getElementById("ptabs");
-let gi = 0, prod = "CureCue";
-
-GATES.forEach((g, i) => {
-  const b = document.createElement("button");
-  b.setAttribute("role", "tab"); b.id = "tab-" + g.k;
-  b.innerHTML = `<span class="k">${g.k}</span><span class="n">${g.name}</span><span class="q">${g.q.split(",")[0].split(";")[0]}</span>`;
-  b.addEventListener("click", () => { gi = i; render(); });
-  b.addEventListener("keydown", e => {
-    if (e.key === "ArrowRight") { gi = (gi + 1) % GATES.length; render(); strip.children[gi].focus(); }
-    if (e.key === "ArrowLeft") { gi = (gi + GATES.length - 1) % GATES.length; render(); strip.children[gi].focus(); }
-  });
-  strip.appendChild(b);
-});
-Object.keys(PROOF).forEach(p => {
-  const b = document.createElement("button");
-  b.setAttribute("role", "tab"); b.textContent = p;
-  b.addEventListener("click", () => { prod = p; render(); });
-  ptabs.appendChild(b);
-});
-
-function render() {
-  const g = GATES[gi];
-  [...strip.children].forEach((b, i) => b.setAttribute("aria-selected", i === gi));
-  [...ptabs.children].forEach(b => b.setAttribute("aria-selected", b.textContent === prod));
-  document.getElementById("d-title").textContent = `${g.k} · ${g.name}`;
-  document.getElementById("d-q").textContent = g.q;
-  document.getElementById("d-out").innerHTML = g.out.map(x => `<li>${x}</li>`).join("");
-  document.getElementById("d-card").innerHTML =
-    `<div class="hdr"><span class="who who-client">${g.card.hdr}</span></div><div>${g.card.q}</div><ol>` +
-    g.card.opts.map((o, i) => `<li${i === 0 ? ' class="rec"' : ""}>${o}</li>`).join("") + `</ol>`;
-  const P = PROOF[prod], x = P[g.k];
-  document.getElementById("d-proof").innerHTML = x
-    ? `<p class="what">${x.t}</p><span class="status ${x.s}">${x.s === "built" ? "Built" : "Designed, not built"}</span>
-       <div class="src">${P.about} Source: <a href="${P.url}">${P.url.replace("https://", "")}</a>, ${x.src}.</div>`
-    : `<p class="what">Nothing at this gate in ${prod}.</p>`;
-}
-render();
-</script>
+<footer>
+  <div class="wrap">
+    <span>VALUED · a method and its harness, not a product · synthetic data only</span>
+    <span>Design tokens from <a href="https://github.com/nikjain15/relay">Relay</a></span>
+  </div>
+</footer>
 </body>
 </html>
