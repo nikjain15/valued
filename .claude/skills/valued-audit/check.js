@@ -112,9 +112,21 @@ const evalsMd = read(path.join(out, "5-evals.md"));
 const singleContext = /single-context|inline|not independent/i.test(evalsMd + state);
 expect(!singleContext || /not independent/i.test(evalsMd), 6, "built in one context but the evidence pack does not say 'not independent'", "out/5-evals.md");
 expect(/holdout\.json/.test(evalsMd) && /node (?:out\/proto\/)?eval\.js/.test(evalsMd), 6, "evidence pack lacks reproduce commands", "out/5-evals.md");
+// S-078: who wrote the holdout, and did that context also write the router?
+const prov = json(path.join(proto, "provenance.json"), {});
+const by = (k) => [...new Set((Array.isArray(prov[k]) ? prov[k] : []).map((x) => x && x.by).filter(Boolean))];
+const hBy = by("holdout"), rBy = by("router"), shared = hBy.filter((x) => rBy.includes(x));
+expect(hBy.length > 0 && rBy.length > 0, 6, "out/proto/provenance.json does not name who wrote the holdout and who wrote the router", "out/proto/provenance.json");
+if (hBy.length && rBy.length) expect(shared.length === 0, 6, `holdout not independent: ${shared.join(", ")} wrote both the holdout rows and the router`, "out/proto/provenance.json");
+// S-085: one sealed score per router version.
+const hlog = read(path.join(proto, "holdout-log.jsonl")).split("\n").filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+const versions = [...new Set(hlog.map((x) => x.router))].length;
+expect(versions <= 2, 6, `sealed holdout scored against ${versions} router versions; 1 is clean, 2 is one disclosed repair`, "out/proto/holdout-log.jsonl");
 const router = read(path.join(proto, "router.js"));
 expect(router && !/\brequire\(|\bimport\s|readFileSync|fetch\(/.test(router), 7, "router.js is not self-contained (require, import, file read or fetch)", "out/proto/router.js");
 expect(/module\.exports\s*=\s*\{\s*decide/.test(router), 7, "router.js does not end with module.exports = { decide }", "out/proto/router.js");
+const routerLines = router.split("\n").filter((l) => l.trim() && !/^\s*\/\//.test(l)).length;
+expect(routerLines <= 200, 7, `router.js is ${routerLines} lines of code; 160 is the guideline and 200 the limit`, "out/proto/router.js");
 
 // ---------- 8 Writing ----------
 const scan = [];

@@ -37,8 +37,8 @@ Works in the case workspace (the folder with `out/` and `.claude/`). Prints only
 | 3 Product shape | Today (greeting, tiles, readiness, overnight, "While you were away", "Close to their clock", top 3), Queue tabs, the right detail shape, trail and "This is wrong" on every item, 6+ systems, industry labels |
 | 4 Traceability | decisions with gate, who and effect; FAQ "from" tags; governance rows with owners; app.html unchanged |
 | 5 PRD | 0 "Pending:", gate V title, IDs, Given/When/Then, the four tables, eval results, history, section 17 |
-| 6 Evals | 30+ dev and 12 holdout rows, 8 gates, per-group line, dev and sealed holdout pass, "not independent" when true |
-| 7 Browser | local and hosted pages load with no console errors, full queue, self-contained router |
+| 6 Evals | 30+ dev and 12 holdout rows, 8 gates, per-group line, dev and sealed holdout pass; `provenance.json` names both writers and no name wrote both the holdout and the router; the sealed set scored against at most 2 router versions |
+| 7 Browser | local and hosted pages load with no console errors, full queue, self-contained router of at most 200 lines |
 | 8 Writing | no em-dashes, no real company or person, no employer names |
 
 ## Observability

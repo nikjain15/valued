@@ -49,7 +49,7 @@ question 2 to how the decision is filed. Control runs on portal and airline, bot
 
 ## Nothing still failing
 
-The suite is green. Four things are open and worth knowing:
+The suite was green under the checker as it stood. Four things were open:
 
 | Open | Why it matters |
 |---|---|
@@ -57,6 +57,63 @@ The suite is green. Four things are open and worth knowing:
 | S-085 render re-scores the holdout | `conductor.js render` scores the sealed set every time it runs, 3 to 6 times per run, so the seal is procedural only |
 | S-086 shape is not stable | the sharpened rule moved two scenarios, so the shape expectation is a weak check |
 | S-080 router length | the generated router runs 200 to 500 lines against a 160-line guideline |
+
+## Second round: what the eval number is worth (2026-10-26)
+
+The two that decide whether the eval numbers mean anything, S-078 and S-085, are now fixed in the
+method rather than noted in a report. S-080 is enforced and S-086 is detectable.
+
+| Was | Now | Where |
+|---|---|---|
+| One context wrote the answer key and then fixed the router | `holdout-sealer` writes `holdout.json` in its own context; the L gate never opens it; every writer records itself in `provenance.json` and both checkers fail a run where one name wrote both | `.claude/agents/holdout-sealer.md`, `valued-labels/SKILL.md`, `conductor.js seal`, `check.js` |
+| `render` re-scored the sealed set 3 to 6 times a run | a sealed run is stored under a fingerprint of the router and replayed on an unchanged router; a changed router is a numbered attempt; more than two versions fails the audit | `valued-build/eval.js`, `conductor.js`, `check.js` |
+| Router length was a guideline nothing read | 200 lines of code is a hard limit on standard 7, with the remedy named: wording belongs in `sources.json` match lists or the trigger lexicon | `prototype-builder.md`, `conductor.js`, `check.js` |
+| A reworded shape rule cost 18 runs to notice | `shape-eval.js` scores the shape decision alone against a recorded baseline, for one Haiku agent | `learning/regression/shape-eval.js`, `shape-baseline.json` |
+| The hosted page inlined both label sets with nothing checking they were synthetic | `build-hosted.js` refuses to build when a golden or holdout row carries an `origin` under `inputs/` | `valued-build/build-hosted.js` |
+
+### What the shape micro-eval found
+
+Read cold against a one-line case, the shape table settles 13 of the 17 cases that have one and cannot
+settle airline, returns, maintenance or surveillance: it reads all four as `chat` or `rank` where the
+expectation wants `desk` or `review`. Full runs get them right because the A gate arrives with the value
+gate, the three lenses and the systems behind it. So the rule is under-determined by a case line alone.
+The micro-eval therefore gates drift, not correctness: a shape that moves since the baseline is the
+S-086 failure, and the four unsettled cases are reported next to it, never gated.
+
+### Verified end to end
+
+One full lean run on card-dispute, on the sealed path, 7m 15s of 28:
+
+| Check | Result |
+|---|---|
+| `provenance.json` | holdout by `holdout-sealer`, router by `prototype-builder`, no overlap |
+| `holdout-log.jsonl` | one line, one attempt; one file in `holdout-runs/`, so the sealed set was scored once |
+| Dev | passes all gates, 35 rows, recall 1.00, precision 1.00, routing 0.97, after one router fix |
+| Sealed holdout | passes all gates, 20 rows, 12 escalations, recall 1.00, precision 1.00, routing 0.95, never repaired |
+| `conductor.js check` | all checks pass |
+| Audit standards 6 and 7 | pass, confirmed by re-running the audit independently |
+| Audit standard 3 | FAIL, I-001, and not about any of this: see below |
+
+The one failure is worth more than the passes. The `review` router returned the right field names with
+every `value` and `evidence` empty, so the item screen showed no confirmed fields, and both evals passed
+anyway because `eval.js` scores verdicts only. A shape can satisfy its whole contract structurally,
+extract nothing, and the number that decides the release will not notice. That is S-088, and it is
+direct evidence for P-002, which is accepted and not built. The run agent left it open rather than
+change the router and spend a second sealed attempt, which is the right call under the new rule.
+
+One more thing the run exposed, as S-089: none of the three agents resolves as a registered agent type
+in this harness, so each was launched as a general-purpose agent told to follow its definition file and
+seal under that name. Independence held in substance, because each ran in its own context, but the name
+in `provenance.json` is written by the orchestrator. The check proves two names were declared, not that
+two contexts existed. It is worth having and it is not proof against a careless orchestrator.
+
+### The cost of the fix, stated plainly
+
+The 18 recorded runs were made in single context. Under the checker that now enforces independence,
+every one of them fails standard 6, because every one of them genuinely was not independent. That is
+the correct result, not a regression in the checker: the scorecard above records what those runs were
+worth under the old rule. The suite is red until the 18 are re-run on the sealed path, and re-running
+them is its own spend.
 
 ## Time per phase against 28 minutes
 

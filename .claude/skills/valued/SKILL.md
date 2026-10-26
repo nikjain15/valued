@@ -11,8 +11,10 @@ pressure, 30 GenAI ideas, COO wants a plan in six weeks`. Flags:
 - `--auto`: take the recommended option on every card (`conductor.js cards auto <round>`), logged "(auto)".
 - `--no-open`: never run `open`; print paths instead.
 - `--lean`: the low-token mode for regression runs. Do every gate in this context (score the three lenses one after
-  another, run L, U and D inline) and launch only two subagents: `prototype-builder` (Sonnet) and `guard-model`
-  (Haiku), so the holdout stays independent. Read each gate skill once; keep printed output to the phase headers,
+  another, run L, U and D inline) and launch only three subagents: `holdout-sealer` (Sonnet),
+  `prototype-builder` (Sonnet) and `guard-model` (Haiku). Those three are never cut, in any mode: the
+  sealer is the only reason the holdout number means anything, because this context must never hold both
+  the holdout rows and the router. Read each gate skill once; keep printed output to the phase headers,
   the eval result lines and the closing line; write any notes to `out/run-notes.md`.
 
 Below, `out/tools/c` is the conductor (`node .claude/skills/valued/conductor.js`), a two-line wrapper phase 0 writes; run it from the workspace root, with the
@@ -70,8 +72,11 @@ round, shorter prose. **Never cut** governance checks, the evals, the holdout or
 (each reads its own gate skill, writes only its own files, and does not run `render`), then wait for both and run `out/tools/c render` once. If you cannot launch
 subagents, run them one after the other without stopping for cards, and follow the single-context rules:
 score each lens separately before merging; write the router before opening `golden.json`; never open
-`holdout.json` while building or fixing; set `"independent": false` in `e.json` so every place that shows the
-holdout says "not independent".
+`holdout.json` while building or fixing. `holdout-sealer` is still launched as a subagent even here: it
+is the one thing single-context mode may not absorb, because a holdout written by the context that
+fixes the router grades its own author. If subagents are genuinely unavailable, seal it as
+`holdout single-context` and let the audit fail the run as not independent; that failure is the
+honest record of what the number is worth, not a thing to work around.
 
 ## Phase 0: Frame (3 min)
 

@@ -454,3 +454,31 @@ addressed by <change>, rejected: <reason>).
 
 ### S-083
 - Fixed by the "Invent every name" rule in `CLAUDE.md` and `valued/SKILL.md`, with Contoso, Globex, Initech and Example Corp added to the real-name check in `valued-audit/check.js`.
+
+### S-078
+- Fixed by splitting authorship. `out/proto/holdout.json` is now written by a new `holdout-sealer` subagent (`.claude/agents/holdout-sealer.md`) from the label spec, the trigger lexicon, the sources and the 30 dev rows; the L gate never opens it and passes no row on. Every writer records itself with `conductor.js seal holdout|router <by>` into `out/proto/provenance.json`, and both `conductor.js check` and `valued-audit/check.js` fail the run when one name appears on both sides. Single-context mode seals `holdout single-context` and fails as not independent, which is the honest record rather than a workaround.
+
+### S-080
+- Fixed by a limit with a named remedy. `prototype-builder` now reads "under 160 lines of code, 200 a hard limit", and both checkers fail standard 7 above 200 lines, telling the builder to move wording into `sources.json` match lists or the trigger lexicon instead of adding branches.
+
+### S-085
+- Fixed in `valued-build/eval.js`. A sealed run is stored under a fingerprint of the router plus the model cache in `out/proto/holdout-runs/<fp>.txt`; a later run on an unchanged router replays that output and says so, instead of re-scoring. A changed router is a new attempt, numbered in the output, and both checkers fail a run scored against more than two router versions. Verified: two runs on one router produce one log line, and a touched router produces "Attempt 2".
+
+### S-086
+- Mitigated, not closed, and sharpened. `learning/regression/shape-eval.js` scores the shape decision on its own: `brief` prints the A gate's shape table verbatim plus the 17 case lines that have one, `baseline <answers>.json` records today's shapes, and `score <answers>.json` reports what moved. Drift is the verdict, because a shape that moves is exactly the S-086 failure; the baseline is `learning/regression/shape-baseline.json` with a hash of the shape table, so a reworded rule is visible next to the drift it caused. One Haiku agent replaces 18 runs.
+- Sharpened: read cold against a one-line case, the table settles 13 of 17 and cannot settle airline, returns, maintenance or surveillance (it reads all four as chat or rank, where the expectation wants desk or review). Full runs get those right because the A gate arrives with the value gate, the three lenses and the systems behind it. So the shape rule is under-determined by the case line alone, which is why shape is a weak regression check and why the micro-eval gates drift rather than correctness.
+- Status: open, with drift now detectable
+
+### S-087
+- Gate: app, B. The hosted bundle inlines `golden.json` and `holdout.json` (P-001, accepted on the stated trade-off that the seal is from the model, not from a reader). That trade-off holds only while the rows are synthetic, and nothing checked. A run that read real client material from `inputs/` would have published it on the shared link, against the rule in `CLAUDE.md`.
+- Fixed: `build-hosted.js` refuses to build when any golden or holdout row carries an `origin` under `inputs/`, naming the file and the count, and tells you to de-identify the rows or pass `--client-confirmed-deidentified` once the client has confirmed the published copy. Verified both ways on a test workspace.
+
+### S-088
+- Gate: B, E. On the card-dispute verification run the `review` router returned the right field names with every `value` and `evidence` empty, so the item screen showed 0 confirmed fields. The dev and holdout evals both passed anyway, at recall 1.00 and routing 0.97, because `eval.js` scores verdicts only. Standard 3 in the browser was the only thing that caught it.
+- Evidence: a shape can satisfy its whole contract structurally and extract nothing, and the number that decides the release will not notice. This is direct evidence for P-002 (field-accuracy and rank metrics in eval.js, accepted, not implemented).
+- Status: open, and the reason P-002 should be the next thing built
+
+### S-089
+- Gate: conductor. Extends S-075. None of `holdout-sealer`, `prototype-builder` or `guard-model` resolves as a registered agent type in this harness, so the verification run launched each as a general-purpose agent told to follow its definition file and to seal under that name.
+- Evidence: independence still held in substance, because each ran in its own context, and `provenance.json` recorded two distinct writers. But the name in `provenance.json` is self-reported by the orchestrator, so the check proves that two names were declared, not that two contexts existed. The check is worth having and is not proof against a careless or dishonest orchestrator.
+- Status: open

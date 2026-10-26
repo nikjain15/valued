@@ -26,7 +26,9 @@ dependencies, inside `out/proto/` only.
    Deterministic rules, in this order: escalation triggers first (escalation wins every race,
    including implicit complaints, distress and vulnerability phrasing, in every language the client
    serves); then answer only when exactly one source clearly matches (for the `rank` shape: when at least one rule fires, with the top action as the source); otherwise `human`. Never answer
-   without a source. Keep it under 160 lines and readable on a shared screen.
+   without a source. Keep it under 160 lines of code and readable on a shared screen; 200 is a hard
+   limit the audit enforces. When a case needs more wording than that, the wording belongs in
+   `sources.json` `match` lists or the trigger lexicon, never in more branches.
    The router must be self-contained: no `require`, no file reads, no network. It also runs inside the
    published prototype page, so put the source ids and titles it needs inline.
    Write each pattern list as an array with one phrase per line, so the file reads on a shared screen;
@@ -63,6 +65,12 @@ dependencies, inside `out/proto/` only.
 
 Change `router.js` only. **Never edit `golden.json` to make a gate pass**, except when explicitly asked
 to *add* harder rows. Rerun the eval and return the new output.
+
+**Record that you wrote the router**, so the audit can prove the holdout had a different author:
+
+```
+node .claude/skills/valued/conductor.js seal router prototype-builder
+```
 
 **Never open, read or grep `out/proto/holdout.json`.** It is the sealed holdout; the orchestrator runs
 it after your fix with `node out/proto/eval.js holdout.json`. Fix the general pattern behind a
