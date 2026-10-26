@@ -27,12 +27,17 @@ description: VALUED gate U. Design where a person decides for every action, reco
    a person.
 4. **Escalation triggers** (max 6 rows): trigger, example phrasing, who it goes to, response time. If any
    trigger fires, nothing else is drafted.
-5. **Ask the client (max 2 cards):**
+5. **Clocks** (an output): the response deadline for each outcome, in hours, naming the regulatory
+   clock where one applies (complaint acknowledgement, CMS 72-hour urgent prior authorization, state
+   claim acknowledgement). Write to `case.json` as `clocks`: `{ "escalate": { "hours", "label" },
+   "human": { "hours", "label" }, "answer": { "hours", "label" } }`. The prototype counts each item down
+   from arrival and shows "Close to their clock" on its home screen.
+6. **Ask the client (max 2 cards):**
    - **"Risk": "How much autonomy in the first 90 days?"** Options from step 2, our preference first
      "(Recommended)", each with its trade-off.
    - **"Operations": "Who owns an escalation?"** Options from their likely structure (supervisor path, a
      specialist team, the risk desk), each with its trade-off; our preference is the existing path.
-6. **Governance check** in `out/4-user-loop.md` (question, answer, status):
+7. **Governance check** in `out/4-user-loop.md` (question, answer, status):
    - Accountable decisions: each regulated decision, its accountable role, and confirmation that the AI
      only prepares it.
    - Disclosure: a drafted customer-facing line, if any, saying AI assisted, and where it appears.
@@ -40,6 +45,6 @@ description: VALUED gate U. Design where a person decides for every action, reco
    - Logging: what is recorded for every action (input, sources, output, the approver, time, version),
      and how long it is kept.
    Add open items to the "Governance log" in `out/state.md`.
-7. **Finalize** `out/4-user-loop.md`, update `out/state.md`.
-8. **Say it** (three lines): the system drafts and a person decides; the one thing it never does; why
+8. **Finalize** `out/4-user-loop.md`, update `out/state.md`.
+9. **Say it** (three lines): the system drafts and a person decides; the one thing it never does; why
    every action is logged with who approved it.

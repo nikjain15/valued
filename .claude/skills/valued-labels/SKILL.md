@@ -42,7 +42,10 @@ description: VALUED gate L. Define ground truth before any model is built, recom
    never list carry `"never": true`; at least 3 of them.
    Then **split it**: move 10 rows covering every group into `out/proto/holdout.json`. The builder may
    learn from the 30 dev rows; the holdout is never shown to it, not even while fixing.
-5. **Systems to connect** (an output, specific to the industry): 5 to 8 systems the first wave reads
+5. **Systems to connect** (an output, specific to the industry). **Start from the industry list** in
+   `connectors-library.json` in this skill's folder (key = `industry` from gate V, or the closest):
+   keep every system the first wave touches (at least 6), rewrite `provides` and `usedFor` for this
+   case, and add any system the case needs that the list lacks. These are the systems the first wave reads
    from or hands off to, grouped as where work arrives (`channel`), approved knowledge (`knowledge`),
    systems of record (`record`), test and labelling data (`testing`), and people and alerts (`collab`).
    Name each by what it is ("Claims system", "Contact-centre platform"); put vendor names only as

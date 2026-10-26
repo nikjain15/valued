@@ -73,6 +73,12 @@ client to accept or overrule.
    `{ "name", "kind": "rules" | "model", "job", "may": [], "never": [], "gate" }`, using the client's words
    ("Safety guard", "Extraction assistant"), never "agent 1". When the client allows a hosted model,
    recommend design C (AI with a rules guard) for the release.
+   **Sweeps** (an output): 1 to 3 assistants that work unprompted on a schedule, the way a good
+   colleague checks things overnight (for example: customers with three contacts on the same topic in 30
+   days; claims nearing the state acknowledgement deadline; households turning 73 this year; policies
+   that contradict a recent change). For each: the assistant, rules or AI, the schedule, what it checks,
+   and the decision it hands to a person. Write them to `case.json` as `sweeps`:
+   `{ "agent", "kind", "schedule", "checks", "findings": [] }`; the build step writes the findings.
 7. **Governance check** in `out/2-ai-fit.md` (question, answer, status):
    - Human judgement required: decisions in scope that a regulation or policy reserves for a person
      (for example coverage, credit, suitability, clinical). They stay **off AI**: the AI may prepare,

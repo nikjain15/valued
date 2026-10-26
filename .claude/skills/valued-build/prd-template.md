@@ -84,6 +84,12 @@ request ─▶ escalation guard ─▶ router (one source?) ─▶ draft (cited 
 | Safety guard | Rules | <escalation and never-list check> | <never> | Catches every escalation |
 | <assistant> | <AI / rules> | <job> | <never> | <release check> |
 
+**Sweeps (proactive work)**
+
+| Sweep | Rules or AI | Schedule | What it checks | Decision it hands to a person |
+|---|---|---|---|---|
+| <sweep> | <rules / AI> | <nightly> | <check> | <decision> |
+
 **Alternatives considered**
 
 | Alternative | Why not now | When we would revisit |
@@ -123,6 +129,16 @@ request ─▶ escalation guard ─▶ router (one source?) ─▶ draft (cited 
 | Action | Autonomy (first 90 days) | Approver | AI shows | On failure |
 |---|---|---|---|---|
 | <action> | <suggest / draft with approval / act> | <role> | reason and source | route to a person |
+
+**Clocks**
+
+| Outcome | Respond within | Regulatory clock |
+|---|---|---|
+| Escalate | <hours> | <e.g. complaint acknowledgement> |
+| Needs a person | <hours> | <none or name> |
+| Prepared for review | <hours> | <none or name> |
+
+**Learning loop:** any reviewer can mark an outcome wrong; it joins the labelled test set with the right answer and every design is re-scored.
 
 **Disclosure (compliance to confirm):** "<drafted line>".
 

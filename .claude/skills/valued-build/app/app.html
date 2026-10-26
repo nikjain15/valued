@@ -25,6 +25,7 @@
   .nav button[aria-current="page"] svg { color: var(--brand); }
   .nav .count { margin-left: auto; font-size: 11px; font-weight: 700; background: var(--error); color: var(--white); border-radius: var(--r-pill); padding: 1px 7px; }
   .nav .count.soft { background: var(--line-2); color: var(--ink-3); }
+  .nav .count:empty { display: none; }
   .me { margin-top: auto; display: flex; gap: 10px; align-items: center; padding: 10px 6px 0; border-top: 1px solid var(--line-2); }
   .av { width: 36px; height: 36px; border-radius: 50%; background: var(--brand-tint); color: var(--brand-strong); display: grid; place-items: center; font-weight: 700; font-size: 13px; flex: none; }
   .av.sm { width: 30px; height: 30px; font-size: 11px; }
@@ -175,6 +176,15 @@
   .code { font: 600 12px var(--font-mono); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
   .stats { display: flex; gap: 8px; flex-wrap: wrap; }
   .statb { background: var(--paper); border-radius: var(--r-card); padding: 8px 12px; min-width: 92px; } .statb b { display: block; font-family: var(--font-display); font-size: 20px; } .statb span { font-size: var(--fs-micro); color: var(--ink-3); }
+  .ready-banner { margin-top: 18px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .clock { font-size: 11.5px; font-weight: 600; padding: 2px 9px; border-radius: var(--r-pill); background: var(--paper); border: 1px solid var(--line-2); color: var(--ink-3); white-space: nowrap; }
+  .clock.soon { background: var(--amber-bg); border-color: #f1dfc2; color: var(--amber-strong); }
+  .clock.late { background: var(--error-bg); border-color: #f1cfcb; color: var(--error); }
+  .finding { all: unset; box-sizing: border-box; display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: start; background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; }
+  .finding .ic { width: 30px; height: 30px; border-radius: 8px; background: var(--brand-tint); color: var(--brand-strong); display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+  .finding p { font-size: var(--fs-label); color: var(--ink-2); margin-top: 3px; }
+  .finding.done { opacity: .55; }
+  .wrong { border-top: 1px dashed var(--line); padding-top: 12px; display: grid; gap: 10px; }
   .overnight { margin-top: 18px; background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; }
   .overnight .ic { width: 34px; height: 34px; border-radius: 10px; background: var(--dark); color: var(--white); display: grid; place-items: center; flex: none; }
   .overnight b { font-size: 15px; } .overnight p { font-size: var(--fs-label); color: var(--ink-2); margin-top: 4px; }
@@ -260,7 +270,10 @@
         <div class="hello"><span class="spark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></span>
           <div><h2 id="greet">Good morning.</h2><p id="greetSub"></p></div></div>
         <div class="tiles" id="tiles"></div>
+        <div id="readyBanner"></div>
         <div class="overnight" id="overnight"></div>
+        <div id="away"></div>
+        <div id="clocks"></div>
         <div id="queues"></div>
       </section>
 
@@ -482,12 +495,27 @@ function identity(row, i) {
   const name = pool[i % pool.length];
   const channel = row.slices?.channel || ({ desk: "chat", review: "email", rank: "book", chat: (row.slices?.region || "").toUpperCase() || "Teams" })[CASE.shape || "desk"];
   const mins = 4 + ((i * 37) % 300);
-  return { name, id: `${SHAPE.idp}${26104 + i * 7}`, channel, ago: mins < 60 ? `${mins} min ago` : `${Math.floor(mins / 60)} h ago` };
+  return { name, id: `${SHAPE.idp}${26104 + i * 7}`, channel, mins, ago: mins < 60 ? `${mins} min ago` : `${Math.floor(mins / 60)} h ago` };
 }
 function buildQueue() {
   ITEMS = (ROUTER ? GOLDEN : []).map((row, i) => ({ key: row.id, row, text: row.text, who: identity(row, i), d: ROUTER.decide(row.text), state: "open", ai: null }));
 }
 function counts() { const c = { escalate: 0, human: 0, answer: 0 }; for (const it of ITEMS) if (it.state === "open") c[it.d.verdict] = (c[it.d.verdict] || 0) + 1; return c; }
+function renderReadiness() {
+  const open = (CASE.governance || []).filter((g) => !/^answered/i.test(g.status || ""));
+  const owners = [...new Set(open.map((g) => g.owner).filter(Boolean))];
+  $("#readyBanner").innerHTML = open.length ? `<div class="banner warn ready-banner"><span><strong>Not ready for go-live yet.</strong> ${open.length} control${open.length === 1 ? "" : "s"} still open${owners.length ? `, owned by ${owners.slice(0, 3).join(", ")}${owners.length > 3 ? " and others" : ""}` : ""}. The pilot can run on synthetic data meanwhile.</span><button class="btn ghost sm" data-go="gov">Close the gaps</button></div>` : `<div class="banner ok ready-banner"><span><strong>Ready for go-live review.</strong> Every control has an answer.</span></div>`;
+}
+function renderAway() {
+  const sw = CASE.sweeps || []; const items = sw.flatMap((s, si) => (s.findings || []).map((f, fi) => ({ ...f, agent: s.agent, kind: s.kind, key: `${si}-${fi}` })));
+  $("#away").innerHTML = items.length ? `<div class="qhead"><h3>While you were away</h3><span>${sw.length} sweep${sw.length === 1 ? "" : "s"} ran ${esc(sw[0]?.schedule || "overnight")} and found ${items.length} things only you can decide</span></div>
+    <div class="queue">${items.slice(0, 4).map((f) => `<div class="finding ${FIND_DONE.has(f.key) ? "done" : ""}"><span class="ic">${f.kind === "model" ? "AI" : "R"}</span><div><b>${esc(f.title)}</b><p>${esc(f.why)}</p><div class="meta" style="margin-top:4px">${esc(f.agent)}${f.cite ? ` · cites ${esc(f.cite)}` : ""}</div></div><div class="row" style="flex-direction:column;align-items:flex-end;gap:6px">${f.due ? `<span class="clock soon">${esc(f.due)}</span>` : ""}<button class="btn ghost sm" data-find="${f.key}">${FIND_DONE.has(f.key) ? "Reviewed" : "Mark reviewed"}</button></div></div>`).join("")}</div>` : "";
+}
+const FIND_DONE = new Set();
+function renderClocks() {
+  const urgent = ITEMS.map((it) => ({ it, c: clockOf(it) })).filter((x) => x.c && x.c.cls).sort((a, b) => a.c.left - b.c.left).slice(0, 3);
+  $("#clocks").innerHTML = urgent.length ? `<div class="qhead"><h3>Close to their clock</h3><span>${esc(Object.values(CASE.clocks || {}).map((c) => c.label).filter(Boolean)[0] || "Response deadlines")} set in the working session</span></div><div class="queue">${urgent.map((x) => qcard(x.it)).join("")}</div>` : "";
+}
 function renderHome(persona = CASE.persona || { name: "there" }) {
   const c = counts(), total = ITEMS.length, V = CASE.verdicts || {};
   const hour = new Date().getHours(), part = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
@@ -506,9 +534,17 @@ function renderQueue() {
   const V = CASE.verdicts || {}, tabs = [["escalate", V.escalate?.label || "Escalate", "bad"], ["human", V.human?.label || "Needs you", ""], ["answer", V.answer?.label || "Ready", ""], ["done", "Done", ""]];
   const list = (k) => ITEMS.filter((it) => (k === "done" ? it.state !== "open" : it.d.verdict === k && it.state === "open"));
   $("#qtabs").innerHTML = tabs.map(([k, l, cls]) => `<button role="tab" data-qtab="${k}" aria-selected="${k === qTab}">${esc(l)}<span class="n ${cls && list(k).length ? cls : ""}">${list(k).length}</span></button>`).join("");
-  const items = list(qTab);
+  const items = list(qTab).sort((a, b) => (clockOf(a)?.left ?? 1e9) - (clockOf(b)?.left ?? 1e9));
   $("#qlist").innerHTML = items.length ? items.map(qcard).join("") : `<div class="card"><p class="muted">Nothing here right now.</p></div>`;
 }
+/* Clocks: each outcome has a response deadline set at gate U; items count down from arrival. */
+function clockOf(it) {
+  const c = (CASE.clocks || {})[it.d.verdict]; if (!c || !c.hours || it.state !== "open") return null;
+  const left = c.hours * 60 - (it.who.mins || 0), total = c.hours * 60;
+  const txt = left <= 0 ? `Overdue ${fmtDur(-left)}` : `Due in ${fmtDur(left)}`;
+  return { left, cls: left <= 0 ? "late" : left < total * 0.25 ? "soon" : "", txt, label: c.label || "" };
+}
+const fmtDur = (m) => (m >= 1440 ? `${Math.floor(m / 1440)}d ${Math.floor((m % 1440) / 60)}h` : m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m}m`);
 function qcard(it) {
   const trig = triggerOf(it.d), V = CASE.verdicts || {};
   const body = clean(it.text), excerpt = body.length > 190 ? body.slice(0, 190) + "..." : body;
@@ -516,7 +552,7 @@ function qcard(it) {
     <span class="av sm">${initials(it.who.name)}</span>
     <div class="qbody"><div class="qtop"><strong>${esc(it.who.name)}</strong><span class="meta">${esc(it.who.id)} · ${esc(it.who.channel)} · ${esc(it.who.ago)}</span></div>
       <p>${highlight(excerpt, [trig])}</p>${it.d.reason ? `<div class="why" style="margin-top:4px">${esc(it.d.reason)}</div>` : ""}</div>
-    <div class="qside"><span class="pill ${VSTYLE[it.d.verdict]}">${esc(V[it.d.verdict]?.label || it.d.verdict)}</span>${it.state !== "open" ? `<span class="meta">${esc(it.state)}</span>` : ""}</div></button>`;
+    <div class="qside"><span class="pill ${VSTYLE[it.d.verdict]}">${esc(V[it.d.verdict]?.label || it.d.verdict)}</span>${(() => { const c = clockOf(it); return c ? `<span class="clock ${c.cls}" title="${esc(c.label)}">${esc(c.txt)}</span>` : ""; })()}${it.state !== "open" ? `<span class="meta">${esc(it.state)}</span>` : ""}</div></button>`;
 }
 
 /* ---------- Agents: agentic by design, deterministic where it must be ---------- */
@@ -579,14 +615,23 @@ function trailFor(it) {
     if (rulesSteps[0]) steps.push([rulesSteps[0], "rules", it.d.verdict === "answer" ? `Matched approved knowledge: ${srcTitle(srcOf(it.d.source))}.` : it.d.reason]);
     if (it.d.verdict === "answer" && mdl) steps.push([mdl, it.ai?.by && !/template|rules/.test(it.ai.by) ? "model" : "rules", it.ai?.meta || (AI && BUILD.engine !== "rules" ? "Working..." : "AI is off here, so it is assembled from the approved source by rule.")]);
   }
-  steps.push([{ name: (CASE.persona || {}).name || "You" }, "person", it.state !== "open" ? `${it.state}.` : "Waiting for your decision."]);
+  steps.push([{ name: CASE.shape === "chat" ? "Service desk" : (CASE.persona || {}).name || "You" }, "person", it.state !== "open" ? `${it.state}.` : CASE.shape === "chat" ? (it.d.verdict === "answer" ? "Answered directly; any hand-off reaches the desk." : "Ticket or case opened for a person.") : "Waiting for your decision."]);
   return `<div><div class="label">How this was prepared</div><ol class="trail" style="margin-top:6px">${steps.map(([a, k, txt]) => `<li><span class="k ${k}">${k === "model" ? "AI" : k === "person" ? "P" : k === "stop" ? "!" : "R"}</span><span><b>${esc(a.name)}</b> · ${esc(txt)}</span><span class="meta">${k === "model" ? esc(model().short) : k === "person" ? "you" : "rules"}</span></li>`).join("")}</ol></div>`;
+}
+function wrongBox(it) {
+  const V = CASE.verdicts || {};
+  return `<div class="wrong" id="wrongBox"><button class="linkbtn" id="wrongOpen">This is wrong</button><div id="wrongForm" hidden>
+    <div class="label">What should it have been?</div>
+    <div class="row"><select id="wrongV">${["answer", "human", "escalate"].map((v) => `<option value="${v}" ${v === it.d.verdict ? "" : ""}>${esc(V[v]?.label || v)}</option>`).join("")}</select>
+    <select id="wrongS"><option value="">No source</option>${SOURCES.map((s) => `<option value="${esc(s.id)}">${esc(srcTitle(s))}</option>`).join("")}</select>
+    <button class="btn solid sm" id="wrongSave">Add to the test set</button></div>
+    <p class="meta">It joins the labelled test set with your answer, and every design is re-scored against it on the ${esc(LBL().evals)} page.</p></div></div>`;
 }
 function addTrail(it) {
   const host = document.querySelector("#item .assist") || document.querySelector("#item .stack");
   if (!host || !OPEN) return;
   document.querySelector("#trailBox")?.remove();
-  const d = document.createElement("div"); d.id = "trailBox"; d.innerHTML = trailFor(it); host.appendChild(d);
+  const d = document.createElement("div"); d.id = "trailBox"; d.innerHTML = trailFor(it) + wrongBox(it); host.appendChild(d);
 }
 
 /* ---------- Navigation ---------- */
@@ -597,7 +642,7 @@ function go(view, key) {
   document.querySelectorAll(".nav button").forEach((b) => b.removeAttribute("aria-current"));
   if (view === "item") { $("#p-item").hidden = false; openItem(key); document.querySelector('[data-go="home"]').setAttribute("aria-current", "page"); }
   else { $("#p-" + view).hidden = false; document.querySelector(`.nav [data-go="${view}"]`)?.setAttribute("aria-current", "page"); $("#pageTitle").textContent = TITLES[view] || ""; $("#pageCtx").textContent = view === "home" ? `${CASE.client || ""} · ${new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}` : ""; }
-  if (view === "home") { renderHome(); renderOvernight(); } if (view === "queue") renderQueue(); if (view === "audit") renderLog(); if (view === "gov") renderGov(); if (view === "agents") renderAgents();
+  if (view === "home") { renderHome(); renderOvernight(); renderReadiness(); renderAway(); renderClocks(); } if (view === "queue") renderQueue(); if (view === "audit") renderLog(); if (view === "gov") renderGov(); if (view === "agents") renderAgents();
   scrollTo(0, 0);
 }
 function logAction(it, action, extra = {}) {
@@ -699,7 +744,7 @@ function rankView(it, V) {
   const actions = it.d.actions || (it.d.source ? [{ source: it.d.source, why: it.d.reason, must: true }] : []);
   const facts = it.text.split(/\.\s+/).map((x) => x.replace(/\.$/, "").trim()).filter(Boolean).slice(0, 5);
   $("#item").innerHTML = `<div class="stack">
-    <div class="card"><div class="hh"><span class="av">${initials(it.who.name)}</span><div><h2 style="font-size:22px">${esc(it.who.name)} household</h2><div class="meta">${esc(it.who.id)} · ${esc(it.who.ago)}</div></div></div>
+    <div class="card"><div class="hh"><span class="av">${initials(it.who.name)}</span><div><h2 style="font-size:22px">${esc(it.who.name)}${/household/i.test(it.who.name) ? "" : " household"}</h2><div class="meta">${esc(it.who.id)} · ${esc(it.who.ago)}</div></div></div>
       <div class="facts" style="margin-top:12px">${facts.map((f) => `<span class="fact">${esc(f)}</span>`).join("")}</div></div>
     ${outcomeHead(it, V)}
     ${it.d.verdict === "escalate" ? escBanner(it) + `<div class="row"><button class="btn danger" data-act="Sent to supervisor">Send to ${esc(CASE.escalationOwner || "supervisor")}</button></div>`
@@ -815,7 +860,7 @@ const valText = (d) => (d.kind === "min" ? `${Math.round(d.value * 100)}%` : d.k
 function renderEvalControls() {
   const rows = rowsFor(evalSet), e_ = rows.filter((r) => r.expected === "escalate").length;
   $("#setDev").textContent = `Development set (${GOLDEN.length})`; $("#setHold").textContent = `Sealed holdout (${HOLDOUT.length})`;
-  $("#setCustom").hidden = !CUSTOM.length; $("#setCustom").textContent = `Your data (${CUSTOM.length})`;
+  $("#setCustom").hidden = !CUSTOM.length; $("#setCustom").textContent = `Your data and flags (${CUSTOM.length})`;
   $("#setInfo").textContent = evalSet === "holdout" ? `${rows.length} ${SHAPE.noun[1]} the system never saw while it was built or fixed. The honest score; individual items stay hidden.` : `${rows.length} ${SHAPE.noun[1]}, each labelled with the right outcome before anything was built: ${e_} should escalate, ${rows.filter((r) => r.expected === "answer").length} are ready, ${rows.filter((r) => r.expected === "human").length} need a person.`;
   $("#engineSeg").innerHTML = ENGINES.map((e) => `<button class="design" data-engine="${e.id}" aria-pressed="${e.id === engine}"><span class="t">Design ${e.letter}: ${e.name}${e.rec ? ' <span class="pill ok">Recommended</span>' : ""}</span><div class="path">${esc(e.path)}</div><p>${esc(e.what)}</p><p><span class="pro">+</span> ${esc(e.pro)}<br><span class="con">-</span> ${esc(e.con)}</p></button>`).join("");
   $("#engineDesc").textContent = engine !== "rules" ? `Model for designs B and C: ${model().short}. Change it in the top bar.` : "Design A uses no model.";
@@ -965,6 +1010,12 @@ document.addEventListener("click", async (e) => {
   const t = e.target.closest("button"); if (!t) return;
   if (t.dataset.go) return go(t.dataset.go);
   if (t.dataset.qtab) { qTab = t.dataset.qtab; return renderQueue(); }
+  if (t.dataset.find) { FIND_DONE.add(t.dataset.find); LOG.unshift({ at: new Date().toISOString(), item: "Overnight finding", verdict: "", action: "Finding reviewed", by: (CASE.persona || {}).name || "Reviewer", edited: false, ai: "none" }); $("#cntLog").textContent = LOG.length; return renderAway(); }
+  if (t.id === "wrongOpen") { $("#wrongForm").hidden = false; t.hidden = true; return; }
+  if (t.id === "wrongSave") { const it = OPEN, v = $("#wrongV").value, src = $("#wrongS").value || null;
+    CUSTOM.push({ id: `f${String(CUSTOM.length + 1).padStart(2, "0")}`, text: it.text, expected: v, source: v === "answer" ? src : null, slices: { origin: "reviewer flag", ...(it.row.slices || {}) } });
+    logAction(it, `Flagged as wrong: should be ${v}`); it.state = "open"; renderEvalControls();
+    $("#wrongBox").innerHTML = `<div class="banner ok"><strong>Added to the test set.</strong> ${CUSTOM.length} reviewer-labelled item${CUSTOM.length === 1 ? "" : "s"} now in "Your data" on the ${esc(LBL().evals)} page.</div>`; return; }
   if (t.dataset.open) return go("item", t.dataset.open);
   if (t.dataset.more) { const v = t.dataset.more; t.previousElementSibling.innerHTML = ITEMS.filter((it) => it.d.verdict === v && it.state === "open").map(qcard).join(""); t.remove(); return; }
   if (t.dataset.act) { const d = $("#draft"); const edited = Boolean(d && d.dataset.original !== undefined && d.innerText.trim() !== d.dataset.original.trim()); if (/Sent|Filed|Accepted/.test(t.dataset.act)) { stats.approved++; if (edited) stats.edited++; } logAction(OPEN, t.dataset.act, { edited, ai: OPEN.ai?.by || "none" }); return go("queue"); }

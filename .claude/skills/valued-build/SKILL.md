@@ -23,7 +23,13 @@ in the orchestrator). This step fills what needs every gate at once. Target: 3 m
 1. **Check the prototype.** `curl -s localhost:4317/api/status` must show `"ready":true`. If the server
    is not running, start it in the background: `node out/proto/server.js`. If `router.js` uses `export`,
    convert it to `module.exports = { decide }`. Fill any `case.json` field a gate left empty (fields
-   listed in the orchestrator's table).
+   listed in the orchestrator's table). If `connectors` is missing or has fewer than 6, fill it from
+   `.claude/skills/valued-labels/connectors-library.json` for the case's `industry`: channels and
+   knowledge `connected`, the rest `planned`. The Data and tools page must never be empty.
+   For each sweep in `sweeps`, write 2 to 3 `findings` from the synthetic world of this run:
+   `{ "title", "why", "cite", "due" }`, where `why` states the facts the sweep read, `cite` names the
+   rule or source, and `due` is a clock when one applies ("Due in 2 days"). If `clocks` is missing,
+   set it from gate U's response times.
 2. **Write the FAQ** into `case.json` as `faq`: 7 to 8 `{ "q", "a" }` pairs, each answer two sentences
    at most, written from this run's decisions, not generic. Cover: why this first (and not the obvious
    alternative); what it never does; what happens when it is unsure; how we know it is safe to launch
