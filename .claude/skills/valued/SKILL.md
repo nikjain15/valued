@@ -80,7 +80,7 @@ holdout says "not independent".
 2. Set up:
    ```bash
    B=.claude/skills/valued-build; mkdir -p out/proto out/gates out/tools inputs
-   printf '#!/bin/sh\nexec node .claude/skills/valued/conductor.js "$@"\n' > out/tools/c; chmod +x out/tools/c
+   printf '#!/bin/sh\nexport PORT=${PORT:-%s}\nexec node .claude/skills/valued/conductor.js "$@"\n' "${PORT:-4317}" > out/tools/c; chmod +x out/tools/c
    cp $B/app/app.html $B/app/server.js $B/app/ff.css $B/prd-viewer.html $B/eval.js out/proto/
    echo '{}' > out/proto/case.json; echo '[]' > out/cards.json
    echo "<the case line>" > out/case-line.txt; echo "orchestrated" > out/mode.txt
@@ -137,7 +137,7 @@ If the client picks a different first wave than A recommended, update `a.json` (
 ## Phase 4: L and U in parallel (5 min)
 
 `out/tools/c clock 4 start`. Launch `valued-labels` and `valued-user-loop` together. Both read `out/gates/v.json`,
-`a.json` and the answered cards; neither asks the client anything. L writes `l.json`, `golden.json`,
+`a.json` and the answered cards; neither asks the client anything. L writes `l.json` and `out/proto/golden.json`,
 `holdout.json`, `sources.json`; U writes `u.json`. When both are back, `out/tools/c render`. `out/tools/c clock 4 end`.
 
 ## Phase 5: E and D in parallel (6 min)
