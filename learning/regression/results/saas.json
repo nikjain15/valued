@@ -1,0 +1,157 @@
+{
+  "dir": "valued-audit-saas",
+  "shape": "rank",
+  "questions": 11,
+  "agents": 5,
+  "sweeps": 3,
+  "systems": 7,
+  "pending": 0,
+  "golden": 34,
+  "holdout": 20,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "pass",
+    "6": "pass",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4409/",
+      "errors": [],
+      "items": 34,
+      "counts": "{\"escalate\":15,\"human\":10,\"answer\":9}",
+      "greet": "Good afternoon, Maya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 13 controls still open, owned by ",
+      "overnight": 311,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New account|Release checks|Assistants|Governance|Audit trail|Account data2/|How it works|FAQ",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 656
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 436
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 880
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 7,
+      "govRows": 25,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-saas/out/hosted/index.html",
+      "errors": [],
+      "items": 34,
+      "counts": "{\"escalate\":15,\"human\":10,\"answer\":9}",
+      "greet": "Good afternoon, Maya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 13 controls still open, owned by ",
+      "overnight": 311,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New account|Release checks|Assistants|Governance|Audit trail|Account data2/|How it works|FAQ",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 656
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 436
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 880
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 7,
+      "govRows": 25,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4409/prd",
+      "errors": [],
+      "text": 21344,
+      "pending": 0
+    }
+  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 7,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 27,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 3,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 110,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 153,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 26,
+      "over": false
+    }
+  ],
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": 6.016666666666667
+}

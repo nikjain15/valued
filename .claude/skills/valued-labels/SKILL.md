@@ -15,6 +15,14 @@ description: VALUED gate L. Define ground truth before any model is built, recom
 | **Gives** | A label spec, a golden set, a holdout, a data and privacy table, and a labelling-approach recommendation with trade-offs. |
 | **Governance asks** | Are we allowed to use this data for this purpose? Is personal or health data minimised and protected? Do the labels check fairness across groups? |
 
+> **Mode.** In the default run the conductor (`valued/SKILL.md`) asks this gate's cards in its rounds: skip
+> the "Ask the client" step, read the answered cards for gate L in `out/cards.json`, and never ask a card
+> yourself. Under `--teach`, ask them as written and append each card, with its answer, to `out/cards.json`
+> in the card schema. Either way, end by writing `out/gates/l.json` (below) and running
+> `node .claude/skills/valued/conductor.js render` (skip the render when the conductor launched you in a parallel
+> phase; it renders once both gates are back). Never hand-edit the rendered files: wherever a step below says to
+> write a gate file, `case.json`, `state.md` or a PRD section, put that content in the gate JSON instead.
+
 ## Steps
 
 1. **Draft the label spec** for the first-wave use case: the verdicts the system can return (for an
@@ -30,7 +38,13 @@ Schemas the prototype reads: `verdicts` in `case.json` is
    assistant's `gate` is one of "Catches every escalation", "Keeps false alarms low", "Never acts without
    approved knowledge", "Sends each item the right way", "Works equally across groups", "No group falls
    below the bar", "Stays off forbidden topics", "Only allowed outcomes".
-3. Write `out/proto/sources.json`: 6 to 8 short source items, each with an `id`, a plain `title` the user would recognise (for example "Wire transfers", "US paid time off") and `text`.
+3. Write `out/proto/sources.json`: 6 to 10 short source items, each with an `id`, a plain `title` the user would recognise (for example "Wire transfers", "US paid time off") and `text`.
+   **Cover every row.** Every document type and request family that appears in `golden.json` or
+   `holdout.json` needs a source whose `match` phrases carry its wording, including the quiet ones
+   (status notes, covering letters, acknowledgements, amendments). After writing all three files, check
+   each row against the match lists: a row that matches no source scores as mis-routed, not as a safe
+   escalation, so widen the match list rather than leaving the backstop to catch it. Never change a
+   label to fit a source.
    For the `review` shape, each source is a document type and also carries `fields`: the exact list of
    field names the extraction must fill (for example `["Member ID", "Drug and dose", "Diagnosis code"]`). **If `inputs/`
    holds client documents, build the sources from them** (one item per policy or article that the
@@ -40,14 +54,14 @@ Schemas the prototype reads: `verdicts` in `case.json` is
    de-identify (names, account and card numbers, addresses, dates of birth), keep the phrasing, and set
    `"origin"`. Propose each row's label from the label spec and mark it `"label": "proposed"` until the
    client's labeller confirms it; fill the remaining rows synthetically and say how many are real.
-   Write `out/proto/golden.json` **now, before any system exists**: 40 rows, each
+   Write `out/proto/golden.json` **now, before any system exists**: 50 rows (30 dev after the split), each
    `{ "id", "text", "expected": "answer|human|escalate", "source": "<id or null>", "slices": {...} }`.
    At least 8 rows in a second language the client serves, at least 6 implied complaints or distress
    without the obvious keyword, at least 5 adversarial rows. Hand-written variety.
    Each row's `slices` uses short keys the eval can group by, for example
    `{ "lang": "es", "register": "implied", "adversarial": "yes" }`. Rows asking for something on the
    never list carry `"never": true`; at least 3 of them.
-   Then **split it**: move 12 rows covering every group, at least 6 of them escalations, into
+   Then **split it**: move 20 rows covering every group, at least 10 of them escalations (2+ per trigger family the holdout tests), into
    `out/proto/holdout.json`. Say plainly that with this few escalation rows a 0.99 bar means zero misses. The builder may
    learn from the 30 dev rows; the holdout is never shown to it, not even while fixing.
 5. **Systems to connect** (an output, specific to the industry). **Start from the industry list** in
@@ -65,9 +79,9 @@ Schemas the prototype reads: `verdicts` in `case.json` is
 6. **Data and privacy table** (max 6 rows): data needed, owner, purpose, personal or health data
    involved, minimisation (dropped, masked or tokenised), retention.
 7. **Ask the client (max 2 cards):**
-   - **"Ops lead": "Which group worries you most?"** Groups from step 1, our preference first (the one
+   - **"<operations owner role>": "Which group worries you most?"** Groups from step 1, our preference first (the one
      whose silent failure would hurt most), each with why it matters.
-   - **"Data owner": "What can the pilot connect to?"** Options such as: read-only channels and knowledge
+   - **"<data owner role>": "What can the pilot connect to?"** Options such as: read-only channels and knowledge
      with synthetic test labels (Recommended for a first pilot); read-only including systems of record
      with personal data masked; file uploads only for now. Each with its trade-off. The labelling
      source follows from the answer and is stated as a recommendation, not asked.
@@ -77,8 +91,11 @@ Schemas the prototype reads: `verdicts` in `case.json` is
    - Minimisation: what personal or health data the labels need, and what is masked or excluded.
    - Fairness: which groups the golden set covers, and the minimum rows per group for a gate to mean
      something. Flag any group too thin to evaluate.
-   Add open items to the "Governance log" in `out/state.md`.
-9. **Finalize** `out/3-labels.md` (spec, groups, counts per group, data table, recommendation); update
-   `out/state.md`.
+   Put the rows in `governance`; render adds open ones to the Governance log.
+9. **Write** `out/gates/<k>.json` (see Output) and run `node .claude/skills/valued/conductor.js render`; it writes the gate file, state.md, the PRD sections and case.json.
 10. **Say it** (three lines): labels before the model; the group you split by and why; why the holdout
    stays sealed.
+
+## Output: `out/gates/l.json`
+
+Keys (render and `conductor.js check` read them; keep strings to one line): `verdicts` (`{ answer: { label, desc }, human: {...}, escalate: {...} }`), `groups` (`{ key, values, why }`, keys matching the golden `slices`), `labelling` (a recommendation), `goldenNote`, `connectors` (6+ in the connector schema, starting from the library), `dataPrivacy` (`{ data, owner, purpose, personal, minimisation, retention }`), `samples` (optional; 6 from golden.json, otherwise render picks them). Every escalation row carries `slices.family` with one of `a.json` `triggerFamilies`; every family has 2+ escalation rows in dev, and the holdout's 6+ escalations test new wordings of families dev has, never a family dev lacks (not every family must appear in the holdout). Groups with fewer than 2 holdout escalations are reported, not gated. Rewrite seed slices to this case's group keys and drop seeds off-topic for the case. Each source in `sources.json` carries `match`: 6 to 10 phrases and synonyms a user might use for it. Also write `out/proto/golden.json` (30+ dev rows after the split), `out/proto/holdout.json` (20 rows, 10+ escalations) and `out/proto/sources.json`. Start the golden set from `golden-seeds.json` for the industry (`node .claude/skills/valued/conductor.js seed <industry>`): rewrite each seed for this case, then add rows; never copy a seed into the holdout unchanged.; plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.

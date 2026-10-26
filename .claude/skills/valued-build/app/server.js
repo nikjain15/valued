@@ -22,8 +22,25 @@ function loadRouter() {
   const file = path.join(DIR, "router.js");
   if (!fs.existsSync(file)) return null;
   delete require.cache[require.resolve(file)];
-  return require(file);
+  let cache = {}; try { cache = JSON.parse(fs.readFileSync(path.join(DIR, "model-cache.json"), "utf8")); } catch {}
+  return withBackstop(require(file), cache);
 }
+const normKey = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim();
+// Model backstop (model-cache.json): escalates what the rules missed, and checks or supplies the one source.
+const withBackstop = (r, raw) => {
+  if (!r) return r;
+  const cache = Object.fromEntries(Object.entries(raw || {}).map(([k, v]) => [normKey(k), v]));
+  return { ...r, decide: (t) => {
+    const d = r.decide(t) || {}, m = cache[normKey(t)];
+    if (!m || d.verdict === "escalate") return d;
+    if (m.verdict === "escalate") return { verdict: "escalate", source: null, reason: `model backstop (${m.family || "escalation"}): ${m.reason || ""}`.trim(), backstop: true };
+    // Source matching: answer when rules and model agree, or when only the model found one source and is sure; else a person.
+    if (d.verdict === "answer" && m.source !== undefined && m.source !== d.source) return { ...d, verdict: "human", source: null, reason: `rules matched ${d.source}, the model ${m.source || "none"}: a person decides`, backstop: true };
+    if (d.verdict === "human" && m.source && m.sure) return { ...d, verdict: "answer", source: m.source, reason: `matched by the model: ${m.reason || m.source}`, backstop: true };
+    return d;
+  } };
+};
+
 function refresh() {
   sources = readJson("sources.json", []);
   build = readJson("build.json", { engine: "rules" });
@@ -136,7 +153,7 @@ function runEval(file) {
 }
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".md": "text/markdown; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml" };
-const PUBLIC = new Set(["app.html", "ff.css", "case.json", "build.json", "sources.json", "gates.json", "router.js", "golden.json", "holdout.json"]);
+const PUBLIC = new Set(["app.html", "ff.css", "case.json", "build.json", "sources.json", "gates.json", "router.js", "golden.json", "holdout.json", "model-cache.json"]);
 
 function send(res, code, body, type = "application/json") {
   res.writeHead(code, { "content-type": type, "cache-control": "no-store" });

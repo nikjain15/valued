@@ -1,0 +1,187 @@
+{
+  "dir": "valued-audit-pilot",
+  "shape": "desk",
+  "questions": 13,
+  "agents": 4,
+  "sweeps": 3,
+  "systems": 9,
+  "pending": 0,
+  "golden": 30,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "fail",
+    "6": "fail",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 5,
+      "msg": "no FR- requirement ids",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 5,
+      "msg": "no NFR- requirement ids",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 5,
+      "msg": "no US- requirement ids",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 5,
+      "msg": "no M- requirement ids",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 5,
+      "msg": "no R- requirement ids",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 6,
+      "msg": "holdout eval does not pass all gates",
+      "file": "out/proto/router.js"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4420/",
+      "errors": [],
+      "items": 30,
+      "counts": "{\"escalate\":14,\"human\":6,\"answer\":10}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 16 controls still open, owned by ",
+      "overnight": 314,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New dispute|Release checks|Assistants|Controls|Dispute audit log|Systems4/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 1004
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 727
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1364
+        }
+      },
+      "agentCards": 4,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 9,
+      "govRows": 32,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-pilot/out/hosted/index.html",
+      "errors": [],
+      "items": 30,
+      "counts": "{\"escalate\":14,\"human\":6,\"answer\":10}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 16 controls still open, owned by ",
+      "overnight": 314,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New dispute|Release checks|Assistants|Controls|Dispute audit log|Systems4/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 1004
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 727
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1364
+        }
+      },
+      "agentCards": 4,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 9,
+      "govRows": 32,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4420/prd",
+      "errors": [],
+      "text": 27593,
+      "pending": 0
+    }
+  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 8,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 14,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 91,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 17,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 124,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 201,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 7,
+      "over": false
+    }
+  ],
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE BLOCKED"
+}

@@ -1,0 +1,134 @@
+{
+  "dir": "valued-audit-card-dispute",
+  "shape": "review",
+  "questions": 13,
+  "agents": 6,
+  "sweeps": 3,
+  "systems": 9,
+  "pending": 0,
+  "golden": 30,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "fail",
+    "6": "fail",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 6,
+      "msg": "holdout eval does not pass all gates",
+      "file": "out/proto/router.js"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4401/",
+      "errors": [],
+      "items": 30,
+      "counts": "{\"escalate\":12,\"human\":7,\"answer\":11}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 16 controls still open, owned by ",
+      "overnight": 318,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New dispute|Reg E quality and release|Assistants and rules|Controls and compliance|Case activity|Data and tools4/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 798
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 1124
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1158
+        }
+      },
+      "agentCards": 6,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 9,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-card-dispute/out/hosted/index.html",
+      "errors": [],
+      "items": 30,
+      "counts": "{\"escalate\":12,\"human\":7,\"answer\":11}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 16 controls still open, owned by ",
+      "overnight": 318,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New dispute|Reg E quality and release|Assistants and rules|Controls and compliance|Case activity|Data and tools4/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 798
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 1124
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1158
+        }
+      },
+      "agentCards": 6,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 9,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4401/prd",
+      "errors": [],
+      "text": 30702,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": null,
+    "V": null,
+    "A": null,
+    "L": null,
+    "U": null,
+    "E": 107,
+    "D": 46,
+    "B": 88
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE BLOCKED",
+  "minutes": null
+}

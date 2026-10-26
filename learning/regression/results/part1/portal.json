@@ -1,0 +1,139 @@
+{
+  "dir": "valued-audit-portal",
+  "shape": "desk",
+  "questions": 13,
+  "agents": 5,
+  "sweeps": 3,
+  "systems": 8,
+  "pending": 0,
+  "golden": 28,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "fail",
+    "6": "fail",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 6,
+      "msg": "holdout eval does not pass all gates",
+      "file": "out/proto/router.js"
+    },
+    {
+      "std": 6,
+      "msg": "golden 28 rows, holdout 12; expected 30+ and 10+",
+      "file": "out/proto/golden.json"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4404/",
+      "errors": [],
+      "items": 28,
+      "counts": "{\"escalate\":11,\"human\":7,\"answer\":10}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
+      "overnight": 312,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New message|Safety and release|Assistants and rules|Clinical governance|Triage record|Data and systems3/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 806
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 718
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1619
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 8,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-portal/out/hosted/index.html",
+      "errors": [],
+      "items": 28,
+      "counts": "{\"escalate\":11,\"human\":7,\"answer\":10}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
+      "overnight": 312,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New message|Safety and release|Assistants and rules|Clinical governance|Triage record|Data and systems3/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 806
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 718
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1619
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 8,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4404/prd",
+      "errors": [],
+      "text": 30147,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": null,
+    "V": null,
+    "A": null,
+    "L": null,
+    "U": null,
+    "E": 56,
+    "D": 34,
+    "B": 106
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE BLOCKED",
+  "minutes": null
+}

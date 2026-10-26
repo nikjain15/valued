@@ -18,43 +18,39 @@ client can click.
 The gates have already filled most of the PRD and the prototype as they went (see the live-outputs rule
 in the orchestrator). This step fills what needs every gate at once. Target: 3 minutes.
 
+> **Mode.** In the default run the conductor (`valued/SKILL.md`) asks this gate's cards in its rounds: skip
+> the "Ask the client" step, read the answered cards for gate B in `out/cards.json`, and never ask a card
+> yourself. Under `--teach`, ask them as written and append each card, with its answer, to `out/cards.json`
+> in the card schema. Either way, end by writing `out/gates/b.json` (below) and running
+> `node .claude/skills/valued/conductor.js render` (skip the render when the conductor launched you in a parallel
+> phase; it renders once both gates are back). Never hand-edit the rendered files: wherever a step below says to
+> write a gate file, `case.json`, `state.md` or a PRD section, put that content in the gate JSON instead.
+
 ## Steps
 
-1. **Check the prototype.** `curl -s localhost:4317/api/status` must show `"ready":true`. If the server
-   is not running, start it in the background: `node out/proto/server.js`. If `router.js` uses `export`,
-   convert it to `module.exports = { decide }`. Fill any `case.json` field a gate left empty (fields
-   listed in the orchestrator's table). If `connectors` is missing or has fewer than 6, fill it from
-   `.claude/skills/valued-labels/connectors-library.json` for the case's `industry`: channels,
-   knowledge and test data `connected`, the rest `planned`. The Data and tools page must never be empty.
-   For each sweep in `sweeps`, write 2 to 3 `findings` from the synthetic world of this run:
-   `{ "title", "why", "cite", "due" }`, where `why` states the facts the sweep read, `cite` names the
-   rule or source, and `due` is a clock when one applies ("Due in 2 days"). If `clocks` is missing,
-   set it from gate U's response times.
-2. **Write the FAQ** into `case.json` as `faq`: 7 to 8 `{ "q", "a" }` pairs, each answer two sentences
-   at most, written from this run's decisions, not generic. Cover: why this first (and not the obvious
-   alternative); what it never does; what happens when it is unsure; how we know it is safe to launch
-   (the client's bar and the latest result); whether it uses a model, and what happens if the model is
-   down or declines; who approves and what is logged; what data it uses and what is masked; what would
-   make us stop. Each pair also has `"from"`: the gate, the decision and who made it (for example
-   "Gate U: draft with approval (Risk)"), so every answer traces to the session. Set `version` to
-   `proto-0.1`.
-3. **Complete the PRD** in `out/prd.md`, following `prd-template.md`: replace every remaining
-   `> Pending: fills at gate B.` line (sections 1, 7, 12, 15, 16, 17 and the appendix), add the
-   Recommendation and Decision-asked quote under the meta line, and update `Version` to `0.1, draft for
-   client review`. Rules:
-   - Requirement IDs everywhere (G-, M-, US-, FR-, NFR-, R-, Q-, T-). Each FR has a testable acceptance
-     criterion, Given / When / Then where it fits, and names the user story it serves.
-   - Every number comes from a gate file or is marked (assumed). Never invent client facts.
-   - Re-read sections the gates wrote; fix contradictions with later decisions (for example a bar
-     changed at E). The PRD must agree with itself and with the prototype.
-   - Section 11 shows the real latest dev and holdout results, including any gate still red. Holdout
-     misses by id only, never their text. Row counts are current counts.
-   - Section 17 is for a coding agent: concrete tasks in order, each with the requirement it implements
-     and a command that proves it is done. Fill the kickoff prompt with the real use case.
-   - Tables at most 12 rows; where a gate produced more (governance often does), put open items first and
-     merge the rest. Telegraphic, verb-first. No em-dashes.
-4. **Render the standalone copy:** `node .claude/skills/valued-build/render-prd.js out/prd.md
-   out/prd.html`.
+1. **Check the prototype.** `curl -s localhost:4317/api/status` must show `"ready":true`; if the server is
+   not running, start it in the background (`PORT=4317 node out/proto/server.js`). `router.js` must be
+   self-contained CommonJS ending `module.exports = { decide }` (no `require`, no `import`).
+2. **Write `out/gates/b.json`** (keys under Output), reading every gate JSON, the answered cards and the
+   latest eval output:
+   - `sweepFindings`: for each sweep in `a.json`, in order, 2 to 3 findings from this run's synthetic world:
+     `why` states the facts the sweep read, `cite` names the rule or source, `due` is a clock when one applies.
+   - `faq`: 7 to 8 pairs, each answer two sentences at most, from this run's decisions, not generic. Cover:
+     why this first; what it never does; what happens when it is unsure; how we know it is safe (the
+     client's bar and the latest result); the model and what happens if it is down or declines; who approves
+     and what is logged; what data it uses and what is masked; what would make us stop. `from` names the
+     gate, the decision and who made it ("Gate U: draft with approval (Risk)").
+   - `requirements` with IDs, each naming its story and a Given / When / Then acceptance; `nfrs`, `risks`,
+     `dependencies`, `openQuestions`, and `tasks` for section 17 (concrete, in order, each with the
+     requirement it implements and the command that proves it done). Every number comes from a gate file or
+     is marked (assumed). No em-dashes. `version`: `proto-0.1`.
+3. **Render and check.** `node .claude/skills/valued/conductor.js render` writes every PRD section,
+   `case.json` (connectors topped up to 6 from the library, sweeps with findings, FAQ, samples, decisions,
+   governance), `out/prd.html` and `out/brief.html`. Then `node .claude/skills/valued/conductor.js check`;
+   fix what it names in the JSON and render again until it prints `All checks pass.`. A failing eval stays
+   red in section 11: never edit labels to turn it green.
+4. **Hosted page.** Always run `node .claude/skills/valued-build/build-hosted.js out` so
+   `out/hosted/index.html` exists.
 5. **Publish the hosted versions** (about a minute), so the client sees a real product and a real document:
    1. `node .claude/skills/valued-build/build-hosted.js out` and publish `out/hosted/index.html` with the
       Artifact tool, `capabilities: {"sample": {}}`. Note its URL (the prototype).
@@ -64,11 +60,15 @@ in the orchestrator). This step fills what needs every gate at once. Target: 3 m
       again to the same path, so the prototype's PRD button opens the PRD.
    The prototype runs the same router in the browser, lets the client pick Claude Haiku, Sonnet or Opus,
    and measures latency and estimated cost on every AI call, with no API key. Print both links and add
-   them to `out/state.md`. If publishing is unavailable, say so in one line and keep localhost.
+   them to `out/state-notes.md`. If publishing is unavailable, say so in one line and keep localhost.
 6. Write `out/proto/CLAUDE.md` with three lines: read `../prd.md` first; work from section 17; never
    edit `golden.json` or read `holdout.json`.
-7. Append to `out/state.md`: `Build: PRD complete (localhost:4317/prd, out/prd.html); prototype on
+7. Append to `out/state-notes.md` (render copies it into state.md): `Build: PRD complete (localhost:4317/prd, out/prd.html); prototype on
    localhost:4317 (engine <x>)`. Then `open http://localhost:4317` (skip under `--no-open`).
 8. **Say it** (three lines): this is the decisions turned into a spec a team or a coding agent can build
    from; every requirement has a test, and the evals are the definition of done; the prototype is the
    same rules, clickable, with every action logged.
+
+## Output: `out/gates/b.json`
+
+Keys (render and `conductor.js check` read them; keep strings to one line): `summary` `{ problem, who, build, never, works, milestone }`, `recommendation`, `decisionAsked`, `agentSentence` (one sentence with the figures), `requirements` (6+ `{ id, requirement, story, priority, acceptance }`, Given/When/Then), `nfrs` (`{ id, requirement, target }`), `risks` (`{ id, risk, likelihood, impact, mitigation }`), `dependencies` (`{ dependency, owner, neededFor, status }`), `openQuestions` (`{ id, question, owner, neededBy }`), `tasks` (5+ `{ id, task, implements, doneWhen }` for section 17), `section17Intro` (optional), `guardrails` (optional strings), `faq` (7 to 8 `{ q, a, from }`), `sweepFindings` (one array per sweep, in order, 2 to 3 `{ title, why, cite, due }` each), `stats` (optional, 3 `{ value, label }`), `evalCaption`, `version`; plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.

@@ -1,0 +1,144 @@
+{
+  "dir": "valued-audit-underwriting",
+  "shape": "review",
+  "questions": 13,
+  "agents": 6,
+  "sweeps": 3,
+  "systems": 10,
+  "pending": 0,
+  "golden": 30,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "fail",
+    "3": "fail",
+    "4": "pass",
+    "5": "fail",
+    "6": "pass",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 2,
+      "msg": "first assistant is not a fixed-rules safety guard",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 3,
+      "msg": "local: Close to their clock shows nothing",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 3,
+      "msg": "hosted: Close to their clock shows nothing",
+      "file": "out/proto/case.json"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4403/",
+      "errors": [],
+      "items": 30,
+      "counts": "{\"escalate\":10,\"human\":8,\"answer\":12}",
+      "greet": "Good morning, Priya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
+      "overnight": 321,
+      "away": 4,
+      "clocks": 0,
+      "top": 3,
+      "sidebar": "Today|Queue|New submission|Accuracy and release|Assistants and rules|Underwriting controls|Submission activity|Data and tools5/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 3,
+          "wrong": true,
+          "body": 1151
+        },
+        "human": {
+          "trail": 4,
+          "wrong": true,
+          "body": 769
+        },
+        "answer": {
+          "trail": 5,
+          "wrong": true,
+          "body": 2344
+        }
+      },
+      "agentCards": 6,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 10,
+      "govRows": 26,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-underwriting/out/hosted/index.html",
+      "errors": [],
+      "items": 30,
+      "counts": "{\"escalate\":10,\"human\":8,\"answer\":12}",
+      "greet": "Good morning, Priya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
+      "overnight": 321,
+      "away": 4,
+      "clocks": 0,
+      "top": 3,
+      "sidebar": "Today|Queue|New submission|Accuracy and release|Assistants and rules|Underwriting controls|Submission activity|Data and tools5/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 3,
+          "wrong": true,
+          "body": 1151
+        },
+        "human": {
+          "trail": 4,
+          "wrong": true,
+          "body": 769
+        },
+        "answer": {
+          "trail": 5,
+          "wrong": true,
+          "body": 2344
+        }
+      },
+      "agentCards": 6,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 10,
+      "govRows": 26,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4403/prd",
+      "errors": [],
+      "text": 30773,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": null,
+    "V": null,
+    "A": null,
+    "L": null,
+    "U": null,
+    "E": 105,
+    "D": 40,
+    "B": 88
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": null
+}

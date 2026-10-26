@@ -1,0 +1,157 @@
+{
+  "dir": "valued-audit-nocase",
+  "shape": "desk",
+  "questions": 11,
+  "agents": 4,
+  "sweeps": 3,
+  "systems": 10,
+  "pending": 0,
+  "golden": 34,
+  "holdout": 20,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "pass",
+    "6": "pass",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4417/",
+      "errors": [],
+      "items": 34,
+      "counts": "{\"escalate\":16,\"human\":10,\"answer\":8}",
+      "greet": "Good afternoon, Priya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 11 controls still open, owned by ",
+      "overnight": 314,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New request|Release checks|Triage assistants|Clinical and privacy governance|Review trail|Case systems6/|How a request is triaged|Questions from nurses and medical directors",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 740
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 622
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1142
+        }
+      },
+      "agentCards": 4,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 10,
+      "govRows": 26,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-nocase/out/hosted/index.html",
+      "errors": [],
+      "items": 34,
+      "counts": "{\"escalate\":16,\"human\":10,\"answer\":8}",
+      "greet": "Good afternoon, Priya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 11 controls still open, owned by ",
+      "overnight": 314,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New request|Release checks|Triage assistants|Clinical and privacy governance|Review trail|Case systems6/|How a request is triaged|Questions from nurses and medical directors",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 740
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 622
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1142
+        }
+      },
+      "agentCards": 4,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 10,
+      "govRows": 26,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4417/prd",
+      "errors": [],
+      "text": 22272,
+      "pending": 0
+    }
+  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 5,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 28,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 40,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 9,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 87,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 185,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 27,
+      "over": false
+    }
+  ],
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": 6.516666666666667
+}

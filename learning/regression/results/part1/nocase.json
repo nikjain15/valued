@@ -1,0 +1,144 @@
+{
+  "dir": "valued-audit-nocase",
+  "shape": "review",
+  "questions": 16,
+  "agents": 4,
+  "sweeps": 2,
+  "systems": 9,
+  "pending": 0,
+  "golden": 32,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "fail",
+    "4": "pass",
+    "5": "fail",
+    "6": "fail",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 3,
+      "msg": "a connector names a vendor without (assumed)",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 3,
+      "msg": "4 samples, expected 6 with expect",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 6,
+      "msg": "holdout eval does not pass all gates",
+      "file": "out/proto/router.js"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4417/",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":11,\"human\":6,\"answer\":15}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 12 controls still open, owned by ",
+      "overnight": 317,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New notice|Release checks|Intake assistants|Claims governance|Claim audit log|Claims data and systems5/|How intake works|Questions from claims",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 659
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 664
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1137
+        }
+      },
+      "agentCards": 4,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 9,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-nocase/out/hosted/index.html",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":11,\"human\":6,\"answer\":15}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 12 controls still open, owned by ",
+      "overnight": 317,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New notice|Release checks|Intake assistants|Claims governance|Claim audit log|Claims data and systems5/|How intake works|Questions from claims",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 659
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 664
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1137
+        }
+      },
+      "agentCards": 4,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 9,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4417/prd",
+      "errors": [],
+      "text": 20763,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": 34,
+    "V": 65,
+    "A": 54,
+    "L": 88,
+    "U": 31,
+    "E": 73,
+    "D": 33,
+    "B": 67
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE BLOCKED",
+  "minutes": 7.416666666666667
+}

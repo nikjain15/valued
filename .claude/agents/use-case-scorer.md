@@ -2,7 +2,7 @@
 name: use-case-scorer
 description: Scores a list of candidate AI use cases through one lens (value-reuse, feasibility-data, or risk) for the VALUED gate A. Launched three at a time in parallel by valued-ai-fit.
 tools: Read
-model: sonnet
+model: haiku
 ---
 
 You score candidate AI use cases through **one lens only**, the lens named in your instructions.

@@ -1,0 +1,18 @@
+1	card-dispute	4401	retail bank, card dispute claims arrive as chats and forms, 9k a month, disputes team misses Reg E clocks, head of card operations wants a pilot in 8 weeks
+2	covenant	4402	commercial lender, relationship managers miss covenant breaches across 1,200 loans, credit decisions stay with credit officers, chief credit officer wants early warning in a quarter
+3	underwriting	4403	specialty insurer, underwriting submissions arrive as broker emails with PDFs, underwriters re-key 30 fields per submission, head of underwriting wants quote turnaround halved by Q2
+4	portal	4404	hospital, patient portal messages to nurses, 20k a month, nurses triage by hand and clinical red flags get buried, chief nursing officer wants a pilot in 10 weeks
+5	pharmacy	4405	pharmacy chain, insurance claim rejections that pharmacists fix by hand, 60k rejections a month, reject codes live in people's heads, VP pharmacy operations wants rework cut by a third this year
+6	utility	4406	utility, outage and billing questions from customers in chat, 150k a month with storm surges, customer operations director wants faster answers without wrong outage promises
+7	airline	4407	airline, disruption rebooking requests during irregular operations, 40k a day on bad days, agents miss compensation rules and time limits, VP customer care wants a pilot before summer
+8	returns	4408	e-commerce retailer, returns and refund requests, 300k a month, refund fraud and policy exceptions handled by hand, head of customer service wants refund cost and handle time down by Q3
+9	saas	4409	B2B SaaS company, account managers need next-best actions on 3,000 accounts, churn and expansion signals sit in five tools, chief revenue officer wants net revenue retention up this year
+10	benefits	4410	state agency, caseworkers review benefits applications, 50k a month, backlog drives appeals and complaints, agency director wants decisions faster with accessibility and fair treatment guaranteed
+11	contracts	4411	law firm, contract clause review against a playbook, 2,000 contracts a year, associates miss deviations and work is privileged, managing partner wants review time halved with citations
+12	recruiting	4412	recruiting team, screening 40k applications a year, recruiters cannot read them all and fairness is a legal risk, head of talent wants time to shortlist halved and AI never deciding
+13	maintenance	4413	manufacturer, maintenance work orders from operator shift logs across 12 plants, safety issues get lost in free text, VP operations wants safety escalations caught and planner time cut
+14	ap	4414	finance team, accounts payable invoice matching exceptions, 25k invoices a month with 15% exceptions, three-way match failures handled by email, controller wants exception handling time halved with no payment made by AI
+15	university	4415	university, student support questions to an assistant, 80k a year across admissions, financial aid and wellbeing, some students are minors, dean of students wants faster answers with wellbeing escalated to people
+16	surveillance	4416	asset manager, compliance surveillance of advisor communications, 2M messages a month with 98% false positives, reviewers burn out, chief compliance officer wants true escalations caught with far fewer false alarms
+17	nocase	4417	
+18	rules	4418	credit union, member requests for password resets and address changes, 30k a month handled by agents, head of member services wants them automated but the team is not sure AI is even needed

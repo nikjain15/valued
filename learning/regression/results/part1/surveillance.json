@@ -1,0 +1,144 @@
+{
+  "dir": "valued-audit-surveillance",
+  "shape": "desk",
+  "questions": 13,
+  "agents": 5,
+  "sweeps": 3,
+  "systems": 8,
+  "pending": 0,
+  "golden": 32,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "fail",
+    "4": "pass",
+    "5": "fail",
+    "6": "pass",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 3,
+      "msg": "a connector names a vendor without (assumed)",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 3,
+      "msg": "local: Close to their clock shows nothing",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 3,
+      "msg": "hosted: Close to their clock shows nothing",
+      "file": "out/proto/case.json"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4416/",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":16,\"human\":6,\"answer\":10}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 13 controls still open, owned by ",
+      "overnight": 313,
+      "away": 4,
+      "clocks": 0,
+      "top": 3,
+      "sidebar": "Today|Queue|New alert|Surveillance checks|Surveillance assistants|Supervisory controls|Supervision log|Data and systems4/|How triage works|Questions from compliance",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 687
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 584
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1223
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 8,
+      "govRows": 26,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-surveillance/out/hosted/index.html",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":16,\"human\":6,\"answer\":10}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 13 controls still open, owned by ",
+      "overnight": 313,
+      "away": 4,
+      "clocks": 0,
+      "top": 3,
+      "sidebar": "Today|Queue|New alert|Surveillance checks|Surveillance assistants|Supervisory controls|Supervision log|Data and systems4/|How triage works|Questions from compliance",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 687
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 584
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1223
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 8,
+      "govRows": 26,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4416/prd",
+      "errors": [],
+      "text": 22691,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": 54,
+    "V": 201,
+    "A": 28,
+    "L": 135,
+    "U": 21,
+    "E": 97,
+    "D": 4,
+    "B": 91
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": 10.516666666666667
+}

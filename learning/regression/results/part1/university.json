@@ -1,0 +1,154 @@
+{
+  "dir": "valued-audit-university",
+  "shape": "desk",
+  "questions": 13,
+  "agents": 5,
+  "sweeps": 3,
+  "systems": 8,
+  "pending": 0,
+  "golden": 32,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "fail",
+    "6": "fail",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 6,
+      "msg": "dev eval does not pass all gates",
+      "file": "out/proto/router.js"
+    },
+    {
+      "std": 6,
+      "msg": "holdout eval does not pass all gates",
+      "file": "out/proto/router.js"
+    },
+    {
+      "std": 6,
+      "msg": "gates.json lacks one of the 8 gates or riskiest_slice",
+      "file": "out/proto/gates.json"
+    },
+    {
+      "std": 6,
+      "msg": "eval output lists fewer than 8 gates",
+      "file": "out/proto/eval.js"
+    },
+    {
+      "std": 6,
+      "msg": "eval output has no per-group line",
+      "file": "out/proto/eval.js"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4415/",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":11,\"human\":8,\"answer\":13}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
+      "overnight": 317,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New question|Answer quality|Assistants and rules|Student privacy and safeguarding|Activity record|Data and tools3/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 749
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 659
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1372
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 8,
+      "govRows": 26,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-university/out/hosted/index.html",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":11,\"human\":8,\"answer\":13}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
+      "overnight": 317,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New question|Answer quality|Assistants and rules|Student privacy and safeguarding|Activity record|Data and tools3/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 749
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 659
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1372
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 8,
+      "govRows": 26,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4415/prd",
+      "errors": [],
+      "text": 20795,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": 43,
+    "V": 51,
+    "A": 54,
+    "L": 77,
+    "U": 32,
+    "E": 73,
+    "D": 31,
+    "B": 76
+  },
+  "dev": "RELEASE OK: all gates pass",
+  "holdoutLine": "RELEASE OK: all gates pass",
+  "minutes": 7.283333333333333
+}

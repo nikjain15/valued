@@ -23,6 +23,7 @@ const data = {
   "golden.json": json("golden.json", []),
   "holdout.json": json("holdout.json", []),
   "router.js": read("router.js", ""),
+  "model-cache.json": json("model-cache.json", {}),
   prdUrl,
 };
 const dataTag = `<script>window.__VALUED__ = ${JSON.stringify(data).replace(/<\/(script)/gi, "<\\/$1")};</script>`;

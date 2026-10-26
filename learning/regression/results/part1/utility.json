@@ -1,0 +1,129 @@
+{
+  "dir": "valued-audit-utility",
+  "shape": "desk",
+  "questions": 13,
+  "agents": 5,
+  "sweeps": 3,
+  "systems": 9,
+  "pending": 0,
+  "golden": 34,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "fail",
+    "6": "pass",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4406/",
+      "errors": [],
+      "items": 34,
+      "counts": "{\"escalate\":15,\"human\":8,\"answer\":11}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 9 controls still open, owned by R",
+      "overnight": 310,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New chat|Answer quality and release|Assistants and rules|Customer protection and compliance|Reply record|Systems and data4/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 956
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 658
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1698
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 9,
+      "govRows": 25,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-utility/out/hosted/index.html",
+      "errors": [],
+      "items": 34,
+      "counts": "{\"escalate\":15,\"human\":8,\"answer\":11}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 9 controls still open, owned by R",
+      "overnight": 310,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New chat|Answer quality and release|Assistants and rules|Customer protection and compliance|Reply record|Systems and data4/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 956
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 658
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1698
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 9,
+      "govRows": 25,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4406/prd",
+      "errors": [],
+      "text": 26239,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": null,
+    "V": null,
+    "A": null,
+    "L": null,
+    "U": null,
+    "E": 47,
+    "D": 36,
+    "B": 84
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": null
+}

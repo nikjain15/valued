@@ -54,6 +54,11 @@ A table at the end of each gate file: **question · answer · status**, where st
 
 - Tables over prose, at most 12 rows. Telegraphic, verb-first bullets. No em-dashes, ever.
 - Write only under `./out/`. Read client material only from `./inputs/`. Touch nothing else.
+- **Invent every name.** A placeholder is not synthetic: never write Acme, Contoso, Globex, Initech or
+  Example Corp, and never a real company, insurer, bank, airline, retailer, hospital or platform. Build
+  names from the case's own words (for example "Northbank Card Services", "Harborline Utilities"). The
+  audit's real-name check fails a run on any of them, so check `prd.md`, `case.json`, `sources.json`,
+  `golden.json`, `holdout.json` and `state.md` before the closing line.
 - Synthetic data by default. Real client material is used only when the client puts it in `inputs/`
   (policies, knowledge articles, sample requests, transcripts, spreadsheets; PDF, Word, text or CSV).
   Read it locally, de-identify any personal data before it reaches `out/`, record each item's origin
