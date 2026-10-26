@@ -1,12 +1,12 @@
 {
   "dir": "valued-audit-saas",
   "shape": "rank",
-  "questions": 12,
+  "questions": 11,
   "agents": 5,
   "sweeps": 3,
-  "systems": 9,
+  "systems": 7,
   "pending": 0,
-  "golden": 31,
+  "golden": 34,
   "holdout": 20,
   "row": {
     "1": "pass",
@@ -16,105 +16,94 @@
     "5": "pass",
     "6": "pass",
     "7": "pass",
-    "8": "fail"
+    "8": "pass"
   },
-  "failures": [
-    {
-      "std": 8,
-      "msg": "real company name \"Acme\" in out/prd.md",
-      "file": "out/prd.md"
-    },
-    {
-      "std": 8,
-      "msg": "real company name \"Acme\" in out/proto/case.json",
-      "file": "out/proto/case.json"
-    }
-  ],
+  "failures": [],
   "browser": {
     "local": {
       "url": "http://localhost:4409/",
       "errors": [],
-      "items": 31,
-      "counts": "{\"escalate\":15,\"human\":8,\"answer\":8}",
-      "greet": "Good afternoon, Priya. Here is what came in.",
+      "items": 34,
+      "counts": "{\"escalate\":15,\"human\":10,\"answer\":9}",
+      "greet": "Good afternoon, Maya. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
-      "overnight": 317,
+      "ready": "Not ready for go-live yet. 13 controls still open, owned by ",
+      "overnight": 311,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New account signal|Action evals|Account agents|Revenue governance|Action audit trail|Account data3/|How an action is made|Account manager FAQ",
+      "sidebar": "Today|Queue|New account|Release checks|Assistants|Governance|Audit trail|Account data2/|How it works|FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 593
+          "body": 656
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 715
+          "body": 436
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 748
+          "body": 880
         }
       },
       "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 9,
-      "govRows": 27,
+      "connCards": 7,
+      "govRows": 25,
       "faq": 8,
       "emdash": false
     },
     "hosted": {
       "url": "file:///Users/nikjain/dev/valued-audit-saas/out/hosted/index.html",
       "errors": [],
-      "items": 31,
-      "counts": "{\"escalate\":15,\"human\":8,\"answer\":8}",
-      "greet": "Good afternoon, Priya. Here is what came in.",
+      "items": 34,
+      "counts": "{\"escalate\":15,\"human\":10,\"answer\":9}",
+      "greet": "Good afternoon, Maya. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
-      "overnight": 317,
+      "ready": "Not ready for go-live yet. 13 controls still open, owned by ",
+      "overnight": 311,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New account signal|Action evals|Account agents|Revenue governance|Action audit trail|Account data3/|How an action is made|Account manager FAQ",
+      "sidebar": "Today|Queue|New account|Release checks|Assistants|Governance|Audit trail|Account data2/|How it works|FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 593
+          "body": 656
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 715
+          "body": 436
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 748
+          "body": 880
         }
       },
       "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 9,
-      "govRows": 27,
+      "connCards": 7,
+      "govRows": 25,
       "faq": 8,
       "emdash": false
     },
     "prd": {
       "url": "http://localhost:4409/prd",
       "errors": [],
-      "text": 22694,
+      "text": 21344,
       "pending": 0
     }
   },
@@ -122,7 +111,7 @@
     {
       "phase": "0 Frame",
       "budgetMin": 3,
-      "seconds": 14,
+      "seconds": 7,
       "over": false
     },
     {
@@ -134,35 +123,35 @@
     {
       "phase": "2 V then A",
       "budgetMin": 7,
-      "seconds": 45,
+      "seconds": 27,
       "over": false
     },
     {
       "phase": "3 Round 2",
       "budgetMin": 2,
-      "seconds": 13,
+      "seconds": 3,
       "over": false
     },
     {
       "phase": "4 L and U",
       "budgetMin": 5,
-      "seconds": 81,
+      "seconds": 110,
       "over": false
     },
     {
       "phase": "5 E and D",
       "budgetMin": 6,
-      "seconds": 159,
+      "seconds": 153,
       "over": false
     },
     {
       "phase": "6 Build",
       "budgetMin": 3,
-      "seconds": 41,
+      "seconds": 26,
       "over": false
     }
   ],
   "dev": "RELEASE PASSES ALL GATES",
   "holdoutLine": "RELEASE PASSES ALL GATES",
-  "minutes": 6.283333333333333
+  "minutes": 6.016666666666667
 }

@@ -1,12 +1,12 @@
 {
   "dir": "valued-audit-ap",
-  "shape": "desk",
-  "questions": 13,
+  "shape": "review",
+  "questions": 11,
   "agents": 4,
   "sweeps": 3,
   "systems": 7,
   "pending": 0,
-  "golden": 30,
+  "golden": 34,
   "holdout": 20,
   "row": {
     "1": "pass",
@@ -23,32 +23,32 @@
     "local": {
       "url": "http://localhost:4414/",
       "errors": [],
-      "items": 30,
-      "counts": "{\"escalate\":16,\"human\":7,\"answer\":7}",
-      "greet": "Good afternoon, Dana. Here is what came in.",
+      "items": 34,
+      "counts": "{\"escalate\":16,\"human\":8,\"answer\":10}",
+      "greet": "Good afternoon, Priya. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
-      "overnight": 317,
+      "ready": "Not ready for go-live yet. 12 controls still open, owned by ",
+      "overnight": 318,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New exception|Release checks|Assistants|Controls|Audit trail|Systems3/|How it works|FAQ",
+      "sidebar": "Today|Queue|New exception|Accuracy and release|Assistants and rules|Payment controls|Exception activity|Data and tools4/|How it works|Questions",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 888
+          "body": 796
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 715
+          "body": 738
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1228
+          "body": 1061
         }
       },
       "agentCards": 4,
@@ -56,39 +56,39 @@
       "evalPass": true,
       "evalGates": 8,
       "connCards": 7,
-      "govRows": 31,
+      "govRows": 27,
       "faq": 8,
       "emdash": false
     },
     "hosted": {
       "url": "file:///Users/nikjain/dev/valued-audit-ap/out/hosted/index.html",
       "errors": [],
-      "items": 30,
-      "counts": "{\"escalate\":16,\"human\":7,\"answer\":7}",
-      "greet": "Good afternoon, Dana. Here is what came in.",
+      "items": 34,
+      "counts": "{\"escalate\":16,\"human\":8,\"answer\":10}",
+      "greet": "Good afternoon, Priya. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
-      "overnight": 317,
+      "ready": "Not ready for go-live yet. 12 controls still open, owned by ",
+      "overnight": 318,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New exception|Release checks|Assistants|Controls|Audit trail|Systems3/|How it works|FAQ",
+      "sidebar": "Today|Queue|New exception|Accuracy and release|Assistants and rules|Payment controls|Exception activity|Data and tools4/|How it works|Questions",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 888
+          "body": 796
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 715
+          "body": 738
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1228
+          "body": 1061
         }
       },
       "agentCards": 4,
@@ -96,14 +96,14 @@
       "evalPass": true,
       "evalGates": 8,
       "connCards": 7,
-      "govRows": 31,
+      "govRows": 27,
       "faq": 8,
       "emdash": false
     },
     "prd": {
       "url": "http://localhost:4414/prd",
       "errors": [],
-      "text": 24882,
+      "text": 23355,
       "pending": 0
     }
   },
@@ -111,47 +111,47 @@
     {
       "phase": "0 Frame",
       "budgetMin": 3,
-      "seconds": 12,
+      "seconds": 6,
       "over": false
     },
     {
       "phase": "1 Round 1",
       "budgetMin": 2,
-      "seconds": 13,
+      "seconds": 0,
       "over": false
     },
     {
       "phase": "2 V then A",
       "budgetMin": 7,
-      "seconds": 80,
+      "seconds": 28,
       "over": false
     },
     {
       "phase": "3 Round 2",
       "budgetMin": 2,
-      "seconds": 14,
+      "seconds": 0,
       "over": false
     },
     {
       "phase": "4 L and U",
       "budgetMin": 5,
-      "seconds": 114,
+      "seconds": 68,
       "over": false
     },
     {
       "phase": "5 E and D",
       "budgetMin": 6,
-      "seconds": 291,
+      "seconds": 175,
       "over": false
     },
     {
       "phase": "6 Build",
       "budgetMin": 3,
-      "seconds": 39,
+      "seconds": 7,
       "over": false
     }
   ],
   "dev": "RELEASE PASSES ALL GATES",
   "holdoutLine": "RELEASE PASSES ALL GATES",
-  "minutes": 9.383333333333333
+  "minutes": 6.9
 }

@@ -31,6 +31,12 @@ section 17. `out/tools/c check` lists what is still missing, by standard; a run 
 client owns, every recommendation shows its trade-offs, mark every assumed fact (assumed), synthetic data
 only, no em-dashes, tables of at most 12 rows.
 
+- **Invent every name.** A placeholder is not synthetic: never write Acme, Contoso, Globex, Initech or
+  Example Corp, and never a real company, insurer, bank, airline, retailer, hospital or platform. Build
+  names from the case's own words (for example "Northbank Card Services", "Harborline Utilities"). The
+  audit's real-name check fails a run on any of them, so check `prd.md`, `case.json`, `sources.json`,
+  `golden.json`, `holdout.json` and `state.md` before the closing line.
+
 **Card schema** (`out/cards.json`, an array; append, never rewrite answered cards):
 `{ "id": "R1-1", "round": 0|1|2|3, "gate": "Frame|V|A|L|U|E|D", "role": "<this case's sponsor or owner role>",
 "question": "...", "format": "<own-words answer shape, with an example>", "options": [{ "label", "tradeoff" }],

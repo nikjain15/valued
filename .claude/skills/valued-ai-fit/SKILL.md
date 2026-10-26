@@ -72,10 +72,20 @@ client to accept or overrule.
    | `rank` | A person picks next steps for a record (client, account, case) | Record with ranked action cards; accept or dismiss with a reason |
    | `chat` | The end user asks and gets an answer directly | Conversation with cited answers; sensitive topics routed to people |
 
-   When two shapes fit, the user's decision wins over the input: documents that feed a next-step decision on a
-   record over time (a loan, an account, a household) are `rank`; a document whose fields a person confirms
-   once is `review`. A customer conversation under draft-with-approval is `desk`; `chat` only when answers
-   reach the end user directly. Write `shape` to `a.json`.
+   When two shapes fit, the shape follows the decision, never the channel the work arrived on. Walk these
+   four questions in order and stop at the first yes:
+
+   | Order | Ask | Shape |
+   |---|---|---|
+   | 1 | Does the work decide the next steps on a record the firm tracks over time (a loan, an account, a household, a facility)? Documents arrive repeatedly and update a standing position | `rank` |
+   | 2 | Must a person confirm facts taken from the material the case arrives with before deciding, and is the decision filed as confirmed fields on the item rather than sent back as a message? The material is any document or submitted form (receipts, certificates, invoices, claim and dispute forms, pay stubs, applications), whether attached or filled in | `review` |
+   | 3 | Is the deliverable the reply itself, drafted from the message alone, with no fields a person confirms? | `desk` |
+   | 4 | Does the answer reach the end user directly, with no person approving it? | `chat` |
+
+   A case that arrives as a message or a request form is still `rank` or `review` when question 1 or 2
+   says so. A customer conversation under draft-with-approval is `desk`, never `chat`. Write `shape` and
+   `shapeWhy` to `a.json`, and say in `shapeWhy` which of the four questions picked it, by number, and
+   the decision behind it, never the channel it arrived on.
    **Assistants** (an output): design the first wave as 3 to 6 named assistants, one job each, in the
    order they run. The first check is always a fixed-rules safety guard (escalation and the never list);
    every assistant that reads or writes free language is a model, except the safety guard and the matchers,

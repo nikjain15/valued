@@ -428,5 +428,29 @@ addressed by <change>, rejected: <reason>).
 - Evidence: "Acme" reached out/prd.md and out/proto/case.json and failed the real-name check. The runner reported no real names remaining, so the gate skills treat placeholder names as synthetic while the checker counts them as real
 - Status: open
 
+### S-084
+- Source: audit, 2026-10-26 · Scenario: covenant · Gate: E
+- Evidence: on the fix re-run the holdout was scored once before the router fix and once after, so the sealed set was seen against two router versions. Nothing in the conductor stops a second holdout run after a router change
+- Status: open
+
+### S-085
+- Source: audit, 2026-10-26 · Scenario: returns, card-dispute · Gate: conductor, E
+- Evidence: `conductor.js render` scores the sealed holdout every time it runs, so a single run scores it 3 to 6 times, against whatever router version is current. The seal is procedural only; nothing in the conductor scores the holdout once and records that score
+- Status: open
+
+### S-086
+- Source: audit, 2026-10-26 · Scenario: ap, returns · Gate: A
+- Evidence: the sharpened shape test moved both from desk to review. Both expectations allow either, so the suite stays green, but the shape of a case is not stable across skill wordings, which makes the shape expectation a weak check
+- Status: open
+
 
 ## Status updates
+
+### S-079
+- Fixed by the source-coverage rule in `valued-labels/SKILL.md`: every document type and request family in golden.json or holdout.json needs a source whose match phrases carry its wording. Covenant re-run passes the holdout at routing 1.00 with 11 sources.
+
+### S-082
+- Fixed by the ordered four-question shape test in `valued-ai-fit/SKILL.md`. The first prose version of the fix regressed covenant from rank to desk, which is why the rule became an ordered table with rank asked first.
+
+### S-083
+- Fixed by the "Invent every name" rule in `CLAUDE.md` and `valued/SKILL.md`, with Contoso, Globex, Initech and Example Corp added to the real-name check in `valued-audit/check.js`.

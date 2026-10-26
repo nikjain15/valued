@@ -1,68 +1,62 @@
 {
   "dir": "valued-audit-card-dispute",
-  "shape": "desk",
+  "shape": "review",
   "questions": 11,
   "agents": 5,
   "sweeps": 3,
-  "systems": 10,
+  "systems": 12,
   "pending": 0,
   "golden": 34,
   "holdout": 20,
   "row": {
     "1": "pass",
     "2": "pass",
-    "3": "fail",
+    "3": "pass",
     "4": "pass",
     "5": "pass",
     "6": "pass",
     "7": "pass",
     "8": "pass"
   },
-  "failures": [
-    {
-      "std": 3,
-      "msg": "shape desk, expected review",
-      "file": "out/gates/a.json"
-    }
-  ],
+  "failures": [],
   "browser": {
     "local": {
       "url": "http://localhost:4401/",
       "errors": [],
       "items": 34,
-      "counts": "{\"escalate\":18,\"human\":9,\"answer\":7}",
-      "greet": "Good afternoon, Dana. Here is what came in.",
+      "counts": "{\"escalate\":16,\"human\":9,\"answer\":9}",
+      "greet": "Good afternoon, Mara. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
-      "overnight": 310,
+      "ready": "Not ready for go-live yet. 10 controls still open, owned by ",
+      "overnight": 313,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New dispute|Quality and release|Assistants and rules|Reg E controls|Dispute activity record|Data and tools4/|How it works|Questions",
+      "sidebar": "Today|Queue|New dispute|Release checks|Dispute assistants|Regulation E and card network rules|Dispute audit trail|Dispute data5/|How a dispute moves|Dispute desk FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 874
+          "body": 744
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 612
+          "body": 650
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1319
+          "body": 988
         }
       },
       "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 10,
-      "govRows": 27,
+      "connCards": 12,
+      "govRows": 26,
       "faq": 8,
       "emdash": false
     },
@@ -70,46 +64,46 @@
       "url": "file:///Users/nikjain/dev/valued-audit-card-dispute/out/hosted/index.html",
       "errors": [],
       "items": 34,
-      "counts": "{\"escalate\":18,\"human\":9,\"answer\":7}",
-      "greet": "Good afternoon, Dana. Here is what came in.",
+      "counts": "{\"escalate\":16,\"human\":9,\"answer\":9}",
+      "greet": "Good afternoon, Mara. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
-      "overnight": 310,
+      "ready": "Not ready for go-live yet. 10 controls still open, owned by ",
+      "overnight": 313,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New dispute|Quality and release|Assistants and rules|Reg E controls|Dispute activity record|Data and tools4/|How it works|Questions",
+      "sidebar": "Today|Queue|New dispute|Release checks|Dispute assistants|Regulation E and card network rules|Dispute audit trail|Dispute data5/|How a dispute moves|Dispute desk FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 874
+          "body": 744
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 612
+          "body": 650
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1319
+          "body": 988
         }
       },
       "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 10,
-      "govRows": 27,
+      "connCards": 12,
+      "govRows": 26,
       "faq": 8,
       "emdash": false
     },
     "prd": {
       "url": "http://localhost:4401/prd",
       "errors": [],
-      "text": 25884,
+      "text": 23094,
       "pending": 0
     }
   },
@@ -117,7 +111,7 @@
     {
       "phase": "0 Frame",
       "budgetMin": 3,
-      "seconds": 1,
+      "seconds": 5,
       "over": false
     },
     {
@@ -129,7 +123,7 @@
     {
       "phase": "2 V then A",
       "budgetMin": 7,
-      "seconds": 30,
+      "seconds": 56,
       "over": false
     },
     {
@@ -141,23 +135,23 @@
     {
       "phase": "4 L and U",
       "budgetMin": 5,
-      "seconds": 36,
+      "seconds": 54,
       "over": false
     },
     {
       "phase": "5 E and D",
       "budgetMin": 6,
-      "seconds": 303,
+      "seconds": 227,
       "over": false
     },
     {
       "phase": "6 Build",
       "budgetMin": 3,
-      "seconds": 6,
+      "seconds": 9,
       "over": false
     }
   ],
   "dev": "RELEASE PASSES ALL GATES",
   "holdoutLine": "RELEASE PASSES ALL GATES",
-  "minutes": 8.983333333333333
+  "minutes": 8.9
 }

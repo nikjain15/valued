@@ -1,10 +1,10 @@
 {
   "dir": "valued-audit-portal",
   "shape": "desk",
-  "questions": 11,
+  "questions": 12,
   "agents": 5,
   "sweeps": 3,
-  "systems": 6,
+  "systems": 7,
   "pending": 0,
   "golden": 34,
   "holdout": 20,
@@ -24,39 +24,39 @@
       "url": "http://localhost:4404/",
       "errors": [],
       "items": 34,
-      "counts": "{\"escalate\":20,\"human\":8,\"answer\":6}",
-      "greet": "Good afternoon, Maria. Here is what came in.",
+      "counts": "{\"escalate\":18,\"human\":9,\"answer\":7}",
+      "greet": "Good afternoon, Maren. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 9 controls still open, owned by c",
-      "overnight": 312,
+      "ready": "Not ready for go-live yet. 11 controls still open, owned by ",
+      "overnight": 313,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New message|Safety checks|Triage assistants|Clinical governance|Audit trail|Patient data3/|How triage works|Questions nurses ask",
+      "sidebar": "Today|Queue|New message|Triage evals|Triage assistants|Clinical governance|Audit trail|Patient data4/|How triage works|Nurse and patient FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 724
+          "body": 739
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 587
+          "body": 603
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1185
+          "body": 1194
         }
       },
       "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 6,
-      "govRows": 25,
+      "connCards": 7,
+      "govRows": 27,
       "faq": 8,
       "emdash": false
     },
@@ -64,46 +64,46 @@
       "url": "file:///Users/nikjain/dev/valued-audit-portal/out/hosted/index.html",
       "errors": [],
       "items": 34,
-      "counts": "{\"escalate\":20,\"human\":8,\"answer\":6}",
-      "greet": "Good afternoon, Maria. Here is what came in.",
+      "counts": "{\"escalate\":18,\"human\":9,\"answer\":7}",
+      "greet": "Good afternoon, Maren. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 9 controls still open, owned by c",
-      "overnight": 312,
+      "ready": "Not ready for go-live yet. 11 controls still open, owned by ",
+      "overnight": 313,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New message|Safety checks|Triage assistants|Clinical governance|Audit trail|Patient data3/|How triage works|Questions nurses ask",
+      "sidebar": "Today|Queue|New message|Triage evals|Triage assistants|Clinical governance|Audit trail|Patient data4/|How triage works|Nurse and patient FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 724
+          "body": 739
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 587
+          "body": 603
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1185
+          "body": 1194
         }
       },
       "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 6,
-      "govRows": 25,
+      "connCards": 7,
+      "govRows": 27,
       "faq": 8,
       "emdash": false
     },
     "prd": {
       "url": "http://localhost:4404/prd",
       "errors": [],
-      "text": 24631,
+      "text": 24676,
       "pending": 0
     }
   },
@@ -117,41 +117,41 @@
     {
       "phase": "1 Round 1",
       "budgetMin": 2,
-      "seconds": 0,
+      "seconds": 12,
       "over": false
     },
     {
       "phase": "2 V then A",
       "budgetMin": 7,
-      "seconds": 26,
+      "seconds": 79,
       "over": false
     },
     {
       "phase": "3 Round 2",
       "budgetMin": 2,
-      "seconds": 0,
+      "seconds": 12,
       "over": false
     },
     {
       "phase": "4 L and U",
       "budgetMin": 5,
-      "seconds": 0,
+      "seconds": 179,
       "over": false
     },
     {
       "phase": "5 E and D",
       "budgetMin": 6,
-      "seconds": 149,
+      "seconds": 208,
       "over": false
     },
     {
       "phase": "6 Build",
       "budgetMin": 3,
-      "seconds": 10,
+      "seconds": 16,
       "over": false
     }
   ],
   "dev": "RELEASE PASSES ALL GATES",
   "holdoutLine": "RELEASE PASSES ALL GATES",
-  "minutes": 7.45
+  "minutes": 8.583333333333334
 }

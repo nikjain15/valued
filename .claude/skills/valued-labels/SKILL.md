@@ -39,6 +39,12 @@ Schemas the prototype reads: `verdicts` in `case.json` is
    approved knowledge", "Sends each item the right way", "Works equally across groups", "No group falls
    below the bar", "Stays off forbidden topics", "Only allowed outcomes".
 3. Write `out/proto/sources.json`: 6 to 10 short source items, each with an `id`, a plain `title` the user would recognise (for example "Wire transfers", "US paid time off") and `text`.
+   **Cover every row.** Every document type and request family that appears in `golden.json` or
+   `holdout.json` needs a source whose `match` phrases carry its wording, including the quiet ones
+   (status notes, covering letters, acknowledgements, amendments). After writing all three files, check
+   each row against the match lists: a row that matches no source scores as mis-routed, not as a safe
+   escalation, so widen the match list rather than leaving the backstop to catch it. Never change a
+   label to fit a source.
    For the `review` shape, each source is a document type and also carries `fields`: the exact list of
    field names the extraction must fill (for example `["Member ID", "Drug and dose", "Diagnosis code"]`). **If `inputs/`
    holds client documents, build the sources from them** (one item per policy or article that the
