@@ -200,6 +200,10 @@ http.createServer(async (req, res) => {
       const file = path.join(DIR, "..", "prd.md");
       return send(res, 200, fs.existsSync(file) ? fs.readFileSync(file) : "# PRD\n\n> Pending: the PRD starts when the run starts.", TYPES[".md"]);
     }
+    if (url.pathname === "/cards.json") {
+      const file = path.join(DIR, "..", "cards.json");
+      return send(res, 200, fs.existsSync(file) ? fs.readFileSync(file) : "[]", TYPES[".json"]);
+    }
     if (url.pathname === "/prd") return send(res, 200, fs.readFileSync(path.join(DIR, "prd-viewer.html")), TYPES[".html"]);
     const name = url.pathname === "/" ? "app.html" : url.pathname.slice(1);
     if (!PUBLIC.has(name)) return send(res, 404, { error: "not found" });
