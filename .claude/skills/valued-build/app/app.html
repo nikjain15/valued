@@ -652,7 +652,7 @@ function renderHow() {
     ["", "Log", "Request, source, output, approver, time and version, for audit."],
   ];
   $("#flow").innerHTML = steps.map(([k, t, d], i) => `<div class="step ${k}"><div class="n">${i + 1}</div><strong>${esc(t)}</strong><p class="small muted">${esc(d)}</p></div>`).join("");
-  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(d.gate)}</span></td><td>${esc(d.decision)}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Decisions appear here as each gate is decided.</td></tr>`;
+  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(d.gate)}</span></td><td>${esc(d.decision)}${d.revised ? ` <span class="pill warn">Revised</span><div class="meta" style="margin-top:4px">Was: ${esc(d.was || "")}</div>` : ""}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Decisions appear here as each gate is decided.</td></tr>`;
   $("#gateRows").innerHTML = gateDefs().map((g) => `<tr><td>${esc(g.q)}</td><td class="muted">${esc(barText(g))}</td></tr>`).join("");
   $("#sourceRows").innerHTML = SOURCES.map((s) => `<tr><td class="num">${esc(s.id)}</td><td>${esc(s.text)}</td></tr>`).join("");
 }

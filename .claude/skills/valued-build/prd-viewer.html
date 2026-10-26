@@ -125,7 +125,7 @@ function parse(text) {
     const nl = p.indexOf("\n"), heading = (nl < 0 ? p : p.slice(0, nl)).trim(), body = nl < 0 ? "" : p.slice(nl + 1).trim();
     const m = heading.match(/^(\d+)\.\s*(.*)$/);
     const gate = (body.match(/^>\s*Pending: fills at gate (\w)/im) || [])[1] || null;
-    return { num: m ? m[1] : "A", name: m ? m[2] : heading, body, gate, id: "s-" + (m ? m[1] : "appendix") };
+    return { num: m ? m[1] : "A", name: m ? m[2] : heading, body, gate, id: "s-" + (m ? m[1] : heading.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")) };
   });
   return { title, meta, quote, sections };
 }

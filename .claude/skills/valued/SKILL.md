@@ -73,7 +73,7 @@ this before gate V; gate V's draft marks everything else (assumed).
    Each client decision says which role chose what, with our recommendation in the caption. The
    governance section lists each gate's open items from the "Governance log" with the role to close
    them; if none are open, say so.
-5. Print the closing line, nothing else: `Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Evals: node out/proto/eval.js`.
+5. Print the closing line, nothing else: `Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Feedback: /valued-revise <what to change>`.
 
 ## Rules for every gate (pass these on)
 
@@ -116,3 +116,5 @@ this before gate V; gate V's draft marks everything else (assumed).
   | B | 1, 7, 12, 15, 16, 17, the appendix, and the recommendation at the top | `faq`, `version` |
 - Never exceed 12 table rows. Mark assumed numbers (assumed). Synthetic data only.
 - If a step is taking too long, cut scope and say so in one line. Never stall the room.
+- **If the client changes an earlier answer mid-run**, apply it with the `valued-revise` skill before
+  continuing, then resume at the current gate. After the run, any feedback goes through `/valued-revise`.

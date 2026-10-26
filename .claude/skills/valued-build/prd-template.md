@@ -239,3 +239,9 @@ Start with T-01.
 | Gate | Decision | Chosen by | Our recommendation |
 |---|---|---|---|
 | <gate> | <decision> | <role> | <recommended option> |
+
+## Appendix: document history
+
+| Version | Date | Change | Requested by | Sections |
+|---|---|---|---|---|
+| 0.1 | <date> | First draft, built gate by gate in the working session | Product lead | All |

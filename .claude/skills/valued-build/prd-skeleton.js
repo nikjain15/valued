@@ -34,6 +34,12 @@ const out = [
   "",
   "> Pending: fills at gate B.",
   "",
+  "## Appendix: document history",
+  "",
+  "| Version | Date | Change | Requested by | Sections |",
+  "|---|---|---|---|---|",
+  `| 0.1 | ${today} | First draft, built gate by gate in the working session | Product lead | All |`,
+  "",
 ];
 fs.writeFileSync(dest, out.join("\n"));
 console.log(`PRD skeleton: ${dest}`);
