@@ -153,7 +153,7 @@ function runEval(file) {
 }
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".md": "text/markdown; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml" };
-const PUBLIC = new Set(["app.html", "ff.css", "case.json", "build.json", "sources.json", "gates.json", "router.js", "golden.json", "holdout.json", "model-cache.json"]);
+const PUBLIC = new Set(["app.html", "ff.css", "case.json", "build.json", "sources.json", "gates.json", "router.js", "golden.json", "holdout.json", "model-cache.json", "status.json"]);
 
 function send(res, code, body, type = "application/json") {
   res.writeHead(code, { "content-type": type, "cache-control": "no-store" });

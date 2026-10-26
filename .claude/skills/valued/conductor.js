@@ -49,6 +49,8 @@ const CUTS = {
 const G = (k) => json(path.join(GATES, `${k}.json`), null);
 const gates = () => ({ v: G("v"), a: G("a"), l: G("l"), u: G("u"), e: G("e"), d: G("d"), b: G("b") });
 const cards = () => json(path.join(OUT, "cards.json"), []);
+// The client's chosen product name (framing card) is the title shown everywhere, over the generic use-case label.
+const productName = () => { const c = cards().find((x) => /product name|what would you like to call|call (this|it)/i.test(x.question || "") && x.decision); return c ? String(c.decision).trim() : null; };
 const caseLine = () => (read(path.join(OUT, "case-line.txt")).trim() || (read(path.join(OUT, "prd.md")).match(/<!-- Case: (.*) -->/) || [, ""])[1]);
 
 // ---------- recommendation block ----------
@@ -160,7 +162,7 @@ function renderCase(g, ev) {
   const cs = cards();
   const c = {
     ...prev,
-    title: v.title, client: v.client, useCase: v.useCase, headline: v.headline, scenario: v.scenario, user: v.user, inputLabel: v.inputLabel, persona: v.persona, industry: v.industry, labels: v.labels,
+    title: productName() || v.title, client: v.client, useCase: productName() || v.useCase, headline: v.headline, scenario: v.scenario, user: v.user, inputLabel: v.inputLabel, persona: v.persona, industry: v.industry, labels: v.labels,
     promise: a.promise, shape: a.shape, agents: a.agents, itemNoun: a.itemNoun, recordSuffix: a.recordSuffix, dismissReasons: a.dismissReasons,
     sweeps: A(a.sweeps).map((s, i) => ({ agent: s.agent, kind: s.kind, schedule: s.schedule, checks: s.checks, findings: A((b.sweepFindings || [])[i] || s.findings) })),
     verdicts: l.verdicts, samples: A(l.samples).length === 6 ? l.samples.map((x) => ({ text: x.text, expect: x.expect || x.expected })) : samplesFrom(golden), connectors: fillConnectors(l.connectors, v.industry),
@@ -212,7 +214,7 @@ function renderPrd(g, ev, c) {
   const prev = read(path.join(OUT, "prd.md"));
   const history = (prev.match(/## Appendix: document history[\s\S]*$/) || [""])[0].trim();
   const version = (prev.match(/\*\*Version:\*\* ([^·]+)·/) || [, b ? "0.1, draft for client review " : "0.1, live draft "])[1].trim().replace(/live draft/, b ? "draft for client review" : "live draft");
-  const md = [`# ${v?.useCase || "(use case, from gate V)"}: product requirements`, "", `<!-- Case: ${clean(caseLine())} -->`, "", `**Client:** ${v?.client || "(from gate V)"} · **Version:** ${version} · **Owner:** product lead · **Date:** ${today()} · **Source:** VALUED run, every decision traceable to a gate file in \`out/\``, "",
+  const md = [`# ${productName() || v?.useCase || "(use case, from gate V)"}: product requirements`, "", `<!-- Case: ${clean(caseLine())} -->`, "", `**Client:** ${v?.client || "(from gate V)"} · **Version:** ${version} · **Owner:** product lead · **Date:** ${today()} · **Source:** VALUED run, every decision traceable to a gate file in \`out/\``, "",
     ...(b ? [`> **Recommendation.** ${clean(b.recommendation)}`, `> **Decision asked of the client.** ${clean(b.decisionAsked)}`, ""] : []),
     ...Object.entries(titles).flatMap(([n, t]) => [`## ${n}. ${t}`, "", s[n], ""]),
     "## Appendix: client decisions", "", cs.some((x) => x.decision) ? table(["Gate", "Decision", "Chosen by", "Our recommendation"], cs.filter((x) => x.decision).map((x) => [x.gate, x.decision, x.by || x.role, A(x.options)[0]?.label])) : P("B"), "",
@@ -311,7 +313,9 @@ const [cmd, ...rest] = process.argv.slice(2);
 if (cmd && !(cmd === "clock" && rest[0] === "status")) trace({ kind: "cmd", cmd, args: rest });
 if (cmd === "clock") {
   if (rest[0] === "status") clockStatus();
-  else { fs.mkdirSync(OUT, { recursive: true }); fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: rest[1], t: Date.now(), note: rest.slice(2).join(" ") }) + "\n"); if (rest[1] === "start") { const p = PHASES.find((x) => x[0] === rest[0]); if (p) console.log(`[${p[0]}] ${p[1]} · budget ${p[2]} min`); } }
+  else { fs.mkdirSync(OUT, { recursive: true }); fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: rest[1], t: Date.now(), note: rest.slice(2).join(" ") }) + "\n"); const p = PHASES.find((x) => x[0] === rest[0]); if (rest[1] === "start" && p) console.log(`[${p[0]}] ${p[1]} · budget ${p[2]} min`);
+    // Live status so the prototype and PRD can show what is being built right now, even during a long gate.
+    try { fs.mkdirSync(PROTO, { recursive: true }); const done = rest[1] === "end" && rest[0] === "6"; writeJson(path.join(PROTO, "status.json"), { phase: rest[0], label: p ? p[1] : "", running: rest[1] === "start", done, t: Date.now() }); } catch {} }
 } else if (cmd === "cut") {
   fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: "cut", t: Date.now(), note: rest.slice(1).join(" ") }) + "\n");
   console.log(`Over budget in phase ${rest[0]}: cutting ${rest.slice(1).join(" ")}. Governance, evals, the holdout and the never list stay.`);

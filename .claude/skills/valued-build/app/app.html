@@ -177,6 +177,8 @@
   .stats { display: flex; gap: 8px; flex-wrap: wrap; }
   .statb { background: var(--paper); border-radius: var(--r-card); padding: 8px 12px; min-width: 92px; } .statb b { display: block; font-family: var(--font-display); font-size: 20px; } .statb span { font-size: var(--fs-micro); color: var(--ink-3); }
   .ready-banner { margin-top: 18px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--ink-3); display: inline-block; flex: none; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
   .clock { font-size: 11.5px; font-weight: 600; padding: 2px 9px; border-radius: var(--r-pill); background: var(--paper); border: 1px solid var(--line-2); color: var(--ink-3); white-space: nowrap; }
   .clock.soon { background: var(--amber-bg); border-color: #f1dfc2; color: var(--amber-strong); }
   .clock.late { background: var(--error-bg); border-color: #f1cfcb; color: var(--error); }
@@ -416,7 +418,7 @@ const NAMES = {
   es: ["Lucía Fernández", "Carlos Mendes", "Isabel Cruz", "Diego Ramos", "Sofía Herrera", "Mateo Vargas", "Valentina Ruiz", "Javier Soto"],
   de: ["Lukas Weber", "Hannah Schmidt", "Jonas Fischer", "Lea Wagner", "Felix Braun", "Mia Hoffmann", "Paul Richter", "Emma Koch"],
 };
-let CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules" }, ROUTER = null, AI = null, GOLDEN = [], HOLDOUT = [], CUSTOM = [], CARDS = [];
+let CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules" }, ROUTER = null, AI = null, GOLDEN = [], HOLDOUT = [], CUSTOM = [], CARDS = [], STATUS = {};
 let SHAPE = SHAPES.desk, ITEMS = [], OPEN = null, LOG = [], stats = { approved: 0, edited: 0 };
 let evalSet = "golden", engine = "rules", RUNS = [], selRun = null, ctl = null;
 const model = () => MODELS.find((m) => m.id === $("#model").value) || MODELS[1];
@@ -495,7 +497,7 @@ const triggerOf = (d) => { const q = [...String(d.reason || "").matchAll(/"([^"]
 
 /* ---------- Data and queue ---------- */
 async function boot() {
-  [CASE, SOURCES, GATES, BUILD, GOLDEN, HOLDOUT, CARDS] = await Promise.all([load("case.json", {}), load("sources.json", []), load("gates.json", {}), load("build.json", { engine: "rules" }), load("golden.json", []), load("holdout.json", []), load("cards.json", [])]);
+  [CASE, SOURCES, GATES, BUILD, GOLDEN, HOLDOUT, CARDS, STATUS] = await Promise.all([load("case.json", {}), load("sources.json", []), load("gates.json", {}), load("build.json", { engine: "rules" }), load("golden.json", []), load("holdout.json", []), load("cards.json", []), load("status.json", {})]);
   ROUTER = withBackstop(compileRouter(await load("router.js", "")), await load("model-cache.json", {}));
   SHAPE = { ...(SHAPES[CASE.shape] || SHAPES.desk) }; if (Array.isArray(CASE.itemNoun)) SHAPE.noun = CASE.itemNoun;
   const persona = CASE.persona || { name: "Maya Brooks", role: SHAPE.personaRole };
@@ -541,23 +543,34 @@ function renderClocks() {
   const urgent = ITEMS.map((it) => ({ it, c: clockOf(it) })).filter((x) => x.c && x.c.cls).sort((a, b) => a.c.left - b.c.left).slice(0, 3);
   $("#clocks").innerHTML = urgent.length ? `<div class="qhead"><h3>Close to their clock</h3><span>${esc(Object.values(CASE.clocks || {}).map((c) => c.label).filter(Boolean)[0] || "Response deadlines")} set in the working session</span></div><div class="queue">${urgent.map((x) => qcard(x.it)).join("")}</div>` : "";
 }
-function renderDecided() {
+// While the product is being built, the home reflects the decisions as product configuration, not as a
+// Q&A list: each answer becomes a setting of the thing being built. Once the router exists, the real
+// product (queue, evals) takes over and this panel disappears.
+function renderBuilding() {
   const el = $("#decided"); if (!el) return;
   const ans = (CARDS || []).filter((c) => c.decision);
-  if (!ans.length) { el.innerHTML = ""; return; }
-  const rounds = [...new Set(ans.map((c) => c.round))].sort((a, b) => a - b);
-  const stage = ROUTER
-    ? `<div class="banner ok" style="margin:10px 0"><strong>Live.</strong> The agents are built; the queue and evals below are real.</div>`
-    : `<div class="banner warn" style="margin:10px 0"><strong>Staged preview.</strong> These are your decisions captured so far. The queue and numbers are placeholders until the agents are built at the evals gate (E).</div>`;
-  const label = (r) => r === 0 ? "Framing" : `Round ${r}`;
-  const block = rounds.map((r) => {
-    const cs = ans.filter((c) => c.round === r);
-    return `<div class="qhead" style="margin-top:12px"><h3>${label(r)}</h3></div><div class="queue">${cs.map((c) => `<div class="finding"><span class="ic">${esc(String(c.gate || "").slice(0, 1) || "·")}</span><div><b>${esc(c.question)}</b><p>${esc(c.decision)}${c.skipped ? " · default taken" : ""}</p></div></div>`).join("")}</div>`;
-  }).join("");
-  el.innerHTML = `<div class="card" style="margin-top:14px"><div class="qhead"><h3>Decided so far</h3><span>${ans.length} client decision${ans.length === 1 ? "" : "s"} captured this session</span></div>${stage}${block}</div>`;
+  if (ROUTER || !ans.length) { el.innerHTML = ""; return; }
+  const name = CASE.title || "This assistant", client = CASE.client || "";
+  // Turn a card's "effect" (what the answer sets) into a product-setting label, never the question text.
+  const labelFor = (c) => {
+    const e = String(c.effect || "").replace(/^sets?\s+(the\s+)?/i, "").replace(/\s*\(.*\)\s*$/, "").trim();
+    return e ? e.charAt(0).toUpperCase() + e.slice(1) : (c.gate ? `Gate ${c.gate}` : "Setting");
+  };
+  const settings = ans.filter((c) => c.round !== 0 || !/product name|call (this|it)/i.test(c.question || ""))
+    .map((c) => `<div class="finding"><span class="ic">${esc(String(c.gate || "·").slice(0, 1))}</span><div><b>${esc(labelFor(c))}</b><p>${esc(c.decision)}${c.skipped ? " · default" : ""}</p></div></div>`).join("");
+  const built = SHAPE && CASE.shape ? ` Shape: ${esc(SHAPE.noun ? SHAPE.noun[1] : CASE.shape)}.` : "";
+  const now = STATUS && STATUS.running && STATUS.label
+    ? `<div class="banner" style="margin:10px 0;display:flex;align-items:center;gap:8px"><span class="spin" aria-hidden="true"></span><span><strong>Working now:</strong> ${esc(STATUS.label)}${STATUS.phase ? " (phase " + esc(String(STATUS.phase)) + ")" : ""}. The screen updates as each step lands.</span></div>`
+    : "";
+  el.innerHTML = `<div class="card" style="margin-top:14px">
+    <div class="qhead"><h3>Building ${esc(name)}</h3><span>${client ? "for " + esc(client) + " · " : ""}taking shape from your decisions</span></div>
+    ${now}
+    <div class="banner warn" style="margin:10px 0"><strong>Being built.</strong> This is how your answers are configuring the product.${built} The live queue and evals come online once the agents are built at the evals gate.</div>
+    <div class="queue">${settings}</div>
+  </div>`;
 }
 function renderHome(persona = CASE.persona || { name: "there" }) {
-  renderDecided();
+  renderBuilding();
   const c = counts(), total = ITEMS.length, V = CASE.verdicts || {};
   const hour = new Date().getHours(), part = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
   $("#greet").textContent = `Good ${part}, ${String(persona.name).split(" ")[0]}. Here is what came in.`;
@@ -1090,7 +1103,7 @@ document.addEventListener("keydown", (e) => { if (e.target.id === "followUp" && 
   $("#aiPill").textContent = AI ? "AI: live" : "AI: off"; $("#aiPill").className = "pill " + (AI ? "ok" : "plain");
   if (!AI) { $("#model").disabled = true; $("#model").title = HOSTED ? "AI needs this page opened in Claude." : "AI needs an API key on the local server."; }
   renderEvalControls();
-  if (!HOSTED) { let sig = ""; setInterval(async () => { try { const s = await Promise.all(["/case.json", "/gates.json", "/router.js", "/cards.json"].map((u) => fetch(u, { cache: "no-store" }).then((r) => r.text()))).then((a) => a.join("|")); if (sig && s !== sig) { await boot(); go("home"); toast("Updated from the latest round"); } sig = s; } catch {} }, 4000); }
+  if (!HOSTED) { let sig = ""; setInterval(async () => { try { const s = await Promise.all(["/case.json", "/gates.json", "/router.js", "/cards.json", "/status.json"].map((u) => fetch(u, { cache: "no-store" }).then((r) => r.text()))).then((a) => a.join("|")); if (sig && s !== sig) { await boot(); go("home"); toast("Updated from the latest round"); } sig = s; } catch {} }, 4000); }
 })();
 </script>
 </body>

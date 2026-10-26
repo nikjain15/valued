@@ -108,7 +108,13 @@ honest record of what the number is worth, not a thing to work around.
    should we start with stand-ins and bring yours in later?"** ("Synthetic only for now" recommended when
    nothing is ready; "Documents in inputs/"; "Sample requests or transcripts, de-identified"; "Both";
    format "the material, its rough size and who owns it (e.g. '300 policy PDFs, owned by HR operations')"). If files are in `inputs/`, list them in one
-   table instead and print `Grounded in: <n> client files`. Under `--auto` take the first option of each.
+   table instead and print `Grounded in: <n> client files`.
+   **Always ask one more framing card, even when the case line is complete: "Product name": "What would you
+   like to call this, so your team recognizes it on screen?"** (3 to 4 short, human product names built from
+   the case in the client's own words, e.g. "MemberReply", "Harbor Claims Copilot", plus "Other"; format "a
+   short product name (e.g. 'MemberReply')"). This name is the title of the prototype and the PRD, so it is
+   shown everywhere instead of the generic use-case label. Append it to `out/cards.json` with `"round": 0`
+   and `"gate": "Frame"`; render reads it as the title. Under `--auto` take the first option of each.
    Print `Engagement: <case line>` when you built it from answers.
 2. Set up:
    ```bash
