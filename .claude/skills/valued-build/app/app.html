@@ -35,7 +35,7 @@
   .bubble { background: var(--brand-tint); border-radius: var(--r-bubble-ai); padding: 14px 16px; color: var(--ink); white-space: pre-wrap; min-height: 48px; }
   .bubble[contenteditable="true"] { background: var(--white); outline: 2px solid var(--brand-soft); }
   .meta { font-size: var(--fs-micro); color: var(--ink-3); font-variant-numeric: tabular-nums; }
-  .banner { border-radius: var(--r-card); padding: 12px 14px; font-size: var(--fs-label); display: flex; gap: 10px; align-items: center; }
+  .banner { border-radius: var(--r-card); padding: 12px 14px; font-size: var(--fs-label); line-height: 1.5; }
   .banner.bad { background: var(--error-bg); color: var(--error); border: 1px solid #f1cfcb; }
   .banner.warn { background: var(--amber-bg); color: var(--amber-strong); border: 1px solid #f1dfc2; }
   .banner.ok { background: var(--brand-tint); color: var(--brand-strong); border: 1px solid var(--brand-soft); }
@@ -52,14 +52,31 @@
   .tbl tr.sel td { background: var(--brand-tint); }
   .tbl tr.click { cursor: pointer; }
   .num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 12.5px; }
-  .design { text-align: left; border: 1.5px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; background: var(--white); cursor: pointer; font: inherit; color: inherit; }
+  .design { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; text-align: left; border: 1.5px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; background: var(--white); cursor: pointer; font: inherit; color: inherit; }
   .design[aria-pressed="true"] { border-color: var(--brand); box-shadow: var(--focus-ring); }
   .design .t { font-weight: 600; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .design .path { font: 500 11.5px var(--font-mono); color: var(--ink-3); margin-top: 8px; background: var(--paper); border-radius: 8px; padding: 6px 8px; }
   .design p { font-size: var(--fs-label); color: var(--ink-2); margin-top: 8px; }
   .design .pro { color: var(--brand-strong); } .design .con { color: var(--error); }
   .linkbtn { background: none; border: 0; color: var(--ink-3); cursor: pointer; font: 500 var(--fs-label) var(--font-sans); text-decoration: underline; }
-  .drop { border: 1.5px dashed var(--line); border-radius: var(--r-card); padding: 18px; text-align: center; color: var(--ink-3); background: var(--paper); }
+  .drop { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; border: 1.5px dashed var(--line); border-radius: var(--r-card); padding: 26px 18px; text-align: center; color: var(--ink-3); background: var(--paper); cursor: pointer; transition: border-color var(--dur-base), background var(--dur-base); }
+  .drop:hover, .drop:focus-within { border-color: var(--brand); }
+  .drop svg { color: var(--brand); }
+  .drop strong { color: var(--ink); font-weight: 600; }
+  .drop .sub { font-size: var(--fs-micro); }
+  .privacy { display: flex; gap: 10px; align-items: flex-start; color: var(--ink-3); font-size: var(--fs-label); max-width: 90ch; }
+  .privacy svg { flex: none; margin-top: 2px; color: var(--brand); }
+  .step-n { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--dark); color: var(--white); font-size: 12px; font-weight: 600; margin-right: 8px; }
+  .cols td:first-child { white-space: nowrap; }
+  .code { font: 600 12px var(--font-mono); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
+  .srcitem { padding: 12px 0; border-bottom: 1px solid var(--line-2); }
+  .srcitem:last-child { border-bottom: 0; }
+  .srcitem p { margin-top: 6px; font-size: var(--fs-label); color: var(--ink-2); }
+  .stats { display: flex; gap: 8px; flex-wrap: wrap; }
+  .stat { background: var(--paper); border-radius: var(--r-card); padding: 8px 12px; min-width: 92px; }
+  .stat b { display: block; font-family: var(--font-display); font-size: 20px; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: var(--fs-micro); color: var(--ink-3); }
+  details.more summary { cursor: pointer; font-size: var(--fs-label); color: var(--ink-3); padding: 8px 0; }
   .drop.over { border-color: var(--brand); background: var(--brand-tint); }
   .gate { border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; background: var(--white); }
   .gate .top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
@@ -179,23 +196,31 @@
   <!-- Your data -->
   <section class="panel" id="data" hidden>
     <div class="stack">
-      <div class="banner ok">Files you add here stay in this browser tab. Nothing is uploaded or stored. For PDFs, Word files or real client data, put them in the session's <strong>&nbsp;inputs&nbsp;</strong> folder instead; VALUED reads them during the run and de-identifies before anything is published.</div>
+      <div>
+        <div class="eyebrow">Your data</div>
+        <h2 style="margin-top:6px">Test it on your own requests and documents</h2>
+        <p class="muted" style="margin-top:8px;max-width:70ch">Add real requests with known outcomes, or your own policy documents. The same release gates then run on your data, for every design and model.</p>
+      </div>
+      <p class="privacy"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Files stay in this browser tab. Nothing is uploaded or stored. For PDFs, Word files or confidential client data, add them to the session's inputs folder instead; VALUED reads them during the run and de-identifies them before anything is published.</span></p>
       <div class="two">
         <div class="card stack">
-          <div><div class="eyebrow">Test with your own cases</div><h3 style="margin-top:6px">Labelled requests</h3>
-          <p class="small muted" style="margin-top:4px">A CSV or JSON file of real requests, each with the right outcome. The same release gates then run on your data, for every design and model.</p></div>
-          <label class="drop" id="caseDrop"><input type="file" id="caseFile" accept=".csv,.json,text/csv,application/json" hidden>Drop a file here, or <strong>choose a file</strong></label>
-          <div><div class="label">Format</div><pre class="num" style="background:var(--paper);border-radius:8px;padding:10px;margin-top:6px;overflow-x:auto">text,expected,source,language
-"How much is an international wire?",answer,S2-wires,en
-"I never authorised this payment",escalate,,en</pre>
-          <p class="small muted">expected is answer, human or escalate. source is the approved source id for answers. Any extra column (language, channel, segment) becomes a group the gates check.</p></div>
-          <div id="caseSummary"></div>
+          <div><div class="row"><span class="step-n">1</span><h3>Labelled requests</h3></div>
+            <p class="small muted" style="margin-top:6px">Real requests, each with the outcome a person agreed was right.</p></div>
+          <label class="drop" id="caseDrop"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><strong>Drop a CSV or JSON file</strong><span class="sub">or click to choose a file</span><input type="file" id="caseFile" accept=".csv,.json,text/csv,application/json" hidden></label>
+          <div id="caseSummary"><button class="btn ghost sm" id="loadExample">Use the example file</button></div>
+          <div><div class="label">Columns</div>
+            <div class="tbl cols" style="margin-top:6px"><table><tbody>
+              <tr><td><span class="code">text</span></td><td>The request, as the customer wrote it. Required.</td></tr>
+              <tr><td><span class="code">expected</span></td><td>The right outcome: <strong>answer</strong>, <strong>human</strong> or <strong>escalate</strong>. Required.</td></tr>
+              <tr><td><span class="code">source</span></td><td>For answers, the approved source that answers it, for example <span class="code">S2-wires</span>.</td></tr>
+              <tr><td><span class="code">any other</span></td><td>A group the gates check separately, such as <span class="code">language</span> or <span class="code">channel</span>.</td></tr>
+            </tbody></table></div></div>
         </div>
         <div class="card stack">
-          <div><div class="eyebrow">Ground it in your documents</div><h3 style="margin-top:6px">Knowledge sources</h3>
-          <p class="small muted" style="margin-top:4px">Text or Markdown policy documents. Designs B and C read them at once; design A only knows the sources it was built with, so its rules need a rebuild to use them.</p></div>
-          <label class="drop" id="srcDrop"><input type="file" id="srcFile" accept=".txt,.md,text/plain,text/markdown" multiple hidden>Drop files here, or <strong>choose files</strong></label>
-          <div class="tbl"><table><thead><tr><th>Source</th><th>Origin</th><th>Excerpt</th><th></th></tr></thead><tbody id="srcList"></tbody></table></div>
+          <div><div class="row"><span class="step-n">2</span><h3>Knowledge documents</h3></div>
+            <p class="small muted" style="margin-top:6px">Policy or knowledge articles as text or Markdown. Designs B and C use them straight away; design A's rules are rebuilt from them in the next session.</p></div>
+          <label class="drop" id="srcDrop"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><strong>Drop text or Markdown files</strong><span class="sub">or click to choose files</span><input type="file" id="srcFile" accept=".txt,.md,text/plain,text/markdown" multiple hidden></label>
+          <div id="srcList"></div>
         </div>
       </div>
     </div>
@@ -568,6 +593,11 @@ function renderDetail() {
 }
 
 /* ---------- Your data (browser only) ---------- */
+/* A ready-made example in the client's own vocabulary: the session's samples, with their labelled outcomes. */
+const EXAMPLE_ROWS = () => {
+  const golden = new Map(GOLDEN.map((r) => [r.text, r]));
+  return (CASE.samples || []).map((x) => { const g = golden.get(x.text); return { text: x.text, expected: x.expect || g?.expected || "human", source: g?.source || "", channel: g?.slices?.channel || "", language: g?.slices?.lang || "" }; });
+};
 function parseCsv(text) {
   const rows = []; let row = [], cell = "", q = false;
   for (let i = 0; i < text.length; i++) {
@@ -592,9 +622,13 @@ async function loadCases(file) {
     return { id: r.id || `c${String(i + 1).padStart(2, "0")}`, text: String(r.text || ""), expected: String(r.expected || "").toLowerCase(), source: r.source || null, slices };
   }).filter((r) => r.text && allowed.includes(r.expected));
   const bad = (Array.isArray(raw) ? raw.length : 0) - CUSTOM.length;
+  const groups = [...new Set(CUSTOM.flatMap((r) => Object.keys(r.slices)))];
   $("#caseSummary").innerHTML = CUSTOM.length
-    ? `<div class="banner ok"><strong>${CUSTOM.length} cases loaded</strong> from ${esc(file.name)}: ${CUSTOM.filter((r) => r.expected === "escalate").length} escalate, ${CUSTOM.filter((r) => r.expected === "answer").length} answer, ${CUSTOM.filter((r) => r.expected === "human").length} person.${bad ? ` ${bad} rows skipped (missing text or an outcome other than answer, human, escalate).` : ""}</div><button class="btn solid" id="toEvals" style="margin-top:10px">Run evals on your data</button>`
-    : `<div class="banner bad">No usable rows in ${esc(file.name)}. Check the format above.</div>`;
+    ? `<div class="stack"><div class="banner ok"><strong>${esc(file.name)} loaded.</strong> ${CUSTOM.length} requests ready to test.${bad ? ` ${bad} row${bad === 1 ? "" : "s"} skipped: missing text, or an outcome other than answer, human or escalate.` : ""}</div>
+       <div class="stats">${[["Requests", CUSTOM.length], ["Escalate", CUSTOM.filter((r) => r.expected === "escalate").length], ["Answer", CUSTOM.filter((r) => r.expected === "answer").length], ["Person", CUSTOM.filter((r) => r.expected === "human").length]].map(([l, n]) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`).join("")}</div>
+       ${groups.length ? `<p class="small muted">Groups the gates will check: ${groups.map((g) => `<span class="code">${esc(g)}</span>`).join(" ")}</p>` : ""}
+       <div class="row"><button class="btn solid" id="toEvals">Run evals on this file</button><button class="btn ghost sm" id="loadExample">Use the example file instead</button></div></div>`
+    : `<div class="banner bad"><strong>No usable rows in ${esc(file.name)}.</strong> Check the columns below: text and expected are required.</div>`;
   renderEvalControls();
 }
 async function loadSources(files) {
@@ -606,7 +640,10 @@ async function loadSources(files) {
   renderSources(); toast(`${files.length} document${files.length === 1 ? "" : "s"} added as sources`);
 }
 function renderSources() {
-  $("#srcList").innerHTML = SOURCES.map((x) => `<tr><td class="num">${esc(x.id)}</td><td>${x.uploaded ? `<span class="pill info">${esc(x.file)}</span>` : `<span class="pill plain">session</span>`}</td><td class="small">${esc(x.text.slice(0, 90))}${x.text.length > 90 ? "..." : ""}</td><td>${x.uploaded ? `<button class="linkbtn" data-rmsrc="${esc(x.id)}">Remove</button>` : ""}</td></tr>`).join("");
+  const item = (x) => `<div class="srcitem"><div class="row between"><span class="code">${esc(x.id)}</span>${x.uploaded ? `<span class="row" style="gap:8px"><span class="pill info">${esc(x.file)}</span><button class="linkbtn" data-rmsrc="${esc(x.id)}">Remove</button></span>` : ""}</div><p>${esc(x.text.slice(0, 160))}${x.text.length > 160 ? "..." : ""}</p></div>`;
+  const up = SOURCES.filter((x) => x.uploaded), base = SOURCES.filter((x) => !x.uploaded);
+  $("#srcList").innerHTML = `${up.length ? `<div class="label">Your documents (${up.length})</div>${up.map(item).join("")}` : `<p class="small muted">No documents added yet.</p>`}
+    <details class="more"><summary>${base.length} approved sources from the working session</summary>${base.map(item).join("")}</details>`;
   renderHow();
 }
 function wireDrop(label, input, handler) {
@@ -679,6 +716,7 @@ document.addEventListener("click", async (e) => {
   if (t.dataset.engine) { engine = t.dataset.engine; renderEvalControls(); return; }
   if (t.id === "runTest") return runTest();
   if (t.dataset.rmsrc) { SOURCES = SOURCES.filter((x) => x.id !== t.dataset.rmsrc); renderSources(); return; }
+  if (t.id === "loadExample") return loadCases(new File([JSON.stringify(EXAMPLE_ROWS())], "example-requests.json", { type: "application/json" }));
   if (t.id === "toEvals") { evalSet = "custom"; showTab("evals"); renderEvalControls(); renderBoard(); document.querySelectorAll("[data-set]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.set === "custom")); return; }
   if (t.id === "stopTest") return ctl?.abort();
 });
