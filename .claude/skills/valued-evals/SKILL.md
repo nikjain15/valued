@@ -87,7 +87,7 @@ the ship-or-fix decision go to the client, because they trade customer harm agai
   found one and is sure), send any disagreement to a person, and print how many rows the model changed. Rerun `model-inputs` and the guard model
   whenever rows are added. Under engine `rules`, the holdout is reported as is.
 - **False alarms.** When precision fails because the guard model escalated rows that are not escalations, sharpen the
-  family definitions in `u.json` `triggers` (what is and is not this family), rerun the guard model, and rerun the
+  `definition` of each family in `u.json` `triggers` (gate E may edit only that field), rerun the guard model, and rerun the
   evals. Change definitions, never rows or labels.
 - **One repair round.** If the sealed holdout blocks after the dev fix, give the builder only the failing
   groups and trigger families the runner printed (never row ids or text), have it widen the lexicon for those
