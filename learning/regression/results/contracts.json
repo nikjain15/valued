@@ -1,75 +1,54 @@
 {
   "dir": "valued-audit-contracts",
   "shape": "review",
-  "questions": 13,
+  "questions": 14,
   "agents": 5,
-  "sweeps": 2,
+  "sweeps": 3,
   "systems": 8,
   "pending": 0,
-  "golden": 32,
-  "holdout": 12,
+  "golden": 30,
+  "holdout": 20,
   "row": {
     "1": "pass",
     "2": "pass",
-    "3": "fail",
+    "3": "pass",
     "4": "pass",
-    "5": "fail",
-    "6": "fail",
+    "5": "pass",
+    "6": "pass",
     "7": "pass",
     "8": "pass"
   },
-  "failures": [
-    {
-      "std": 5,
-      "msg": "fewer than 3 Given / When / Then acceptance criteria",
-      "file": "out/prd.md"
-    },
-    {
-      "std": 6,
-      "msg": "golden set has fewer than 3 never-list rows",
-      "file": "out/proto/golden.json"
-    },
-    {
-      "std": 3,
-      "msg": "local: Close to their clock shows nothing",
-      "file": "out/proto/case.json"
-    },
-    {
-      "std": 3,
-      "msg": "hosted: Close to their clock shows nothing",
-      "file": "out/proto/case.json"
-    }
-  ],
+  "failures": [],
   "browser": {
     "local": {
       "url": "http://localhost:4411/",
       "errors": [],
-      "items": 32,
-      "counts": "{\"escalate\":17,\"human\":4,\"answer\":11}",
-      "greet": "Good morning, Priya. Here is what came in.",
+      "items": 30,
+      "counts": "{\"escalate\":13,\"human\":3,\"answer\":14}",
+      "greet": "Good afternoon, Priya. Here is what came in.",
       "tiles": 4,
       "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
-      "overnight": 317,
+      "overnight": 315,
       "away": 4,
-      "clocks": 0,
+      "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New clause|Release checks|Review assistants|Risk and conduct|Matter audit trail|Systems and privilege4/|How the review works|Questions from partners",
+      "sidebar": "Today|Queue|New contract|Release checks|Review assistants|Privilege and professional conduct|Review trail|Matter data4/|How a review runs|Partner FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 615
+          "body": 859
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 604
+          "body": 747
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1054
+          "body": 1180
         }
       },
       "agentCards": 5,
@@ -77,39 +56,39 @@
       "evalPass": true,
       "evalGates": 8,
       "connCards": 8,
-      "govRows": 26,
+      "govRows": 31,
       "faq": 8,
       "emdash": false
     },
     "hosted": {
       "url": "file:///Users/nikjain/dev/valued-audit-contracts/out/hosted/index.html",
       "errors": [],
-      "items": 32,
-      "counts": "{\"escalate\":17,\"human\":4,\"answer\":11}",
-      "greet": "Good morning, Priya. Here is what came in.",
+      "items": 30,
+      "counts": "{\"escalate\":13,\"human\":3,\"answer\":14}",
+      "greet": "Good afternoon, Priya. Here is what came in.",
       "tiles": 4,
       "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
-      "overnight": 317,
+      "overnight": 315,
       "away": 4,
-      "clocks": 0,
+      "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New clause|Release checks|Review assistants|Risk and conduct|Matter audit trail|Systems and privilege4/|How the review works|Questions from partners",
+      "sidebar": "Today|Queue|New contract|Release checks|Review assistants|Privilege and professional conduct|Review trail|Matter data4/|How a review runs|Partner FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 615
+          "body": 859
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 604
+          "body": 747
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1054
+          "body": 1180
         }
       },
       "agentCards": 5,
@@ -117,28 +96,62 @@
       "evalPass": true,
       "evalGates": 8,
       "connCards": 8,
-      "govRows": 26,
+      "govRows": 31,
       "faq": 8,
       "emdash": false
     },
     "prd": {
       "url": "http://localhost:4411/prd",
       "errors": [],
-      "text": 21071,
+      "text": 28757,
       "pending": 0
     }
   },
-  "timing": {
-    "setup": 25,
-    "V": 57,
-    "A": 57,
-    "L": 101,
-    "U": 29,
-    "E": 70,
-    "D": 29,
-    "B": 83
-  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 15,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 49,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 125,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 628,
+      "over": true
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 10,
+      "over": false
+    }
+  ],
   "dev": "RELEASE PASSES ALL GATES",
   "holdoutLine": "RELEASE PASSES ALL GATES",
-  "minutes": 7.516666666666667
+  "minutes": 14.766666666666667
 }

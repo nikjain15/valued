@@ -1,139 +1,157 @@
 {
   "dir": "valued-audit-portal",
   "shape": "desk",
-  "questions": 13,
+  "questions": 11,
   "agents": 5,
   "sweeps": 3,
-  "systems": 8,
+  "systems": 6,
   "pending": 0,
-  "golden": 28,
-  "holdout": 12,
+  "golden": 34,
+  "holdout": 20,
   "row": {
     "1": "pass",
     "2": "pass",
     "3": "pass",
     "4": "pass",
-    "5": "fail",
-    "6": "fail",
+    "5": "pass",
+    "6": "pass",
     "7": "pass",
     "8": "pass"
   },
-  "failures": [
-    {
-      "std": 5,
-      "msg": "fewer than 3 Given / When / Then acceptance criteria",
-      "file": "out/prd.md"
-    },
-    {
-      "std": 6,
-      "msg": "holdout eval does not pass all gates",
-      "file": "out/proto/router.js"
-    },
-    {
-      "std": 6,
-      "msg": "golden 28 rows, holdout 12; expected 30+ and 10+",
-      "file": "out/proto/golden.json"
-    }
-  ],
+  "failures": [],
   "browser": {
     "local": {
       "url": "http://localhost:4404/",
       "errors": [],
-      "items": 28,
-      "counts": "{\"escalate\":11,\"human\":7,\"answer\":10}",
-      "greet": "Good morning, Dana. Here is what came in.",
+      "items": 34,
+      "counts": "{\"escalate\":20,\"human\":8,\"answer\":6}",
+      "greet": "Good afternoon, Maria. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
+      "ready": "Not ready for go-live yet. 9 controls still open, owned by c",
       "overnight": 312,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New message|Safety and release|Assistants and rules|Clinical governance|Triage record|Data and systems3/|How it works|Questions",
+      "sidebar": "Today|Queue|New message|Safety checks|Triage assistants|Clinical governance|Audit trail|Patient data3/|How triage works|Questions nurses ask",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 806
+          "body": 724
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 718
+          "body": 587
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1619
+          "body": 1185
         }
       },
       "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 8,
-      "govRows": 24,
+      "connCards": 6,
+      "govRows": 25,
       "faq": 8,
       "emdash": false
     },
     "hosted": {
       "url": "file:///Users/nikjain/dev/valued-audit-portal/out/hosted/index.html",
       "errors": [],
-      "items": 28,
-      "counts": "{\"escalate\":11,\"human\":7,\"answer\":10}",
-      "greet": "Good morning, Dana. Here is what came in.",
+      "items": 34,
+      "counts": "{\"escalate\":20,\"human\":8,\"answer\":6}",
+      "greet": "Good afternoon, Maria. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
+      "ready": "Not ready for go-live yet. 9 controls still open, owned by c",
       "overnight": 312,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New message|Safety and release|Assistants and rules|Clinical governance|Triage record|Data and systems3/|How it works|Questions",
+      "sidebar": "Today|Queue|New message|Safety checks|Triage assistants|Clinical governance|Audit trail|Patient data3/|How triage works|Questions nurses ask",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 806
+          "body": 724
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 718
+          "body": 587
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1619
+          "body": 1185
         }
       },
       "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 8,
-      "govRows": 24,
+      "connCards": 6,
+      "govRows": 25,
       "faq": 8,
       "emdash": false
     },
     "prd": {
       "url": "http://localhost:4404/prd",
       "errors": [],
-      "text": 30147,
+      "text": 24631,
       "pending": 0
     }
   },
-  "timing": {
-    "setup": null,
-    "V": null,
-    "A": null,
-    "L": null,
-    "U": null,
-    "E": 56,
-    "D": 34,
-    "B": 106
-  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 5,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 26,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 149,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 10,
+      "over": false
+    }
+  ],
   "dev": "RELEASE PASSES ALL GATES",
-  "holdoutLine": "RELEASE BLOCKED",
-  "minutes": null
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": 7.45
 }

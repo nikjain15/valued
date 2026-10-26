@@ -1,129 +1,157 @@
 {
   "dir": "valued-audit-maintenance",
   "shape": "review",
-  "questions": 13,
-  "agents": 5,
+  "questions": 14,
+  "agents": 4,
   "sweeps": 3,
   "systems": 8,
   "pending": 0,
-  "golden": 32,
-  "holdout": 12,
+  "golden": 35,
+  "holdout": 20,
   "row": {
     "1": "pass",
     "2": "pass",
     "3": "pass",
     "4": "pass",
-    "5": "fail",
+    "5": "pass",
     "6": "pass",
     "7": "pass",
     "8": "pass"
   },
-  "failures": [
-    {
-      "std": 5,
-      "msg": "fewer than 3 Given / When / Then acceptance criteria",
-      "file": "out/prd.md"
-    }
-  ],
+  "failures": [],
   "browser": {
     "local": {
       "url": "http://localhost:4413/",
       "errors": [],
-      "items": 32,
-      "counts": "{\"escalate\":13,\"human\":7,\"answer\":12}",
-      "greet": "Good morning, Dana. Here is what came in.",
+      "items": 35,
+      "counts": "{\"escalate\":20,\"human\":8,\"answer\":7}",
+      "greet": "Good afternoon, Dana. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 11 controls still open, owned by ",
-      "overnight": 317,
+      "ready": "Not ready for go-live yet. 18 controls still open, owned by ",
+      "overnight": 318,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New entry|Release checks|Assistants|EHS and governance|Work order audit log|Plant systems3/|How it works|Questions from the plants",
+      "sidebar": "Today|Queue|New shift log|Release checks|Assistants|Safety and governance|Audit trail|Plant systems5/|How it works|Plant FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 600
+          "body": 942
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 617
+          "body": 952
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 940
+          "body": 1054
         }
       },
-      "agentCards": 5,
+      "agentCards": 4,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
       "connCards": 8,
-      "govRows": 24,
+      "govRows": 32,
       "faq": 8,
       "emdash": false
     },
     "hosted": {
       "url": "file:///Users/nikjain/dev/valued-audit-maintenance/out/hosted/index.html",
       "errors": [],
-      "items": 32,
-      "counts": "{\"escalate\":13,\"human\":7,\"answer\":12}",
-      "greet": "Good morning, Dana. Here is what came in.",
+      "items": 35,
+      "counts": "{\"escalate\":20,\"human\":8,\"answer\":7}",
+      "greet": "Good afternoon, Dana. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 11 controls still open, owned by ",
-      "overnight": 317,
+      "ready": "Not ready for go-live yet. 18 controls still open, owned by ",
+      "overnight": 318,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New entry|Release checks|Assistants|EHS and governance|Work order audit log|Plant systems3/|How it works|Questions from the plants",
+      "sidebar": "Today|Queue|New shift log|Release checks|Assistants|Safety and governance|Audit trail|Plant systems5/|How it works|Plant FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 600
+          "body": 942
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 617
+          "body": 952
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 940
+          "body": 1054
         }
       },
-      "agentCards": 5,
+      "agentCards": 4,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
       "connCards": 8,
-      "govRows": 24,
+      "govRows": 32,
       "faq": 8,
       "emdash": false
     },
     "prd": {
       "url": "http://localhost:4413/prd",
       "errors": [],
-      "text": 21096,
+      "text": 26061,
       "pending": 0
     }
   },
-  "timing": {
-    "setup": 39,
-    "V": 46,
-    "A": 54,
-    "L": 75,
-    "U": 31,
-    "E": 72,
-    "D": 34,
-    "B": 92
-  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 17,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 14,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 82,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 14,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 131,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 255,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 41,
+      "over": false
+    }
+  ],
   "dev": "RELEASE PASSES ALL GATES",
   "holdoutLine": "RELEASE PASSES ALL GATES",
-  "minutes": 7.383333333333334
+  "minutes": 9.233333333333333
 }

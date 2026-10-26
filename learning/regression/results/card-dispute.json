@@ -1,134 +1,163 @@
 {
   "dir": "valued-audit-card-dispute",
-  "shape": "review",
-  "questions": 13,
-  "agents": 6,
+  "shape": "desk",
+  "questions": 11,
+  "agents": 5,
   "sweeps": 3,
-  "systems": 9,
+  "systems": 10,
   "pending": 0,
-  "golden": 30,
-  "holdout": 12,
+  "golden": 34,
+  "holdout": 20,
   "row": {
     "1": "pass",
     "2": "pass",
-    "3": "pass",
+    "3": "fail",
     "4": "pass",
-    "5": "fail",
-    "6": "fail",
+    "5": "pass",
+    "6": "pass",
     "7": "pass",
     "8": "pass"
   },
   "failures": [
     {
-      "std": 5,
-      "msg": "fewer than 3 Given / When / Then acceptance criteria",
-      "file": "out/prd.md"
-    },
-    {
-      "std": 6,
-      "msg": "holdout eval does not pass all gates",
-      "file": "out/proto/router.js"
+      "std": 3,
+      "msg": "shape desk, expected review",
+      "file": "out/gates/a.json"
     }
   ],
   "browser": {
     "local": {
       "url": "http://localhost:4401/",
       "errors": [],
-      "items": 30,
-      "counts": "{\"escalate\":12,\"human\":7,\"answer\":11}",
-      "greet": "Good morning, Dana. Here is what came in.",
+      "items": 34,
+      "counts": "{\"escalate\":18,\"human\":9,\"answer\":7}",
+      "greet": "Good afternoon, Dana. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 16 controls still open, owned by ",
-      "overnight": 318,
+      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
+      "overnight": 310,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New dispute|Reg E quality and release|Assistants and rules|Controls and compliance|Case activity|Data and tools4/|How it works|Questions",
+      "sidebar": "Today|Queue|New dispute|Quality and release|Assistants and rules|Reg E controls|Dispute activity record|Data and tools4/|How it works|Questions",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 798
+          "body": 874
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 1124
+          "body": 612
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1158
+          "body": 1319
         }
       },
-      "agentCards": 6,
+      "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 9,
-      "govRows": 24,
+      "connCards": 10,
+      "govRows": 27,
       "faq": 8,
       "emdash": false
     },
     "hosted": {
       "url": "file:///Users/nikjain/dev/valued-audit-card-dispute/out/hosted/index.html",
       "errors": [],
-      "items": 30,
-      "counts": "{\"escalate\":12,\"human\":7,\"answer\":11}",
-      "greet": "Good morning, Dana. Here is what came in.",
+      "items": 34,
+      "counts": "{\"escalate\":18,\"human\":9,\"answer\":7}",
+      "greet": "Good afternoon, Dana. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 16 controls still open, owned by ",
-      "overnight": 318,
+      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
+      "overnight": 310,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New dispute|Reg E quality and release|Assistants and rules|Controls and compliance|Case activity|Data and tools4/|How it works|Questions",
+      "sidebar": "Today|Queue|New dispute|Quality and release|Assistants and rules|Reg E controls|Dispute activity record|Data and tools4/|How it works|Questions",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 798
+          "body": 874
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 1124
+          "body": 612
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1158
+          "body": 1319
         }
       },
-      "agentCards": 6,
+      "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 9,
-      "govRows": 24,
+      "connCards": 10,
+      "govRows": 27,
       "faq": 8,
       "emdash": false
     },
     "prd": {
       "url": "http://localhost:4401/prd",
       "errors": [],
-      "text": 30702,
+      "text": 25884,
       "pending": 0
     }
   },
-  "timing": {
-    "setup": null,
-    "V": null,
-    "A": null,
-    "L": null,
-    "U": null,
-    "E": 107,
-    "D": 46,
-    "B": 88
-  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 1,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 30,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 36,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 303,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 6,
+      "over": false
+    }
+  ],
   "dev": "RELEASE PASSES ALL GATES",
-  "holdoutLine": "RELEASE BLOCKED",
-  "minutes": null
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": 8.983333333333333
 }

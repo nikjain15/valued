@@ -1,154 +1,157 @@
 {
   "dir": "valued-audit-university",
-  "shape": "desk",
+  "shape": "chat",
   "questions": 13,
-  "agents": 5,
+  "agents": 4,
   "sweeps": 3,
   "systems": 8,
   "pending": 0,
-  "golden": 32,
-  "holdout": 12,
+  "golden": 34,
+  "holdout": 20,
   "row": {
     "1": "pass",
     "2": "pass",
     "3": "pass",
     "4": "pass",
-    "5": "fail",
-    "6": "fail",
+    "5": "pass",
+    "6": "pass",
     "7": "pass",
     "8": "pass"
   },
-  "failures": [
-    {
-      "std": 5,
-      "msg": "fewer than 3 Given / When / Then acceptance criteria",
-      "file": "out/prd.md"
-    },
-    {
-      "std": 6,
-      "msg": "dev eval does not pass all gates",
-      "file": "out/proto/router.js"
-    },
-    {
-      "std": 6,
-      "msg": "holdout eval does not pass all gates",
-      "file": "out/proto/router.js"
-    },
-    {
-      "std": 6,
-      "msg": "gates.json lacks one of the 8 gates or riskiest_slice",
-      "file": "out/proto/gates.json"
-    },
-    {
-      "std": 6,
-      "msg": "eval output lists fewer than 8 gates",
-      "file": "out/proto/eval.js"
-    },
-    {
-      "std": 6,
-      "msg": "eval output has no per-group line",
-      "file": "out/proto/eval.js"
-    }
-  ],
+  "failures": [],
   "browser": {
     "local": {
       "url": "http://localhost:4415/",
       "errors": [],
-      "items": 32,
-      "counts": "{\"escalate\":11,\"human\":8,\"answer\":13}",
-      "greet": "Good morning, Dana. Here is what came in.",
+      "items": 34,
+      "counts": "{\"escalate\":16,\"human\":9,\"answer\":9}",
+      "greet": "Good afternoon, Casey. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
-      "overnight": 317,
+      "ready": "Not ready for go-live yet. 16 controls still open, owned by ",
+      "overnight": 314,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New question|Answer quality|Assistants and rules|Student privacy and safeguarding|Activity record|Data and tools3/|How it works|Questions",
+      "sidebar": "Today|Queue|New question|Release checks|Assistants|Policy and privacy|Advising log|Student data3/|How it works|Questions from staff",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 749
+          "body": 866
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 659
+          "body": 606
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1372
+          "body": 891
         }
       },
-      "agentCards": 5,
+      "agentCards": 4,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
       "connCards": 8,
-      "govRows": 26,
+      "govRows": 29,
       "faq": 8,
       "emdash": false
     },
     "hosted": {
       "url": "file:///Users/nikjain/dev/valued-audit-university/out/hosted/index.html",
       "errors": [],
-      "items": 32,
-      "counts": "{\"escalate\":11,\"human\":8,\"answer\":13}",
-      "greet": "Good morning, Dana. Here is what came in.",
+      "items": 34,
+      "counts": "{\"escalate\":16,\"human\":9,\"answer\":9}",
+      "greet": "Good afternoon, Casey. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
-      "overnight": 317,
+      "ready": "Not ready for go-live yet. 16 controls still open, owned by ",
+      "overnight": 314,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New question|Answer quality|Assistants and rules|Student privacy and safeguarding|Activity record|Data and tools3/|How it works|Questions",
+      "sidebar": "Today|Queue|New question|Release checks|Assistants|Policy and privacy|Advising log|Student data3/|How it works|Questions from staff",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 749
+          "body": 866
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 659
+          "body": 606
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1372
+          "body": 891
         }
       },
-      "agentCards": 5,
+      "agentCards": 4,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
       "connCards": 8,
-      "govRows": 26,
+      "govRows": 29,
       "faq": 8,
       "emdash": false
     },
     "prd": {
       "url": "http://localhost:4415/prd",
       "errors": [],
-      "text": 20795,
+      "text": 26743,
       "pending": 0
     }
   },
-  "timing": {
-    "setup": 43,
-    "V": 51,
-    "A": 54,
-    "L": 77,
-    "U": 32,
-    "E": 73,
-    "D": 31,
-    "B": 76
-  },
-  "dev": "RELEASE OK: all gates pass",
-  "holdoutLine": "RELEASE OK: all gates pass",
-  "minutes": 7.283333333333333
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 27,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 35,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 107,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 161,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 5,
+      "over": false
+    }
+  ],
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": 7.35
 }

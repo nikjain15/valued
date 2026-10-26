@@ -2,133 +2,156 @@
   "dir": "valued-audit-ap",
   "shape": "desk",
   "questions": 13,
-  "agents": 5,
+  "agents": 4,
   "sweeps": 3,
-  "systems": 8,
+  "systems": 7,
   "pending": 0,
-  "golden": 32,
-  "holdout": 12,
+  "golden": 30,
+  "holdout": 20,
   "row": {
     "1": "pass",
     "2": "pass",
-    "3": "fail",
+    "3": "pass",
     "4": "pass",
-    "5": "fail",
+    "5": "pass",
     "6": "pass",
     "7": "pass",
     "8": "pass"
   },
-  "failures": [
-    {
-      "std": 3,
-      "msg": "a connector names a vendor without (assumed)",
-      "file": "out/proto/case.json"
-    },
-    {
-      "std": 5,
-      "msg": "fewer than 3 Given / When / Then acceptance criteria",
-      "file": "out/prd.md"
-    }
-  ],
+  "failures": [],
   "browser": {
     "local": {
       "url": "http://localhost:4414/",
       "errors": [],
-      "items": 32,
-      "counts": "{\"escalate\":12,\"human\":4,\"answer\":16}",
-      "greet": "Good morning, Dana. Here is what came in.",
+      "items": 30,
+      "counts": "{\"escalate\":16,\"human\":7,\"answer\":7}",
+      "greet": "Good afternoon, Dana. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 10 controls still open, owned by ",
-      "overnight": 316,
+      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
+      "overnight": 317,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New exception|Control tests|Assistants|Controls and sign-offs|Control evidence|Systems and data4/|How it works|FAQ",
+      "sidebar": "Today|Queue|New exception|Release checks|Assistants|Controls|Audit trail|Systems3/|How it works|FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 640
+          "body": 888
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 621
+          "body": 715
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1310
+          "body": 1228
         }
       },
-      "agentCards": 5,
+      "agentCards": 4,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 8,
-      "govRows": 24,
+      "connCards": 7,
+      "govRows": 31,
       "faq": 8,
       "emdash": false
     },
     "hosted": {
       "url": "file:///Users/nikjain/dev/valued-audit-ap/out/hosted/index.html",
       "errors": [],
-      "items": 32,
-      "counts": "{\"escalate\":12,\"human\":4,\"answer\":16}",
-      "greet": "Good morning, Dana. Here is what came in.",
+      "items": 30,
+      "counts": "{\"escalate\":16,\"human\":7,\"answer\":7}",
+      "greet": "Good afternoon, Dana. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 10 controls still open, owned by ",
-      "overnight": 316,
+      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
+      "overnight": 317,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New exception|Control tests|Assistants|Controls and sign-offs|Control evidence|Systems and data4/|How it works|FAQ",
+      "sidebar": "Today|Queue|New exception|Release checks|Assistants|Controls|Audit trail|Systems3/|How it works|FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 640
+          "body": 888
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 621
+          "body": 715
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1310
+          "body": 1228
         }
       },
-      "agentCards": 5,
+      "agentCards": 4,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 8,
-      "govRows": 24,
+      "connCards": 7,
+      "govRows": 31,
       "faq": 8,
       "emdash": false
     },
     "prd": {
       "url": "http://localhost:4414/prd",
       "errors": [],
-      "text": 20566,
+      "text": 24882,
       "pending": 0
     }
   },
-  "timing": {
-    "setup": 34,
-    "V": 90,
-    "A": 61,
-    "L": 43,
-    "U": 31,
-    "E": 66,
-    "D": 33,
-    "B": 80
-  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 12,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 13,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 80,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 14,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 114,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 291,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 39,
+      "over": false
+    }
+  ],
   "dev": "RELEASE PASSES ALL GATES",
   "holdoutLine": "RELEASE PASSES ALL GATES",
-  "minutes": 7.3
+  "minutes": 9.383333333333333
 }

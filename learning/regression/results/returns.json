@@ -1,134 +1,157 @@
 {
   "dir": "valued-audit-returns",
   "shape": "desk",
-  "questions": 13,
-  "agents": 5,
+  "questions": 11,
+  "agents": 4,
   "sweeps": 3,
   "systems": 8,
   "pending": 0,
-  "golden": 32,
-  "holdout": 12,
+  "golden": 36,
+  "holdout": 20,
   "row": {
     "1": "pass",
     "2": "pass",
-    "3": "fail",
+    "3": "pass",
     "4": "pass",
-    "5": "fail",
+    "5": "pass",
     "6": "pass",
     "7": "pass",
     "8": "pass"
   },
-  "failures": [
-    {
-      "std": 3,
-      "msg": "a connector names a vendor without (assumed)",
-      "file": "out/proto/case.json"
-    },
-    {
-      "std": 5,
-      "msg": "fewer than 3 Given / When / Then acceptance criteria",
-      "file": "out/prd.md"
-    }
-  ],
+  "failures": [],
   "browser": {
     "local": {
       "url": "http://localhost:4408/",
       "errors": [],
-      "items": 32,
-      "counts": "{\"escalate\":13,\"human\":5,\"answer\":14}",
-      "greet": "Good morning, Dana. Here is what came in.",
+      "items": 36,
+      "counts": "{\"escalate\":18,\"human\":10,\"answer\":8}",
+      "greet": "Good afternoon, Priya. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 11 controls still open, owned by ",
-      "overnight": 312,
+      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
+      "overnight": 324,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New request|Release checks|Returns assistants|Policy and compliance|Refund audit log|Data and systems3/|How it works|FAQ",
+      "sidebar": "Today|Queue|New request|Release checks|Returns assistants|Refund governance|Refund audit trail|Returns data3/|How a return is handled|Returns FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 711
+          "body": 739
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 616
+          "body": 614
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1134
+          "body": 1128
         }
       },
-      "agentCards": 5,
+      "agentCards": 4,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
       "connCards": 8,
-      "govRows": 24,
+      "govRows": 27,
       "faq": 8,
       "emdash": false
     },
     "hosted": {
       "url": "file:///Users/nikjain/dev/valued-audit-returns/out/hosted/index.html",
       "errors": [],
-      "items": 32,
-      "counts": "{\"escalate\":13,\"human\":5,\"answer\":14}",
-      "greet": "Good morning, Dana. Here is what came in.",
+      "items": 36,
+      "counts": "{\"escalate\":18,\"human\":10,\"answer\":8}",
+      "greet": "Good afternoon, Priya. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 11 controls still open, owned by ",
-      "overnight": 312,
+      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
+      "overnight": 324,
       "away": 4,
       "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New request|Release checks|Returns assistants|Policy and compliance|Refund audit log|Data and systems3/|How it works|FAQ",
+      "sidebar": "Today|Queue|New request|Release checks|Returns assistants|Refund governance|Refund audit trail|Returns data3/|How a return is handled|Returns FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 711
+          "body": 739
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 616
+          "body": 614
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 1134
+          "body": 1128
         }
       },
-      "agentCards": 5,
+      "agentCards": 4,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
       "connCards": 8,
-      "govRows": 24,
+      "govRows": 27,
       "faq": 8,
       "emdash": false
     },
     "prd": {
       "url": "http://localhost:4408/prd",
       "errors": [],
-      "text": 23901,
+      "text": 21101,
       "pending": 0
     }
   },
-  "timing": {
-    "setup": 29,
-    "V": 63,
-    "A": 61,
-    "L": 106,
-    "U": 35,
-    "E": 81,
-    "D": 40,
-    "B": 89
-  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 4,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 31,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 32,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 141,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 31,
+      "over": false
+    }
+  ],
   "dev": "RELEASE PASSES ALL GATES",
   "holdoutLine": "RELEASE PASSES ALL GATES",
-  "minutes": 8.4
+  "minutes": 5.733333333333333
 }

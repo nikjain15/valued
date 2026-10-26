@@ -2,81 +2,60 @@
   "dir": "valued-audit-underwriting",
   "shape": "review",
   "questions": 13,
-  "agents": 6,
-  "sweeps": 3,
-  "systems": 10,
+  "agents": 5,
+  "sweeps": 2,
+  "systems": 9,
   "pending": 0,
-  "golden": 30,
+  "golden": 31,
   "holdout": 12,
   "row": {
     "1": "pass",
-    "2": "fail",
-    "3": "fail",
+    "2": "pass",
+    "3": "pass",
     "4": "pass",
-    "5": "fail",
+    "5": "pass",
     "6": "pass",
     "7": "pass",
     "8": "pass"
   },
-  "failures": [
-    {
-      "std": 2,
-      "msg": "first assistant is not a fixed-rules safety guard",
-      "file": "out/proto/case.json"
-    },
-    {
-      "std": 5,
-      "msg": "fewer than 3 Given / When / Then acceptance criteria",
-      "file": "out/prd.md"
-    },
-    {
-      "std": 3,
-      "msg": "local: Close to their clock shows nothing",
-      "file": "out/proto/case.json"
-    },
-    {
-      "std": 3,
-      "msg": "hosted: Close to their clock shows nothing",
-      "file": "out/proto/case.json"
-    }
-  ],
+  "failures": [],
   "browser": {
     "local": {
       "url": "http://localhost:4403/",
       "errors": [],
-      "items": 30,
-      "counts": "{\"escalate\":10,\"human\":8,\"answer\":12}",
-      "greet": "Good morning, Priya. Here is what came in.",
+      "items": 31,
+      "counts": "{\"escalate\":16,\"human\":6,\"answer\":9}",
+      "greet": "Good afternoon, Priya. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
-      "overnight": 321,
+      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
+      "overnight": 320,
       "away": 4,
-      "clocks": 0,
+      "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New submission|Accuracy and release|Assistants and rules|Underwriting controls|Submission activity|Data and tools5/|How it works|Questions",
+      "sidebar": "Today|Queue|New submission|Release checks|Intake assistants|Underwriting governance|Submission audit trail|Submission data6/|How intake works|Underwriter FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
-          "trail": 3,
+          "trail": 2,
           "wrong": true,
-          "body": 1151
+          "body": 925
         },
         "human": {
-          "trail": 4,
+          "trail": 3,
           "wrong": true,
-          "body": 769
+          "body": 713
         },
         "answer": {
-          "trail": 5,
+          "trail": 4,
           "wrong": true,
-          "body": 2344
+          "body": 1078
         }
       },
-      "agentCards": 6,
+      "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 10,
+      "connCards": 9,
       "govRows": 26,
       "faq": 8,
       "emdash": false
@@ -84,39 +63,39 @@
     "hosted": {
       "url": "file:///Users/nikjain/dev/valued-audit-underwriting/out/hosted/index.html",
       "errors": [],
-      "items": 30,
-      "counts": "{\"escalate\":10,\"human\":8,\"answer\":12}",
-      "greet": "Good morning, Priya. Here is what came in.",
+      "items": 31,
+      "counts": "{\"escalate\":16,\"human\":6,\"answer\":9}",
+      "greet": "Good afternoon, Priya. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
-      "overnight": 321,
+      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
+      "overnight": 320,
       "away": 4,
-      "clocks": 0,
+      "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New submission|Accuracy and release|Assistants and rules|Underwriting controls|Submission activity|Data and tools5/|How it works|Questions",
+      "sidebar": "Today|Queue|New submission|Release checks|Intake assistants|Underwriting governance|Submission audit trail|Submission data6/|How intake works|Underwriter FAQ",
       "qtabs": 4,
       "opened": {
         "escalate": {
-          "trail": 3,
+          "trail": 2,
           "wrong": true,
-          "body": 1151
+          "body": 925
         },
         "human": {
-          "trail": 4,
+          "trail": 3,
           "wrong": true,
-          "body": 769
+          "body": 713
         },
         "answer": {
-          "trail": 5,
+          "trail": 4,
           "wrong": true,
-          "body": 2344
+          "body": 1078
         }
       },
-      "agentCards": 6,
+      "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 10,
+      "connCards": 9,
       "govRows": 26,
       "faq": 8,
       "emdash": false
@@ -124,21 +103,55 @@
     "prd": {
       "url": "http://localhost:4403/prd",
       "errors": [],
-      "text": 30773,
+      "text": 27394,
       "pending": 0
     }
   },
-  "timing": {
-    "setup": null,
-    "V": null,
-    "A": null,
-    "L": null,
-    "U": null,
-    "E": 105,
-    "D": 40,
-    "B": 88
-  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 30,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 96,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 15,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 130,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 102,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 35,
+      "over": false
+    }
+  ],
   "dev": "RELEASE PASSES ALL GATES",
   "holdoutLine": "RELEASE PASSES ALL GATES",
-  "minutes": null
+  "minutes": 6.866666666666666
 }

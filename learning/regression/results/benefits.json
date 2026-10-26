@@ -1,19 +1,19 @@
 {
   "dir": "valued-audit-benefits",
-  "shape": "review",
-  "questions": 13,
+  "shape": "desk",
+  "questions": 11,
   "agents": 5,
   "sweeps": 3,
-  "systems": 8,
+  "systems": 6,
   "pending": 0,
   "golden": 34,
-  "holdout": 12,
+  "holdout": 20,
   "row": {
     "1": "pass",
     "2": "pass",
     "3": "fail",
     "4": "pass",
-    "5": "fail",
+    "5": "pass",
     "6": "pass",
     "7": "pass",
     "8": "pass"
@@ -21,23 +21,8 @@
   "failures": [
     {
       "std": 3,
-      "msg": "a connector names a vendor without (assumed)",
-      "file": "out/proto/case.json"
-    },
-    {
-      "std": 5,
-      "msg": "fewer than 3 Given / When / Then acceptance criteria",
-      "file": "out/prd.md"
-    },
-    {
-      "std": 3,
-      "msg": "local: Close to their clock shows nothing",
-      "file": "out/proto/case.json"
-    },
-    {
-      "std": 3,
-      "msg": "hosted: Close to their clock shows nothing",
-      "file": "out/proto/case.json"
+      "msg": "shape desk, expected review",
+      "file": "out/gates/a.json"
     }
   ],
   "browser": {
@@ -45,39 +30,39 @@
       "url": "http://localhost:4410/",
       "errors": [],
       "items": 34,
-      "counts": "{\"escalate\":13,\"human\":9,\"answer\":12}",
-      "greet": "Good morning, Maren. Here is what came in.",
+      "counts": "{\"escalate\":19,\"human\":6,\"answer\":9}",
+      "greet": "Good afternoon, Maya. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
-      "overnight": 322,
+      "ready": "Not ready for go-live yet. 16 controls still open, owned by ",
+      "overnight": 310,
       "away": 4,
-      "clocks": 0,
+      "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New application|Release checks|Assistants|Governance and civil rights|Case audit log|Data and systems4/|How it works|Questions",
+      "sidebar": "Today|Queue|New message|Fairness and release|Assistants and rules|Program rules and privacy|Case activity record|Systems and records3/|How it works|Questions",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 740
+          "body": 756
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 651
+          "body": 637
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 967
+          "body": 1372
         }
       },
       "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 8,
-      "govRows": 24,
+      "connCards": 6,
+      "govRows": 29,
       "faq": 8,
       "emdash": false
     },
@@ -85,60 +70,94 @@
       "url": "file:///Users/nikjain/dev/valued-audit-benefits/out/hosted/index.html",
       "errors": [],
       "items": 34,
-      "counts": "{\"escalate\":13,\"human\":9,\"answer\":12}",
-      "greet": "Good morning, Maren. Here is what came in.",
+      "counts": "{\"escalate\":19,\"human\":6,\"answer\":9}",
+      "greet": "Good afternoon, Maya. Here is what came in.",
       "tiles": 4,
-      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
-      "overnight": 322,
+      "ready": "Not ready for go-live yet. 16 controls still open, owned by ",
+      "overnight": 310,
       "away": 4,
-      "clocks": 0,
+      "clocks": 3,
       "top": 3,
-      "sidebar": "Today|Queue|New application|Release checks|Assistants|Governance and civil rights|Case audit log|Data and systems4/|How it works|Questions",
+      "sidebar": "Today|Queue|New message|Fairness and release|Assistants and rules|Program rules and privacy|Case activity record|Systems and records3/|How it works|Questions",
       "qtabs": 4,
       "opened": {
         "escalate": {
           "trail": 2,
           "wrong": true,
-          "body": 740
+          "body": 756
         },
         "human": {
           "trail": 3,
           "wrong": true,
-          "body": 651
+          "body": 637
         },
         "answer": {
           "trail": 4,
           "wrong": true,
-          "body": 967
+          "body": 1372
         }
       },
       "agentCards": 5,
       "evalRows": 1,
       "evalPass": true,
       "evalGates": 8,
-      "connCards": 8,
-      "govRows": 24,
+      "connCards": 6,
+      "govRows": 29,
       "faq": 8,
       "emdash": false
     },
     "prd": {
       "url": "http://localhost:4410/prd",
       "errors": [],
-      "text": 24104,
+      "text": 25776,
       "pending": 0
     }
   },
-  "timing": {
-    "setup": 19,
-    "V": 69,
-    "A": 63,
-    "L": 97,
-    "U": 34,
-    "E": 85,
-    "D": 38,
-    "B": 92
-  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 5,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 58,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 115,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 143,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 5,
+      "over": false
+    }
+  ],
   "dev": "RELEASE PASSES ALL GATES",
   "holdoutLine": "RELEASE PASSES ALL GATES",
-  "minutes": 8.283333333333333
+  "minutes": 6.733333333333333
 }

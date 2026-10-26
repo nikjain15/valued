@@ -383,5 +383,50 @@ addressed by <change>, rejected: <reason>).
 - Evidence: card headers in the gate skills say COO, Sponsor, Risk; every runner had to remap them to the case's roles
 - Status: open
 
+### S-075
+- Source: audit, 2026-10-26 · Scenario: university, nocase, rules, v2 runs · Gate: conductor
+- Evidence: the `guard-model` agent type is not registered in the harness, so every run fell back to a general-purpose haiku agent reading `.claude/agents/guard-model.md`. The skill names a subagent_type that does not resolve
+- Status: open
+
+### S-076
+- Source: audit, 2026-10-26 · Scenario: university, nocase, rules, v2 runs · Gate: conductor
+- Evidence: the lean briefs state that `out/` is empty, but a refreshed workspace has no `out/` at all; every runner improvised a mkdir and reported it
+- Status: open
+
+### S-077
+- Source: audit, 2026-10-26 · Scenario: nocase · Gate: V
+- Evidence: the empty case argument leaves framing cards with nothing to frame; the runner synthesized a case line and auto-answered the framing cards, so the no-case path is unspecified rather than handled
+- Status: open
+
+### S-078
+- Source: audit, 2026-10-26 · Scenario: university, nocase, rules · Gate: E
+- Evidence: holdout runs pass at recall 1.00 but are marked `independent=false`, because one context wrote the golden set, the holdout and the router. A perfect holdout score on a non-independent run proves little
+- Status: open
+
+### S-079
+- Source: audit, 2026-10-26 · Scenario: covenant · Gate: E, L
+- Evidence: the holdout is blocked at routing 0.80. The guard model names no source for 4 covenant status notes (H17 to H20), so the backstop routes them to a person and the rows score as mis-routed. Status notes are a document type with no entry in sources.json
+- Status: open
+
+### S-080
+- Source: audit, 2026-10-26 · Scenario: card-dispute, portal · Gate: B
+- Evidence: the generated router runs 460 to 500 lines against the 160-line guideline in the build skill. Every runner logged it as an improvisation rather than cutting it, so the guideline is advisory in practice
+- Status: open
+
+### S-081
+- Source: audit, 2026-10-26 · Scenario: covenant · Gate: conductor
+- Evidence: the dev run was blocked at routing 0.82 and the "Ship anyway, or fix first?" card auto-answered "Fix first", which spent a repair round inside the 28 minutes. The overrun rule does not price a repair round
+- Status: open
+
+### S-082
+- Source: audit, 2026-10-26 · Scenario: card-dispute, benefits · Gate: A
+- Evidence: both runs chose the desk shape where scenarios.json expects review. Disputes and benefits claims arrive as documents but are decided as requests, and the shape table does not say which reading wins. Same gap as S-073, now seen on two more cases
+- Status: open
+
+### S-083
+- Source: audit, 2026-10-26 · Scenario: saas · Gate: B
+- Evidence: "Acme" reached out/prd.md and out/proto/case.json and failed the real-name check. The runner reported no real names remaining, so the gate skills treat placeholder names as synthetic while the checker counts them as real
+- Status: open
+
 
 ## Status updates
