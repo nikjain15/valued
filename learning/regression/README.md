@@ -17,3 +17,14 @@ The 18 audit scenarios, kept as a gate every approved change must pass before a 
 3. `node learning/regression/run.js` (add `--only slug,slug` for a subset, `--static` to skip the browser).
 
 The suite passes when every row is all pass and every run is within 28 minutes. Never push on red.
+
+## Keep it cheap
+
+| Change | Cheapest check |
+|---|---|
+| Renderer, checker, app or a schema default | Re-render existing runs (`node .claude/skills/valued/conductor.js render` in each workspace), then `audit.js --no-browser`. No new run. |
+| Eval rules, router, guard model | Re-run gate E only in an existing workspace (builder and guard model), then audit. |
+| A gate skill or the conductor | `--smoke` set (6 runs) with `--lean` briefs, Sonnet run agents, at most 3 at once. |
+| Before a push | All 18, `--lean`. |
+
+Run agents on Sonnet; scorers and the guard model on Haiku; the builder on Sonnet. Reports stay under 10 lines; details go to `out/run-notes.md`.

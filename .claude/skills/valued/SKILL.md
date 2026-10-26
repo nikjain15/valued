@@ -10,6 +10,10 @@ pressure, 30 GenAI ideas, COO wants a plan in six weeks`. Flags:
 - `--teach`: stop reading here and follow `teach.md` in this folder (one gate at a time, cards at every gate).
 - `--auto`: take the recommended option on every card (`conductor.js cards auto <round>`), logged "(auto)".
 - `--no-open`: never run `open`; print paths instead.
+- `--lean`: the low-token mode for regression runs. Do every gate in this context (score the three lenses one after
+  another, run L, U and D inline) and launch only two subagents: `prototype-builder` (Sonnet) and `guard-model`
+  (Haiku), so the holdout stays independent. Read each gate skill once; keep printed output to the phase headers,
+  the eval result lines and the closing line; write any notes to `out/run-notes.md`.
 
 Below, `out/tools/c` is the conductor (`node .claude/skills/valued/conductor.js`), a two-line wrapper phase 0 writes; run it from the workspace root, with the
 port `P=${PORT:-4317}` (written as 4317 in the skills).

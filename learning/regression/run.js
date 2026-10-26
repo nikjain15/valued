@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Regression suite: scores every scenario workspace with check.js plus the expected properties in
 // scenarios.json, and prints the scorecard. Must be all pass, within the time budget, before a push.
-// Usage: node run.js [--prefix ~/dev/valued-audit-] [--only slug,slug] [--static] [--out results]
+// Usage: node run.js [--prefix ~/dev/valued-audit-] [--only slug,slug] [--smoke] [--static] [--out results]
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
@@ -11,6 +11,7 @@ const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const prefix = opt("--prefix", path.join(os.homedir(), "dev", "valued-audit-")).replace(/^~/, os.homedir());
 const only = (opt("--only", "") || "").split(",").filter(Boolean);
+const smokeOnly = args.includes("--smoke");
 const outDir = path.resolve(__dirname, opt("--out", "results"));
 const { scenarios } = JSON.parse(fs.readFileSync(path.join(__dirname, "scenarios.json"), "utf8"));
 fs.mkdirSync(outDir, { recursive: true });
@@ -23,7 +24,7 @@ const minutes = (meta) => {
   return p.length ? null : null; // a resumed run has no full time
 };
 const rows = [];
-for (const s of scenarios.filter((x) => !only.length || only.includes(x.slug))) {
+for (const s of scenarios.filter((x) => (!only.length || only.includes(x.slug)) && (!smokeOnly || x.smoke))) {
   const dir = prefix + s.slug;
   if (!fs.existsSync(path.join(dir, "out"))) { rows.push({ s, missing: true }); continue; }
   const jf = path.join(outDir, `${s.slug}.json`);

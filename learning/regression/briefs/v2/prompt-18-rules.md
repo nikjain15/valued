@@ -8,12 +8,12 @@ Port: `4418` (`export PORT=4418`; the skills write 4317, use 4418 everywhere).
 Behave exactly as Claude Code would if the user typed this in `/Users/nikjain/dev/valued-audit-rules`:
 
 ```
-/valued credit union, member requests for password resets and address changes, 30k a month handled by agents, head of member services wants them automated but the team is not sure AI is even needed --auto --no-open
+/valued credit union, member requests for password resets and address changes, 30k a month handled by agents, head of member services wants them automated but the team is not sure AI is even needed --auto --no-open --lean
 ```
 
 Read `/Users/nikjain/dev/valued-audit-rules/CLAUDE.md`, then `/Users/nikjain/dev/valued-audit-rules/.claude/skills/valued/SKILL.md` (the conductor) and follow it phase by phase, reading each gate skill it names under `/Users/nikjain/dev/valued-audit-rules/.claude/skills/<name>/SKILL.md` and the agents under `/Users/nikjain/dev/valued-audit-rules/.claude/agents/`. Use `node .claude/skills/valued/conductor.js` for the clock, cards, seeds, render, check and report exactly as the conductor says; the clock is the timing record, so start and end every phase with it.
 
-Subagents: launch every subagent in the foreground and wait for its result (never in the background), and never end your own turn before the closing line. Where the conductor or a gate says to launch subagents (three scorers, L and U in parallel, E and D in parallel, the prototype builder), use the Agent tool with subagent_type general-purpose, giving each the relevant skill or agent file as its brief plus the workspace path, port and these hard limits. If you cannot launch subagents, follow the conductor's single-context rules.
+Subagents: follow `--lean`: only `prototype-builder` and `guard-model`, launched in the foreground (wait for each; never hand back before the closing line).
 
 `--auto`: answer every card round with `conductor.js cards auto <round>`; still draft every card in full. `--no-open`: never run `open`. Do not ask anyone anything. Do not skip steps; cut scope only through the conductor's overrun rule.
 
@@ -28,4 +28,4 @@ Subagents: launch every subagent in the foreground and wait for its result (neve
 
 ## Report back
 
-Your final message: the closing line, the output of `conductor.js clock status`, the final dev and holdout eval lines, the output of `conductor.js check`, and one line per thing you had to improvise because a skill was unclear. Nothing else.
+At most 10 lines: the closing line, total clock time, the final dev and holdout result lines, the `check` result, and the count of improvisations (write each one to `out/run-notes.md`, not in the report).

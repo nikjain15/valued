@@ -1,5 +1,5 @@
 {
- "_about": "The 18 audit scenarios as a regression suite. Expected properties, never exact text. run.js scores each workspace with check.js and these expectations.",
+ "_about": "The 18 audit scenarios as a regression suite. Expected properties, never exact text. run.js scores each workspace with check.js and these expectations. Scenarios with smoke:true (one per shape, the rules case and the empty case) are the cheap set: run.js --smoke.",
  "scenarios": [
   {
    "n": 1,
@@ -30,7 +30,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": true
   },
   {
    "n": 2,
@@ -61,7 +62,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": false
   },
   {
    "n": 3,
@@ -92,7 +94,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": false
   },
   {
    "n": 4,
@@ -123,7 +126,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": true
   },
   {
    "n": 5,
@@ -155,7 +159,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": false
   },
   {
    "n": 6,
@@ -188,7 +193,8 @@
     "holdoutPass": true,
     "maxMinutes": 28,
     "shapeNote": "desk when autonomy is draft with approval; chat when answers go to the end user directly"
-   }
+   },
+   "smoke": false
   },
   {
    "n": 7,
@@ -219,7 +225,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": false
   },
   {
    "n": 8,
@@ -251,7 +258,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": false
   },
   {
    "n": 9,
@@ -282,7 +290,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": true
   },
   {
    "n": 10,
@@ -313,7 +322,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": false
   },
   {
    "n": 11,
@@ -344,7 +354,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": false
   },
   {
    "n": 12,
@@ -376,7 +387,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": false
   },
   {
    "n": 13,
@@ -408,7 +420,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": false
   },
   {
    "n": 14,
@@ -440,7 +453,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": false
   },
   {
    "n": 15,
@@ -473,7 +487,8 @@
     "holdoutPass": true,
     "maxMinutes": 28,
     "shapeNote": "desk when autonomy is draft with approval; chat when answers go to the end user directly"
-   }
+   },
+   "smoke": true
   },
   {
    "n": 16,
@@ -505,7 +520,8 @@
     "devPass": true,
     "holdoutPass": true,
     "maxMinutes": 28
-   }
+   },
+   "smoke": false
   },
   {
    "n": 17,
@@ -540,7 +556,8 @@
     "holdoutPass": true,
     "maxMinutes": 28,
     "framingCards": true
-   }
+   },
+   "smoke": true
   },
   {
    "n": 18,
@@ -575,7 +592,8 @@
     "holdoutPass": true,
     "maxMinutes": 28,
     "notGenAIFirst": true
-   }
+   },
+   "smoke": true
   }
  ]
 }
