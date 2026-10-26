@@ -151,11 +151,13 @@ both are back, `$C render`. `$C clock 5 end`.
 `$C clock 6 start`. Run `valued-build`: it writes `b.json` (summary, recommendation, requirements, FAQ, sweep
 findings, section 17), runs `$C render`, `$C check` until it prints `All checks pass.` (fix the JSON, never
 the rendered files), builds the hosted page, and publishes (or, if publishing is unavailable or not allowed,
-says so in one line and keeps localhost). Then `$C clock 6 end` and `$C report` (writes
-`out/run-report.json`: time per phase, questions, revisions, flags, eval blocks and fixes, cuts). Print
-`$C clock status` and the closing line, nothing else:
+says so in one line and keeps localhost). Then `$C clock 6 end`, `$C report` (writes
+`out/run-report.json`: time per phase, questions, revisions, flags, eval blocks and fixes, cuts), and the
+audit: `node .claude/skills/valued-audit/audit.js --port 4317` (the `valued-audit` skill: the eight standards,
+every issue with its owner and fix, `out/observe.html`). Print `$C clock status`, the audit's standards row
+and open issues, and the closing line, nothing else:
 
-`Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Feedback: /valued-revise <what to change>`
+`Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Run: out/observe.html · Audit: /valued-audit · Feedback: /valued-revise <what to change>`
 
 Under `--no-open` skip every `open`; otherwise `open out/brief.html`.
 

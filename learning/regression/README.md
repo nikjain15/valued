@@ -6,7 +6,7 @@ The 18 audit scenarios, kept as a gate every approved change must pass before a 
 |---|---|
 | `scenarios.json` | each scenario's case line, port and expected properties (shape, systems, cards, gates, no pending sections, no console errors, dev and holdout pass, 28 minutes) |
 | `briefs/prompt-<n>-<slug>.md` | the brief a fresh subagent follows to run one scenario end to end in its own workspace |
-| `check.js` | scores one workspace against the eight standards (static checks, both evals, headless Chrome on the local and hosted prototype) |
+| `check.js` | (wrapper for `.claude/skills/valued-audit/check.js`) scores one workspace against the eight standards (static checks, both evals, headless Chrome on the local and hosted prototype) |
 | `run.js` | scores every workspace with `check.js` plus `scenarios.json`, writes `results/scorecard.md` |
 
 ## Run it

@@ -25,6 +25,8 @@ const read = (f, fb = "") => { try { return fs.readFileSync(f, "utf8"); } catch 
 const json = (f, fb) => { try { return JSON.parse(read(f)); } catch { return fb; } };
 const write = (f, s) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, s); };
 const writeJson = (f, o) => write(f, JSON.stringify(o, null, 2) + "\n");
+// Observability: every command leaves one event in out/trace.jsonl (rendered by valued-audit/observe.js).
+const trace = (e) => { try { fs.mkdirSync(OUT, { recursive: true }); fs.appendFileSync(path.join(OUT, "trace.jsonl"), JSON.stringify({ t: Date.now(), ...e }) + "\n"); } catch {} };
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const clean = (s) => String(s ?? "").replace(/—/g, ", ").replace(/\|/g, "/").replace(/\s+/g, " ").trim();
 const cell = (s) => clean(s) || "";
@@ -267,6 +269,7 @@ function seed(industry) {
 
 // ---------- main ----------
 const [cmd, ...rest] = process.argv.slice(2);
+if (cmd && !(cmd === "clock" && rest[0] === "status")) trace({ kind: "cmd", cmd, args: rest });
 if (cmd === "clock") {
   if (rest[0] === "status") clockStatus();
   else { fs.mkdirSync(OUT, { recursive: true }); fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: rest[1], t: Date.now(), note: rest.slice(2).join(" ") }) + "\n"); if (rest[1] === "start") { const p = PHASES.find((x) => x[0] === rest[0]); if (p) console.log(`[${p[0]}] ${p[1]} · budget ${p[2]} min`); } }
@@ -276,7 +279,7 @@ if (cmd === "clock") {
 } else if (cmd === "cards") {
   const cs = cards(); const round = Number(rest[1]);
   const mine = cs.filter((c) => Number(c.round) === round);
-  if (rest[0] === "auto") { for (const c of mine) { c.decision = A(c.options)[0]?.label; c.auto = true; c.by = c.role; } writeJson(path.join(OUT, "cards.json"), cs); console.log(`Round ${round}: ${mine.length} cards answered with the recommended option (auto).`); }
+  if (rest[0] === "auto") { for (const c of mine) { c.decision = A(c.options)[0]?.label; c.auto = true; c.by = c.role; trace({ kind: "decision", id: c.id, gate: c.gate, role: c.role, question: c.question, decision: c.decision, auto: true }); } writeJson(path.join(OUT, "cards.json"), cs); console.log(`Round ${round}: ${mine.length} cards answered with the recommended option (auto).`); }
   else for (const c of mine) { console.log(`\n**"${c.role}": "${c.question}"** If none fits, answer with: ${c.format}`); A(c.options).forEach((o, i) => console.log(`${i + 1}. ${o.label}${i === 0 ? " (Recommended)" : ""}: ${clean(o.tradeoff)}`)); }
 } else if (cmd === "seed") seed(rest[0]);
 else if (cmd === "model-inputs") {
@@ -305,6 +308,7 @@ else if (cmd === "render" || cmd === "check" || cmd === "report") {
     renderPrd(g, ev, c); renderBrief(g, ev, c);
     if (g.b) { const r = spawnSync("node", [path.join(SK, "valued-build", "render-prd.js"), path.join(OUT, "prd.md"), path.join(OUT, "prd.html")], { encoding: "utf8" }); if (r.status) console.log(r.stderr); }
     const miss = check(g, ev, c, true);
+    trace({ kind: "render", gates: Object.entries(g).filter(([, x]) => x).map(([k]) => k.toUpperCase()), pending: (read(path.join(OUT, "prd.md")).match(/Pending:/g) || []).length, open: miss.length, dev: ev.devPass, holdout: ev.holdPass, devGates: ev.devGates, holdGates: ev.holdGates, golden: ev.goldenN, holdoutN: ev.holdoutN });
     console.log(`Rendered: ${Object.entries(g).filter(([, x]) => x).map(([k]) => k.toUpperCase()).join(" ")} · prd.md (${(read(path.join(OUT, "prd.md")).match(/Pending:/g) || []).length} pending) · case.json · ${miss.length} open checks${miss.length ? ":\n" + miss.map(([s, m]) => `  - [${s}] ${m}`).join("\n") : ""}`);
   } else if (cmd === "check") check(g, ev, json(path.join(PROTO, "case.json"), {}));
   else report(g, ev, json(path.join(PROTO, "case.json"), {}));
