@@ -25,7 +25,7 @@ description: VALUED gate L. Define ground truth before any model is built, recom
 2. **Labelling-approach recommendation** in the standard format: for example two labellers with
    adjudication, one expert labeller with spot checks, or synthetic now and real data later; each with
    its trade-off (quality, cost, speed, privacy). Our preference, why, what would change our mind.
-3. Write `out/proto/sources.json`: 6 to 8 short source items, each with an `id` and `text`. **If `inputs/`
+3. Write `out/proto/sources.json`: 6 to 8 short source items, each with an `id`, a plain `title` the user would recognise (for example "Wire transfers", "US paid time off") and `text`. **If `inputs/`
    holds client documents, build the sources from them** (one item per policy or article that the
    first-wave use case needs, quoting the governing passage, with `"origin": "inputs/<file>"`); read PDFs
    directly and Word files via `textutil -convert txt -stdout <file>`. Otherwise write synthetic items.

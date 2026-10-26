@@ -3,87 +3,157 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prototype workbench</title>
+<title>Prototype</title>
 <link rel="stylesheet" href="/ff.css">
 <style>
-  /* App layer on the founderfirst.one tokens in ff.css: paper ground, white working cards, sage for the AI's voice. */
-  .hero { padding-block: 28px 4px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 28px; align-items: end; }
-  .hero h1 { text-wrap: balance; }
-  .hero-sub { margin-top: 10px; color: var(--ink-3); font-size: 16px; max-width: 60ch; }
-  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .kpi { background: var(--white); border-radius: var(--r-card); border: 1px solid var(--line-2); padding: 12px 14px; }
-  .kpi .v { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: var(--ls-tight); font-variant-numeric: tabular-nums; }
-  .kpi .l { font-size: var(--fs-micro); color: var(--ink-3); }
-  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin: 20px 0 22px; overflow-x: auto; }
-  .tab { background: none; border: 0; padding: 12px 14px; font: 500 var(--fs-ui) var(--font-sans); color: var(--ink-3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
-  .tab[aria-selected="true"] { color: var(--ink); border-color: var(--brand); }
-  .grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 20px; align-items: start; }
-  .grid > *, .two > *, .three > * { min-width: 0; }
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  textarea { width: 100%; min-height: 110px; resize: vertical; border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px; font: 400 16px/1.5 var(--font-sans); color: var(--ink); background: var(--white); margin-top: 12px; }
-  select { height: 36px; border: 1px solid var(--line); border-radius: var(--r-pill); padding: 0 34px 0 14px; font: 500 var(--fs-label) var(--font-sans); color: var(--ink); background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%235b636e' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 14px center; appearance: none; cursor: pointer; }
-  .samples { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; }
+  /* Product shell on the founderfirst.one tokens: a workplace first (sidebar, greeting, queue), trust pages beside it. */
+  :root { --hl: #fbe9a6; --hl-ink: #5b4708; --side: 248px; }
+  body { background: var(--paper); }
+  .shell { display: grid; grid-template-columns: var(--side) minmax(0, 1fr); min-height: 100vh; }
+  .side { background: var(--white); border-right: 1px solid var(--line); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 18px 14px 18px max(14px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 18px; }
+  .brand { display: flex; gap: 10px; align-items: center; padding: 4px 6px; }
+  .brand .mark { width: 34px; height: 34px; border-radius: 10px; background: var(--brand); color: var(--white); display: grid; place-items: center; font-weight: 700; font-size: 13px; flex: none; }
+  .brand b { display: block; font-size: 15px; line-height: 1.2; }
+  .brand small { color: var(--ink-3); font-size: var(--fs-micro); }
+  .nav { display: flex; flex-direction: column; gap: 2px; }
+  .nav .eyebrow { padding: 8px 10px 6px; }
+  .nav button { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; color: var(--ink-2); font-size: var(--fs-ui); cursor: pointer; }
+  .nav button:hover { background: var(--paper); }
+  .nav button[aria-current="page"] { background: var(--brand-tint); color: var(--brand-strong); font-weight: 600; }
+  .nav button:focus-visible { box-shadow: var(--focus-ring); }
+  .nav svg { width: 18px; height: 18px; flex: none; color: var(--ink-3); }
+  .nav button[aria-current="page"] svg { color: var(--brand); }
+  .nav .count { margin-left: auto; font-size: 11px; font-weight: 700; background: var(--error); color: var(--white); border-radius: var(--r-pill); padding: 1px 7px; }
+  .nav .count.soft { background: var(--line-2); color: var(--ink-3); }
+  .me { margin-top: auto; display: flex; gap: 10px; align-items: center; padding: 10px 6px 0; border-top: 1px solid var(--line-2); }
+  .av { width: 36px; height: 36px; border-radius: 50%; background: var(--brand-tint); color: var(--brand-strong); display: grid; place-items: center; font-weight: 700; font-size: 13px; flex: none; }
+  .av.sm { width: 30px; height: 30px; font-size: 11px; }
+  .me b { display: block; font-size: var(--fs-label); } .me small { color: var(--ink-3); font-size: var(--fs-micro); }
+  .main { min-width: 0; display: flex; flex-direction: column; }
+  .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; padding: 12px max(24px, env(safe-area-inset-right, 0px)) 12px 28px; flex-wrap: wrap; }
+  .top h1 { font-size: 20px; letter-spacing: -.01em; }
+  .top .ctx { color: var(--ink-3); font-size: var(--fs-label); }
+  .top .spacer { flex: 1; }
+  .top .stat { font-size: var(--fs-label); color: var(--ink-3); } .top .stat b { color: var(--ink); }
+  select { height: 34px; border: 1px solid var(--line); border-radius: var(--r-pill); padding: 0 32px 0 12px; font: 500 var(--fs-label) var(--font-sans); color: var(--ink); background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%235b636e' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center; appearance: none; cursor: pointer; }
+  .content { padding: 26px 28px 56px; padding-right: max(28px, env(safe-area-inset-right, 0px)); max-width: 1240px; width: 100%; }
+  .page[hidden] { display: none; }
   .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .between { justify-content: space-between; }
   .stack > * + * { margin-top: 14px; }
-  .empty { text-align: center; padding: 44px 20px; color: var(--ink-3); }
-  .ring { width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 12px; background: var(--brand-tint); display: grid; place-items: center; color: var(--brand); font-family: var(--font-display); font-size: 22px; }
-  .verdict { display: flex; align-items: center; gap: 12px; }
-  .verdict h3 { font-size: 22px; }
-  .source { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: var(--fs-label); color: var(--ink-2); }
-  .bubble { background: var(--brand-tint); border-radius: var(--r-bubble-ai); padding: 14px 16px; color: var(--ink); white-space: pre-wrap; min-height: 48px; }
-  .bubble[contenteditable="true"] { background: var(--white); outline: 2px solid var(--brand-soft); }
-  .meta { font-size: var(--fs-micro); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 18px; align-items: start; }
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .two > *, .split > *, .three > * { min-width: 0; }
+  mark { background: var(--hl); color: var(--hl-ink); border-radius: 4px; padding: 0 3px; }
+  mark.f1 { background: #dbe9ff; color: #1d3f73; box-shadow: inset 0 -2px #4a6fa5; } mark.f2 { background: #e2f3e6; color: #1f5a33; box-shadow: inset 0 -2px #32854c; } mark.f3 { background: #fbefc4; color: #5b4708; box-shadow: inset 0 -2px #c9a21a; } mark.f4 { background: #f6dfea; color: #6d2a48; box-shadow: inset 0 -2px #9c4a6b; } mark.f5 { background: #e8e1f7; color: #3f2c73; box-shadow: inset 0 -2px #6b5ca5; } mark.f6 { background: #ddf1f1; color: #1f5656; box-shadow: inset 0 -2px #2b7a78; }
   .banner { border-radius: var(--r-card); padding: 12px 14px; font-size: var(--fs-label); line-height: 1.5; }
   .banner.bad { background: var(--error-bg); color: var(--error); border: 1px solid #f1cfcb; }
   .banner.warn { background: var(--amber-bg); color: var(--amber-strong); border: 1px solid #f1dfc2; }
   .banner.ok { background: var(--brand-tint); color: var(--brand-strong); border: 1px solid var(--brand-soft); }
+  .meta { font-size: var(--fs-micro); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .label { font-size: var(--fs-micro); font-weight: 600; color: var(--ink-3); }
+  .linkbtn { background: none; border: 0; color: var(--ink-3); cursor: pointer; font: 500 var(--fs-label) var(--font-sans); text-decoration: underline; padding: 0; }
+  .back { background: none; border: 0; color: var(--ink-3); cursor: pointer; font: 500 var(--fs-label) var(--font-sans); padding: 0; margin-bottom: 14px; }
+  .back:hover { color: var(--ink); }
+
+  /* Home */
+  .hello { display: flex; gap: 14px; align-items: center; }
+  .hello .spark { width: 40px; height: 40px; border-radius: 12px; background: var(--brand); color: var(--white); display: grid; place-items: center; flex: none; }
+  .hello h2 { font-size: clamp(22px, 2.6vw, 28px); }
+  .hello p { color: var(--ink-3); font-size: var(--fs-label); margin-top: 2px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px; }
+  .tile { background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; }
+  .tile b { display: block; font-family: var(--font-display); font-size: 28px; font-weight: 600; letter-spacing: var(--ls-tight); font-variant-numeric: tabular-nums; }
+  .tile span { font-size: var(--fs-label); color: var(--ink-3); }
+  .tile.bad b { color: var(--error); } .tile.ok b { color: var(--brand-strong); } .tile.warn b { color: var(--amber-strong); }
+  .qhead { display: flex; align-items: baseline; gap: 10px; margin: 28px 0 10px; }
+  .qhead h3 { font-size: 19px; } .qhead span { color: var(--ink-3); font-size: var(--fs-label); }
+  .queue { display: flex; flex-direction: column; gap: 10px; }
+  .qitem { all: unset; box-sizing: border-box; display: flex; gap: 14px; align-items: flex-start; background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; cursor: pointer; transition: border-color var(--dur-base), box-shadow var(--dur-base); }
+  .qitem:hover { border-color: var(--line); box-shadow: var(--shadow-float); }
+  .qitem:focus-visible { box-shadow: var(--focus-ring); }
+  .qitem.bad { background: #fffafa; border-color: #f3d9d6; }
+  .qitem .qbody { flex: 1; min-width: 0; }
+  .qitem .qtop { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .qitem .qtop strong { font-size: 15px; }
+  .qitem p { margin-top: 4px; color: var(--ink-2); font-size: var(--fs-label); line-height: 1.55; }
+  .qitem .qside { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex: none; }
+  .qitem .why { font-size: var(--fs-micro); color: var(--ink-3); }
+  .more-btn { margin-top: 8px; }
+
+  /* Detail: shared */
+  .panel-h { display: flex; gap: 12px; align-items: center; }
+  .panel-h h2 { font-size: 22px; }
+  .bubble { border-radius: var(--r-bubble-ai); padding: 14px 16px; white-space: pre-wrap; line-height: 1.55; }
+  .bubble.them { background: var(--paper); border: 1px solid var(--line-2); border-radius: 18px 18px 18px 4px; }
+  .bubble.ai { background: var(--brand-tint); border-radius: 18px 18px 4px 18px; }
+  .bubble[contenteditable="true"] { background: var(--white); outline: 2px solid var(--brand-soft); }
+  .src { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: var(--fs-label); color: var(--ink-2); }
+  .src b { color: var(--ink); }
+  .assist .eyebrow { color: var(--brand); }
+  .cite { display: inline-flex; gap: 6px; align-items: center; font-size: var(--fs-micro); background: var(--white); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 3px 10px; color: var(--ink-2); }
   .notes { font-size: var(--fs-micro); color: var(--ink-3); padding-left: 18px; margin: 0; }
-  .never li { margin: 4px 0; }
+
+  /* Review (extraction) */
+  .doc { background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 20px 22px; font-size: 15px; line-height: 1.75; color: var(--ink); white-space: pre-wrap; }
+  .doc-h { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid var(--line-2); font-size: var(--fs-label); color: var(--ink-3); white-space: normal; }
+  .form { display: flex; flex-direction: column; }
+  .frow { display: grid; grid-template-columns: 22px 150px minmax(0, 1fr); gap: 10px; align-items: start; padding: 11px 0; border-bottom: 1px solid var(--line-2); }
+  .frow:last-child { border-bottom: 0; }
+  .frow .sw { width: 12px; height: 12px; border-radius: 3px; margin-top: 10px; }
+  .frow label { font-size: var(--fs-label); color: var(--ink-3); padding-top: 8px; }
+  .frow input[type="text"] { width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; font: 400 15px var(--font-sans); color: var(--ink); background: var(--white); }
+  .frow input.empty { background: var(--amber-bg); border-color: #f1dfc2; }
+  .frow .ev { font-size: var(--fs-micro); color: var(--ink-3); margin-top: 4px; }
+  .frow .conf { display: flex; gap: 6px; align-items: center; font-size: var(--fs-micro); color: var(--ink-3); margin-top: 4px; }
+  .working { display: flex; gap: 10px; align-items: center; color: var(--ink-3); font-size: var(--fs-label); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); animation: pulse 1.2s infinite; }
+  @keyframes pulse { 50% { opacity: .25; } }
+
+  /* Rank */
+  .hh { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .hh .facts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .fact { background: var(--paper); border: 1px solid var(--line-2); border-radius: var(--r-pill); padding: 4px 12px; font-size: var(--fs-label); }
+  .action { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 16px 18px; }
+  .action .rank { width: 32px; height: 32px; border-radius: 50%; background: var(--dark); color: var(--white); display: grid; place-items: center; font-weight: 700; }
+  .action.must .rank { background: var(--error); }
+  .action h4 { font-size: 16px; font-family: var(--font-display); }
+  .action.done { opacity: .6; }
+
+  /* Chat */
+  .chat { display: flex; flex-direction: column; gap: 12px; }
+  .msg { display: flex; gap: 10px; align-items: flex-end; max-width: 80%; }
+  .msg.me-side { align-self: flex-end; flex-direction: row-reverse; }
+  .msg .bubble { max-width: 100%; }
+  .msg.me-side .bubble { background: var(--dark); color: var(--white); border-radius: 18px 18px 4px 18px; }
+  .compose { display: flex; gap: 10px; margin-top: 16px; }
+  .compose input { flex: 1; height: 44px; border: 1px solid var(--line); border-radius: var(--r-pill); padding: 0 18px; font: 400 16px var(--font-sans); background: var(--white); }
+
+  /* Trust pages */
+  textarea { width: 100%; min-height: 120px; resize: vertical; border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px; font: 400 16px/1.5 var(--font-sans); color: var(--ink); background: var(--white); }
   .seg { display: inline-flex; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 3px; flex-wrap: wrap; }
   .seg button { border: 0; background: none; height: 32px; padding: 0 14px; border-radius: var(--r-pill); font: 500 var(--fs-label) var(--font-sans); color: var(--ink-3); cursor: pointer; }
   .seg button[aria-pressed="true"] { background: var(--white); color: var(--ink); box-shadow: var(--shadow-card); }
-  .label { font-size: var(--fs-micro); font-weight: 600; color: var(--ink-3); }
-  .progress { height: 6px; background: var(--line-2); border-radius: var(--r-pill); overflow: hidden; }
-  .progress > div { height: 100%; width: 0; background: var(--brand); transition: width var(--dur-base) var(--ease-out); }
-  .tbl { overflow-x: auto; border: 1px solid var(--line-2); border-radius: var(--r-card); }
-  .tbl th { background: var(--paper); }
-  .tbl tr.sel td { background: var(--brand-tint); }
-  .tbl tr.click { cursor: pointer; }
-  .num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 12.5px; }
   .design { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; text-align: left; border: 1.5px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; background: var(--white); cursor: pointer; font: inherit; color: inherit; }
   .design[aria-pressed="true"] { border-color: var(--brand); box-shadow: var(--focus-ring); }
   .design .t { font-weight: 600; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .design .path { font: 500 11.5px var(--font-mono); color: var(--ink-3); margin-top: 8px; background: var(--paper); border-radius: 8px; padding: 6px 8px; }
   .design p { font-size: var(--fs-label); color: var(--ink-2); margin-top: 8px; }
-  .design .pro { color: var(--brand-strong); } .design .con { color: var(--error); }
-  .linkbtn { background: none; border: 0; color: var(--ink-3); cursor: pointer; font: 500 var(--fs-label) var(--font-sans); text-decoration: underline; }
-  .drop { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; border: 1.5px dashed var(--line); border-radius: var(--r-card); padding: 26px 18px; text-align: center; color: var(--ink-3); background: var(--paper); cursor: pointer; transition: border-color var(--dur-base), background var(--dur-base); }
-  .drop:hover, .drop:focus-within { border-color: var(--brand); }
-  .drop svg { color: var(--brand); }
-  .drop strong { color: var(--ink); font-weight: 600; }
-  .drop .sub { font-size: var(--fs-micro); }
-  .privacy { display: flex; gap: 10px; align-items: flex-start; color: var(--ink-3); font-size: var(--fs-label); max-width: 90ch; }
-  .privacy svg { flex: none; margin-top: 2px; color: var(--brand); }
-  .step-n { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--dark); color: var(--white); font-size: 12px; font-weight: 600; margin-right: 8px; }
-  .cols td:first-child { white-space: nowrap; }
-  .code { font: 600 12px var(--font-mono); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
-  .srcitem { padding: 12px 0; border-bottom: 1px solid var(--line-2); }
-  .srcitem:last-child { border-bottom: 0; }
-  .srcitem p { margin-top: 6px; font-size: var(--fs-label); color: var(--ink-2); }
-  .stats { display: flex; gap: 8px; flex-wrap: wrap; }
-  .stat { background: var(--paper); border-radius: var(--r-card); padding: 8px 12px; min-width: 92px; }
-  .stat b { display: block; font-family: var(--font-display); font-size: 20px; font-variant-numeric: tabular-nums; }
-  .stat span { font-size: var(--fs-micro); color: var(--ink-3); }
-  details.more summary { cursor: pointer; font-size: var(--fs-label); color: var(--ink-3); padding: 8px 0; }
-  .drop.over { border-color: var(--brand); background: var(--brand-tint); }
+  .pro { color: var(--brand-strong); } .con { color: var(--error); }
+  .progress { height: 6px; background: var(--line-2); border-radius: var(--r-pill); overflow: hidden; }
+  .progress > div { height: 100%; width: 0; background: var(--brand); transition: width var(--dur-base) var(--ease-out); }
+  .tbl { overflow-x: auto; border: 1px solid var(--line-2); border-radius: var(--r-card); background: var(--white); }
+  .tbl th { background: var(--paper); }
+  .tbl tr.sel td { background: var(--brand-tint); }
+  .tbl tr.click { cursor: pointer; }
+  .num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 12.5px; }
   .gate { border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; background: var(--white); }
-  .gate .top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+  .gate .top2 { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
   .gate .q { font-weight: 600; }
-  .gate .big { font-family: var(--font-display); font-size: 24px; font-weight: 600; letter-spacing: -.01em; margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .gate .big { font-family: var(--font-display); font-size: 24px; font-weight: 600; margin-top: 8px; font-variant-numeric: tabular-nums; }
   .gate .bar { font-size: var(--fs-label); color: var(--ink-2); margin-top: 2px; }
-  .gate .why { font-size: var(--fs-micro); color: var(--ink-3); margin-top: 8px; }
+  .gate .why2 { font-size: var(--fs-micro); color: var(--ink-3); margin-top: 8px; }
   .matrix td, .matrix th { text-align: center; }
   .matrix td.hit { background: var(--brand-tint); color: var(--brand-strong); font-weight: 600; }
   .matrix td.miss { background: var(--error-bg); color: var(--error); font-weight: 600; }
@@ -99,204 +169,193 @@
   .faq details[open] summary::after { content: "-"; }
   .faq details p { margin-top: 8px; color: var(--ink-2); font-size: var(--fs-label); max-width: 75ch; }
   .from { display: inline-block; margin-top: 8px; font-size: var(--fs-micro); color: var(--ink-3); background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 2px 10px; }
+  .drop { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; border: 1.5px dashed var(--line); border-radius: var(--r-card); padding: 24px 18px; text-align: center; color: var(--ink-3); background: var(--paper); cursor: pointer; }
+  .drop:hover, .drop.over { border-color: var(--brand); } .drop.over { background: var(--brand-tint); }
+  .drop svg { color: var(--brand); } .drop strong { color: var(--ink); }
+  .code { font: 600 12px var(--font-mono); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
+  .stats { display: flex; gap: 8px; flex-wrap: wrap; }
+  .statb { background: var(--paper); border-radius: var(--r-card); padding: 8px 12px; min-width: 92px; } .statb b { display: block; font-family: var(--font-display); font-size: 20px; } .statb span { font-size: var(--fs-micro); color: var(--ink-3); }
+  .srcitem { padding: 12px 0; border-bottom: 1px solid var(--line-2); } .srcitem:last-child { border-bottom: 0; } .srcitem p { margin-top: 6px; font-size: var(--fs-label); color: var(--ink-2); }
+  details.more summary { cursor: pointer; font-size: var(--fs-label); color: var(--ink-3); padding: 8px 0; }
   .toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); background: var(--dark); color: var(--white); padding: 10px 18px; border-radius: var(--r-pill); font-size: var(--fs-label); opacity: 0; transition: opacity var(--dur-base); z-index: 60; pointer-events: none; }
   .toast.show { opacity: 1; }
-  footer { padding-block: 32px 48px; color: var(--ink-4); font-size: var(--fs-micro); }
-  @media (max-width: 900px) { .hero, .grid, .two, .three { grid-template-columns: 1fr; } .flow { grid-template-columns: 1fr 1fr; } .kpis { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 1000px) {
+    .shell { grid-template-columns: 1fr; }
+    .side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 12px 16px; }
+    .nav { flex-direction: row; flex-wrap: wrap; } .nav .eyebrow, .me { display: none; }
+    .split, .two, .three, .tiles { grid-template-columns: 1fr; } .flow { grid-template-columns: 1fr 1fr; }
+    .content { padding: 18px 16px 40px; } .top { padding: 12px 16px; }
+    .frow { grid-template-columns: 18px 1fr; } .frow > :nth-child(3) { grid-column: 1 / -1; }
+  }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
 <body>
-<nav class="site-nav">
-  <div class="wrap nav-inner">
-    <span class="logo"><span class="mark" id="mark">AI</span><span id="navTitle">Prototype</span></span>
-    <span class="spacer"></span>
-    <span class="pill info hide-sm" id="enginePill">Rules</span>
-    <label class="label hide-sm" for="model">Model</label>
-    <select id="model" aria-label="Model"></select>
-    <a class="btn ghost sm hide-sm" id="prdLink" href="/prd" target="_blank" rel="noopener">PRD</a>
+<div class="shell">
+  <aside class="side" aria-label="Navigation">
+    <div class="brand"><span class="mark" id="mark">AI</span><div><b id="pname">Prototype</b><small id="pclient">Client</small></div></div>
+    <nav class="nav" aria-label="Work">
+      <div class="eyebrow">Work</div>
+      <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span id="navHome">Today</span><span class="count" id="cntEsc"></span></button>
+      <button data-go="new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="navNew">New item</span></button>
+    </nav>
+    <nav class="nav" aria-label="Trust">
+      <div class="eyebrow">Trust</div>
+      <button data-go="evals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Evals</button>
+      <button data-go="gov"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Governance</button>
+      <button data-go="audit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>Audit log<span class="count soft" id="cntLog"></span></button>
+      <button data-go="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>Your data</button>
+      <button data-go="how"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>How it works</button>
+      <button data-go="faq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17v.01"/></svg>FAQ</button>
+    </nav>
+    <div class="me"><span class="av" id="meAv">AI</span><div><b id="meName">Reviewer</b><small id="meRole">Prototype</small></div></div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <h1 id="pageTitle">Today</h1><span class="ctx" id="pageCtx"></span>
+      <span class="spacer"></span>
+      <span class="pill plain" id="aiPill">AI: checking</span>
+      <select id="model" aria-label="Model"></select>
+      <a class="btn ghost sm" id="prdLink" href="/prd" target="_blank" rel="noopener">PRD</a>
+    </header>
+
+    <main class="content">
+      <!-- Home -->
+      <section class="page" id="p-home">
+        <div class="hello"><span class="spark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></span>
+          <div><h2 id="greet">Good morning.</h2><p id="greetSub"></p></div></div>
+        <div class="tiles" id="tiles"></div>
+        <div id="queues"></div>
+      </section>
+
+      <!-- Item detail -->
+      <section class="page" id="p-item" hidden><button class="back" data-go="home">Back to the queue</button><div id="item"></div></section>
+
+      <!-- New item -->
+      <section class="page" id="p-new" hidden>
+        <div class="card emph stack" style="max-width:760px">
+          <div><div class="eyebrow">New</div><h2 style="margin-top:6px" id="newTitle">Add an item</h2><p class="muted small" style="margin-top:6px" id="newHelp"></p></div>
+          <textarea id="newText" placeholder=""></textarea>
+          <div class="row"><button class="btn solid" id="newGo">Add to the queue and open</button><span class="small muted">The same rules and model run on it.</span></div>
+        </div>
+      </section>
+
+      <!-- Evals -->
+      <section class="page" id="p-evals" hidden>
+        <div class="stack">
+          <div class="card emph stack">
+            <div class="row between">
+              <div><div class="eyebrow">Release readiness</div><h2 style="margin-top:6px">Is it safe to release?</h2></div>
+              <div class="seg" role="group" aria-label="Test set"><button data-set="golden" aria-pressed="true" id="setDev">Development set</button><button data-set="holdout" aria-pressed="false" id="setHold">Sealed holdout</button><button data-set="custom" aria-pressed="false" id="setCustom" hidden>Your data</button></div>
+            </div>
+            <p class="small muted" id="setInfo"></p>
+            <div><div class="label">Which design are we testing?</div><p class="small muted" style="margin-top:2px">Three ways to build the same product. Run each on the same test set and compare them on the scoreboard.</p></div>
+            <div class="three" id="engineSeg" role="group" aria-label="Design"></div>
+            <p class="small muted" id="engineDesc"></p>
+            <div class="row"><button class="btn solid" id="runTest">Run test</button><button class="btn ghost sm" id="stopTest" hidden>Stop</button><span class="small muted" id="runNote"></span></div>
+            <div class="progress" id="prog" hidden><div></div></div>
+          </div>
+          <div class="card">
+            <div class="eyebrow">Scoreboard</div>
+            <p class="small muted" style="margin-top:4px">Every run on this test set. Click a row for its full results. Latency is measured per request; cost is per 1,000 requests.</p>
+            <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Run</th><th>Release</th><th>Escalations caught</th><th>Routed correctly</th><th>Unsafe</th><th>Median latency</th><th>Slowest 5%</th><th>Cost / 1,000</th></tr></thead><tbody id="board"></tbody></table></div>
+            <p class="small muted" id="costNote" style="margin-top:8px"></p>
+          </div>
+          <div id="detail"></div>
+        </div>
+      </section>
+
+      <!-- Governance -->
+      <section class="page" id="p-gov" hidden>
+        <div class="stack">
+          <div class="three" id="govStats"></div>
+          <div class="card"><div class="eyebrow">Controls running in this prototype</div><p class="small muted" style="margin-top:4px">Each control is enforced in the product you are using, with the evidence that shows it.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Control</th><th>How it is enforced</th><th>Evidence</th></tr></thead><tbody id="controls"></tbody></table></div></div>
+          <div class="card"><div class="eyebrow">Governance checks, gate by gate</div><p class="small muted" style="margin-top:4px">Asked inside each gate of the working session. Anything not answered has a named owner.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Gate</th><th>Question</th><th>Answer</th><th>Status</th><th>Closes it</th></tr></thead><tbody id="govRows"></tbody></table></div></div>
+        </div>
+      </section>
+
+      <!-- Audit -->
+      <section class="page" id="p-audit" hidden>
+        <div class="card"><div class="eyebrow">Audit trail</div><h2 style="margin-top:6px">Every action, with who took it</h2>
+          <div class="tbl" style="margin-top:12px"><table><thead><tr><th>Time</th><th>Item</th><th>Outcome</th><th>Action</th><th>By</th><th>Edited</th><th>AI</th></tr></thead><tbody id="logRows"></tbody></table></div></div>
+      </section>
+
+      <!-- Your data -->
+      <section class="page" id="p-data" hidden>
+        <div class="stack">
+          <div><h2>Test it on your own data</h2><p class="muted" style="margin-top:8px;max-width:70ch">Add real items with known outcomes, or your own policy documents. The same release gates then run on your data, for every design and model. Files stay in this browser tab; nothing is uploaded or stored. For PDFs, Word files or confidential client data, use the session's inputs folder.</p></div>
+          <div class="two">
+            <div class="card stack">
+              <h3>Labelled items</h3><p class="small muted">A CSV or JSON file with <span class="code">text</span> and <span class="code">expected</span> (answer, human or escalate), optional <span class="code">source</span>, and any other column as a group.</p>
+              <label class="drop" id="caseDrop"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><strong>Drop a CSV or JSON file</strong><span class="meta">or click to choose</span><input type="file" id="caseFile" accept=".csv,.json" hidden></label>
+              <div id="caseSummary"><button class="btn ghost sm" id="loadExample">Use the example file</button></div>
+            </div>
+            <div class="card stack">
+              <h3>Knowledge documents</h3><p class="small muted">Policy or knowledge articles as text or Markdown. Designs B and C use them straight away.</p>
+              <label class="drop" id="srcDrop"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><strong>Drop text or Markdown files</strong><span class="meta">or click to choose</span><input type="file" id="srcFile" accept=".txt,.md" multiple hidden></label>
+              <div id="srcList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How it works -->
+      <section class="page" id="p-how" hidden>
+        <div class="stack">
+          <p class="muted" id="howIntro" style="max-width:75ch"></p>
+          <div class="flow" id="flow"></div>
+          <div class="card"><div class="eyebrow">Decisions that shaped it</div><p class="small muted" style="margin-top:4px">Every choice made in the working session, who made it, and what it changed here.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Gate</th><th>Decision</th><th>Chosen by</th><th>What it changed</th></tr></thead><tbody id="decisionRows"></tbody></table></div></div>
+          <div class="two">
+            <div class="card"><div class="eyebrow">Release gates</div><div class="tbl" style="margin-top:8px"><table><tbody id="gateRows"></tbody></table></div></div>
+            <div class="card"><div class="eyebrow">Approved knowledge</div><div class="tbl" style="margin-top:8px"><table><tbody id="sourceRows"></tbody></table></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="page" id="p-faq" hidden>
+        <div class="card"><p class="small muted">Every answer comes from a decision made in the working session; the tag shows which.</p><div class="faq" id="faqList" style="margin-top:8px"></div></div>
+      </section>
+
+      <p class="meta" id="foot" style="margin-top:32px"></p>
+    </main>
   </div>
-</nav>
-
-<main class="wrap">
-  <section class="hero">
-    <div>
-      <div class="eyebrow brand" id="eyebrow">Prototype</div>
-      <h1 id="headline" style="margin-top:10px">Working prototype</h1>
-      <p class="hero-sub" id="promise"></p>
-    </div>
-    <div class="kpis" aria-label="Session metrics">
-      <div class="kpi"><div class="v" id="kDecisions">0</div><div class="l">Requests handled</div></div>
-      <div class="kpi"><div class="v" id="kApproved">0</div><div class="l">Drafts approved</div></div>
-      <div class="kpi"><div class="v" id="kEdit">0%</div><div class="l">Edit rate</div></div>
-      <div class="kpi"><div class="v" id="kEsc">0</div><div class="l">Escalated</div></div>
-    </div>
-  </section>
-
-  <div class="tabs" role="tablist">
-    <button class="tab" role="tab" aria-selected="true" data-tab="work">Workbench</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="evals">Evals</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="data">Your data</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="gov">Governance</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="audit">Audit log</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="how">How it works</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="faq">FAQ</button>
-  </div>
-
-  <!-- Workbench -->
-  <section class="panel" id="work">
-    <div class="grid">
-      <div class="stack">
-        <div class="card">
-          <div class="eyebrow">Incoming</div>
-          <h3 style="margin-top:6px" id="inputLabel">Request</h3>
-          <textarea id="input" placeholder="Type a request, or pick an example below"></textarea>
-          <div class="samples" id="samples"></div>
-          <div class="row"><button class="btn solid" id="run">Run it</button><span class="small muted">Ctrl + Enter</span></div>
-        </div>
-        <div class="card flat">
-          <div class="eyebrow">Never list</div>
-          <ul class="never small" id="never" style="padding-left:18px;margin:8px 0 0"></ul>
-          <p class="small muted" style="margin-top:10px">Escalations go to <strong id="owner">a person</strong>. Autonomy: <span id="autonomy"></span>.</p>
-        </div>
-      </div>
-      <div class="card emph" id="result"></div>
-    </div>
-  </section>
-
-  <!-- Evals -->
-  <section class="panel" id="evals" hidden>
-    <div class="stack">
-      <div class="card emph stack">
-        <div class="row between">
-          <div><div class="eyebrow">Release readiness</div><h2 style="margin-top:6px">Is it safe to release?</h2></div>
-          <div class="seg" role="group" aria-label="Test set"><button data-set="golden" aria-pressed="true" id="setDev">Development set</button><button data-set="holdout" aria-pressed="false" id="setHold">Sealed holdout</button><button data-set="custom" aria-pressed="false" id="setCustom" hidden>Your data</button></div>
-        </div>
-        <p class="small muted" id="setInfo"></p>
-        <div><div class="label">Which design are we testing?</div><p class="small muted" style="margin-top:2px">Three ways to build the same product. Run each on the same test set and compare them on the scoreboard below.</p></div>
-        <div class="three" id="engineSeg" role="group" aria-label="Design"></div>
-        <p class="small muted" id="engineDesc"></p>
-        <div class="row"><button class="btn solid" id="runTest">Run test</button><button class="btn ghost sm" id="stopTest" hidden>Stop</button><span class="small muted" id="runNote"></span></div>
-        <div class="progress" id="prog" hidden><div></div></div>
-      </div>
-
-      <div class="card">
-        <div class="eyebrow">Scoreboard</div>
-        <p class="small muted" style="margin-top:4px">Every run on this test set. Click a row for its full results. Latency is measured per request; cost is per 1,000 requests.</p>
-        <div class="tbl" style="margin-top:10px"><table>
-          <thead><tr><th>Run</th><th>Release</th><th>Escalations caught</th><th>Routed correctly</th><th>Unsafe answers</th><th>Median latency</th><th>Slowest 5%</th><th>Cost / 1,000</th></tr></thead>
-          <tbody id="board"></tbody></table></div>
-        <p class="small muted" id="costNote" style="margin-top:8px"></p>
-      </div>
-
-      <div id="detail"></div>
-    </div>
-  </section>
-
-  <!-- Your data -->
-  <section class="panel" id="data" hidden>
-    <div class="stack">
-      <div>
-        <div class="eyebrow">Your data</div>
-        <h2 style="margin-top:6px">Test it on your own requests and documents</h2>
-        <p class="muted" style="margin-top:8px;max-width:70ch">Add real requests with known outcomes, or your own policy documents. The same release gates then run on your data, for every design and model.</p>
-      </div>
-      <p class="privacy"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Files stay in this browser tab. Nothing is uploaded or stored. For PDFs, Word files or confidential client data, add them to the session's inputs folder instead; VALUED reads them during the run and de-identifies them before anything is published.</span></p>
-      <div class="two">
-        <div class="card stack">
-          <div><div class="row"><span class="step-n">1</span><h3>Labelled requests</h3></div>
-            <p class="small muted" style="margin-top:6px">Real requests, each with the outcome a person agreed was right.</p></div>
-          <label class="drop" id="caseDrop"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><strong>Drop a CSV or JSON file</strong><span class="sub">or click to choose a file</span><input type="file" id="caseFile" accept=".csv,.json,text/csv,application/json" hidden></label>
-          <div id="caseSummary"><button class="btn ghost sm" id="loadExample">Use the example file</button></div>
-          <div><div class="label">Columns</div>
-            <div class="tbl cols" style="margin-top:6px"><table><tbody>
-              <tr><td><span class="code">text</span></td><td>The request, as the customer wrote it. Required.</td></tr>
-              <tr><td><span class="code">expected</span></td><td>The right outcome: <strong>answer</strong>, <strong>human</strong> or <strong>escalate</strong>. Required.</td></tr>
-              <tr><td><span class="code">source</span></td><td>For answers, the approved source that answers it, for example <span class="code">S2-wires</span>.</td></tr>
-              <tr><td><span class="code">any other</span></td><td>A group the gates check separately, such as <span class="code">language</span> or <span class="code">channel</span>.</td></tr>
-            </tbody></table></div></div>
-        </div>
-        <div class="card stack">
-          <div><div class="row"><span class="step-n">2</span><h3>Knowledge documents</h3></div>
-            <p class="small muted" style="margin-top:6px">Policy or knowledge articles as text or Markdown. Designs B and C use them straight away; design A's rules are rebuilt from them in the next session.</p></div>
-          <label class="drop" id="srcDrop"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><strong>Drop text or Markdown files</strong><span class="sub">or click to choose files</span><input type="file" id="srcFile" accept=".txt,.md,text/plain,text/markdown" multiple hidden></label>
-          <div id="srcList"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Governance -->
-  <section class="panel" id="gov" hidden>
-    <div class="stack">
-      <div class="three" id="govStats"></div>
-      <div class="card">
-        <div class="eyebrow">Controls running in this prototype</div>
-        <p class="small muted" style="margin-top:4px">Each control is enforced in the code you just used, with the evidence that shows it.</p>
-        <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Control</th><th>How it is enforced</th><th>Evidence</th></tr></thead><tbody id="controls"></tbody></table></div>
-      </div>
-      <div class="card">
-        <div class="eyebrow">Governance checks, gate by gate</div>
-        <p class="small muted" style="margin-top:4px">Asked inside each gate of the working session, not reviewed at the end. Anything not answered has a named owner.</p>
-        <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Gate</th><th>Question</th><th>Answer</th><th>Status</th><th>Closes it</th></tr></thead><tbody id="govRows"></tbody></table></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Audit -->
-  <section class="panel" id="audit" hidden>
-    <div class="card emph">
-      <div class="eyebrow">Audit trail</div><h2 style="margin-top:6px">Every action, with who approved it</h2>
-      <div class="tbl" style="margin-top:12px"><table><thead><tr><th>Time</th><th>Request</th><th>Decision</th><th>Source</th><th>Action</th><th>Approver</th><th>Edited</th><th>Drafted by</th></tr></thead><tbody id="logRows"></tbody></table></div>
-    </div>
-  </section>
-
-  <!-- How it works -->
-  <section class="panel" id="how" hidden>
-    <div class="stack">
-      <div class="flow" id="flow"></div>
-      <div class="card"><div class="eyebrow">Decisions that shaped it</div><p class="small muted" style="margin-top:4px">Every choice made in the working session, who made it, and what it changed in this prototype.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Gate</th><th>Decision</th><th>Chosen by</th><th>What it changed</th></tr></thead><tbody id="decisionRows"></tbody></table></div></div>
-      <div class="grid">
-        <div class="card"><div class="eyebrow">Release gates</div><div class="tbl" style="margin-top:8px"><table><tbody id="gateRows"></tbody></table></div></div>
-        <div class="card"><div class="eyebrow">Approved knowledge sources</div><div class="tbl" style="margin-top:8px"><table><tbody id="sourceRows"></tbody></table></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section class="panel" id="faq" hidden>
-    <div class="card emph">
-      <div class="eyebrow">Questions people ask</div><h2 style="margin-top:6px">FAQ</h2>
-      <p class="small muted" style="margin-top:4px">Every answer comes from a decision made in the working session; the tag shows which.</p>
-      <div class="faq" id="faqList" style="margin-top:8px"></div>
-    </div>
-  </section>
-</main>
-<footer class="wrap" id="foot">Prototype on synthetic data. Not for production use.</footer>
+</div>
 <div class="toast" id="toast" role="status"></div>
 <!--VALUED_DATA-->
 <script>
-/* One code path for two homes: served by out/proto/server.js during a run, or published as a page with its data embedded. */
+/* One code path for two homes: served by out/proto/server.js during a run, or published with its data embedded. */
 const HOSTED = Boolean(window.__VALUED__);
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const VERDICT_STYLE = { answer: "ok", human: "warn", escalate: "bad" };
-const ENGINE_LABEL = { rules: "Rules decide", "rules+model": "Rules decide, AI drafts", "model-first": "AI proposes, rules guard" };
-/* List prices per million tokens (input, output). */
+const VSTYLE = { answer: "ok", human: "warn", escalate: "bad" };
 const MODELS = [
-  { id: "claude-haiku-5-5", name: "Claude Haiku 5.5", short: "Haiku 5.5", tier: "quick", pin: 0.10, pout: 0.50, note: "fastest, lowest cost" },
-  { id: "claude-sonnet-5-5", name: "Claude Sonnet 5.5", short: "Sonnet 5.5", tier: "default", pin: 2, pout: 10, note: "balanced" },
-  { id: "claude-opus-5-5", name: "Claude Opus 5.5", short: "Opus 5.5", tier: "complex", pin: 4, pout: 20, note: "most capable" },
+  { id: "claude-haiku-5-5", short: "Haiku 5.5", tier: "quick", pin: 0.10, pout: 0.50, note: "fastest, lowest cost" },
+  { id: "claude-sonnet-5-5", short: "Sonnet 5.5", tier: "default", pin: 2, pout: 10, note: "balanced" },
+  { id: "claude-opus-5-5", short: "Opus 5.5", tier: "complex", pin: 4, pout: 20, note: "most capable" },
 ];
-const ENGINES = [
-  { id: "rules", letter: "A", name: "Rules only", path: "request > rules > outcome", what: "Keyword rules written from the session's escalation triggers and approved sources decide everything. No AI.", pro: "Predictable, instant, free, easy to explain.", con: "Misses phrasing nobody wrote a rule for." },
-  { id: "ai", letter: "B", name: "AI only", path: "request > model > outcome", what: "The selected model reads each request and decides on its own.", pro: "Understands any phrasing.", con: "If it misses an escalation, nothing catches it." },
-  { id: "guard", letter: "C", name: "AI with rules guard", rec: true, path: "request > rules check > model > source check > outcome", what: "Rules check every request for escalations first and overrule the model; the model handles the rest; no answer ships without an approved source.", pro: "Flexible like AI, safe like rules.", con: "Costs and latency of a model call on most requests." },
-];
-let CUSTOM = [], BASE_SOURCES = 0, CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules" }, ROUTER = null, AI = null, READY = false, GOLDEN = [], HOLDOUT = [];
-let current = null, stats = { decisions: 0, approved: 0, edited: 0, escalated: 0 }, LOG = [], evalSet = "golden", engine = "rules", RUNS = [], selRun = null, ctl = null;
-const rowsFor = (set) => (set === "golden" ? GOLDEN : set === "holdout" ? HOLDOUT : CUSTOM);
-const model = () => MODELS.find((m) => m.id === $("#model").value) || MODELS[0];
+/* What each product shape calls things. The run sets `shape` at gate A; everything else follows. */
+const SHAPES = {
+  desk:   { noun: ["message", "messages"], verbs: { answer: "Approve and send", human: "Assign to a person", escalate: "Escalate" }, idp: "C-", greetLine: () => "came in since this morning:", newHelp: "Paste a customer message as it arrived.", sideIn: "Customer", personaRole: "Contact-centre agent" },
+  review: { noun: ["notice", "notices"], verbs: { answer: "Confirm and file", human: "Request missing details", escalate: "Send to specialist" }, idp: "FN-", greetLine: () => "arrived overnight:", newHelp: "Paste the text of a notice: an email, a PDF's text or a call note.", sideIn: "Claimant", personaRole: "Intake adjuster" },
+  rank:   { noun: ["household", "households"], verbs: { answer: "Accept", human: "Add a note", escalate: "Send to supervisor" }, idp: "HH-", greetLine: () => "in your book have something new:", newHelp: "Paste a household summary: age, accounts, allocation, beneficiaries, notes.", sideIn: "Household", personaRole: "Financial advisor" },
+  chat:   { noun: ["question", "questions"], verbs: { answer: "Answered", human: "Hand off", escalate: "Route to a specialist" }, idp: "Q-", greetLine: () => "were asked today:", newHelp: "Ask a question the way an employee would.", sideIn: "Employee", personaRole: "Service desk lead" },
+};
+const NAMES = {
+  en: ["Maria Lopez", "James Carter", "Aisha Khan", "Wei Chen", "Priya Nair", "Grace Kim", "Daniel Ortiz", "Fatima Ali", "Ben Murphy", "Kwame Mensah", "Olivia Brown", "Marcus Lee", "Chloe Martin", "Nora Hansen", "Sam Patel", "Ethan Wright", "Mei Lin", "Zara Ahmed", "Ruth Adler", "Tom Becker", "Hannah Cole", "Ivan Petrov", "Leah Gordon", "Noah Rivera", "Emma Walsh", "Owen Park", "Julia Novak", "Ravi Shah", "Lily Evans", "Caleb Ross", "Ada Brooks", "Hugo Lam", "Iris Vance", "Max Ferreira"],
+  es: ["Lucía Fernández", "Carlos Mendes", "Isabel Cruz", "Diego Ramos", "Sofía Herrera", "Mateo Vargas", "Valentina Ruiz", "Javier Soto"],
+  de: ["Lukas Weber", "Hannah Schmidt", "Jonas Fischer", "Lea Wagner", "Felix Braun", "Mia Hoffmann", "Paul Richter", "Emma Koch"],
+};
+let CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules" }, ROUTER = null, AI = null, GOLDEN = [], HOLDOUT = [], CUSTOM = [];
+let SHAPE = SHAPES.desk, ITEMS = [], OPEN = null, LOG = [], stats = { approved: 0, edited: 0 };
+let evalSet = "golden", engine = "rules", RUNS = [], selRun = null, ctl = null;
+const model = () => MODELS.find((m) => m.id === $("#model").value) || MODELS[1];
+const rowsFor = (s) => (s === "golden" ? GOLDEN : s === "holdout" ? HOLDOUT : CUSTOM);
+const clean = (t) => String(t || "").replace(/^\[[A-Z]{2,3}\]\s*/, "");
+const initials = (n) => n.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+const srcOf = (id) => SOURCES.find((s) => s.id === id) || null;
+const srcTitle = (s) => s?.title || (s?.id || "").replace(/^[A-Z]\d+-/, "").replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase());
 
 async function load(name, fallback) {
   if (HOSTED) return window.__VALUED__[name] ?? fallback;
@@ -306,149 +365,294 @@ function compileRouter(src) {
   if (!src) return null;
   try { const module = { exports: {} }; new Function("module", "exports", src)(module, module.exports); return typeof module.exports.decide === "function" ? module.exports : null; } catch (e) { console.error("router", e); return null; }
 }
-
-/* Real AI. Published: Claude through the page's own access. Localhost: the run's server, with an API key. */
 async function connectAI() {
   if (HOSTED) {
     const sample = window.claude ? await window.claude.use("sample").catch(() => null) : null;
     if (!sample) return null;
-    return {
-      exact: false,
-      call: async (prompt, m, opts = {}) => {
-        const t = performance.now();
-        const r = await sample(prompt, { model: m.id, modelTier: m.tier, effort: "low", onText: opts.onText, signal: opts.signal, cache: false });
-        return { text: r.text, ms: performance.now() - t, inTok: Math.ceil(prompt.length / 4), outTok: Math.ceil(r.text.length / 4), answeredBy: r.modelApplied ? m.short : `${r.modelTierApplied} tier` };
-      },
-    };
+    return { exact: false, call: async (prompt, m, opts = {}) => {
+      const t = performance.now();
+      const r = await sample(prompt, { model: m.id, modelTier: m.tier, effort: "low", onText: opts.onText, signal: opts.signal, cache: false });
+      return { text: r.text, ms: performance.now() - t, inTok: Math.ceil(prompt.length / 4), outTok: Math.ceil(r.text.length / 4), by: r.modelApplied ? m.short : `${r.modelTierApplied} tier` };
+    } };
   }
   try {
     const s = await fetch("/api/status", { cache: "no-store" }).then((r) => r.json());
     if (!s.modelReady) return null;
-    return {
-      exact: true,
-      call: async (prompt, m, opts = {}) => {
-        const t = performance.now();
-        const r = await fetch("/api/ai", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ prompt, model: m.id }), signal: opts.signal }).then((x) => x.json());
-        if (!r.ok) throw { code: "upstream_error", message: r.why };
-        opts.onText?.({ text: r.text });
-        return { text: r.text, ms: performance.now() - t, inTok: r.usage?.input_tokens ?? Math.ceil(prompt.length / 4), outTok: r.usage?.output_tokens ?? Math.ceil(r.text.length / 4), answeredBy: m.short };
-      },
-    };
+    return { exact: true, call: async (prompt, m, opts = {}) => {
+      const t = performance.now();
+      const r = await fetch("/api/ai", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ prompt, model: m.id }), signal: opts.signal }).then((x) => x.json());
+      if (!r.ok) throw { code: "upstream_error", message: r.why };
+      opts.onText?.({ text: r.text });
+      return { text: r.text, ms: performance.now() - t, inTok: r.usage?.input_tokens ?? Math.ceil(prompt.length / 4), outTok: r.usage?.output_tokens ?? Math.ceil(r.text.length / 4), by: m.short };
+    } };
   } catch { return null; }
 }
-const costOf = (m, inTok, outTok) => (inTok * m.pin + outTok * m.pout) / 1e6;
+const costOf = (m, i, o) => (i * m.pin + o * m.pout) / 1e6;
 const fmtMs = (ms) => (ms < 1 ? "<1 ms" : ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`);
 const fmtUsd = (x) => (x === 0 ? "$0" : x < 0.01 ? `$${x.toFixed(4)}` : `$${x.toFixed(2)}`);
-const aiErrorCopy = (e) => ({ not_granted: "AI access was not allowed for this page.", rate_limited: "Too many AI calls right now. Wait a minute and try again.", sampling_disabled: "AI is not available on this account.", cancelled: "Stopped.", invalid_json: "The AI reply was not in the expected format." }[e?.code] || `The AI call failed${e?.message ? ": " + e.message : ""}.`);
-function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2400); }
-function renderStats() {
-  $("#kDecisions").textContent = stats.decisions; $("#kApproved").textContent = stats.approved;
-  $("#kEdit").textContent = stats.approved ? Math.round((stats.edited / stats.approved) * 100) + "%" : "0%"; $("#kEsc").textContent = stats.escalated;
+const aiErr = (e) => ({ not_granted: "AI access was not allowed for this page.", rate_limited: "Too many AI calls right now; try again in a minute.", sampling_disabled: "AI is not available on this account.", cancelled: "Stopped." }[e?.code] || `The AI call failed${e?.message ? ": " + e.message : ""}.`);
+const parseJson = (t) => { try { const a = t.search(/[[{]/), b = Math.max(t.lastIndexOf("}"), t.lastIndexOf("]")); return JSON.parse(t.slice(a, b + 1)); } catch { return null; } };
+function toast(m) { const t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2400); }
+function highlight(text, phrases, cls = "") {
+  let html = esc(text);
+  for (const [i, p] of (phrases || []).filter(Boolean).entries()) {
+    const pe = esc(p).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    html = html.replace(new RegExp(`(${pe})`, "i"), `<mark class="${typeof cls === "function" ? cls(i) : cls}">$1</mark>`);
+  }
+  return html;
 }
+const triggerOf = (d) => { const q = [...String(d.reason || "").matchAll(/"([^"]{2,60})"/g)].map((m) => m[1]); return q.length ? q[q.length - 1] : null; };
 
+/* ---------- Data and queue ---------- */
 async function boot() {
   [CASE, SOURCES, GATES, BUILD, GOLDEN, HOLDOUT] = await Promise.all([load("case.json", {}), load("sources.json", []), load("gates.json", {}), load("build.json", { engine: "rules" }), load("golden.json", []), load("holdout.json", [])]);
   ROUTER = compileRouter(await load("router.js", ""));
-  READY = Boolean(ROUTER && CASE.title);
-  const c = CASE;
-  document.title = c.title || "Prototype workbench";
-  $("#navTitle").textContent = c.title || "Prototype";
-  $("#mark").textContent = (c.client || "AI").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-  $("#eyebrow").textContent = `${c.client || "Client"} · prototype on synthetic data`;
-  $("#headline").textContent = c.headline || c.useCase || "Working prototype";
-  $("#promise").textContent = c.promise || "";
-  $("#inputLabel").textContent = c.inputLabel || "Incoming request";
-  $("#owner").textContent = c.escalationOwner || "a person";
-  $("#autonomy").textContent = c.autonomy || "draft with approval";
-  $("#never").innerHTML = (c.neverList || []).map((n) => `<li>${esc(n)}</li>`).join("");
-  $("#samples").innerHTML = (c.samples || []).map((s, i) => `<button class="chip" data-sample="${i}">${esc(s.label)}</button>`).join("");
-  $("#enginePill").textContent = ENGINE_LABEL[BUILD.engine] || "Rules decide";
-  $("#foot").textContent = `${c.title || "Prototype"} · version ${c.version || "proto-0.1"} · synthetic data, not for production use.`;
+  SHAPE = SHAPES[CASE.shape] || SHAPES.desk;
+  const persona = CASE.persona || { name: "Maya Brooks", role: SHAPE.personaRole };
+  document.title = CASE.title || "Prototype";
+  $("#pname").textContent = CASE.title || "Prototype"; $("#pclient").textContent = CASE.client || "";
+  $("#mark").textContent = initials(CASE.title || "AI");
+  $("#meAv").textContent = initials(persona.name); $("#meName").textContent = persona.name; $("#meRole").textContent = persona.role || SHAPE.personaRole;
+  $("#navHome").textContent = "Today"; $("#navNew").textContent = `New ${SHAPE.noun[0]}`;
+  $("#newTitle").textContent = `New ${SHAPE.noun[0]}`; $("#newHelp").textContent = SHAPE.newHelp; $("#newText").placeholder = (CASE.samples || [])[0]?.text || "";
+  $("#foot").textContent = `${CASE.title || "Prototype"} · ${CASE.client || ""} · version ${CASE.version || "proto-0.1"} · synthetic data, not for production use.`;
   if (HOSTED) { const prd = window.__VALUED__.prdUrl; $("#prdLink").hidden = !prd; if (prd) $("#prdLink").href = prd; }
-  renderHow(); renderFaq(); renderGov(); renderEvalControls(); renderBoard(); renderSources();
-  if (!current) $("#result").innerHTML = READY
-    ? `<div class="empty"><div class="ring">?</div><p>Run a request to see the decision, the cited source, the draft and who signs it off.</p></div>`
-    : `<div class="empty"><div class="ring">·</div><p>The decision logic is built at gate E, from the labels and the never list decided in the session.</p></div>`;
-  $("#run").disabled = !READY;
+  buildQueue(persona);
+  renderHome(persona); renderHow(); renderFaq(); renderGov(); renderEvalControls(); renderBoard(); renderSources();
+}
+function identity(row, i) {
+  const lang = row.slices?.lang || row.slices?.language || row.slices?.region || "en";
+  const pool = NAMES[lang] || NAMES.en;
+  const name = pool[i % pool.length];
+  const channel = row.slices?.channel || ({ desk: "chat", review: "email", rank: "book", chat: (row.slices?.region || "").toUpperCase() || "Teams" })[CASE.shape || "desk"];
+  const mins = 4 + ((i * 37) % 300);
+  return { name, id: `${SHAPE.idp}${26104 + i * 7}`, channel, ago: mins < 60 ? `${mins} min ago` : `${Math.floor(mins / 60)} h ago` };
+}
+function buildQueue() {
+  ITEMS = (ROUTER ? GOLDEN : []).map((row, i) => ({ key: row.id, row, text: row.text, who: identity(row, i), d: ROUTER.decide(row.text), state: "open", ai: null }));
+}
+function counts() { const c = { escalate: 0, human: 0, answer: 0 }; for (const it of ITEMS) if (it.state === "open") c[it.d.verdict] = (c[it.d.verdict] || 0) + 1; return c; }
+function renderHome(persona = CASE.persona || { name: "there" }) {
+  const c = counts(), total = ITEMS.length, V = CASE.verdicts || {};
+  const hour = new Date().getHours(), part = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
+  $("#greet").textContent = `Good ${part}, ${String(persona.name).split(" ")[0]}. Here is what came in.`;
+  $("#greetSub").textContent = `${total} ${SHAPE.noun[1]} ${SHAPE.greetLine("").trim()} ${c.escalate} to escalate first, ${c.human} need you, ${c.answer} ready for your review.`;
+  $("#tiles").innerHTML = [["bad", c.escalate, V.escalate?.label || "Escalate"], ["warn", c.human, V.human?.label || "Need you"], ["ok", c.answer, V.answer?.label || "Ready"], ["", stats.approved, `Handled this session${stats.approved ? ` · edit rate ${Math.round((stats.edited / stats.approved) * 100)}%` : ""}`]]
+    .map(([k, n, l]) => `<div class="tile ${k}"><b>${n}</b><span>${esc(l)}</span></div>`).join("");
+  const sec = (v, title, sub) => {
+    const list = ITEMS.filter((it) => it.d.verdict === v && it.state === "open");
+    if (!list.length) return "";
+    const shown = list.slice(0, 6);
+    return `<div class="qhead"><h3>${esc(title)}</h3><span>${esc(sub)} · ${list.length}</span></div><div class="queue">${shown.map(qcard).join("")}</div>${list.length > shown.length ? `<button class="btn ghost sm more-btn" data-more="${v}">Show all ${list.length}</button>` : ""}`;
+  };
+  $("#queues").innerHTML = ITEMS.length ? [
+    sec("escalate", V.escalate?.label || "Escalate first", `Goes to ${CASE.escalationOwner || "a specialist"}`),
+    sec("human", V.human?.label || "Needs you", "No clear rule or source"),
+    sec("answer", V.answer?.label || "Ready", CASE.shape === "rank" ? "Ranked actions prepared" : "Prepared for your review"),
+  ].join("") : `<div class="card" style="margin-top:18px"><p class="muted">The queue fills when the decision logic is built at gate E.</p></div>`;
+  $("#cntEsc").textContent = c.escalate || ""; $("#cntEsc").hidden = !c.escalate;
+}
+function qcard(it) {
+  const trig = triggerOf(it.d), V = CASE.verdicts || {};
+  const body = clean(it.text), excerpt = body.length > 190 ? body.slice(0, 190) + "..." : body;
+  return `<button class="qitem ${it.d.verdict === "escalate" ? "bad" : ""}" data-open="${esc(it.key)}">
+    <span class="av sm">${initials(it.who.name)}</span>
+    <div class="qbody"><div class="qtop"><strong>${esc(it.who.name)}</strong><span class="meta">${esc(it.who.id)} · ${esc(it.who.channel)} · ${esc(it.who.ago)}</span></div>
+      <p>${highlight(excerpt, [trig])}</p>${it.d.reason ? `<div class="why" style="margin-top:4px">${esc(it.d.reason)}</div>` : ""}</div>
+    <div class="qside"><span class="pill ${VSTYLE[it.d.verdict]}">${esc(V[it.d.verdict]?.label || it.d.verdict)}</span>${it.state !== "open" ? `<span class="meta">${esc(it.state)}</span>` : ""}</div></button>`;
 }
 
-/* ---------- Workbench ---------- */
-const srcText = (id) => (SOURCES.find((s) => s.id === id) || {}).text || "";
-function draftPrompt(input, sourceId) {
-  return [`You draft a reply for a ${CASE.user || "front-line employee"} at ${CASE.client || "the client"} to review before anything is sent.`,
-    "Use only the facts in SOURCE. If SOURCE does not answer the request, reply exactly NO_ANSWER.",
-    "Two to four plain sentences, in the language of the request. No promises, no advice beyond the source, no dashes as punctuation.",
-    CASE.draftOpener ? `Open in this voice: "${CASE.draftOpener}"` : "", "", `SOURCE ${sourceId}: ${srcText(sourceId)}`, "", `REQUEST: ${input}`].join("\n");
+/* ---------- Navigation ---------- */
+const TITLES = { home: "Today", new: "New", evals: "Evals", gov: "Governance", audit: "Audit log", data: "Your data", how: "How it works", faq: "FAQ" };
+function go(view, key) {
+  document.querySelectorAll(".page").forEach((p) => (p.hidden = true));
+  document.querySelectorAll(".nav button").forEach((b) => b.removeAttribute("aria-current"));
+  if (view === "item") { $("#p-item").hidden = false; openItem(key); document.querySelector('[data-go="home"]').setAttribute("aria-current", "page"); }
+  else { $("#p-" + view).hidden = false; document.querySelector(`.nav [data-go="${view}"]`)?.setAttribute("aria-current", "page"); $("#pageTitle").textContent = TITLES[view] || ""; $("#pageCtx").textContent = view === "home" ? `${CASE.client || ""} · ${new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}` : ""; }
+  if (view === "home") renderHome(); if (view === "audit") renderLog(); if (view === "gov") renderGov();
+  scrollTo(0, 0);
 }
-async function run() {
-  const text = $("#input").value.trim();
-  if (!text || !READY) { $("#input").focus(); return; }
-  const t = performance.now();
-  const r = { ...ROUTER.decide(text), input: text, notes: [], ruleMs: performance.now() - t };
-  current = r; stats.decisions++; if (r.verdict === "escalate") stats.escalated++; renderStats();
-  if (r.verdict === "answer") {
-    r.sourceText = srcText(r.source);
-    if (BUILD.engine !== "rules" && AI) { r.drafter = model().short; r.draft = ""; renderResult(true); await aiDraft(r); return; }
-    r.drafter = "template"; r.draft = `${CASE.draftOpener || "Thanks for reaching out."} ${r.sourceText}`;
-    r.notes.push(BUILD.engine === "rules" ? "Rules engine: the draft is assembled from the cited source." : "AI is not connected here, so the draft is assembled from the cited source.");
-  }
-  renderResult(false);
+function logAction(it, action, extra = {}) {
+  LOG.unshift({ at: new Date().toISOString(), item: `${it.who.id} · ${it.who.name}`, verdict: it.d.verdict, action, by: (CASE.persona || {}).name || CASE.approverRole || "Reviewer", edited: Boolean(extra.edited), ai: extra.ai || "none" });
+  if (!HOSTED) fetch("/api/log", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(LOG[0]) }).catch(() => {});
+  $("#cntLog").textContent = LOG.length; it.state = action;
+  toast(`${action} · logged with your name`);
 }
-async function aiDraft(r) {
-  const m = model();
+
+/* ---------- Detail views, one per shape ---------- */
+function openItem(key) {
+  const it = ITEMS.find((x) => x.key === key); if (!it) return go("home");
+  OPEN = it; const V = CASE.verdicts || {};
+  $("#pageTitle").textContent = it.who.name; $("#pageCtx").textContent = `${it.who.id} · ${it.who.channel} · ${it.who.ago}`;
+  const view = { desk: deskView, review: reviewView, rank: rankView, chat: chatView }[CASE.shape] || deskView;
+  view(it, V);
+}
+function outcomeHead(it, V) {
+  return `<div class="panel-h"><span class="pill ${VSTYLE[it.d.verdict]}">${esc(V[it.d.verdict]?.label || it.d.verdict)}</span></div><p class="small muted" style="margin-top:6px">${esc(V[it.d.verdict]?.desc || "")}</p>`;
+}
+const escBanner = (it) => `<div class="banner bad"><strong>Escalation wins.</strong> ${esc(it.d.reason || "")}${/nothing/i.test(it.d.reason || "") ? "" : " Nothing is prepared."} It goes to ${esc(CASE.escalationOwner || "a specialist")} within ${esc(CASE.escalationSla || "the agreed time")}.</div>`;
+
+/* A small, stable synthetic profile per person, so the screen reads like a real record. */
+function profile(it) {
+  const n = [...it.key].reduce((a, c) => a + c.charCodeAt(0), 0);
+  const prods = (CASE.profileProducts || ["Checking", "Savings", "Credit card", "Mortgage", "Personal loan"]);
+  return [["Customer since", String(2009 + (n % 15))], ["Products", [prods[n % prods.length], prods[(n + 2) % prods.length]].filter((x, i, a) => a.indexOf(x) === i).join(", ")], ["Last contact", `${3 + (n % 40)} days ago`], ["Language", (it.row.slices?.lang || "en") === "es" ? "Spanish" : "English"], ["Contacts in 90 days", String(1 + (n % 4))]];
+}
+/* Desk: the message beside the assist panel. */
+function deskView(it, V) {
+  const s = srcOf(it.d.source), trig = triggerOf(it.d);
+  $("#item").innerHTML = `<div class="split">
+    <div class="card stack"><div class="row"><span class="av">${initials(it.who.name)}</span><div><b>${esc(it.who.name)}</b><div class="meta">${esc(SHAPE.sideIn)} · ${esc(it.who.channel)} · ${esc(it.who.ago)}</div></div></div>
+      <div class="bubble them">${highlight(it.text, [trig])}</div>
+      <div class="tbl"><table><tbody>${profile(it).map(([k, v]) => `<tr><td class="muted" style="width:40%">${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}</tbody></table></div>
+      <p class="meta">Profile is synthetic, for the prototype.</p></div>
+    <div class="card emph stack assist"><div class="eyebrow">Assist</div>${outcomeHead(it, V)}
+      ${it.d.verdict === "escalate" ? escBanner(it) + `<div class="row"><button class="btn danger" data-act="Escalated">Escalate to ${esc(CASE.escalationOwner || "specialist")}</button></div>`
+      : it.d.verdict === "human" ? `<div class="banner warn">${esc(it.d.reason || "")} The system never guesses.</div><div class="row"><button class="btn dark" data-act="Assigned">Assign to a person</button></div>`
+      : `<div><div class="label">Cited source</div><div class="src" style="margin-top:6px"><b>${esc(srcTitle(s))}.</b> ${esc(s?.text || "")}</div></div>
+         <div><div class="label" id="draftLabel">Draft reply</div><div class="bubble ai" id="draft" style="margin-top:6px"></div>${CASE.disclosure ? `<p class="meta" style="margin-top:6px">${esc(CASE.disclosure)}</p>` : ""}</div>
+         <div class="row"><button class="btn solid" data-act="Sent">Approve and send</button><button class="btn ghost" id="editBtn">Edit</button><button class="btn ghost" data-act="Handed off">Send to a person</button></div>
+         <p class="meta" id="aiMeta"></p>`}</div></div>`;
+  if (it.d.verdict === "answer") draftReply(it, s);
+}
+async function draftReply(it, s) {
+  const tmpl = `${CASE.draftOpener || ""} ${s?.text || ""}`.trim();
+  if (it.ai?.draft) { $("#draft").textContent = it.ai.draft; $("#aiMeta").textContent = it.ai.meta; return; }
+  if (!AI || BUILD.engine === "rules") { $("#draft").textContent = tmpl; $("#aiMeta").textContent = "Assembled from the cited source by rule."; return; }
+  const m = model(); $("#draft").textContent = "Thinking..."; $("#draftLabel").textContent = `Draft reply · ${m.short} is writing`;
   try {
-    const out = await AI.call(draftPrompt(r.input, r.source), m, { onText: ({ text }) => { if (current === r && $("#draft")) $("#draft").textContent = text; } });
-    if (current !== r) return;
-    r.cost = costOf(m, out.inTok, out.outTok); r.ms = out.ms; r.drafter = out.answeredBy;
-    if (/NO_ANSWER/.test(out.text)) { r.verdict = "human"; r.source = null; r.notes.push("The model found no answer in the source, so a person handles it."); renderResult(false); return; }
-    r.draft = out.text.trim();
-  } catch (e) {
-    r.drafter = "template"; r.draft = `${CASE.draftOpener || ""} ${r.sourceText}`.trim(); r.notes.push(`${aiErrorCopy(e)} Showing a template draft from the cited source.`);
-  }
-  if (current === r) renderResult(false);
+    const out = await AI.call([`Draft a reply for a ${CASE.user || "colleague"} at ${CASE.client || "the client"} to review before sending.`, "Use only the facts in SOURCE. If it does not answer the message, reply exactly NO_ANSWER.", "Two to four plain sentences, in the language of the message. No promises beyond the source.", CASE.draftOpener ? `Open with: "${CASE.draftOpener}"` : "", "", `SOURCE: ${s?.text}`, "", `MESSAGE: ${it.text}`].join("\n"), m, { onText: ({ text }) => { if (OPEN === it && $("#draft")) $("#draft").textContent = text; } });
+    const meta = `Drafted by ${out.by} in ${fmtMs(out.ms)} · ${fmtUsd(costOf(m, out.inTok, out.outTok))}${AI.exact ? "" : " (estimated)"} · from the cited source only`;
+    it.ai = { draft: /NO_ANSWER/.test(out.text) ? tmpl : out.text.trim(), meta, by: out.by };
+  } catch (e) { it.ai = { draft: tmpl, meta: `${aiErr(e)} Template draft from the cited source.`, by: "template" }; }
+  if (OPEN === it) { $("#draft").textContent = it.ai.draft; $("#aiMeta").textContent = it.ai.meta; $("#draftLabel").textContent = "Draft reply"; }
 }
-function renderResult(drafting) {
-  const r = current, v = (CASE.verdicts || {})[r.verdict] || {};
-  const metaLine = `Decision by rules in ${fmtMs(r.ruleMs)}` + (r.ms ? ` · draft by ${esc(r.drafter)} in ${fmtMs(r.ms)} · ${fmtUsd(r.cost)}${AI && !AI.exact ? " (estimated)" : ""}` : "");
-  let body = "";
-  if (r.verdict === "escalate") body = `<div class="banner bad"><strong>Escalation wins.</strong> Nothing is drafted. Routed to ${esc(CASE.escalationOwner || "a person")} within ${esc(CASE.escalationSla || "the agreed time")}.</div><div class="row"><button class="btn danger" data-act="escalated">Escalate to ${esc(CASE.escalationOwner || "owner")}</button></div>`;
-  else if (r.verdict === "human") body = `<div class="banner warn">No single source answers this clearly, so a person handles it. The system never guesses.</div><div class="row"><button class="btn dark" data-act="assigned">Assign to a person</button></div>`;
-  else body = `<div><div class="eyebrow">Cited source · ${esc(r.source)}</div><div class="source" style="margin-top:6px">${esc(r.sourceText)}</div></div>
-    <div><div class="eyebrow">Draft for review · ${drafting ? `${esc(model().short)} is writing` : esc(r.drafter)}</div><div class="bubble" id="draft" style="margin-top:6px">${drafting ? "Thinking..." : esc(r.draft)}</div>${CASE.disclosure ? `<p class="small muted" style="margin-top:6px">${esc(CASE.disclosure)}</p>` : ""}</div>
-    <div class="row"><button class="btn solid" data-act="approved" ${drafting ? "disabled" : ""}>Approve and send</button><button class="btn ghost" id="editBtn" ${drafting ? "disabled" : ""}>Edit</button><button class="btn ghost" data-act="handed-off">Send to a person</button></div>`;
-  const notes = r.notes.length ? `<ul class="notes">${r.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>` : "";
-  $("#result").innerHTML = `<div class="stack"><div class="verdict"><span class="pill ${VERDICT_STYLE[r.verdict] || "plain"}">${esc(r.verdict)}</span><h3>${esc(v.label || r.verdict)}</h3></div><p class="muted small">${esc(v.desc || "")}</p><div><div class="eyebrow">Why</div><p style="margin-top:4px">${esc(r.reason)}</p></div>${body}<p class="meta">${metaLine}</p>${notes}</div>`;
+
+/* Review: the document beside a field-by-field form, every value tied to its evidence. */
+const fieldListFor = (s) => { const m = (s?.text || "").match(/requires?:\s*([^.]+)/i); return m ? m[1].split(/,\s*|\s+and\s+/).map((x) => x.trim().replace(/^the\s+/i, "")).filter(Boolean).map((x) => x[0].toUpperCase() + x.slice(1)) : []; };
+function reviewView(it, V) {
+  const s = srcOf(it.d.source) || srcOf((SOURCES.find((x) => (it.d.reason || "").includes(x.id)) || {}).id);
+  const fields = it.ai?.fields || it.d.fields || fieldListFor(s).map((n) => ({ name: n, value: "", evidence: "" }));
+  const ev = fields.map((f) => f.evidence).filter(Boolean);
+  const trig = triggerOf(it.d);
+  $("#item").innerHTML = `<div class="split">
+    <div class="stack"><div class="doc"><div class="doc-h"><span><b style="color:var(--ink)">${esc(it.who.name)}</b> · ${esc(it.who.channel)} · received ${esc(it.who.ago)}</span><span class="code">${esc(it.who.id)}</span></div>${it.d.verdict === "escalate" ? highlight(it.text, [trig]) : highlight(it.text, ev, (i) => "f" + ((i % 6) + 1))}</div>
+      <p class="meta">Highlights show exactly where each field came from. A field with no evidence stays empty.</p></div>
+    <div class="card emph stack assist"><div class="eyebrow">Claim set-up</div>${outcomeHead(it, V)}
+      ${it.d.verdict === "escalate" ? escBanner(it) + `<div class="row"><button class="btn danger" data-act="Sent to specialist">Send to ${esc(CASE.escalationOwner || "specialist")}</button></div>` : `
+      <div class="row between"><div class="label">${s ? esc(srcTitle(s)) + " fields" : "Fields"}</div><span class="meta" id="aiMeta">${esc(it.ai?.meta || (AI && BUILD.engine !== "rules" ? "" : "Fields found by rule; the rest for you to complete."))}</span></div>
+      <div id="extracting"></div>
+      <div class="form" id="form">${fields.map((f, i) => `<div class="frow"><span class="sw" style="background:${["#4a6fa5", "#32854c", "#c9a21a", "#9c4a6b", "#6b5ca5", "#2b7a78"][i % 6]}"></span><label for="f${i}">${esc(f.name)}</label><div><input type="text" id="f${i}" value="${esc(f.value)}" class="${f.value ? "" : "empty"}" placeholder="Not in the notice">${f.evidence ? `<div class="ev">Evidence: "${esc(f.evidence)}"</div>` : `<div class="ev">No evidence in the notice; ask the ${esc(SHAPE.sideIn.toLowerCase())}.</div>`}<label class="conf"><input type="checkbox" class="fconf" ${f.value ? "" : "disabled"}> Confirmed</label></div></div>`).join("")}</div>
+      ${it.d.verdict === "human" ? `<div class="banner warn">${esc(it.d.reason)}</div>` : ""}
+      <div class="row"><button class="btn solid" data-act="Filed" id="fileBtn" disabled>Confirm and file</button><button class="btn ghost" data-act="Details requested">Request missing details</button><button class="linkbtn" id="confirmAll">Confirm all found fields</button></div>`}</div></div>`;
+  wireConfirm();
+  if (it.d.verdict !== "escalate" && !it.ai && AI && BUILD.engine !== "rules" && s) extract(it, s);
 }
-async function act(action) {
-  const d = $("#draft");
-  const edited = Boolean(d && d.dataset.original !== undefined && d.innerText.trim() !== d.dataset.original.trim());
-  if (action === "approved") { stats.approved++; if (edited) stats.edited++; renderStats(); }
-  const entry = { at: new Date().toISOString(), input: current.input.slice(0, 120), verdict: current.verdict, source: current.source, action, edited, approver: CASE.approverRole || "Reviewer (demo)", drafter: current.drafter || "none" };
-  LOG.unshift(entry);
-  if (!HOSTED) fetch("/api/log", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(entry) }).catch(() => {});
-  toast(`Logged: ${action}${edited ? " (edited)" : ""} by ${entry.approver}`);
-  $("#result").querySelectorAll("button").forEach((b) => (b.disabled = true));
-  renderGov();
+function wireConfirm() {
+  const upd = () => { const boxes = [...document.querySelectorAll(".fconf:not(:disabled)")]; const btn = $("#fileBtn"); if (btn) btn.disabled = !boxes.length || !boxes.every((b) => b.checked) || OPEN.d.verdict !== "answer"; };
+  document.querySelectorAll(".fconf").forEach((b) => b.addEventListener("change", upd)); upd();
 }
-function renderLog() {
-  $("#logRows").innerHTML = LOG.length ? LOG.map((r) => `<tr><td class="num">${esc(new Date(r.at).toLocaleTimeString())}</td><td>${esc(r.input)}</td><td><span class="pill ${VERDICT_STYLE[r.verdict] || "plain"}">${esc(r.verdict)}</span></td><td class="num">${esc(r.source || "none")}</td><td>${esc(r.action)}</td><td>${esc(r.approver)}</td><td>${r.edited ? "Yes" : "No"}</td><td>${esc(r.drafter)}</td></tr>`).join("")
-    : `<tr><td colspan="8" class="muted">No actions yet. Approve, edit or escalate something on the Workbench.</td></tr>`;
+async function extract(it, s) {
+  const m = model(), names = fieldListFor(s);
+  $("#extracting").innerHTML = `<div class="working"><span class="dot"></span>${esc(m.short)} is reading the ${esc(SHAPE.noun[0])} and pulling ${names.length} fields with their evidence...</div>`;
+  try {
+    const out = await AI.call([`Extract these fields from the notice: ${names.join("; ")}.`, "For each field give the value and the exact evidence: a short span copied word for word from the notice. If the notice does not state it, value and evidence are empty strings. Do not infer.", 'Reply with only JSON: {"fields": [{"name": "...", "value": "...", "evidence": "..."}]}', "", `NOTICE: ${it.text}`].join("\n"), m);
+    const j = parseJson(out.text) || {}; const got = Array.isArray(j.fields) ? j.fields : [];
+    const low = it.text.toLowerCase();
+    let dropped = 0;
+    it.ai = { fields: names.map((n) => { const f = got.find((g) => String(g.name).toLowerCase() === n.toLowerCase()) || {}; const evOk = f.evidence && low.includes(String(f.evidence).toLowerCase()); if (f.value && !evOk) dropped++; return { name: n, value: evOk ? String(f.value) : "", evidence: evOk ? String(f.evidence) : "" }; }),
+      meta: `Extracted by ${out.by} in ${fmtMs(out.ms)} · ${fmtUsd(costOf(m, out.inTok, out.outTok))}${AI.exact ? "" : " (estimated)"}${dropped ? ` · ${dropped} value${dropped === 1 ? "" : "s"} dropped: evidence not found in the notice` : ""}`, by: out.by };
+  } catch (e) { it.ai = { fields: it.d.fields || names.map((n) => ({ name: n, value: "", evidence: "" })), meta: aiErr(e), by: "rules" }; }
+  if (OPEN === it) reviewView(it, CASE.verdicts || {});
+}
+
+/* Rank: the household with every applicable action, worst first. */
+function rankView(it, V) {
+  const actions = it.d.actions || (it.d.source ? [{ source: it.d.source, why: it.d.reason, must: true }] : []);
+  const facts = it.text.split(/\.\s+/).map((x) => x.replace(/\.$/, "").trim()).filter(Boolean).slice(0, 5);
+  $("#item").innerHTML = `<div class="stack">
+    <div class="card"><div class="hh"><span class="av">${initials(it.who.name)}</span><div><h2 style="font-size:22px">${esc(it.who.name)} household</h2><div class="meta">${esc(it.who.id)} · ${esc(it.who.ago)}</div></div></div>
+      <div class="facts" style="margin-top:12px">${facts.map((f) => `<span class="fact">${esc(f)}</span>`).join("")}</div></div>
+    ${outcomeHead(it, V)}
+    ${it.d.verdict === "escalate" ? escBanner(it) + `<div class="row"><button class="btn danger" data-act="Sent to supervisor">Send to ${esc(CASE.escalationOwner || "supervisor")}</button></div>`
+      : !actions.length ? `<div class="banner warn">${esc(it.d.reason)}</div><div class="row"><button class="btn dark" data-act="Noted">Add a note</button></div>`
+      : actions.map((a, i) => { const s = srcOf(a.source); return `<div class="action ${a.must !== false ? "must" : ""}" id="act${i}"><span class="rank">${i + 1}</span><div class="stack">
+          <div class="row between"><h4>${esc(a.title || srcTitle(s))}</h4><span class="pill ${a.must !== false ? "bad" : "plain"}">${a.must !== false ? "Must do" : "Should do"}</span></div>
+          <p class="small">${esc(a.why || "")}</p><div class="src"><b>Rule.</b> ${esc(s?.text || "")}</div>
+          <div><div class="label">Talking point</div><div class="bubble ai" id="tp${i}" style="margin-top:6px">${esc(it.ai?.["tp" + i] || `${a.title || srcTitle(s)}: ${a.why || ""}`)}</div></div>
+          <div class="row"><button class="btn solid sm" data-accept="${i}">Accept</button><select data-dismiss="${i}" aria-label="Dismiss with a reason"><option value="">Dismiss with a reason</option><option>Already handled</option><option>Client declined</option><option>Not suitable for this client</option><option>Discuss at next review</option></select>${AI && BUILD.engine !== "rules" ? `<button class="linkbtn" data-tp="${i}">Draft talking point with ${esc(model().short)}</button>` : ""}</div></div></div>`; }).join("")}
+  </div>`;
+}
+async function talkingPoint(i) {
+  const it = OPEN, a = (it.d.actions || [{ source: it.d.source }])[i], s = srcOf(a.source), m = model();
+  $("#tp" + i).textContent = "Thinking...";
+  try { const out = await AI.call(`Write one talking point (two sentences) for an advisor raising this with the client. Use only these facts and this rule. No product names, no promises.\nFACTS: ${it.text}\nRULE: ${s?.text}`, m, { onText: ({ text }) => { $("#tp" + i).textContent = text; } });
+    (it.ai ||= {})["tp" + i] = out.text.trim(); $("#tp" + i).textContent = out.text.trim(); toast(`Drafted by ${out.by} in ${fmtMs(out.ms)}`); }
+  catch (e) { $("#tp" + i).textContent = aiErr(e); }
+}
+
+/* Chat: the employee's conversation, answers cited, sensitive topics routed. */
+function chatView(it, V) {
+  const s = srcOf(it.d.source), turns = it.turns || (it.turns = [{ who: "them", text: it.text }]);
+  $("#item").innerHTML = `<div class="split">
+    <div class="card stack"><div class="row"><span class="av">${initials(it.who.name)}</span><div><b>${esc(it.who.name)}</b><div class="meta">${esc(SHAPE.sideIn)} · ${esc(it.who.channel)} · ${esc(it.who.ago)}</div></div></div>
+      <div class="chat" id="chat"></div>
+      <div class="compose"><input id="followUp" placeholder="Ask a follow-up as ${esc(it.who.name.split(" ")[0])}" aria-label="Follow-up question"><button class="btn solid sm" id="sendFollow">Send</button></div></div>
+    <div class="card emph stack assist"><div class="eyebrow">Behind the answer</div>${outcomeHead(it, V)}
+      ${it.d.verdict === "escalate" ? escBanner(it) : it.d.verdict === "human" ? `<div class="banner warn">${esc(it.d.reason)}</div>` : `<div><div class="label">Cited policy</div><div class="src" style="margin-top:6px"><b>${esc(srcTitle(s))}.</b> ${esc(s?.text || "")}</div></div>`}
+      <p class="meta" id="aiMeta">${esc(it.ai?.meta || "")}</p></div></div>`;
+  renderChat(it);
+  if (!it.ai && it.d.verdict === "answer") answerChat(it, it.text, it.d);
+  else if (!it.ai) { turns.push({ who: "ai", text: it.d.verdict === "escalate" ? `This needs a person, so I have passed it to ${CASE.escalationOwner || "a specialist"}. Someone will contact you ${CASE.escalationSla || "soon"}. Your message is kept confidential.` : "I could not find a policy that clearly covers this, so I have opened a ticket with the service desk. They will reply within one business day." }); it.ai = { meta: "No AI answer: routed by rule." }; renderChat(it); }
+}
+function renderChat(it) {
+  $("#chat").innerHTML = it.turns.map((t) => t.who === "them" ? `<div class="msg"><span class="av sm">${initials(it.who.name)}</span><div class="bubble them">${esc(clean(t.text))}</div></div>`
+    : `<div class="msg me-side"><span class="av sm" style="background:var(--brand);color:var(--white)">AI</span><div><div class="bubble ai" style="background:var(--brand-tint);color:var(--ink)">${esc(t.text)}</div>${t.cite ? `<div class="row" style="margin-top:6px"><span class="cite">Source: ${esc(t.cite)}</span><button class="linkbtn" data-act="Helpful">Helpful</button><button class="linkbtn" data-act="Handed off">Talk to a person</button></div>` : ""}</div></div>`).join("");
+}
+async function answerChat(it, q, d) {
+  const s = srcOf(d.source), tmpl = s?.text || "", m = model();
+  const turn = { who: "ai", text: "Thinking...", cite: srcTitle(s) }; it.turns.push(turn); renderChat(it);
+  if (!AI || BUILD.engine === "rules") { turn.text = tmpl; it.ai = { meta: "Answer assembled from the cited policy by rule." }; renderChat(it); $("#aiMeta").textContent = it.ai.meta; return; }
+  try {
+    const out = await AI.call(`Answer an employee's question in two or three friendly sentences using only POLICY. If POLICY does not answer it, reply exactly NO_ANSWER. Answer in the language of the question.\nPOLICY: ${tmpl}\nQUESTION: ${q}`, m, { onText: ({ text }) => { turn.text = text; renderChat(it); } });
+    turn.text = /NO_ANSWER/.test(out.text) ? "I could not find this in the policy, so I have passed it to the service desk." : out.text.trim();
+    it.ai = { meta: `Answered by ${out.by} in ${fmtMs(out.ms)} · ${fmtUsd(costOf(m, out.inTok, out.outTok))}${AI.exact ? "" : " (estimated)"} · from the cited policy only` };
+  } catch (e) { turn.text = tmpl; it.ai = { meta: `${aiErr(e)} Showing the policy text.` }; }
+  renderChat(it); if ($("#aiMeta")) $("#aiMeta").textContent = it.ai.meta;
+}
+async function followUp() {
+  const q = $("#followUp").value.trim(); if (!q) return; const it = OPEN; $("#followUp").value = "";
+  it.turns.push({ who: "them", text: q }); const d = ROUTER.decide((it.text.match(/^\[[A-Z]+\]/) || [""])[0] + " " + q);
+  if (d.verdict === "answer") return answerChat(it, q, d);
+  it.turns.push({ who: "ai", text: d.verdict === "escalate" ? `This needs a person, so I have passed it to ${CASE.escalationOwner || "a specialist"}.` : "I could not find a policy that clearly covers this, so I have opened a ticket with the service desk." }); renderChat(it);
+}
+
+/* New item */
+function addNew() {
+  const text = $("#newText").value.trim(); if (!text || !ROUTER) return;
+  const row = { id: "n" + Date.now(), text, slices: {} };
+  const it = { key: row.id, row, text, who: { name: (CASE.persona?.name ? "New" : "New") + " " + SHAPE.noun[0], id: `${SHAPE.idp}NEW`, channel: "added by you", ago: "just now" }, d: ROUTER.decide(text), state: "open", ai: null };
+  it.who.name = `New ${SHAPE.noun[0]}`; ITEMS.unshift(it); $("#newText").value = ""; go("item", it.key);
 }
 
 /* ---------- Evals ---------- */
 const norm = (g) => Object.fromEntries(Object.entries(g || {}).map(([k, v]) => [k.replace(/_/g, "").toLowerCase(), v]));
-const pct = (a, b) => (b ? Math.round((a / b) * 100) : 100);
+const ENGINES = [
+  { id: "rules", letter: "A", name: "Rules only", path: "item > rules > outcome", what: "Rules written from the session's triggers and approved knowledge decide everything. No AI.", pro: "Predictable, instant, free, easy to explain.", con: "Misses phrasing nobody wrote a rule for." },
+  { id: "ai", letter: "B", name: "AI only", path: "item > model > outcome", what: "The selected model reads each item and decides on its own.", pro: "Understands any phrasing.", con: "If it misses an escalation, nothing catches it." },
+  { id: "guard", letter: "C", name: "AI with rules guard", rec: true, path: "item > rules check > model > source check > outcome", what: "Rules check every item for escalations first and overrule the model; the model handles the rest; nothing proceeds without approved knowledge.", pro: "Flexible like AI, safe like rules.", con: "Cost and latency of a model call on most items." },
+];
 function gateDefs() {
   const g = norm(GATES), lang = ({ lang: "languages", language: "languages", channel: "channels", region: "regions", segment: "segments" })[g.riskiestslice] || g.riskiestslice || "groups";
   return [
-    { key: "escRecall", q: "Catches every escalation", bar: g.escalationrecall, kind: "min", why: "A missed complaint, fraud or vulnerability case is the costliest error, so it carries the highest bar." },
+    { key: "escRecall", q: "Catches every escalation", bar: g.escalationrecall, kind: "min", why: "The costliest error is a missed escalation, so it carries the highest bar." },
     { key: "escPrecision", q: "Keeps false alarms low", bar: g.escalationprecision, kind: "min", why: "Too many false escalations swamp the team and people stop trusting the flag." },
-    { key: "noSource", q: "Never answers without a source", bar: g.answerswithoutsource, kind: "zero", why: "An answer with no approved source is a guess; it must go to a person instead." },
-    { key: "routing", q: "Sends each request the right way", bar: g.routingaccuracy, kind: "min", why: "Overall usefulness: the right outcome, and the right source when it answers." },
-    { key: "gap", q: `Works equally across ${lang}`, bar: g.recallgapmax, kind: "max", why: `The difference in escalation catch rate between ${lang} groups. An average can hide one that breaks.` },
-    { key: "fairness", q: "No group falls below the bar", bar: g.fairnessmingrouprecall ?? g.fairnessmin, kind: "min", why: "The weakest group of customers must still meet the bar, not just the average." },
-    { key: "never", q: "Stays off forbidden topics", bar: g.neverlistanswers, kind: "zero", why: "Anything on the never list must never get an answer, whatever the phrasing." },
-    { key: "outside", q: "Only allowed outcomes", bar: g.verdictsoutsideallowed, kind: "zero", why: "The system can only answer, hand to a person, or escalate. Nothing else." },
+    { key: "noSource", q: "Never acts without approved knowledge", bar: g.answerswithoutsource, kind: "zero", why: "Without an approved source the system is guessing; it must go to a person." },
+    { key: "routing", q: "Sends each item the right way", bar: g.routingaccuracy, kind: "min", why: "Overall usefulness: the right outcome, and the right source when it acts." },
+    { key: "gap", q: `Works equally across ${lang}`, bar: g.recallgapmax, kind: "max", why: `The difference in escalation catch rate between ${lang}. An average can hide one that breaks.` },
+    { key: "fairness", q: "No group falls below the bar", bar: g.fairnessmingrouprecall ?? g.fairnessmin, kind: "min", why: "The weakest group must still meet the bar, not just the average." },
+    { key: "never", q: "Stays off forbidden topics", bar: g.neverlistanswers, kind: "zero", why: "Anything on the never list must never be acted on, whatever the phrasing." },
+    { key: "outside", q: "Only allowed outcomes", bar: g.verdictsoutsideallowed, kind: "zero", why: "Only the agreed outcomes are possible. Nothing else." },
   ].filter((d) => d.bar !== undefined && d.bar !== null);
 }
 function score(rows, preds) {
@@ -456,281 +660,174 @@ function score(rows, preds) {
   const isNever = (r) => r.never === true || (r.slices || {}).never === "yes";
   const P = (r) => preds[r.id] || { verdict: "missing" };
   const expEsc = rows.filter((r) => r.expected === "escalate"), predEsc = rows.filter((r) => P(r).verdict === "escalate");
-  const caught = expEsc.filter((r) => P(r).verdict === "escalate").length, flaggedRight = predEsc.filter((r) => r.expected === "escalate").length;
-  const groups = {};
-  for (const r of expEsc) for (const [k, v] of Object.entries(r.slices || {})) (groups[`${k}=${v}`] ||= []).push(r);
-  const allGroups = Object.entries(groups).map(([k, set]) => ({ k, hit: set.filter((r) => P(r).verdict === "escalate").length, n: set.length })).map((x) => ({ ...x, v: x.n ? x.hit / x.n : 1 }));
-  const slice = g.riskiestslice, sl = allGroups.filter((x) => x.k.startsWith(slice + "="));
-  const worst = allGroups.length ? allGroups.reduce((a, b) => (b.v < a.v || (b.v === a.v && b.n < a.n) ? b : a)) : { k: "none", v: 1, hit: 0, n: 0 };
+  const caught = expEsc.filter((r) => P(r).verdict === "escalate").length, right = predEsc.filter((r) => r.expected === "escalate").length;
+  const groups = {}; for (const r of expEsc) for (const [k, v] of Object.entries(r.slices || {})) (groups[`${k}=${v}`] ||= []).push(r);
+  const all = Object.entries(groups).map(([k, set]) => ({ k, hit: set.filter((r) => P(r).verdict === "escalate").length, n: set.length })).map((x) => ({ ...x, v: x.n ? x.hit / x.n : 1 }));
+  const sl = all.filter((x) => x.k.startsWith(g.riskiestslice + "="));
+  const worst = all.length ? all.reduce((a, b) => (b.v < a.v || (b.v === a.v && b.n < a.n) ? b : a)) : { k: "none", v: 1, hit: 0, n: 0 };
   const correct = rows.filter((r) => P(r).verdict === r.expected && (r.expected !== "answer" || P(r).source === r.source)).length;
-  const noSource = rows.filter((r) => P(r).verdict === "answer" && !ids.has(P(r).source));
-  const never = rows.filter((r) => isNever(r) && P(r).verdict === "answer");
-  const outside = rows.filter((r) => !allowed.includes(P(r).verdict));
-  const verdicts = ["answer", "human", "escalate"];
-  const matrix = verdicts.map((e) => verdicts.concat(["other"]).map((o) => rows.filter((r) => r.expected === e && (o === "other" ? !verdicts.includes(P(r).verdict) : P(r).verdict === o)).length));
+  const noSource = rows.filter((r) => P(r).verdict === "answer" && !ids.has(P(r).source)), never = rows.filter((r) => isNever(r) && P(r).verdict === "answer"), outside = rows.filter((r) => !allowed.includes(P(r).verdict));
+  const V = ["answer", "human", "escalate"];
+  const matrix = V.map((e) => V.concat(["other"]).map((o) => rows.filter((r) => r.expected === e && (o === "other" ? !V.includes(P(r).verdict) : P(r).verdict === o)).length));
   const res = {
     escRecall: { value: expEsc.length ? caught / expEsc.length : 1, text: `${caught} of ${expEsc.length} caught` },
-    escPrecision: { value: predEsc.length ? flaggedRight / predEsc.length : 1, text: `${flaggedRight} of ${predEsc.length} flags were real` },
-    noSource: { value: noSource.length, text: `${noSource.length} unsourced answer${noSource.length === 1 ? "" : "s"}` },
+    escPrecision: { value: predEsc.length ? right / predEsc.length : 1, text: `${right} of ${predEsc.length} flags were real` },
+    noSource: { value: noSource.length, text: `${noSource.length} without a source` },
     routing: { value: rows.length ? correct / rows.length : 1, text: `${correct} of ${rows.length} correct` },
     gap: { value: sl.length ? Math.max(...sl.map((x) => x.v)) - Math.min(...sl.map((x) => x.v)) : 0, text: sl.map((x) => `${x.k.split("=")[1]} ${x.hit}/${x.n}`).join(" · ") || "one group only" },
     fairness: { value: worst.v, text: worst.n ? `Weakest: ${worst.k} ${worst.hit}/${worst.n}` : "no escalation rows" },
-    never: { value: never.length, text: `${never.length} forbidden-topic answer${never.length === 1 ? "" : "s"}` },
-    outside: { value: outside.length, text: `${outside.length} invalid outcome${outside.length === 1 ? "" : "s"}` },
+    never: { value: never.length, text: `${never.length} on forbidden topics` },
+    outside: { value: outside.length, text: `${outside.length} invalid outcomes` },
   };
   const gates = gateDefs().map((d) => ({ ...d, ...res[d.key], pass: d.kind === "min" ? res[d.key].value >= d.bar : res[d.key].value <= d.bar }));
-  return { gates, pass: gates.every((x) => x.pass), caught, escN: expEsc.length, correct, n: rows.length, unsafe: noSource.length + never.length, groups: allGroups.sort((a, b) => a.k.localeCompare(b.k)), matrix };
+  return { gates, pass: gates.every((x) => x.pass), caught, escN: expEsc.length, correct, n: rows.length, unsafe: noSource.length + never.length, groups: all.sort((a, b) => a.k.localeCompare(b.k)), matrix };
 }
 const barText = (d) => (d.kind === "min" ? `must be at least ${Math.round(d.bar * 100)}%` : d.kind === "max" ? `gap must be ${Math.round(d.bar * 100)} points or less` : `must be ${d.bar}`);
 const valText = (d) => (d.kind === "min" ? `${Math.round(d.value * 100)}%` : d.kind === "max" ? `${Math.round(d.value * 100)} pts` : String(d.value));
-
 function renderEvalControls() {
-  const rows = rowsFor(evalSet), esc_ = rows.filter((r) => r.expected === "escalate").length;
+  const rows = rowsFor(evalSet), e_ = rows.filter((r) => r.expected === "escalate").length;
   $("#setDev").textContent = `Development set (${GOLDEN.length})`; $("#setHold").textContent = `Sealed holdout (${HOLDOUT.length})`;
   $("#setCustom").hidden = !CUSTOM.length; $("#setCustom").textContent = `Your data (${CUSTOM.length})`;
-  $("#setInfo").textContent = evalSet === "custom" ? `${rows.length} requests from your file: ${esc_} should escalate, ${rows.filter((r) => r.expected === "answer").length} should be answered, ${rows.filter((r) => r.expected === "human").length} need a person.` : evalSet === "golden"
-    ? `${rows.length} test requests, each labelled with the right outcome before anything was built: ${esc_} should escalate, ${rows.filter((r) => r.expected === "answer").length} should be answered, ${rows.filter((r) => r.expected === "human").length} need a person. The system was tuned on these.`
-    : `${rows.length} requests the system never saw while it was being built or fixed. This is the honest score; individual requests stay hidden here so nobody tunes to them.`;
-  $("#engineSeg").innerHTML = ENGINES.map((e) => `<button class="design" data-engine="${e.id}" aria-pressed="${e.id === engine}">
-      <span class="t">Design ${e.letter}: ${e.name}${e.rec ? ' <span class="pill ok">Recommended</span>' : ""}</span>
-      <div class="path">${esc(e.path)}</div><p>${esc(e.what)}</p><p><span class="pro">+</span> ${esc(e.pro)}<br><span class="con">-</span> ${esc(e.con)}</p></button>`).join("");
-  $("#engineDesc").textContent = engine !== "rules" ? `Model for designs B and C: ${model().name}. Change it in the top bar.` : "Design A uses no model.";
-  $("#runTest").disabled = !READY || (engine !== "rules" && !AI);
+  $("#setInfo").textContent = evalSet === "holdout" ? `${rows.length} ${SHAPE.noun[1]} the system never saw while it was built or fixed. The honest score; individual items stay hidden.` : `${rows.length} ${SHAPE.noun[1]}, each labelled with the right outcome before anything was built: ${e_} should escalate, ${rows.filter((r) => r.expected === "answer").length} are ready, ${rows.filter((r) => r.expected === "human").length} need a person.`;
+  $("#engineSeg").innerHTML = ENGINES.map((e) => `<button class="design" data-engine="${e.id}" aria-pressed="${e.id === engine}"><span class="t">Design ${e.letter}: ${e.name}${e.rec ? ' <span class="pill ok">Recommended</span>' : ""}</span><div class="path">${esc(e.path)}</div><p>${esc(e.what)}</p><p><span class="pro">+</span> ${esc(e.pro)}<br><span class="con">-</span> ${esc(e.con)}</p></button>`).join("");
+  $("#engineDesc").textContent = engine !== "rules" ? `Model for designs B and C: ${model().short}. Change it in the top bar.` : "Design A uses no model.";
+  $("#runTest").disabled = !ROUTER || (engine !== "rules" && !AI);
   $("#runNote").textContent = engine !== "rules" && !AI ? (HOSTED ? "AI needs this page opened in Claude." : "AI runs in the published version, or here with an API key.") : "";
 }
 function classifyPrompt(r) {
   const v = CASE.verdicts || {};
-  return [`Route one request for "${CASE.title || "this service"}" at ${CASE.client || "the client"}.`,
-    `"answer": ${v.answer?.desc || "exactly one source answers it"} Give that source id.`,
-    `"human": ${v.human?.desc || "no single source answers it"}`, `"escalate": ${v.escalate?.desc || "complaint, fraud, vulnerability or risk"}`,
-    `Never list: ${(CASE.neverList || []).join(" ")}`, "", "SOURCES:", ...SOURCES.map((s) => `${s.id}: ${s.text}`), "", `REQUEST: ${r.text}`, "",
-    'Reply with only JSON: {"verdict": "answer|human|escalate", "source": "<source id or null>"}'].join("\n");
+  return [`Decide the outcome for one item for "${CASE.title}" at ${CASE.client}.`, `"answer": ${v.answer?.desc} Give the source id.`, `"human": ${v.human?.desc}`, `"escalate": ${v.escalate?.desc}`, `Never list: ${(CASE.neverList || []).join(" ")}`, "", "SOURCES:", ...SOURCES.map((s) => `${s.id}: ${s.text}`), "", `ITEM: ${r.text}`, "", 'Reply with only JSON: {"verdict": "answer|human|escalate", "source": "<source id or null>"}'].join("\n");
 }
-const parseJson = (t) => { try { return JSON.parse(t.slice(t.indexOf("{"), t.lastIndexOf("}") + 1)); } catch { return null; } };
 async function runTest() {
   const rows = rowsFor(evalSet), m = model(), useAI = engine !== "rules";
-  const rec = { id: Date.now(), set: evalSet, engine, model: useAI ? m : null, preds: {}, lat: {}, cost: 0, answeredBy: new Set(), at: new Date() };
+  const rec = { id: Date.now(), set: evalSet, engine, model: useAI ? m : null, preds: {}, lat: {}, cost: 0, by: new Set(), at: new Date() };
   ctl = new AbortController(); $("#runTest").disabled = true; $("#stopTest").hidden = !useAI; $("#prog").hidden = false;
-  const prog = (k) => { $("#prog").firstElementChild.style.width = `${Math.round((k / rows.length) * 100)}%`; $("#runNote").textContent = `${k} of ${rows.length} requests${useAI ? ` scored by ${m.short}` : ""}`; };
-  let done = 0; prog(0); const t0 = performance.now();
-  const rulesPred = {};
-  for (const r of rows) { const t = performance.now(); rulesPred[r.id] = ROUTER.decide(r.text); if (!useAI) rec.lat[r.id] = performance.now() - t; }
+  const prog = (k) => { $("#prog").firstElementChild.style.width = `${Math.round((k / rows.length) * 100)}%`; $("#runNote").textContent = `${k} of ${rows.length}${useAI ? ` scored by ${m.short}` : ""}`; };
+  let done = 0; prog(0); const t0 = performance.now(); const rp = {};
+  for (const r of rows) { const t = performance.now(); rp[r.id] = ROUTER.decide(r.text); if (!useAI) rec.lat[r.id] = performance.now() - t; }
   try {
-    if (!useAI) { rec.preds = rulesPred; done = rows.length; prog(done); }
+    if (!useAI) { rec.preds = rp; prog(rows.length); }
     else {
-      const queue = [...rows];
-      const worker = async () => {
-        while (queue.length && !ctl.signal.aborted) {
-          const r = queue.shift();
-          const out = await AI.call(classifyPrompt(r), m, { signal: ctl.signal });
-          const p = parseJson(out.text) || {};
-          let pred = { verdict: String(p.verdict || "invalid").toLowerCase(), source: p.source || null };
-          if (engine === "guard") {
-            if (rulesPred[r.id].verdict === "escalate") pred = { verdict: "escalate", source: null };
-            else if (pred.verdict === "answer" && !SOURCES.some((s) => s.id === pred.source)) pred = { verdict: "human", source: null };
-          }
-          rec.preds[r.id] = pred; rec.lat[r.id] = out.ms; rec.cost += costOf(m, out.inTok, out.outTok); rec.answeredBy.add(out.answeredBy);
-          prog(++done);
-        }
-      };
-      await Promise.all([worker(), worker()]);
-      if (ctl.signal.aborted) throw { code: "cancelled" };
+      const q = [...rows];
+      const w = async () => { while (q.length && !ctl.signal.aborted) { const r = q.shift(); const out = await AI.call(classifyPrompt(r), m, { signal: ctl.signal }); const p = parseJson(out.text) || {};
+        let pred = { verdict: String(p.verdict || "invalid").toLowerCase(), source: p.source || null };
+        if (engine === "guard") { if (rp[r.id].verdict === "escalate") pred = { verdict: "escalate", source: null }; else if (pred.verdict === "answer" && !srcOf(pred.source)) pred = { verdict: "human", source: null }; }
+        rec.preds[r.id] = pred; rec.lat[r.id] = out.ms; rec.cost += costOf(m, out.inTok, out.outTok); rec.by.add(out.by); prog(++done); } };
+      await Promise.all([w(), w()]); if (ctl.signal.aborted) throw { code: "cancelled" };
     }
     Object.assign(rec, score(rows, rec.preds));
-    const lats = Object.values(rec.lat).sort((a, b) => a - b);
-    rec.p50 = lats[Math.floor(lats.length / 2)] || 0; rec.p95 = lats[Math.min(lats.length - 1, Math.floor(lats.length * 0.95))] || 0;
-    rec.per1000 = useAI ? (rec.cost / rows.length) * 1000 : 0;
-    RUNS.unshift(rec); selRun = rec.id;
-    $("#runNote").textContent = `Done: ${rows.length} requests in ${fmtMs(performance.now() - t0)}${useAI ? ` · answered by ${[...rec.answeredBy].join(", ")}` : ""}.`;
-  } catch (e) { $("#runNote").textContent = aiErrorCopy(e); }
-  $("#runTest").disabled = false; $("#stopTest").hidden = true; $("#prog").hidden = true;
-  renderBoard();
+    const l = Object.values(rec.lat).sort((a, b) => a - b); rec.p50 = l[Math.floor(l.length / 2)] || 0; rec.p95 = l[Math.min(l.length - 1, Math.floor(l.length * 0.95))] || 0; rec.per1000 = useAI ? (rec.cost / rows.length) * 1000 : 0;
+    RUNS.unshift(rec); selRun = rec.id; $("#runNote").textContent = `Done: ${rows.length} in ${fmtMs(performance.now() - t0)}${useAI ? ` · answered by ${[...rec.by].join(", ")}` : ""}.`;
+  } catch (e) { $("#runNote").textContent = aiErr(e); }
+  $("#runTest").disabled = false; $("#stopTest").hidden = true; $("#prog").hidden = true; renderBoard();
 }
-function runName(r) { const e = ENGINES.find((x) => x.id === r.engine); return `Design ${e.letter}: ${e.name}${r.model ? ` · ${r.model.short}` : ""}`; }
+const runName = (r) => { const e = ENGINES.find((x) => x.id === r.engine); return `Design ${e.letter}: ${e.name}${r.model ? ` · ${r.model.short}` : ""}`; };
 function renderBoard() {
   const runs = RUNS.filter((r) => r.set === evalSet);
-  $("#board").innerHTML = runs.length ? runs.map((r) => `<tr class="click ${r.id === selRun ? "sel" : ""}" data-run="${r.id}">
-      <td><strong>${esc(runName(r))}</strong><div class="meta">${r.at.toLocaleTimeString()}</div></td>
-      <td><span class="pill ${r.pass ? "ok" : "bad"}">${r.pass ? "Ready" : "Blocked"}</span></td>
-      <td class="num ${r.caught === r.escN ? "ok-t" : "bad-t"}">${r.caught} / ${r.escN}</td>
-      <td class="num">${r.correct} / ${r.n} <span class="muted">(${pct(r.correct, r.n)}%)</span></td>
-      <td class="num ${r.unsafe ? "bad-t" : "ok-t"}">${r.unsafe}</td>
-      <td class="num">${fmtMs(r.p50)}</td><td class="num">${fmtMs(r.p95)}</td>
-      <td class="num">${r.model ? fmtUsd(r.per1000) : "$0"}</td></tr>`).join("")
-    : `<tr><td colspan="8" class="muted">No runs yet on this set. Pick an engine and click Run test. Try Rules only first, then AI only, then AI with rules guard, and compare.</td></tr>`;
-  $("#costNote").textContent = AI && !AI.exact ? "Cost is estimated from the length of each prompt and reply at list prices per million tokens: Haiku 5.5 $0.10 in, $0.50 out; Sonnet 5.5 $2, $10; Opus 5.5 $4, $20. Run locally with an API key for exact token counts." : AI ? "Cost uses exact token counts from the API at list prices." : "";
+  $("#board").innerHTML = runs.length ? runs.map((r) => `<tr class="click ${r.id === selRun ? "sel" : ""}" data-run="${r.id}"><td><strong>${esc(runName(r))}</strong><div class="meta">${r.at.toLocaleTimeString()}</div></td><td><span class="pill ${r.pass ? "ok" : "bad"}">${r.pass ? "Ready" : "Blocked"}</span></td><td class="num ${r.caught === r.escN ? "ok-t" : "bad-t"}">${r.caught} / ${r.escN}</td><td class="num">${r.correct} / ${r.n}</td><td class="num ${r.unsafe ? "bad-t" : "ok-t"}">${r.unsafe}</td><td class="num">${fmtMs(r.p50)}</td><td class="num">${fmtMs(r.p95)}</td><td class="num">${r.model ? fmtUsd(r.per1000) : "$0"}</td></tr>`).join("")
+    : `<tr><td colspan="8" class="muted">No runs yet. Pick a design and click Run test: A first, then B, then C.</td></tr>`;
+  $("#costNote").textContent = AI && !AI.exact ? "Cost is estimated from prompt and reply length at list prices per million tokens: Haiku 5.5 $0.10 in, $0.50 out; Sonnet 5.5 $2, $10; Opus 5.5 $4, $20." : "";
   renderDetail();
 }
 function renderDetail() {
-  const r = RUNS.find((x) => x.id === selRun && x.set === evalSet);
-  if (!r) { $("#detail").innerHTML = ""; return; }
-  const rows = rowsFor(evalSet), sealed = evalSet === "holdout";
-  const failing = r.gates.filter((g) => !g.pass);
-  const verdicts = ["answer", "human", "escalate"];
-  const headline = r.pass ? `<div class="banner ok"><strong>Ready to release.</strong> All ${r.gates.length} gates pass on ${r.n} ${sealed ? "unseen" : "development"} requests.</div>`
-    : `<div class="banner bad"><strong>Release blocked.</strong> ${failing.length} gate${failing.length === 1 ? "" : "s"} failed: ${failing.map((g) => g.q.toLowerCase()).join("; ")}.</div>`;
-  const gates = r.gates.map((g) => `<div class="gate"><div class="top"><span class="q">${esc(g.q)}</span><span class="pill ${g.pass ? "ok" : "bad"}">${g.pass ? "Pass" : "Fail"}</span></div>
-    <div class="big ${g.pass ? "" : "bad-t"}">${esc(g.text)}</div><div class="bar">${valText(g)} · ${barText(g)}</div><div class="why">${esc(g.why)}</div></div>`).join("");
-  const matrix = `<table class="matrix"><thead><tr><th>Right answer</th>${verdicts.map((v) => `<th>Got ${v}</th>`).join("")}<th>Got other</th></tr></thead><tbody>
-    ${verdicts.map((e, i) => `<tr><td style="text-align:left"><span class="pill ${VERDICT_STYLE[e]}">${e}</span></td>${r.matrix[i].map((n, j) => `<td class="num ${n ? (j === i ? "hit" : "miss") : ""}">${n}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
-  const groups = r.groups.map((g) => `<tr><td class="num">${esc(g.k)}</td><td class="num ${g.hit < g.n ? "bad-t" : "ok-t"}">${g.hit} / ${g.n}</td></tr>`).join("");
-  const showMisses = $("#missOnly")?.checked ?? true;
-  const cases = rows.map((row) => { const p = r.preds[row.id] || {}; const ok = p.verdict === row.expected && (row.expected !== "answer" || p.source === row.source); return { row, p, ok }; }).filter((x) => !showMisses || !x.ok);
-  const caseRows = cases.map(({ row, p, ok }) => `<tr><td class="num">${esc(row.id)}</td><td>${sealed ? `<span class="muted">sealed</span>` : esc(row.text)}</td><td><span class="pill ${VERDICT_STYLE[row.expected]}">${esc(row.expected)}</span>${row.source ? ` <span class="num muted">${esc(row.source)}</span>` : ""}</td><td><span class="pill ${VERDICT_STYLE[p.verdict] || "plain"}">${esc(p.verdict || "none")}</span>${p.source ? ` <span class="num muted">${esc(p.source)}</span>` : ""}</td><td class="${ok ? "ok-t" : "bad-t"}">${ok ? "Right" : "Wrong"}</td><td class="num">${fmtMs(r.lat[row.id] || 0)}</td></tr>`).join("");
-  $("#detail").innerHTML = `<div class="card stack">
-    <div class="row between"><div><div class="eyebrow">Run details</div><h3 style="margin-top:4px">${esc(runName(r))} on the ${sealed ? "sealed holdout" : "development set"}</h3></div>
-      <div class="meta">${r.n} requests · median ${fmtMs(r.p50)} · slowest 5% ${fmtMs(r.p95)} · ${r.model ? `${fmtUsd(r.cost)} for this run, ${fmtUsd(r.per1000)} per 1,000` : "no model cost"}</div></div>
-    ${headline}
-    <div><div class="eyebrow">Release gates</div><p class="small muted" style="margin-top:2px">Each bar was set before anything was built. One failure blocks the release.</p><div class="two" style="margin-top:10px">${gates}</div></div>
-    <div class="two">
-      <div><div class="eyebrow">Where it went right and wrong</div><p class="small muted" style="margin-top:2px">Rows are the right answer; columns are what the system did. Green is correct, red is a mistake.</p><div class="tbl" style="margin-top:8px">${matrix}</div></div>
-      <div><div class="eyebrow">Escalations caught, by group</div><p class="small muted" style="margin-top:2px">Each group of customers the labels cover. A group with few rows is too thin to prove anything yet.</p><div class="tbl" style="margin-top:8px"><table><tbody>${groups || `<tr><td class="muted">No escalation rows.</td></tr>`}</tbody></table></div></div>
-    </div>
-    <div><div class="row between"><div class="eyebrow">Test cases</div><label class="small"><input type="checkbox" id="missOnly" ${showMisses ? "checked" : ""}> Mistakes only</label></div>
-      <div class="tbl" style="margin-top:8px"><table><thead><tr><th>ID</th><th>Request</th><th>Right answer</th><th>Got</th><th>Result</th><th>Time</th></tr></thead><tbody>${caseRows || `<tr><td colspan="6" class="muted">No mistakes in this run.</td></tr>`}</tbody></table></div></div>
-    <p class="small muted">Reproduce: the same ${r.n} labelled requests and gates are in the PRD's evaluation section; locally, <span class="num">node out/proto/eval.js${sealed ? " holdout.json" : ""}</span> scores the rules.</p>
-  </div>`;
+  const r = RUNS.find((x) => x.id === selRun && x.set === evalSet); if (!r) { $("#detail").innerHTML = ""; return; }
+  const rows = rowsFor(evalSet), sealed = evalSet === "holdout", fail = r.gates.filter((g) => !g.pass), V = ["answer", "human", "escalate"];
+  const head = r.pass ? `<div class="banner ok"><strong>Ready to release.</strong> All ${r.gates.length} gates pass on ${r.n} ${sealed ? "unseen" : ""} ${SHAPE.noun[1]}.</div>` : `<div class="banner bad"><strong>Release blocked.</strong> ${fail.length} gate${fail.length === 1 ? "" : "s"} failed: ${fail.map((g) => g.q.toLowerCase()).join("; ")}.</div>`;
+  const miss = $("#missOnly")?.checked ?? true;
+  const cases = rows.map((row) => { const p = r.preds[row.id] || {}; const ok = p.verdict === row.expected && (row.expected !== "answer" || p.source === row.source); return { row, p, ok }; }).filter((x) => !miss || !x.ok);
+  $("#detail").innerHTML = `<div class="card stack"><div class="row between"><div><div class="eyebrow">Run details</div><h3 style="margin-top:4px">${esc(runName(r))}</h3></div><div class="meta">${r.n} items · median ${fmtMs(r.p50)} · slowest 5% ${fmtMs(r.p95)} · ${r.model ? `${fmtUsd(r.cost)} this run, ${fmtUsd(r.per1000)} per 1,000` : "no model cost"}</div></div>${head}
+    <div class="two">${r.gates.map((g) => `<div class="gate"><div class="top2"><span class="q">${esc(g.q)}</span><span class="pill ${g.pass ? "ok" : "bad"}">${g.pass ? "Pass" : "Fail"}</span></div><div class="big ${g.pass ? "" : "bad-t"}">${esc(g.text)}</div><div class="bar">${valText(g)} · ${barText(g)}</div><div class="why2">${esc(g.why)}</div></div>`).join("")}</div>
+    <div class="two"><div><div class="eyebrow">Right answer against what it did</div><div class="tbl" style="margin-top:8px"><table class="matrix"><thead><tr><th>Right answer</th>${V.map((v) => `<th>Got ${v}</th>`).join("")}<th>Other</th></tr></thead><tbody>${V.map((e, i) => `<tr><td style="text-align:left"><span class="pill ${VSTYLE[e]}">${e}</span></td>${r.matrix[i].map((n, j) => `<td class="num ${n ? (j === i ? "hit" : "miss") : ""}">${n}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>
+      <div><div class="eyebrow">Escalations caught, by group</div><div class="tbl" style="margin-top:8px"><table><tbody>${r.groups.map((g) => `<tr><td class="num">${esc(g.k)}</td><td class="num ${g.hit < g.n ? "bad-t" : "ok-t"}">${g.hit} / ${g.n}</td></tr>`).join("") || `<tr><td class="muted">No escalation rows.</td></tr>`}</tbody></table></div></div></div>
+    <div><div class="row between"><div class="eyebrow">Test cases</div><label class="small"><input type="checkbox" id="missOnly" ${miss ? "checked" : ""}> Mistakes only</label></div>
+      <div class="tbl" style="margin-top:8px"><table><thead><tr><th>ID</th><th>Item</th><th>Right answer</th><th>Got</th><th>Result</th><th>Time</th></tr></thead><tbody>${cases.map(({ row, p, ok }) => `<tr><td class="num">${esc(row.id)}</td><td>${sealed ? '<span class="muted">sealed</span>' : esc(row.text.slice(0, 120))}</td><td><span class="pill ${VSTYLE[row.expected]}">${esc(row.expected)}</span></td><td><span class="pill ${VSTYLE[p.verdict] || "plain"}">${esc(p.verdict || "none")}</span></td><td class="${ok ? "ok-t" : "bad-t"}">${ok ? "Right" : "Wrong"}</td><td class="num">${fmtMs(r.lat[row.id] || 0)}</td></tr>`).join("") || `<tr><td colspan="6" class="muted">No mistakes in this run.</td></tr>`}</tbody></table></div></div></div>`;
 }
 
-/* ---------- Your data (browser only) ---------- */
-/* A ready-made example in the client's own vocabulary: the session's samples, with their labelled outcomes. */
-const EXAMPLE_ROWS = () => {
-  const golden = new Map(GOLDEN.map((r) => [r.text, r]));
-  return (CASE.samples || []).map((x) => { const g = golden.get(x.text); return { text: x.text, expected: x.expect || g?.expected || "human", source: g?.source || "", channel: g?.slices?.channel || "", language: g?.slices?.lang || "" }; });
-};
+/* ---------- Your data ---------- */
 function parseCsv(text) {
   const rows = []; let row = [], cell = "", q = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
+  for (let i = 0; i < text.length; i++) { const ch = text[i];
     if (q) { if (ch === '"' && text[i + 1] === '"') { cell += '"'; i++; } else if (ch === '"') q = false; else cell += ch; }
     else if (ch === '"') q = true; else if (ch === ",") { row.push(cell); cell = ""; }
-    else if (ch === "\n" || ch === "\r") { if (ch === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
-    else cell += ch;
-  }
+    else if (ch === "\n" || ch === "\r") { if (ch === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; } else cell += ch; }
   if (cell || row.length) { row.push(cell); rows.push(row); }
   const head = (rows.shift() || []).map((h) => h.trim().toLowerCase());
   return rows.filter((r) => r.some((c) => c.trim())).map((r) => Object.fromEntries(head.map((h, i) => [h, (r[i] || "").trim()])));
 }
 async function loadCases(file) {
-  const text = await file.text();
-  let raw = [];
+  const text = await file.text(); let raw = [];
   try { raw = file.name.toLowerCase().endsWith(".json") ? JSON.parse(text) : parseCsv(text); } catch { raw = []; }
-  const allowed = ["answer", "human", "escalate"];
-  CUSTOM = (Array.isArray(raw) ? raw : []).map((r, i) => {
-    const slices = { ...(r.slices || {}) };
-    for (const [k, v] of Object.entries(r)) if (!["text", "expected", "source", "id", "slices"].includes(k) && v !== "") slices[k] = String(v);
-    return { id: r.id || `c${String(i + 1).padStart(2, "0")}`, text: String(r.text || ""), expected: String(r.expected || "").toLowerCase(), source: r.source || null, slices };
-  }).filter((r) => r.text && allowed.includes(r.expected));
-  const bad = (Array.isArray(raw) ? raw.length : 0) - CUSTOM.length;
-  const groups = [...new Set(CUSTOM.flatMap((r) => Object.keys(r.slices)))];
-  $("#caseSummary").innerHTML = CUSTOM.length
-    ? `<div class="stack"><div class="banner ok"><strong>${esc(file.name)} loaded.</strong> ${CUSTOM.length} requests ready to test.${bad ? ` ${bad} row${bad === 1 ? "" : "s"} skipped: missing text, or an outcome other than answer, human or escalate.` : ""}</div>
-       <div class="stats">${[["Requests", CUSTOM.length], ["Escalate", CUSTOM.filter((r) => r.expected === "escalate").length], ["Answer", CUSTOM.filter((r) => r.expected === "answer").length], ["Person", CUSTOM.filter((r) => r.expected === "human").length]].map(([l, n]) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`).join("")}</div>
-       ${groups.length ? `<p class="small muted">Groups the gates will check: ${groups.map((g) => `<span class="code">${esc(g)}</span>`).join(" ")}</p>` : ""}
-       <div class="row"><button class="btn solid" id="toEvals">Run evals on this file</button><button class="btn ghost sm" id="loadExample">Use the example file instead</button></div></div>`
-    : `<div class="banner bad"><strong>No usable rows in ${esc(file.name)}.</strong> Check the columns below: text and expected are required.</div>`;
+  CUSTOM = (Array.isArray(raw) ? raw : []).map((r, i) => { const slices = {}; for (const [k, v] of Object.entries(r)) if (!["text", "expected", "source", "id"].includes(k) && v !== "") slices[k] = String(v); return { id: r.id || `c${String(i + 1).padStart(2, "0")}`, text: String(r.text || ""), expected: String(r.expected || "").toLowerCase(), source: r.source || null, slices }; }).filter((r) => r.text && ["answer", "human", "escalate"].includes(r.expected));
+  $("#caseSummary").innerHTML = CUSTOM.length ? `<div class="stack"><div class="banner ok"><strong>${esc(file.name)} loaded.</strong> ${CUSTOM.length} items ready to test.</div><div class="stats">${[["Items", CUSTOM.length], ["Escalate", CUSTOM.filter((r) => r.expected === "escalate").length], ["Ready", CUSTOM.filter((r) => r.expected === "answer").length], ["Person", CUSTOM.filter((r) => r.expected === "human").length]].map(([l, n]) => `<div class="statb"><b>${n}</b><span>${l}</span></div>`).join("")}</div><div class="row"><button class="btn solid" id="toEvals">Run evals on this file</button></div></div>` : `<div class="banner bad"><strong>No usable rows in ${esc(file.name)}.</strong> text and expected are required.</div>`;
   renderEvalControls();
 }
-async function loadSources(files) {
-  let n = SOURCES.filter((x) => x.uploaded).length;
-  for (const f of files) {
-    const text = (await f.text()).replace(/\s+/g, " ").trim().slice(0, 2500);
-    if (text) SOURCES.push({ id: `U${++n}-${f.name.replace(/\.[^.]+$/, "").replace(/[^a-z0-9]+/gi, "-").slice(0, 24).toLowerCase()}`, text, uploaded: true, file: f.name });
-  }
-  renderSources(); toast(`${files.length} document${files.length === 1 ? "" : "s"} added as sources`);
-}
+async function loadSources(files) { let n = SOURCES.filter((x) => x.uploaded).length; for (const f of files) { const t = (await f.text()).replace(/\s+/g, " ").trim().slice(0, 2500); if (t) SOURCES.push({ id: `U${++n}-${f.name.replace(/\.[^.]+$/, "").replace(/[^a-z0-9]+/gi, "-").slice(0, 24).toLowerCase()}`, text: t, uploaded: true, file: f.name }); } renderSources(); toast(`${files.length} document${files.length === 1 ? "" : "s"} added`); }
 function renderSources() {
-  const item = (x) => `<div class="srcitem"><div class="row between"><span class="code">${esc(x.id)}</span>${x.uploaded ? `<span class="row" style="gap:8px"><span class="pill info">${esc(x.file)}</span><button class="linkbtn" data-rmsrc="${esc(x.id)}">Remove</button></span>` : ""}</div><p>${esc(x.text.slice(0, 160))}${x.text.length > 160 ? "..." : ""}</p></div>`;
+  const item = (x) => `<div class="srcitem"><div class="row between"><span class="code">${esc(x.id)}</span>${x.uploaded ? `<span class="row"><span class="pill info">${esc(x.file)}</span><button class="linkbtn" data-rmsrc="${esc(x.id)}">Remove</button></span>` : ""}</div><p>${esc(x.text.slice(0, 160))}${x.text.length > 160 ? "..." : ""}</p></div>`;
   const up = SOURCES.filter((x) => x.uploaded), base = SOURCES.filter((x) => !x.uploaded);
-  $("#srcList").innerHTML = `${up.length ? `<div class="label">Your documents (${up.length})</div>${up.map(item).join("")}` : `<p class="small muted">No documents added yet.</p>`}
-    <details class="more"><summary>${base.length} approved sources from the working session</summary>${base.map(item).join("")}</details>`;
-  renderHow();
+  $("#srcList").innerHTML = `${up.length ? up.map(item).join("") : `<p class="small muted">No documents added yet.</p>`}<details class="more"><summary>${base.length} approved sources from the working session</summary>${base.map(item).join("")}</details>`;
 }
-function wireDrop(label, input, handler) {
-  input.addEventListener("change", () => input.files.length && handler(input.files));
-  label.addEventListener("dragover", (e) => { e.preventDefault(); label.classList.add("over"); });
-  label.addEventListener("dragleave", () => label.classList.remove("over"));
-  label.addEventListener("drop", (e) => { e.preventDefault(); label.classList.remove("over"); if (e.dataTransfer.files.length) handler(e.dataTransfer.files); });
-}
-wireDrop($("#caseDrop"), $("#caseFile"), (fs) => loadCases(fs[0]));
-wireDrop($("#srcDrop"), $("#srcFile"), (fs) => loadSources([...fs]));
+function wireDrop(label, input, handler) { input.addEventListener("change", () => input.files.length && handler(input.files)); label.addEventListener("dragover", (e) => { e.preventDefault(); label.classList.add("over"); }); label.addEventListener("dragleave", () => label.classList.remove("over")); label.addEventListener("drop", (e) => { e.preventDefault(); label.classList.remove("over"); if (e.dataTransfer.files.length) handler(e.dataTransfer.files); }); }
+wireDrop($("#caseDrop"), $("#caseFile"), (fs) => loadCases(fs[0])); wireDrop($("#srcDrop"), $("#srcFile"), (fs) => loadSources([...fs]));
 
-/* ---------- Governance ---------- */
+/* ---------- Governance, audit, how it works, FAQ ---------- */
 function renderGov() {
-  const items = CASE.governance || [];
-  const count = (s) => items.filter((i) => (i.status || "").toLowerCase().startsWith(s)).length;
-  $("#govStats").innerHTML = [["Answered", count("answered"), "ok"], ["Assumed, to verify", count("assumed"), "warn"], ["Client to confirm", count("client"), "bad"]]
-    .map(([l, n, s]) => `<div class="card"><div class="eyebrow">${l}</div><div class="kpi" style="border:0;padding:0;margin-top:6px"><div class="v">${n}</div></div><span class="pill ${s}">${l.toLowerCase()}</span></div>`).join("");
-  const approvals = LOG.filter((l) => l.action === "approved").length, escs = LOG.filter((l) => l.action === "escalated").length;
-  const controls = [
-    ["Escalation wins every race", "Rules check every request before anything else; on a hit nothing is drafted", `${stats.escalated} escalated this session; escalation gate in Evals`],
-    ["No source, no answer", "An answer must cite exactly one approved source, or a person handles it", `${SOURCES.length} approved sources; "never answers without a source" gate`],
-    ["A person approves every draft", `Autonomy: ${CASE.autonomy || "draft with approval"}; ${CASE.approverRole || "the reviewer"} approves, edits or hands off`, `${approvals} approvals, edit rate ${$("#kEdit").textContent}`],
-    ["Never list enforced", `${(CASE.neverList || []).length} forbidden actions, tested by labelled rows`, `"stays off forbidden topics" gate`],
-    ["Every action logged", "Request, decision, source, action, approver, time, version", `${LOG.length} entries in the Audit log`],
-    ["Customer disclosure", CASE.disclosure || "To confirm with compliance", "Shown under every draft"],
-    ["Release gated by evals", "Bars set before the build; the sealed holdout scores every fix", `${gateDefs().length} gates; ${HOLDOUT.length} sealed requests`],
-  ];
+  const items = CASE.governance || [], count = (s) => items.filter((i) => (i.status || "").toLowerCase().startsWith(s)).length;
+  $("#govStats").innerHTML = [["Answered", count("answered"), "ok"], ["Assumed, to verify", count("assumed"), "warn"], ["Client to confirm", count("client"), "bad"]].map(([l, n, s]) => `<div class="tile ${s}"><b>${n}</b><span>${l}</span></div>`).join("");
+  const controls = [["Escalation wins every race", "Rules check every item before anything else; on a hit nothing is prepared", `${counts().escalate} in today's queue`], ["Approved knowledge only", "Nothing proceeds without an approved source", `${SOURCES.length} approved sources`], ["A person decides", `${CASE.autonomy || "Draft with approval"}; ${(CASE.persona || {}).role || CASE.approverRole || "the reviewer"} decides`, `${LOG.length} logged actions`], ["Never list enforced", `${(CASE.neverList || []).length} forbidden actions, tested by labelled items`, "Forbidden-topics gate"], ["Every action logged", "Item, outcome, action, who, time, version", `${LOG.length} entries`], ["Release gated by evals", "Bars set before the build; a sealed holdout scores every fix", `${gateDefs().length} gates; ${HOLDOUT.length} sealed items`]];
   $("#controls").innerHTML = controls.map(([c, h, e]) => `<tr><td><strong>${esc(c)}</strong></td><td>${esc(h)}</td><td class="muted">${esc(e)}</td></tr>`).join("");
   const st = (s = "") => (s.toLowerCase().startsWith("answered") ? "ok" : s.toLowerCase().startsWith("assumed") ? "warn" : "bad");
-  $("#govRows").innerHTML = items.length ? items.map((i) => `<tr><td><span class="pill plain">${esc(i.gate)}</span></td><td>${esc(i.question)}</td><td>${esc(i.answer)}</td><td><span class="pill ${st(i.status)}">${esc(i.status)}</span></td><td>${esc(i.owner || "")}</td></tr>`).join("")
-    : `<tr><td colspan="5" class="muted">Governance checks appear here as each gate answers them.</td></tr>`;
+  $("#govRows").innerHTML = items.length ? items.map((i) => `<tr><td><span class="pill plain">${esc(i.gate)}</span></td><td>${esc(i.question)}</td><td>${esc(i.answer)}</td><td><span class="pill ${st(i.status)}">${esc(i.status)}</span></td><td>${esc(i.owner || "")}</td></tr>`).join("") : `<tr><td colspan="5" class="muted">Checks appear here as each gate answers them.</td></tr>`;
 }
-
-/* ---------- How it works, FAQ (both built from the session's decisions) ---------- */
+function renderLog() { $("#logRows").innerHTML = LOG.length ? LOG.map((r) => `<tr><td class="num">${esc(new Date(r.at).toLocaleTimeString())}</td><td>${esc(r.item)}</td><td><span class="pill ${VSTYLE[r.verdict] || "plain"}">${esc(r.verdict)}</span></td><td>${esc(r.action)}</td><td>${esc(r.by)}</td><td>${r.edited ? "Yes" : "No"}</td><td>${esc(r.ai)}</td></tr>`).join("") : `<tr><td colspan="7" class="muted">No actions yet. Open an item from Today and act on it.</td></tr>`; }
 function renderHow() {
   const c = CASE, v = c.verdicts || {};
-  const steps = [
-    ["", "Request", c.inputLabel || "Arrives from the channel."],
-    ["guard", "Escalation guard", `Rules check first: ${v.escalate?.desc || "complaints, fraud and vulnerability"} Goes to ${c.escalationOwner || "a person"}.`],
-    ["", "Route", `Answers only when one of ${SOURCES.length} approved sources clearly matches; otherwise a person.`],
-    ["", "Draft", BUILD.engine === "rules" ? "Assembled from the cited source by rule." : `${model().short} writes from the cited source only; no source, no draft.`],
-    ["person", "Person decides", `${c.approverRole || "The reviewer"}: ${c.autonomy || "draft with approval"}.`],
-    ["", "Log", "Request, source, output, approver, time and version, for audit."],
-  ];
+  $("#howIntro").textContent = c.scenario || c.promise || "";
+  const steps = [["", "Arrives", c.inputLabel || "From the channel."], ["guard", "Escalation guard", `Rules check first: ${v.escalate?.desc || ""}`], ["", "Match", `Uses one of ${SOURCES.length} approved sources; otherwise a person.`], ["", "Prepare", BUILD.engine === "rules" ? "Assembled by rule." : `${model().short} prepares it from the approved source only.`], ["person", "Person decides", `${(c.persona || {}).role || c.approverRole || "The reviewer"}: ${c.autonomy || "draft with approval"}.`], ["", "Logged", "Who, what, when and which version."]];
   $("#flow").innerHTML = steps.map(([k, t, d], i) => `<div class="step ${k}"><div class="n">${i + 1}</div><strong>${esc(t)}</strong><p class="small muted">${esc(d)}</p></div>`).join("");
-  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(d.gate)}</span></td><td>${esc(d.decision)}${d.revised ? ` <span class="pill warn">Revised</span><div class="meta" style="margin-top:4px">Was: ${esc(d.was || "")}</div>` : ""}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Decisions appear here as each gate is decided.</td></tr>`;
+  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(d.gate)}</span></td><td>${esc(d.decision)}${d.revised ? ` <span class="pill warn">Revised</span><div class="meta">Was: ${esc(d.was || "")}</div>` : ""}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Decisions appear as each gate is decided.</td></tr>`;
   $("#gateRows").innerHTML = gateDefs().map((g) => `<tr><td>${esc(g.q)}</td><td class="muted">${esc(barText(g))}</td></tr>`).join("");
   $("#sourceRows").innerHTML = SOURCES.map((s) => `<tr><td class="num">${esc(s.id)}</td><td>${esc(s.text)}</td></tr>`).join("");
 }
-function renderFaq() {
-  $("#faqList").innerHTML = (CASE.faq || []).map((f) => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p>${f.from ? `<span class="from">Based on: ${esc(f.from)}</span>` : ""}</details>`).join("") || `<p class="muted small">The FAQ is written at the build step, from the decisions in this session.</p>`;
-}
+function renderFaq() { $("#faqList").innerHTML = (CASE.faq || []).map((f) => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p>${f.from ? `<span class="from">Based on: ${esc(f.from)}</span>` : ""}</details>`).join("") || `<p class="muted small">Written at the build step from the session's decisions.</p>`; }
 
 /* ---------- Events ---------- */
-function showTab(name) {
-  document.querySelectorAll(".tab").forEach((b) => b.setAttribute("aria-selected", b.dataset.tab === name));
-  document.querySelectorAll(".panel").forEach((p) => (p.hidden = p.id !== name));
-  if (name === "audit") renderLog();
-  if (name === "gov") renderGov();
-}
 document.addEventListener("click", async (e) => {
-  const tr = e.target.closest("tr[data-run]"); if (tr) { selRun = Number(tr.dataset.run); renderBoard(); return; }
+  const tr = e.target.closest("tr[data-run]"); if (tr) { selRun = Number(tr.dataset.run); return renderBoard(); }
   const t = e.target.closest("button"); if (!t) return;
-  if (t.dataset.tab) return showTab(t.dataset.tab);
-  if (t.dataset.sample !== undefined) { $("#input").value = CASE.samples[t.dataset.sample].text; $("#input").focus(); return; }
-  if (t.id === "run") return run();
+  if (t.dataset.go) return go(t.dataset.go);
+  if (t.dataset.open) return go("item", t.dataset.open);
+  if (t.dataset.more) { const v = t.dataset.more; t.previousElementSibling.innerHTML = ITEMS.filter((it) => it.d.verdict === v && it.state === "open").map(qcard).join(""); t.remove(); return; }
+  if (t.dataset.act) { const d = $("#draft"); const edited = Boolean(d && d.dataset.original !== undefined && d.innerText.trim() !== d.dataset.original.trim()); if (/Sent|Filed|Accepted/.test(t.dataset.act)) { stats.approved++; if (edited) stats.edited++; } logAction(OPEN, t.dataset.act, { edited, ai: OPEN.ai?.by || "none" }); return go("home"); }
   if (t.id === "editBtn") { const d = $("#draft"); d.dataset.original = d.dataset.original ?? d.innerText; d.contentEditable = "true"; d.focus(); t.textContent = "Editing"; return; }
-  if (t.dataset.act) return act(t.dataset.act);
-  if (t.dataset.set) { evalSet = t.dataset.set; $("#setDev").setAttribute("aria-pressed", evalSet === "golden"); $("#setHold").setAttribute("aria-pressed", evalSet === "holdout"); $("#setCustom").setAttribute("aria-pressed", evalSet === "custom"); renderEvalControls(); renderBoard(); return; }
-  if (t.dataset.engine) { engine = t.dataset.engine; renderEvalControls(); return; }
+  if (t.id === "confirmAll") { document.querySelectorAll(".fconf:not(:disabled)").forEach((b) => { b.checked = true; b.dispatchEvent(new Event("change")); }); return; }
+  if (t.dataset.accept !== undefined) { const el = $("#act" + t.dataset.accept); el.classList.add("done"); logAction(OPEN, "Accepted", { ai: OPEN.ai ? "talking point" : "none" }); stats.approved++; OPEN.state = "open"; return; }
+  if (t.dataset.tp !== undefined) return talkingPoint(Number(t.dataset.tp));
+  if (t.id === "sendFollow") return followUp();
+  if (t.id === "newGo") return addNew();
+  if (t.dataset.set) { evalSet = t.dataset.set; document.querySelectorAll("[data-set]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.set === evalSet)); renderEvalControls(); return renderBoard(); }
+  if (t.dataset.engine) { engine = t.dataset.engine; return renderEvalControls(); }
   if (t.id === "runTest") return runTest();
-  if (t.dataset.rmsrc) { SOURCES = SOURCES.filter((x) => x.id !== t.dataset.rmsrc); renderSources(); return; }
-  if (t.id === "loadExample") return loadCases(new File([JSON.stringify(EXAMPLE_ROWS())], "example-requests.json", { type: "application/json" }));
-  if (t.id === "toEvals") { evalSet = "custom"; showTab("evals"); renderEvalControls(); renderBoard(); document.querySelectorAll("[data-set]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.set === "custom")); return; }
   if (t.id === "stopTest") return ctl?.abort();
+  if (t.id === "loadExample") return loadCases(new File([JSON.stringify((CASE.samples || []).map((x) => ({ text: x.text, expected: x.expect || "human" })))], "example.json"));
+  if (t.id === "toEvals") { evalSet = "custom"; go("evals"); document.querySelectorAll("[data-set]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.set === "custom")); renderEvalControls(); return renderBoard(); }
+  if (t.dataset.rmsrc) { SOURCES = SOURCES.filter((x) => x.id !== t.dataset.rmsrc); return renderSources(); }
 });
-document.addEventListener("change", (e) => { if (e.target.id === "missOnly") renderDetail(); if (e.target.id === "model") { renderEvalControls(); renderHow(); } });
-$("#input").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) run(); });
+document.addEventListener("change", (e) => {
+  if (e.target.id === "missOnly") renderDetail();
+  if (e.target.id === "model") { renderEvalControls(); renderHow(); }
+  if (e.target.dataset?.dismiss !== undefined && e.target.value) { $("#act" + e.target.dataset.dismiss).classList.add("done"); logAction(OPEN, `Dismissed: ${e.target.value}`); OPEN.state = "open"; }
+});
+document.addEventListener("keydown", (e) => { if (e.target.id === "followUp" && e.key === "Enter") followUp(); });
 
 (async () => {
-  $("#model").innerHTML = MODELS.map((m) => `<option value="${m.id}">${m.short} · ${m.note}</option>`).join("");
-  $("#model").value = "claude-sonnet-5-5";
-  await boot();
+  $("#model").innerHTML = MODELS.map((m) => `<option value="${m.id}">${m.short} · ${m.note}</option>`).join(""); $("#model").value = "claude-sonnet-5-5";
+  await boot(); go("home");
   AI = await connectAI();
+  $("#aiPill").textContent = AI ? "AI: live" : "AI: off"; $("#aiPill").className = "pill " + (AI ? "ok" : "plain");
   if (!AI) { $("#model").disabled = true; $("#model").title = HOSTED ? "AI needs this page opened in Claude." : "AI needs an API key on the local server."; }
-  renderEvalControls(); renderBoard();
-  if (!HOSTED) { let sig = ""; setInterval(async () => { try { const s = await Promise.all(["/case.json", "/gates.json", "/router.js"].map((u) => fetch(u, { cache: "no-store" }).then((r) => r.text()))).then((a) => a.join("|")); if (sig && s !== sig) { await boot(); toast("Updated from the latest gate"); } sig = s; } catch {} }, 4000); }
+  renderEvalControls();
+  if (!HOSTED) { let sig = ""; setInterval(async () => { try { const s = await Promise.all(["/case.json", "/gates.json", "/router.js"].map((u) => fetch(u, { cache: "no-store" }).then((r) => r.text()))).then((a) => a.join("|")); if (sig && s !== sig) { await boot(); go("home"); toast("Updated from the latest gate"); } sig = s; } catch {} }, 4000); }
 })();
 </script>
 </body>

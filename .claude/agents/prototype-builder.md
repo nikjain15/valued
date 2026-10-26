@@ -15,6 +15,14 @@ dependencies, inside `out/proto/` only.
 2. Write `out/proto/router.js` (CommonJS: end it with `module.exports = { decide };`, because the
    prototype server loads it with `require`) exporting `decide(text)` that returns
    `{ verdict: "answer" | "human" | "escalate", source: <id or null>, reason }`.
+   Shape the result for the product shape in `out/proto/case.json` (`shape`):
+   - every escalation's `reason` quotes the exact words that fired, for example `fired on "never authori"`,
+     so the screen can highlight them;
+   - `review`: also return `fields`, one `{ "name", "value", "evidence" }` per required field of the
+     matched type, where `evidence` is copied word for word from the input (empty when absent);
+   - `rank`: also return `actions`, every rule that fires, must-do first, each
+     `{ "source", "title", "why", "must" }`; `source` of the result is the top action's;
+   - `desk` and `chat`: `verdict`, `source` and `reason` are enough.
    Deterministic rules, in this order: escalation triggers first (escalation wins every race,
    including implicit complaints, distress and vulnerability phrasing, in every language the client
    serves); then answer only when exactly one source clearly matches; otherwise `human`. Never answer

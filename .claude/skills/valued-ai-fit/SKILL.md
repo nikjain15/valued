@@ -54,7 +54,18 @@ client to accept or overrule.
      - "Yes, and let it lead": the model proposes the verdict, rules guard escalation. Handles varied
        phrasing; harder to explain, and needs its own eval before release. Engine `model-first`.
      Record `Build engine: <engine> (chosen by IT and risk)` under "Client decisions" in `out/state.md`.
-6. **Governance check** in `out/2-ai-fit.md` (question, answer, status):
+6. **Product shape** (an output, never a card): pick the screen the first-wave user actually works in,
+   and say why in one line. It decides how the prototype looks:
+
+   | Shape | Pick it when | The user's screen |
+   |---|---|---|
+   | `desk` | A person reviews a drafted reply to an incoming message | Message beside a cited draft; approve, edit, hand off |
+   | `review` | A person confirms data pulled from a document | Document with highlighted evidence beside a field form; confirm and file |
+   | `rank` | A person picks next steps for a record (client, account, case) | Record with ranked action cards; accept or dismiss with a reason |
+   | `chat` | The end user asks and gets an answer directly | Conversation with cited answers; sensitive topics routed to people |
+
+   Write `"shape"` to `out/proto/case.json`.
+7. **Governance check** in `out/2-ai-fit.md` (question, answer, status):
    - Human judgement required: decisions in scope that a regulation or policy reserves for a person
      (for example coverage, credit, suitability, clinical). They stay **off AI**: the AI may prepare,
      never decide. Say which candidates this rules out or reshapes.
@@ -62,6 +73,6 @@ client to accept or overrule.
    - Explainability: how each first-wave output is explained (cited source, rule path, reason codes).
      A component that cannot be explained cannot ship in a regulated flow.
    Add open items to the "Governance log" in `out/state.md`.
-7. **Finalize** `out/2-ai-fit.md`, update `out/state.md`.
-8. **Say it** (three lines): why most of the list is not GenAI; why this first wave; the build, buy or
+8. **Finalize** `out/2-ai-fit.md`, update `out/state.md`.
+9. **Say it** (three lines): why most of the list is not GenAI; why this first wave; the build, buy or
    partner call and its main trade-off, and what the engine choice means for the prototype.
