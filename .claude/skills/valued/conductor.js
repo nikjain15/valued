@@ -40,7 +40,7 @@ const PHASES = [
 ];
 const CUTS = {
   "2": ["fewer candidates: 8 instead of 12", "two wave options instead of three", "shorter reasons"],
-  "4": ["golden set 32 rows instead of 40 (holdout stays 12)", "6 sources instead of 8", "shorter prose"],
+  "4": ["golden set 30 dev rows, no extras (holdout stays 20)", "6 sources instead of 8", "shorter prose"],
   "5": ["one round of harder rows skipped", "drive table 5 rows", "shorter prose"],
   "6": ["FAQ 7 pairs", "section 17 with 5 tasks", "shorter prose"],
 };
@@ -138,7 +138,7 @@ function renderCase(g, ev) {
     sweeps: A(a.sweeps).map((s, i) => ({ agent: s.agent, kind: s.kind, schedule: s.schedule, checks: s.checks, findings: A((b.sweepFindings || [])[i] || s.findings) })),
     verdicts: l.verdicts, samples: A(l.samples).length === 6 ? l.samples : samplesFrom(golden), connectors: fillConnectors(l.connectors, v.industry),
     clocks: u.clocks, neverList: u.neverList, escalationOwner: u.escalationOwner, escalationSla: u.escalationSla, autonomy: u.autonomy, disclosure: u.disclosure, approverRole: u.approverRole, draftOpener: u.draftOpener,
-    decisions: cs.filter((x) => x.decision).map((x) => ({ gate: x.gate, decision: x.decision, by: x.by || x.role, effect: x.effect || "", ...(x.revised ? { revised: true, was: x.was } : {}) })),
+    decisions: cs.filter((x) => x.decision).map((x) => ({ gate: x.gate, decision: x.decision, by: x.by || x.role, effect: x.effect || `Sets gate ${x.gate}: ${String(x.question || "").replace(/\?$/, "").toLowerCase()}`, ...(x.revised ? { revised: true, was: x.was } : {}) })),
     governance: Object.entries(g).filter(([, x]) => x).flatMap(([k, x]) => A(x.governance).map((r) => ({ gate: k.toUpperCase(), question: r.question, answer: r.answer, status: r.status, owner: /^answered/i.test(r.status || "") ? "" : r.owner || "" }))),
     faq: b.faq || prev.faq, version: b.version || prev.version || "proto-0.1",
   };
@@ -217,8 +217,8 @@ function check(g, ev, c, quiet) {
   if (g.a) { need(A(g.a.agents).length >= 3 && A(g.a.agents).length <= 6, 2, "3 to 6 assistants"); need(A(g.a.agents)[0]?.kind === "rules" && /guard|safety/i.test(A(g.a.agents)[0]?.name || ""), 2, "first assistant must be a fixed-rules safety guard"); need(A(g.a.sweeps).length >= 1 && A(g.a.sweeps).length <= 3, 2, "1 to 3 sweeps"); need(["desk", "review", "rank", "chat"].includes(g.a.shape), 3, "shape"); if (g.a.shape === "rank") need(A(g.a.dismissReasons).length >= 4, 3, "rank needs 4 dismissReasons"); need(A(g.a.scores).some((s) => s.notGenAI), 2, "at least one candidate marked not GenAI"); }
   if (g.b) { need(A(g.b.faq).length >= 7 && A(g.b.faq).length <= 8 && A(g.b.faq).every((f) => f.q && f.a && f.from), 4, "7 to 8 FAQ pairs each with q, a, from"); need(A(g.b.sweepFindings).every((f) => A(f).length >= 2 && A(f).every((x) => x.title && x.why && x.cite)), 2, "2 to 3 findings per sweep, each with title, why, cite"); need(A(g.b.requirements).length >= 6 && A(g.b.requirements).every((r) => /Given[^]*\bwhen\b[^]*\bthen\b/i.test(r.acceptance || "")), 5, "6+ requirements, every acceptance written Given ..., when ..., then ..."); need(A(g.b.tasks).length >= 5, 5, "section 17 needs 5+ tasks"); }
   if (c) { need(A(c.connectors).length >= 6, 3, "6+ systems"); need(A(c.connectors).every((x) => !x.vendor || /assumed|e\.g\./i.test(x.vendor)), 3, "vendors only as e.g. ... (assumed)"); need(A(c.governance).length >= 12, 4, "12+ governance rows"); need(A(c.governance).filter((x) => !/^answered/i.test(x.status)).every((x) => x.owner), 4, "every open governance row has an owner"); need(A(c.neverList).length >= 3, 3, "never list 3+ lines"); need(["escalate", "human", "answer"].every((k) => Number((c.clocks || {})[k]?.hours) > 0), 3, "clocks need { hours, label } for escalate, human and answer"); need(A(c.samples).length === 6, 3, "6 samples"); }
-  need(ev.goldenN >= 30 && ev.holdoutN >= 10, 6, `golden ${ev.goldenN} (30+) and holdout ${ev.holdoutN} (10+) rows`);
-  need(json(path.join(PROTO, "holdout.json"), []).filter((r) => r.expected === "escalate").length >= 6, 6, "holdout needs 6+ escalation rows");
+  need(ev.goldenN >= 30 && ev.holdoutN >= 20, 6, `golden ${ev.goldenN} (30+) and holdout ${ev.holdoutN} (20+) rows`);
+  need(json(path.join(PROTO, "holdout.json"), []).filter((r) => r.expected === "escalate").length >= 10, 6, "holdout needs 10+ escalation rows");
   need(json(path.join(PROTO, "golden.json"), []).filter((r) => r.never).length >= 3, 6, "golden needs 3+ never rows");
   need(!fs.existsSync(path.join(PROTO, "eval.js")) || ev.devPass, 6, "dev eval blocked"); need(!fs.existsSync(path.join(PROTO, "eval.js")) || ev.holdPass, 6, "holdout eval blocked");
   if (g.a && g.a.engine !== "rules" && fs.existsSync(path.join(PROTO, "eval.js"))) { const cache = json(path.join(PROTO, "model-cache.json"), {}); const norm = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim(); const missing = ["golden.json", "holdout.json"].flatMap((f) => json(path.join(PROTO, f), [])).filter((r) => !cache[norm(r.text)]).length; need(missing === 0, 6, `guard model cache misses ${missing} texts: run model-inputs and the guard model again`); }

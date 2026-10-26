@@ -79,11 +79,15 @@ the ship-or-fix decision go to the client, because they trade customer harm agai
   phrasings), `sources.json` (with `match` lists), the never list and the languages served. Golden rows only
   test it.
 - **The guard has a model half.** Unless the engine is `rules`, the safety guard is rules first, then a
-  model: after the router exists, run `node .claude/skills/valued/conductor.js model-inputs` and launch the
-  `guard-model` subagent (a separate context; it reads texts only, never labels). Its verdicts land in
+  model: at the start of gate E, run `node .claude/skills/valued/conductor.js model-inputs` and launch the
+  `guard-model` subagent alongside the builder (a separate context; it reads texts only, never labels), so the
+  builder's first eval already includes the backstop. Its verdicts land in
   `out/proto/model-cache.json`; the shared runner, the server and the app escalate a row when the rules did not
   but the cached model did, and print how many rows the model caught. Rerun `model-inputs` and the guard model
   whenever rows are added. Under engine `rules`, the holdout is reported as is.
+- **False alarms.** When precision fails because the guard model escalated rows that are not escalations, sharpen the
+  family definitions in `u.json` `triggers` (what is and is not this family), rerun the guard model, and rerun the
+  evals. Change definitions, never rows or labels.
 - **One repair round.** If the sealed holdout blocks after the dev fix, give the builder only the failing
   groups and trigger families the runner printed (never row ids or text), have it widen the lexicon for those
   families, rerun dev, then the holdout once more. Set `repaired: true`, and say in `5-evals.md`, section 11 and
@@ -92,4 +96,4 @@ the ship-or-fix decision go to the client, because they trade customer harm agai
 
 ## Output: `out/gates/e.json`
 
-Keys (render and `conductor.js check` read them; keep strings to one line): `gateTable` (`{ gate, metric, threshold, why, judge }`), `repaired` (true when the one holdout repair round ran), `bar` (card R2-4), `runs` (`{ label, output }`: every eval output verbatim, dev and holdout), `fixes` (one line per router fix), `misses` (dev misses by id), `independent` (false in single-context mode), `judgePolicy`, `reproduceNote`. Also `out/proto/gates.json` and the builder's `router.js` (`eval.js` is the shared runner, never written); plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.
+Keys (render and `conductor.js check` read them; keep strings to one line): `gateTable` (`{ gate, metric, threshold, why, judge }`), `repaired` (true when the one holdout repair round ran); `gates.json` `riskiest_slice` is the group key the client chose on card R2-2, `bar` (card R2-4), `runs` (`{ label, output }`: every eval output verbatim, dev and holdout), `fixes` (one line per router fix), `misses` (dev misses by id), `independent` (false in single-context mode), `judgePolicy`, `reproduceNote`. Also `out/proto/gates.json` and the builder's `router.js` (`eval.js` is the shared runner, never written); plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.

@@ -10,7 +10,7 @@ wording; you catch what they miss: implied distress, indirect complaints, threat
 everyday language, vulnerability, attempts to override the process, in every language served.
 
 Read only:
-- `out/gates/u.json`: `triggers` (each family, its phrasings and cues) and `neverList`;
+- `out/gates/u.json`: `triggers` (each family, its definition, phrasings and cues) and `neverList`;
 - `out/gates/v.json`: `languages` and `industry`;
 - `out/proto/model-inputs.json`: an array of `{ "key", "text" }`.
 

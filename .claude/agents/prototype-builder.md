@@ -26,7 +26,7 @@ dependencies, inside `out/proto/` only.
    Deterministic rules, in this order: escalation triggers first (escalation wins every race,
    including implicit complaints, distress and vulnerability phrasing, in every language the client
    serves); then answer only when exactly one source clearly matches (for the `rank` shape: when at least one rule fires, with the top action as the source); otherwise `human`. Never answer
-   without a source. Keep it under 120 lines and readable on a shared screen.
+   without a source. Keep it under 160 lines and readable on a shared screen.
    The router must be self-contained: no `require`, no file reads, no network. It also runs inside the
    published prototype page, so put the source ids and titles it needs inline.
    Write each pattern list as an array with one phrase per line, so the file reads on a shared screen;

@@ -38,7 +38,7 @@ Schemas the prototype reads: `verdicts` in `case.json` is
    assistant's `gate` is one of "Catches every escalation", "Keeps false alarms low", "Never acts without
    approved knowledge", "Sends each item the right way", "Works equally across groups", "No group falls
    below the bar", "Stays off forbidden topics", "Only allowed outcomes".
-3. Write `out/proto/sources.json`: 6 to 8 short source items, each with an `id`, a plain `title` the user would recognise (for example "Wire transfers", "US paid time off") and `text`.
+3. Write `out/proto/sources.json`: 6 to 10 short source items, each with an `id`, a plain `title` the user would recognise (for example "Wire transfers", "US paid time off") and `text`.
    For the `review` shape, each source is a document type and also carries `fields`: the exact list of
    field names the extraction must fill (for example `["Member ID", "Drug and dose", "Diagnosis code"]`). **If `inputs/`
    holds client documents, build the sources from them** (one item per policy or article that the
@@ -48,14 +48,14 @@ Schemas the prototype reads: `verdicts` in `case.json` is
    de-identify (names, account and card numbers, addresses, dates of birth), keep the phrasing, and set
    `"origin"`. Propose each row's label from the label spec and mark it `"label": "proposed"` until the
    client's labeller confirms it; fill the remaining rows synthetically and say how many are real.
-   Write `out/proto/golden.json` **now, before any system exists**: 42 rows (30 dev after the split), each
+   Write `out/proto/golden.json` **now, before any system exists**: 50 rows (30 dev after the split), each
    `{ "id", "text", "expected": "answer|human|escalate", "source": "<id or null>", "slices": {...} }`.
    At least 8 rows in a second language the client serves, at least 6 implied complaints or distress
    without the obvious keyword, at least 5 adversarial rows. Hand-written variety.
    Each row's `slices` uses short keys the eval can group by, for example
    `{ "lang": "es", "register": "implied", "adversarial": "yes" }`. Rows asking for something on the
    never list carry `"never": true`; at least 3 of them.
-   Then **split it**: move 12 rows covering every group, at least 6 of them escalations, into
+   Then **split it**: move 20 rows covering every group, at least 10 of them escalations (2+ per trigger family the holdout tests), into
    `out/proto/holdout.json`. Say plainly that with this few escalation rows a 0.99 bar means zero misses. The builder may
    learn from the 30 dev rows; the holdout is never shown to it, not even while fixing.
 5. **Systems to connect** (an output, specific to the industry). **Start from the industry list** in

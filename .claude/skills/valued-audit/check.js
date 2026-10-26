@@ -105,7 +105,7 @@ const gateKeys = ["escalation_recall", "escalation_precision", "answers_without_
 expect(gateKeys.every((k) => k in gates), 6, "gates.json lacks one of the 8 gates or riskiest_slice", "out/proto/gates.json");
 expect((dev.match(/^\S.*(PASS|FAIL)\s*$/gm) || []).length >= 8, 6, "eval output lists fewer than 8 gates", "out/proto/eval.js");
 expect(/By slice/.test(dev), 6, "eval output has no per-group line", "out/proto/eval.js");
-expect(golden.length >= 30 && holdout.length >= 10, 6, `golden ${golden.length} rows, holdout ${holdout.length}; expected 30+ and 10+`, "out/proto/golden.json");
+expect(golden.length >= 30 && holdout.length >= 12, 6, `golden ${golden.length} rows, holdout ${holdout.length}; expected 30+ and 12+ (new runs write 20)`, "out/proto/golden.json");
 expect(holdout.filter((r) => r.expected === "escalate").length >= 6, 6, "holdout has fewer than 6 escalation rows", "out/proto/holdout.json");
 expect(golden.filter((r) => r.never).length >= 3, 6, "golden set has fewer than 3 never-list rows", "out/proto/golden.json");
 const evalsMd = read(path.join(out, "5-evals.md"));
