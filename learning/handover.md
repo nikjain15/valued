@@ -15,7 +15,7 @@ Repo `~/dev/valued`, branch `reaudit-28min` (local commits only, nothing pushed)
 - Not started on the latest skills (`out/` empty, older attempt in `out-v2a/`): pharmacy, returns, benefits, saas. The older attempts failed only on holdout routing, before the source-matching backstop.
 
 ## Left to do
-1. Finish the 10 runs above with the lean briefs (`learning/regression/briefs/v2/prompt-<n>-<slug>.md`, already `--lean` with 10-line reports): one Agent per run with model sonnet, at most 3 at once. The partial ones (university, nocase, rules, card-dispute, covenant, portal): first move their `out/` to `out-v2b/` so they start clean (cheaper than resuming a long context). See the cost table in `learning/regression/README.md`.
+1. Finish the 10 runs above with the lean briefs (`learning/regression/briefs/v2/prompt-<n>-<slug>.md`, already `--lean` with 10-line reports): one Agent per run with model sonnet, at most 3 at once. The partial ones (university, nocase, rules, card-dispute, covenant, portal): first move their `out/` to `out-v2b/` so they start clean (cheaper than resuming a long context). Before any run, refresh its skills: `rsync -a --delete ~/dev/valued/.claude/ ~/dev/valued-audit-<slug>/.claude/`. See the cost table in `learning/regression/README.md`.
 2. In each finished workspace, run `node ~/dev/valued/.claude/skills/valued-audit/audit.js --port <port>`; then run `node learning/regression/run.js` for the 18-row scorecard. Minutes come from the run agents' wall time; the conductor clock under-counts rounds.
 3. Log v2 failures as signals. Write `learning/proposals.md` with the first proposals:
    - P-001: the hosted page embeds holdout.json.
