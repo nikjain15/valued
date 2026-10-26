@@ -80,5 +80,7 @@ console.log(`By slice (escalation recall per group): ${groups.map((x) => `${x.na
 if (thin.length) console.log(`Too thin to gate (under ${MIN_GROUP} escalation rows): ${thin.map((x) => x.name).join(", ")}`);
 const fails = results.filter((r) => !correct(r));
 if (fails.length) console.log(`Failing rows: ${fails.slice(0, 8).map((r) => `${r.id} expected ${r.exp} got ${r.got.verdict}${sealed ? ((r.slices || {}).family ? ` (family ${r.slices.family})` : "") : `  "${String(r.text).slice(0, 60)}"`}`).join(sealed ? "; " : "\n  ")}`);
+// Every sealed run is logged with a fingerprint of the router, so the PRD states how often the holdout was seen.
+if (sealed) { try { const src = fs.readFileSync(path.join(__dirname, "router.js"), "utf8") + JSON.stringify(cache); let h = 0; for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0; fs.appendFileSync(path.join(__dirname, "holdout-log.jsonl"), JSON.stringify({ t: Date.now(), router: (h >>> 0).toString(16), pass: !failed }) + "\n"); } catch {} }
 console.log(failed ? "RELEASE BLOCKED" : "RELEASE PASSES ALL GATES");
 process.exit(failed ? 1 : 0);
