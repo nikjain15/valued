@@ -16,6 +16,9 @@ const STANDARDS = { 1: "Questions", 2: "Agentic by design", 3: "Product shape", 
 
 // Who owns each kind of issue, and the fix. First match wins.
 const OWNERS = [
+  [/provenance|not independent|wrote both/i, "L", "valued-labels", "The holdout must be written by the holdout-sealer subagent, never by the context that writes or fixes router.js. Launch it at gate L, run `conductor.js seal holdout holdout-sealer`, and `seal router <builder>` when the router is written. A run where one name wrote both cannot be repaired after the fact: re-run it."],
+  [/router versions/i, "E", "valued-evals", "The sealed set has been scored against too many routers. Stop fixing against it: the honest record is the first attempt plus at most one disclosed repair. Add dev rows for the failing family and fix there."],
+  [/lines of code/i, "E", "prototype-builder", "Move wording out of router.js into sources.json match lists or the u.json trigger lexicon. The limit is 200 lines of code; more branches is the wrong fix."],
   [/Given|requirement ids|section 17|document history|PRD table|Pending|title not set|placeholders|prd\.html/i, "B", "valued-build", "Fix the requirement or section in out/gates/b.json, then render. Never hand-edit prd.md."],
   [/holdout eval|dev eval/i, "E", "valued-evals", "Widen the trigger cues for the failing family (u.json), rerun model-inputs and the guard model, rerun both evals. Never edit labels."],
   [/samples/i, "L", "valued-labels", "Set l.json samples to 6 { text, expect } picked from golden.json (or drop them and let render pick), then render."],

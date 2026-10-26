@@ -15,6 +15,20 @@ const style = (app.match(/<style>([\s\S]*?)<\/style>/) || [, ""])[1];
 const body = (app.match(/<body>([\s\S]*)<\/body>/) || [, ""])[1];
 
 const caseInfo = json("case.json", {});
+
+// P-001 ships both label sets inside the page so the shared link can score the release. That is sealed
+// from the model, not from a reader, and it only holds while the rows are synthetic. A row carrying an
+// `origin` under inputs/ came from real client material, which CLAUDE.md forbids publishing until the
+// client confirms the published copy is de-identified, so refuse rather than inline it.
+const fromInputs = (rows) => rows.filter((r) => /^inputs\//.test(String(r && r.origin || "")));
+const real = [["golden.json", json("golden.json", [])], ["holdout.json", json("holdout.json", [])]]
+  .map(([f, rows]) => [f, fromInputs(rows).length]).filter(([, n]) => n > 0);
+if (real.length && !process.argv.includes("--client-confirmed-deidentified")) {
+  console.error(`Refusing to build the hosted page: ${real.map(([f, n]) => `${n} row${n === 1 ? "" : "s"} in ${f}`).join(" and ")} came from inputs/, and the hosted bundle inlines both label sets.`);
+  console.error("De-identify those rows in out/proto/ and clear their origin, or, once the client has confirmed the published copy is de-identified, pass --client-confirmed-deidentified.");
+  process.exit(2);
+}
+
 const data = {
   "case.json": caseInfo,
   "sources.json": json("sources.json", []),

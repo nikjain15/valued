@@ -54,16 +54,24 @@ Schemas the prototype reads: `verdicts` in `case.json` is
    de-identify (names, account and card numbers, addresses, dates of birth), keep the phrasing, and set
    `"origin"`. Propose each row's label from the label spec and mark it `"label": "proposed"` until the
    client's labeller confirms it; fill the remaining rows synthetically and say how many are real.
-   Write `out/proto/golden.json` **now, before any system exists**: 50 rows (30 dev after the split), each
+   Write `out/proto/golden.json` **now, before any system exists**: 30+ dev rows, each
    `{ "id", "text", "expected": "answer|human|escalate", "source": "<id or null>", "slices": {...} }`.
    At least 8 rows in a second language the client serves, at least 6 implied complaints or distress
    without the obvious keyword, at least 5 adversarial rows. Hand-written variety.
    Each row's `slices` uses short keys the eval can group by, for example
    `{ "lang": "es", "register": "implied", "adversarial": "yes" }`. Rows asking for something on the
    never list carry `"never": true`; at least 3 of them.
-   Then **split it**: move 20 rows covering every group, at least 10 of them escalations (2+ per trigger family the holdout tests), into
-   `out/proto/holdout.json`. Say plainly that with this few escalation rows a 0.99 bar means zero misses. The builder may
-   learn from the 30 dev rows; the holdout is never shown to it, not even while fixing.
+   **The holdout is written by another context, and you never read it.** A holdout written by the same
+   context that will fix the router grades its own author, so recall on it means nothing. Launch the
+   `holdout-sealer` subagent (foreground, wait for it) with nothing but the workspace path: it reads the
+   label spec, the trigger lexicon, the sources and your 30 dev rows, writes `out/proto/holdout.json`
+   (20 rows, 10+ escalations, new wordings of the families dev has), and records itself with
+   `conductor.js seal holdout holdout-sealer`. It reports counts only. **Never open
+   `out/proto/holdout.json` yourself, in this run or during any later fix**, and never pass a holdout row
+   to anyone. Quote its counts in `3-labels.md`, and say plainly that with this few escalation rows a
+   0.99 bar means zero misses. If subagents are unavailable, write the holdout yourself, run
+   `conductor.js seal holdout single-context` and expect the audit to fail the run as not independent:
+   that failure is the honest record, not a thing to work around.
 5. **Systems to connect** (an output, specific to the industry). **Start from the industry list** in
    `connectors-library.json` in this skill's folder (key = `industry` from gate V, or the closest):
    keep every system the first wave touches (at least 6), rewrite `provides` and `usedFor` for this
@@ -98,4 +106,4 @@ Schemas the prototype reads: `verdicts` in `case.json` is
 
 ## Output: `out/gates/l.json`
 
-Keys (render and `conductor.js check` read them; keep strings to one line): `verdicts` (`{ answer: { label, desc }, human: {...}, escalate: {...} }`), `groups` (`{ key, values, why }`, keys matching the golden `slices`), `labelling` (a recommendation), `goldenNote`, `connectors` (6+ in the connector schema, starting from the library), `dataPrivacy` (`{ data, owner, purpose, personal, minimisation, retention }`), `samples` (optional; 6 from golden.json, otherwise render picks them). Every escalation row carries `slices.family` with one of `a.json` `triggerFamilies`; every family has 2+ escalation rows in dev, and the holdout's 6+ escalations test new wordings of families dev has, never a family dev lacks (not every family must appear in the holdout). Groups with fewer than 2 holdout escalations are reported, not gated. Rewrite seed slices to this case's group keys and drop seeds off-topic for the case. Each source in `sources.json` carries `match`: 6 to 10 phrases and synonyms a user might use for it. Also write `out/proto/golden.json` (30+ dev rows after the split), `out/proto/holdout.json` (20 rows, 10+ escalations) and `out/proto/sources.json`. Start the golden set from `golden-seeds.json` for the industry (`node .claude/skills/valued/conductor.js seed <industry>`): rewrite each seed for this case, then add rows; never copy a seed into the holdout unchanged.; plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.
+Keys (render and `conductor.js check` read them; keep strings to one line): `verdicts` (`{ answer: { label, desc }, human: {...}, escalate: {...} }`), `groups` (`{ key, values, why }`, keys matching the golden `slices`), `labelling` (a recommendation), `goldenNote`, `connectors` (6+ in the connector schema, starting from the library), `dataPrivacy` (`{ data, owner, purpose, personal, minimisation, retention }`), `samples` (optional; 6 from golden.json, otherwise render picks them). Every escalation row carries `slices.family` with one of `a.json` `triggerFamilies`; every family has 2+ escalation rows in dev, and the holdout's 6+ escalations test new wordings of families dev has, never a family dev lacks (not every family must appear in the holdout). Groups with fewer than 2 holdout escalations are reported, not gated. Rewrite seed slices to this case's group keys and drop seeds off-topic for the case. Each source in `sources.json` carries `match`: 6 to 10 phrases and synonyms a user might use for it. Also write `out/proto/golden.json` (30+ dev rows) and `out/proto/sources.json`; `out/proto/holdout.json` (20 rows, 10+ escalations) is written by the `holdout-sealer` subagent, never by you. Start the golden set from `golden-seeds.json` for the industry (`node .claude/skills/valued/conductor.js seed <industry>`): rewrite each seed for this case, then add rows; never copy a seed into the holdout unchanged.; plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.

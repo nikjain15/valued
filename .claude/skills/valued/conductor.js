@@ -9,6 +9,7 @@
 //   node conductor.js cards auto <round>               answer a round with the recommended options
 //   node conductor.js seed <industry>                  golden-set seeds, sweep templates, systems
 //   node conductor.js model-inputs                     label-free, shuffled texts for the guard model
+//   node conductor.js seal holdout|router <by>       record who wrote it, in a separate context
 //   node conductor.js render                           gate files, state.md, prd.md, case.json, brief
 //   node conductor.js check                            what is still missing, by standard
 //   node conductor.js report                           out/run-report.json
@@ -86,11 +87,32 @@ function gateU(u) {
 }
 function gateE(e, ev) {
   const runs = A(e.runs).map((r, i) => `### Run ${i + 1}: ${r.label || r.set}\n\n\`\`\`\n${r.output}\n\`\`\``).join("\n\n");
-  return [`# E: Evals`, "", "## Proposed gates", "", table(["Gate", "Metric", "Bar", "Why this bar", "LLM judge"], A(e.gateTable).map((g) => [g.gate, g.metric, g.threshold, g.why, g.judge || "never"])), "", `**Client's bar for the riskiest miss:** ${e.bar}`, "", "## Runs", "", runs, "", "### Latest dev run", "", "```", ev.dev, "```", "", `### Sealed holdout${ev.independent ? "" : " (not independent: the same context wrote the golden set and the router)"}${ev.seen ? ` (${ev.seen})` : e.repaired ? " (seen once before a family-level repair)" : ""}`, "", "```", ev.holdout, "```",
+  return [`# E: Evals`, "", "## Proposed gates", "", table(["Gate", "Metric", "Bar", "Why this bar", "LLM judge"], A(e.gateTable).map((g) => [g.gate, g.metric, g.threshold, g.why, g.judge || "never"])), "", `**Client's bar for the riskiest miss:** ${e.bar}`, "", "## Runs", "", runs, "", "### Latest dev run", "", "```", ev.dev, "```", "", `### Sealed holdout${ev.independent ? "" : ` (not independent: ${ev.prov.recorded ? `${ev.prov.shared.join(", ")} wrote both the holdout rows and the router` : "no record of who wrote the holdout and who wrote the router"})`}${ev.seen ? ` (${ev.seen})` : e.repaired ? " (seen once before a family-level repair)" : ""}`, "", "```", ev.holdout, "```",
     "", "## Remaining misses", "", A(e.misses).length ? A(e.misses).map((m) => `- ${clean(m)}`).join("\n") : "- None on the dev set.", "", "## How to reproduce", "", "```", "node out/proto/eval.js", "node out/proto/eval.js holdout.json", "```", `Files: out/proto/router.js, out/proto/gates.json, out/proto/golden.json (${ev.goldenN} rows), out/proto/holdout.json (${ev.holdoutN} rows, sealed). ${clean(e.reproduceNote)}`, "", cardsMd("E"), "", "## Governance check", "", gov(e.governance), "", sayIt(e.sayIt), ""].join("\n");
 }
 function gateD(d) {
   return [`# D: Deploy and drive`, "", "## Deploy", "", table(["Step", "Proves", "Exit criterion", "Signs"], A(d.deploy).map((r) => [r.step, r.proves, r.exit, r.signs])), "", "## Drive", "", table(["Metric", "Why", "Alert threshold"], A(d.drive).map((r) => [r.metric, r.why, r.alert])), "", "## Pilot scope recommendation", "", rec(d.pilot, "Scope"), "", "## Stop rule recommendation", "", rec(d.stop, "Stop rule"), "", "## Plan", "", table(["Week", "Work"], A(d.plan).map((r) => [r.week, r.work])), "", cardsMd("D"), "", "## Governance check", "", gov(d.governance), "", sayIt(d.sayIt), ""].join("\n");
+}
+
+// ---------- provenance: the holdout and the router are written in different contexts ----------
+// S-078: when one context writes the answer key and the router, the holdout grades its own author and
+// recall on it means nothing. Each writer records itself here, and check() refuses a run where the
+// context that wrote the holdout rows also wrote or edited the router.
+const PROV = () => path.join(PROTO, "provenance.json");
+function seal(what, by) {
+  if (!["holdout", "router"].includes(what)) return console.log("Usage: conductor.js seal holdout|router <by>");
+  if (!by) return console.log(`Usage: conductor.js seal ${what} <by>   (the agent name, for example holdout-sealer)`);
+  const p = json(PROV(), {});
+  p[what] = A(p[what]).concat([{ by, at: new Date().toISOString() }]);
+  fs.mkdirSync(PROTO, { recursive: true }); writeJson(PROV(), p);
+  console.log(`Recorded: ${what} written by ${by}. Writers so far: holdout ${A(p.holdout).map((x) => x.by).join(", ") || "none"}; router ${A(p.router).map((x) => x.by).join(", ") || "none"}.`);
+}
+function provenance() {
+  const p = json(PROV(), {});
+  const holdoutBy = [...new Set(A(p.holdout).map((x) => x.by))], routerBy = [...new Set(A(p.router).map((x) => x.by))];
+  const shared = holdoutBy.filter((x) => routerBy.includes(x));
+  const recorded = holdoutBy.length > 0 && routerBy.length > 0;
+  return { holdoutBy, routerBy, shared, recorded, independent: recorded && shared.length === 0 };
 }
 
 // ---------- eval results ----------
@@ -98,12 +120,14 @@ function evalResults() {
   const run = (f) => { if (!fs.existsSync(path.join(PROTO, "eval.js"))) return ""; const r = spawnSync("node", [path.join(PROTO, "eval.js")].concat(f ? [f] : []), { encoding: "utf8", timeout: 60000 }); return ((r.stdout || "") + (r.stderr || "")).trim(); };
   const dev = run(), holdout = run("holdout.json");
   const parse = (t) => Object.fromEntries((t.match(/^(.{1,39}?)\s{2,}(\S+)\s+(\S+)\s+(PASS|FAIL)\s*$/gm) || []).map((l) => { const m = l.match(/^(.{1,39}?)\s{2,}(\S+)\s+(\S+)\s+(PASS|FAIL)\s*$/); return [m[1].trim(), { value: m[2], bar: m[3], result: m[4] }]; }));
-  const e = G("e") || {}, state = read(path.join(OUT, "state.md"));
-  const independent = e.independent !== undefined ? Boolean(e.independent) : !/single-context|not independent/i.test(state + JSON.stringify(e));
+  const e = G("e") || {};
+  // Independence is a fact about who wrote what, not a claim a gate can make about itself.
+  const prov = provenance();
+  const independent = prov.independent;
   const hlog = read(path.join(PROTO, "holdout-log.jsonl")).split("\n").filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
   const versions = [...new Set(hlog.map((x) => x.router))].length;
-  const seen = versions > 1 ? `holdout seen against ${versions} router versions (${hlog.length} runs); only the last counts, and earlier runs may have informed fixes` : "";
-  return { seen, dev, holdout, devGates: parse(dev), holdGates: parse(holdout), devPass: /RELEASE PASSES ALL GATES/.test(dev), holdPass: /RELEASE PASSES ALL GATES/.test(holdout), independent, goldenN: json(path.join(PROTO, "golden.json"), []).length, holdoutN: json(path.join(PROTO, "holdout.json"), []).length };
+  const seen = versions > 1 ? `holdout scored against ${versions} router versions; only the last counts, and the earlier attempts may have informed the change` : "";
+  return { seen, prov, versions, dev, holdout, devGates: parse(dev), holdGates: parse(holdout), devPass: /RELEASE PASSES ALL GATES/.test(dev), holdPass: /RELEASE PASSES ALL GATES/.test(holdout), independent, goldenN: json(path.join(PROTO, "golden.json"), []).length, holdoutN: json(path.join(PROTO, "holdout.json"), []).length };
 }
 
 // ---------- state.md ----------
@@ -173,7 +197,7 @@ function renderPrd(g, ev, c) {
   s[9] = u ? [table(["Action", "Autonomy (first 90 days)", "Approver", "AI shows", "On failure"], A(u.autonomyTable).map((r) => [r.action, r.level, r.approver, r.shows, r.onFailure])), "", "**Clocks**", "", table(["Outcome", "Respond within", "Regulatory clock"], [["Escalate", `${u.clocks?.escalate?.hours} h`, u.clocks?.escalate?.label], ["Needs a person", `${u.clocks?.human?.hours} h`, u.clocks?.human?.label], ["Prepared for review", `${u.clocks?.answer?.hours} h`, u.clocks?.answer?.label]]), "", "**Learning loop:** any reviewer can mark an outcome wrong; it joins the labelled test set with the right answer and every design is re-scored.", "", `**Disclosure (compliance to confirm):** "${clean(u.disclosure)}".`].join("\n") : P("U");
   s[10] = l ? [table(["Data", "Owner", "Purpose", "Personal data", "Minimisation", "Retention"], A(l.dataPrivacy).map((r) => [r.data, r.owner, r.purpose, r.personal, r.minimisation, r.retention])), "", "**Systems to connect**", "", table(["System", "Category", "Provides", "Access", "Personal data", "Owner", "Pilot status"], A(c.connectors).map((x) => [`${x.name} (${x.vendor || "vendor to confirm"})`, x.category, x.provides, x.access, x.pii, x.owner, x.status])), "", `**Golden set:** ${ev.goldenN} dev rows plus ${ev.holdoutN} sealed holdout rows; groups: ${A(l.groups).map((x) => `${x.key} (${A(x.values).join(", ")})`).join("; ")}. Labelled ${clean(l.labelling?.preferred || A(l.labelling?.options)[0]?.label)}. Synthetic until ${clean((cs.find((x) => /connect/i.test(x.question)) || {}).decision || "the client provides data")}.`].join("\n") : P("L");
   const names = { "Escalation recall": "Riskiest miss", "Escalation precision": "False alarms", "Answers without source": "Approved knowledge only", "Routing accuracy": "Right outcome", "Recall gap": "Equal across groups", "Fairness": "No group below the bar", "Never-list answers": "Forbidden topics", "Verdicts outside allowed": "Only allowed outcomes" };
-  s[11] = e ? [table(["Gate", "Metric", "Bar", "Why this bar", "Latest dev", "Holdout"], Object.entries(ev.devGates).map(([k, r]) => [Object.entries(names).find(([n]) => k.toLowerCase().startsWith(n.toLowerCase().slice(0, 12)))?.[1] || k, k, r.bar, (A(e.gateTable).find((x) => k.toLowerCase().includes(String(x.metric || x.gate).toLowerCase().slice(0, 10))) || {}).why || "", r.value, (ev.holdGates[k] || {}).value || ""])), "", `**Release status:** ${ev.devPass && ev.holdPass ? "Passes all gates on dev and holdout" : `Blocked on ${Object.entries(ev.devGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k).concat(Object.entries(ev.holdGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k + " (holdout)")).join(", ") || "a missing eval"}`}${ev.independent ? "" : "; holdout not independent (one context wrote the golden set and the router)"}${ev.seen ? `; ${ev.seen}` : e.repaired ? "; holdout seen once before a family-level repair" : ""}. **LLM judge policy:** ${clean(e.judgePolicy) || "none in the pilot; a judge may score draft quality only after it is validated against labels; escalation never uses one"}.`, "", "**Reproduce:** `node out/proto/eval.js` (dev) and `node out/proto/eval.js holdout.json` (sealed)."].join("\n") : P("E");
+  s[11] = e ? [table(["Gate", "Metric", "Bar", "Why this bar", "Latest dev", "Holdout"], Object.entries(ev.devGates).map(([k, r]) => [Object.entries(names).find(([n]) => k.toLowerCase().startsWith(n.toLowerCase().slice(0, 12)))?.[1] || k, k, r.bar, (A(e.gateTable).find((x) => k.toLowerCase().includes(String(x.metric || x.gate).toLowerCase().slice(0, 10))) || {}).why || "", r.value, (ev.holdGates[k] || {}).value || ""])), "", `**Release status:** ${ev.devPass && ev.holdPass ? "Passes all gates on dev and holdout" : `Blocked on ${Object.entries(ev.devGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k).concat(Object.entries(ev.holdGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k + " (holdout)")).join(", ") || "a missing eval"}`}${ev.independent ? "" : `; holdout not independent (${ev.prov.recorded ? `${ev.prov.shared.join(", ")} wrote both the holdout rows and the router` : "no record of who wrote which"})`}${ev.seen ? `; ${ev.seen}` : e.repaired ? "; holdout seen once before a family-level repair" : ""}. **LLM judge policy:** ${clean(e.judgePolicy) || "none in the pilot; a judge may score draft quality only after it is validated against labels; escalation never uses one"}.`, "", "**Reproduce:** `node out/proto/eval.js` (dev) and `node out/proto/eval.js holdout.json` (sealed)."].join("\n") : P("E");
   s[12] = b ? table(["ID", "Requirement", "Target"], A(b.nfrs).map((r, i) => [`NFR-${String(i + 1).padStart(2, "0")}`, r.requirement, r.target])) : P("B");
   s[13] = d ? [table(["Step", "Proves", "Exit criterion", "Signs"], A(d.deploy).map((r) => [r.step, r.proves, r.exit, r.signs])), "", table(["Drive metric", "Why", "Alert threshold"], A(d.drive).map((r) => [r.metric, r.why, r.alert])), "", `**Stop rule (client decision):** ${clean((cs.find((x) => /stop/i.test(x.question)) || {}).decision || d.stop?.preferred)}. **Kill switch:** per behaviour, owned by ${clean(d.killSwitchOwner || "the product owner")}.`, "", "**Plan**", "", table(["Week", "Work"], A(d.plan).map((r) => [r.week, r.work]))].join("\n") : P("D");
   s[14] = d ? [table(["Approver", "Role", "Signs off on"], A(d.signoffs).map((r) => [r.name || "to confirm", r.role, r.signs])), "", table(["Gate", "Question", "Answer", "Status", "Closes it"], [...A(c.governance).filter((r) => !/^answered/i.test(r.status)), ...A(c.governance).filter((r) => /^answered/i.test(r.status))].map((r) => [r.gate, r.question, r.answer, r.status, r.owner]))].join("\n") : P("D");
@@ -223,12 +247,20 @@ function check(g, ev, c, quiet) {
   need(ev.goldenN >= 30 && ev.holdoutN >= 20, 6, `golden ${ev.goldenN} (30+) and holdout ${ev.holdoutN} (20+) rows`);
   need(json(path.join(PROTO, "holdout.json"), []).filter((r) => r.expected === "escalate").length >= 10, 6, "holdout needs 10+ escalation rows");
   need(json(path.join(PROTO, "golden.json"), []).filter((r) => r.never).length >= 3, 6, "golden needs 3+ never rows");
+  // S-078: the holdout must have been written by a context that never wrote the router.
+  if (fs.existsSync(path.join(PROTO, "holdout.json"))) {
+    need(ev.prov.recorded, 6, "out/proto/provenance.json must name both writers: run `conductor.js seal holdout <agent>` and `conductor.js seal router <agent>`");
+    if (ev.prov.recorded) need(ev.prov.independent, 6, `holdout not independent: ${ev.prov.shared.join(", ")} wrote both the holdout rows and the router, so the sealed score grades its own author`);
+  }
+  // S-085: one sealed score per router version. One repair, disclosed, is allowed; more is tuning on the holdout.
+  need(ev.versions <= 2, 6, `the sealed holdout has been scored against ${ev.versions} router versions: 1 is clean, 2 is one disclosed repair, more means it is being tuned against`);
   need(!fs.existsSync(path.join(PROTO, "eval.js")) || ev.devPass, 6, "dev eval blocked"); need(!fs.existsSync(path.join(PROTO, "eval.js")) || ev.holdPass, 6, "holdout eval blocked");
   if (g.a && g.a.engine !== "rules" && fs.existsSync(path.join(PROTO, "eval.js"))) { const cache = json(path.join(PROTO, "model-cache.json"), {}); const norm = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim(); const missing = ["golden.json", "holdout.json"].flatMap((f) => json(path.join(PROTO, f), [])).filter((r) => !cache[norm(r.text)]).length; need(missing === 0, 6, `guard model cache misses ${missing} texts: run model-inputs and the guard model again`); }
   const router = read(path.join(PROTO, "router.js")); if (router) need(!/\brequire\(|\bimport\s|readFileSync|fetch\(/.test(router) && /module\.exports\s*=\s*\{\s*decide/.test(router), 7, "router must be self-contained CommonJS");
+  if (router) { const n = router.split("\n").filter((l) => l.trim() && !/^\s*\/\//.test(l)).length; need(n <= 200, 7, `router.js is ${n} lines of code (160 is the guideline, 200 the limit): move the wording lists into sources.json match lists or the trigger lexicon, not more branches`); }
   const cs = cards(); need(cs.length >= 11 && cs.length <= 16, 1, `${cs.length} cards (11 to 16)`); need(cs.every((x) => x.role && x.question && x.format && A(x.options).length >= 2 && A(x.options).every((o) => o.label && o.tradeoff)), 1, "every card: role, question, format, 2+ options with trade-offs"); need(!cs.some((x) => /^COO$/i.test(x.role)) || /COO/i.test(caseLine()), 1, "card roles must be this case's sponsor and owner roles, not COO");
   const scanDirs = [OUT]; const files = []; const walk = (d) => { for (const f of fs.readdirSync(d)) { const p = path.join(d, f); if (fs.statSync(p).isDirectory()) { if (!/hosted/.test(f)) walk(p); } else if (/\.(md|json|js|html)$/.test(f) && !/ff\.css|app\.html|prd-viewer|server\.js|audit\.jsonl/.test(f)) files.push(p); } }; if (fs.existsSync(OUT)) walk(OUT);
-  const realCo = /\b(Anthem|Aetna|UnitedHealth|Cigna|Humana|JPMorgan|Wells Fargo|Bank of America|Citibank|Capital One|Delta Air|United Airlines|American Airlines|Walmart|Amazon|Geico|Allstate|State Farm|Kaiser|CVS|Walgreens|Salesforce|Google|Microsoft|Workday|Oracle|SAP|Epic Systems|Cerner|Fidelity|CredR|EdCast|Coursewave|Enelek)\b/;
+  const realCo = /\b(Acme|Contoso|Globex|Initech|Example Corp|Anthem|Aetna|UnitedHealth|Cigna|Humana|JPMorgan|Wells Fargo|Bank of America|Citibank|Capital One|Delta Air|United Airlines|American Airlines|Walmart|Amazon|Geico|Allstate|State Farm|Kaiser|CVS|Walgreens|Salesforce|Google|Microsoft|Workday|Oracle|SAP|Epic Systems|Cerner|Fidelity|CredR|EdCast|Coursewave|Enelek)\b/;
   for (const p of files) { const t = read(p); if (t.includes("—")) need(false, 8, `em-dash in ${path.relative(ROOT, p)}`); const m = t.replace(/e\.g\.[^)\n"]*\(assumed\)/g, "").match(realCo); if (m) need(false, 8, `real or employer name "${m[0]}" in ${path.relative(ROOT, p)}: use a synthetic name, or "e.g. ... (assumed)" for a vendor`); }
   const pend = (read(path.join(OUT, "prd.md")).match(/Pending:/g) || []).length; need(pend === 0, 5, `${pend} Pending lines in the PRD`);
   if (!quiet) { console.log(miss.length ? miss.map(([s, m]) => `- [${s}] ${m}`).join("\n") : "All checks pass."); }
@@ -285,6 +317,7 @@ if (cmd === "clock") {
   if (rest[0] === "auto") { for (const c of mine) { c.decision = A(c.options)[0]?.label; c.auto = true; c.by = c.role; trace({ kind: "decision", id: c.id, gate: c.gate, role: c.role, question: c.question, decision: c.decision, auto: true }); } writeJson(path.join(OUT, "cards.json"), cs); console.log(`Round ${round}: ${mine.length} cards answered with the recommended option (auto).`); }
   else for (const c of mine) { console.log(`\n**"${c.role}": "${c.question}"** If none fits, answer with: ${c.format}`); A(c.options).forEach((o, i) => console.log(`${i + 1}. ${o.label}${i === 0 ? " (Recommended)" : ""}: ${clean(o.tradeoff)}`)); }
 } else if (cmd === "seed") seed(rest[0]);
+else if (cmd === "seal") seal(rest[0], rest[1]);
 else if (cmd === "model-inputs") {
   // Texts only: no ids, no labels, no slices, shuffled, so the guard model cannot tell dev from holdout.
   const norm = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim();

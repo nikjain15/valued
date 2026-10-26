@@ -13,7 +13,7 @@ Behave exactly as Claude Code would if the user typed this in `/Users/nikjain/de
 
 Read `/Users/nikjain/dev/valued-audit-recruiting/CLAUDE.md`, then `/Users/nikjain/dev/valued-audit-recruiting/.claude/skills/valued/SKILL.md` (the conductor) and follow it phase by phase, reading each gate skill it names under `/Users/nikjain/dev/valued-audit-recruiting/.claude/skills/<name>/SKILL.md` and the agents under `/Users/nikjain/dev/valued-audit-recruiting/.claude/agents/`. Use `node .claude/skills/valued/conductor.js` for the clock, cards, seeds, render, check and report exactly as the conductor says; the clock is the timing record, so start and end every phase with it.
 
-Subagents: follow `--lean`: only `prototype-builder` and `guard-model`, launched in the foreground (wait for each; never hand back before the closing line).
+Subagents: follow `--lean`: only `holdout-sealer`, `prototype-builder` and `guard-model`, launched in the foreground (wait for each; never hand back before the closing line). The sealer is not optional: this context must never read `out/proto/holdout.json`, and the audit fails the run if the context that wrote the holdout also wrote the router.
 
 `--auto`: answer every card round with `conductor.js cards auto <round>`; still draft every card in full. `--no-open`: never run `open`. Do not ask anyone anything. Do not skip steps; cut scope only through the conductor's overrun rule.
 

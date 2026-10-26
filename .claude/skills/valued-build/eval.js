@@ -26,6 +26,24 @@ const withBackstop = (r, raw) => {
 };
 const cache = (() => { try { return load("model-cache.json"); } catch { return {}; } })();
 const { decide } = withBackstop(router, cache);
+
+// ---------- the sealed holdout is scored once per router version ----------
+// A render can run six times; the holdout must not be re-scored six times. The first run for a given
+// router fingerprint is the real one: its output is stored and every later run replays it verbatim.
+// A new fingerprint means the router changed, so it is a new attempt, numbered and declared.
+const RUNS = path.join(__dirname, "holdout-runs");
+const fingerprint = () => { const src = fs.readFileSync(path.join(__dirname, "router.js"), "utf8") + JSON.stringify(cache); let h = 0; for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0; return (h >>> 0).toString(16); };
+const fp = sealed ? fingerprint() : null;
+const attemptsBefore = () => { try { return fs.readdirSync(RUNS).filter((f) => f.endsWith(".txt")).length; } catch { return 0; } };
+if (sealed) {
+  const cached = path.join(RUNS, fp + ".txt");
+  if (fs.existsSync(cached)) {
+    const text = fs.readFileSync(cached, "utf8");
+    process.stdout.write(text.replace(/\n$/, "") + "\n");
+    console.log(`(replayed from holdout-runs/${fp}.txt: this router version was already scored against the sealed set, so it is not re-scored)`);
+    process.exit(/RELEASE PASSES ALL GATES/.test(text) ? 0 : 1);
+  }
+}
 const raw = load("gates.json");
 // Accept both key styles (escalation_recall and escalationRecall).
 const g = Object.fromEntries(Object.entries(raw).map(([k, v]) => [k.replace(/_([a-z])/g, (m, c) => c.toUpperCase()), v]));
@@ -67,20 +85,36 @@ const metrics = [
 ];
 
 const pad = (s, n) => String(s).padEnd(n);
-console.log(`Eval: ${file} (${rows.length} rows, ${esc.length} escalations)`);
-console.log(`${pad("Gate", 39)}${pad("Value", 8)}${pad("Bar", 9)}Result`);
+const lines = [];
+const say = (x) => lines.push(x);
+say(`Eval: ${file} (${rows.length} rows, ${esc.length} escalations)`);
+say(`${pad("Gate", 39)}${pad("Value", 8)}${pad("Bar", 9)}Result`);
 let failed = false;
 for (const [name, v, b, op, isRatio] of metrics) {
   const pass = op === ">=" ? v >= b : v <= b; if (!pass) failed = true;
-  console.log(`${pad(name, 39)}${pad(isRatio ? v.toFixed(2) : String(v), 8)}${pad(op + b, 9)}${pass ? "PASS" : "FAIL"}`);
+  say(`${pad(name, 39)}${pad(isRatio ? v.toFixed(2) : String(v), 8)}${pad(op + b, 9)}${pass ? "PASS" : "FAIL"}`);
 }
 const caught = results.filter((r) => r.got.backstop).length;
-if (Object.keys(cache).length) console.log(`Model backstop: ${caught} row${caught === 1 ? "" : "s"} changed by the guard model (cached, ${Object.keys(cache).length} texts)`);
-console.log(`By slice (escalation recall per group): ${groups.map((x) => `${x.name}=${x.recall.toFixed(2)}`).join(" ")}`);
-if (thin.length) console.log(`Too thin to gate (under ${MIN_GROUP} escalation rows): ${thin.map((x) => x.name).join(", ")}`);
+if (Object.keys(cache).length) say(`Model backstop: ${caught} row${caught === 1 ? "" : "s"} changed by the guard model (cached, ${Object.keys(cache).length} texts)`);
+say(`By slice (escalation recall per group): ${groups.map((x) => `${x.name}=${x.recall.toFixed(2)}`).join(" ")}`);
+if (thin.length) say(`Too thin to gate (under ${MIN_GROUP} escalation rows): ${thin.map((x) => x.name).join(", ")}`);
 const fails = results.filter((r) => !correct(r));
-if (fails.length) console.log(`Failing rows: ${fails.slice(0, 8).map((r) => `${r.id} expected ${r.exp} got ${r.got.verdict}${sealed ? ((r.slices || {}).family ? ` (family ${r.slices.family})` : "") : `  "${String(r.text).slice(0, 60)}"`}`).join(sealed ? "; " : "\n  ")}`);
-// Every sealed run is logged with a fingerprint of the router, so the PRD states how often the holdout was seen.
-if (sealed) { try { const src = fs.readFileSync(path.join(__dirname, "router.js"), "utf8") + JSON.stringify(cache); let h = 0; for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0; fs.appendFileSync(path.join(__dirname, "holdout-log.jsonl"), JSON.stringify({ t: Date.now(), router: (h >>> 0).toString(16), pass: !failed }) + "\n"); } catch {} }
-console.log(failed ? "RELEASE BLOCKED" : "RELEASE PASSES ALL GATES");
+if (fails.length) say(`Failing rows: ${fails.slice(0, 8).map((r) => `${r.id} expected ${r.exp} got ${r.got.verdict}${sealed ? ((r.slices || {}).family ? ` (family ${r.slices.family})` : "") : `  "${String(r.text).slice(0, 60)}"`}`).join(sealed ? "; " : "\n  ")}`);
+// Each sealed attempt is numbered and stored under its router fingerprint, so the PRD can state how
+// many router versions the holdout has ever seen, and so a repeat render replays instead of re-scoring.
+if (sealed) {
+  const attempt = attemptsBefore() + 1;
+  if (attempt > 1) say(`Attempt ${attempt}: the router changed since the sealed set was last scored. Only this run counts, and the earlier attempts may have informed the change.`);
+  say(failed ? "RELEASE BLOCKED" : "RELEASE PASSES ALL GATES");
+  const text = lines.join("\n") + "\n";
+  try {
+    fs.mkdirSync(RUNS, { recursive: true });
+    fs.writeFileSync(path.join(RUNS, fp + ".txt"), text);
+    fs.appendFileSync(path.join(__dirname, "holdout-log.jsonl"), JSON.stringify({ t: Date.now(), router: fp, attempt, pass: !failed }) + "\n");
+  } catch {}
+  process.stdout.write(text);
+  process.exit(failed ? 1 : 0);
+}
+say(failed ? "RELEASE BLOCKED" : "RELEASE PASSES ALL GATES");
+console.log(lines.join("\n"));
 process.exit(failed ? 1 : 0);

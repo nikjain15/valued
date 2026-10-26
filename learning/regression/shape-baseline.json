@@ -1,0 +1,91 @@
+{
+ "recorded": "2026-10-26",
+ "table": "854d4283",
+ "shapes": [
+  {
+   "slug": "card-dispute",
+   "shape": "review",
+   "question": 2
+  },
+  {
+   "slug": "covenant",
+   "shape": "rank",
+   "question": 1
+  },
+  {
+   "slug": "underwriting",
+   "shape": "review",
+   "question": 2
+  },
+  {
+   "slug": "portal",
+   "shape": "desk",
+   "question": 3
+  },
+  {
+   "slug": "pharmacy",
+   "shape": "review",
+   "question": 2
+  },
+  {
+   "slug": "utility",
+   "shape": "desk",
+   "question": 3
+  },
+  {
+   "slug": "airline",
+   "shape": "chat",
+   "question": 4
+  },
+  {
+   "slug": "returns",
+   "shape": "chat",
+   "question": 4
+  },
+  {
+   "slug": "saas",
+   "shape": "rank",
+   "question": 1
+  },
+  {
+   "slug": "benefits",
+   "shape": "review",
+   "question": 2
+  },
+  {
+   "slug": "contracts",
+   "shape": "review",
+   "question": 2
+  },
+  {
+   "slug": "recruiting",
+   "shape": "review",
+   "question": 2
+  },
+  {
+   "slug": "maintenance",
+   "shape": "rank",
+   "question": 1
+  },
+  {
+   "slug": "ap",
+   "shape": "review",
+   "question": 2
+  },
+  {
+   "slug": "university",
+   "shape": "desk",
+   "question": 3
+  },
+  {
+   "slug": "surveillance",
+   "shape": "rank",
+   "question": 1
+  },
+  {
+   "slug": "rules",
+   "shape": "chat",
+   "question": 4
+  }
+ ]
+}

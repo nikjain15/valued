@@ -601,13 +601,13 @@
             <div class="quad">
               <div><span>Asks you</span>Which group worries you most? What can we label from?</div>
               <div><span>Uses</span>An answer key labelled by intent, split by group, with a sealed holdout.</div>
-              <div><span>Gives you</span>A golden set, a sealed holdout, a data and privacy table, and the systems to connect, drawn from a library of 83 systems across 10 industries.</div>
+              <div><span>Gives you</span>A golden set, a sealed holdout written by its own agent, a data and privacy table, and the systems to connect, drawn from a library of 83 systems across 10 industries.</div>
               <div class="prev"><span>Prevents</span>The system grading itself.</div>
             </div>
             <div class="govbox"><div class="govh"><span class="gk2">G</span>Governance asks at this gate</div><ul><li>Are we allowed to use this data for this purpose?</li><li>Is personal or health data minimised and protected?</li><li>Do the labels check fairness across groups?</li></ul></div>
           </div>
           <div class="pg-visual"><div class="panel"><div class="ph">The artifact: an answer key, written before the build</div>
-<div class="key"><div class="dev"><b>Development set</b><span>The builder learns from these, and fixes against them.</span></div><div class="hold"><b>Sealed holdout</b><span>Never shown to the builder. Scores every fix honestly.</span></div></div>
+<div class="key"><div class="dev"><b>Development set</b><span>The builder learns from these, and fixes against them.</span></div><div class="hold"><b>Sealed holdout</b><span>Written by a separate agent that never sees the build. Scored once per version of the code it grades.</span></div></div>
 <div class="ph" style="margin:16px 0 8px">Split by the groups that are easy to miss</div>
 <div class="chips"><span>Each language served</span><span>Calm, angry, implied</span><span>Edge and adversarial cases</span><span>Each customer segment</span></div>
 <p class="caption" style="margin:12px 0 0">Labels record what the person meant, never what the system said.</p></div></div>
@@ -643,7 +643,7 @@
             <h3 class="pg-h">Let a number decide the release.</h3>
             <div class="quad">
               <div><span>Asks you</span>Which miss stops the release? Ship anyway, or fix first?</div>
-              <div><span>Uses</span>Gates set before the build and checked per group; a builder that cannot see the answers; a sealed holdout for every fix.</div>
+              <div><span>Uses</span>Gates set before the build and checked per group; a builder that cannot see the answers; a sealed holdout for every fix, scored once per version of the code.</div>
               <div><span>Gives you</span>Proposed gates with reasons, a prototype, a pass or a block, and an evidence pack audit can rerun. Three designs are scored side by side: rules only, AI only, AI with a rules guard.</div>
               <div class="prev"><span>Prevents</span>An average hiding the group that breaks.</div>
             </div>
@@ -871,6 +871,7 @@
         <details><summary>Did you design VALUED first and then build these?</summary><p>No. I built the products first. VALUED names the gates I kept using, so the next product can start from them.</p></details>
         <details><summary>What do I get at the end of a run?</summary><p>Six gate files with every decision and who made it; a PRD with requirements and acceptance tests, release gates with real results, and a build plan written for a coding agent; a prototype in the shape your users work in, gated by its own evals; and a one-page brief.</p></details>
         <details><summary>Which model does it use?</summary><p>That is your call at AI-fit: rules only, rules decide and a model drafts from the cited source, or a model proposes and rules guard escalation. In the prototype you can switch between Claude Haiku, Sonnet and Opus and see the latency and cost of each before anyone commits.</p></details>
+        <details><summary>How do you know the holdout number is honest?</summary><p>Two rules, both enforced by the checker rather than promised. The holdout rows are written by a separate agent that never reads the code it grades, and the run records who wrote what: if one context wrote both the answer key and the router, the run fails as not independent. And the sealed set is scored once per version of the router. Rendering the run again replays the stored result instead of re-scoring, a changed router counts as a new numbered attempt, and a third attempt fails the audit, because by then the holdout has become a development set.</p></details>
         <details><summary>What if the client changes their mind?</summary><p>Run <span class="mono">/valued-revise</span> with the feedback in their words. It confirms the change on one card, updates the gate that owns it and only what depends on it, reruns the evals when they are affected, and adds a version to the PRD. The old decision stays on record, marked revised.</p></details>
         <details><summary>Does the workflow make decisions for me?</summary><p>No. It recommends, showing the options, their trade-offs, its preference and what would change its mind. Decisions that are yours (priorities, risk appetite) come to you as a question; the brief records who decided what, and every governance item still open.</p></details>
       </div>
