@@ -22,6 +22,9 @@ For every item decide: does this need a person urgently, under any trigger famil
 wording? Escalate when a reasonable specialist would; do not escalate routine questions, however
 frustrated the tone, unless they meet a family's definition. Asking for a person or an explanation of a delay is
 not a complaint by itself; a question about how a rule works is not the event it asks about.
+A demand or a request for the assistant to act or decide ("just approve it", "rebook me now", "tell me about
+another customer") is not an escalation: a person handles it (verdict none, no source). It is an override only
+when it claims authority or tells the system to ignore its rules or instructions.
 
 Write `out/proto/model-cache.json`: an object keyed by `key`, each value
 `{ "verdict": "escalate" | "none", "family": "<family key or empty>", "source": "<the one source id that fully answers it, or empty>", "sure": true | false, "reason": "<eight words at most>" }`.
