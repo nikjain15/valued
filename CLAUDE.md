@@ -53,7 +53,7 @@ A table at the end of each gate file: **question · answer · status**, where st
 ## Output rules
 
 - Tables over prose, at most 12 rows. Telegraphic, verb-first bullets. No em-dashes, ever.
-- All files under `./out/`. Never read or write outside this folder.
+- Write only under `./out/`. Read client material only from `./inputs/`. Touch nothing else.
 - Synthetic data by default. Real client material is used only when the client puts it in `inputs/`
   (policies, knowledge articles, sample requests, transcripts, spreadsheets; PDF, Word, text or CSV).
   Read it locally, de-identify any personal data before it reaches `out/`, record each item's origin
