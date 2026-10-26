@@ -54,5 +54,9 @@ A table at the end of each gate file: **question · answer · status**, where st
 
 - Tables over prose, at most 12 rows. Telegraphic, verb-first bullets. No em-dashes, ever.
 - All files under `./out/`. Never read or write outside this folder.
-- Synthetic data only. No real company, customer or person data.
+- Synthetic data by default. Real client material is used only when the client puts it in `inputs/`
+  (policies, knowledge articles, sample requests, transcripts, spreadsheets; PDF, Word, text or CSV).
+  Read it locally, de-identify any personal data before it reaches `out/`, record each item's origin
+  (`"origin": "inputs/<file>"`), never commit `inputs/`, and never publish anything built from it
+  without the client confirming the published copy is de-identified.
 - Prototype and PRD use the founderfirst.one design system shipped in `.claude/skills/valued-build/app/ff.css`. Never restyle.

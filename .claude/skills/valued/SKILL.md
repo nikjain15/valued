@@ -25,6 +25,12 @@ Each ends with its own-words format: client context "industry, size, and the uni
 (e.g. 'P&C insurer, 40k claims a month, claims operations')"; business problem "the process, how it
 shows up, and a rough number (e.g. 'FNOL setup, 20 fields re-keyed, 18 minutes a claim')"; success and
 timeline "a metric, a target and a date (e.g. 'setup under 10 minutes, pilot in 8 weeks')".
+Add a fourth card when `inputs/` is empty or missing: **"Material": "What real material can we work
+from?"** Options: "Documents in inputs/ (policies, knowledge articles)", "Sample requests or transcripts,
+de-identified", "Both", "Synthetic only for now (Recommended when nothing is ready)". If none fits,
+answer with: the material, its rough size and who owns it (e.g. "300 policy PDFs, owned by HR
+operations"). If files are already in `inputs/`, list them in one table (file, type, size, likely use)
+instead of asking, and print `Grounded in: <n> client files`.
 Build the case line from the answers, print it as `Engagement: <case line>`, and go. Never ask more than
 this before gate V; gate V's draft marks everything else (assumed).
 
@@ -39,7 +45,7 @@ this before gate V; gate V's draft marks everything else (assumed).
 
 ## Run
 
-1. **Set up (under 30 seconds).** Create `out/` and `out/proto/`. Write `out/state.md` with four
+1. **Set up (under 30 seconds).** Create `out/`, `out/proto/` and, if missing, `inputs/`. Write `out/state.md` with four
    sections: the case line, "Client decisions", "Assumptions", and "Governance log". Then start the
    live outputs, so the client watches the PRD and the prototype take shape gate by gate:
    ```bash

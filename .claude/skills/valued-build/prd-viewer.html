@@ -5,76 +5,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Product requirements</title>
 <link rel="stylesheet" href="/ff.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 <style>
-  .nav-actions { display: flex; gap: 8px; align-items: center; }
-  .seg { display: inline-flex; background: var(--white); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 3px; }
-  .seg button { border: 0; background: none; height: 30px; padding: 0 14px; border-radius: var(--r-pill); font: 500 var(--fs-label) var(--font-sans); color: var(--ink-3); cursor: pointer; }
-  .seg button[aria-pressed="true"] { background: var(--dark); color: var(--white); }
-  .live { display: none; } .live.on { display: inline-flex; }
-  .live::before { animation: pulse 1.6s infinite; }
-  @keyframes pulse { 50% { opacity: .3; } }
+  /* A document, not a dashboard: one white sheet on the founderfirst paper, contents on the left. */
+  .layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 36px; padding-block: 32px 72px; align-items: start; max-width: 1180px; }
+  .toc { position: sticky; top: calc(76px + env(safe-area-inset-top, 0px)); font-size: var(--fs-label); max-height: calc(100vh - 100px); overflow-y: auto; }
+  .toc .eyebrow { margin-bottom: 8px; }
+  .toc ol { list-style: none; margin: 0; padding: 0; }
+  .toc a { display: flex; gap: 8px; padding: 5px 10px; border-radius: 8px; color: var(--ink-3); text-decoration: none; border-left: 2px solid transparent; line-height: 1.35; }
+  .toc a .n { color: var(--ink-4); font-variant-numeric: tabular-nums; min-width: 18px; }
+  .toc a:hover { color: var(--ink); background: var(--white); }
+  .toc a.on { color: var(--brand-strong); border-left-color: var(--brand); background: var(--white); }
+  .toc a.pending { color: var(--ink-4); }
+  .sheet { background: var(--white); border-radius: var(--r-card-emph); box-shadow: var(--shadow-float-lg); padding: clamp(24px, 5vw, 64px); max-width: 880px; min-width: 0; }
+  .doc-kind { font-size: var(--fs-eyebrow); font-weight: 600; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--brand); }
+  .sheet h1 { font-size: clamp(30px, 4vw, 42px); margin-top: 10px; text-wrap: balance; }
+  .control { width: 100%; margin-top: 22px; border: 1px solid var(--line-2); border-radius: var(--r-card); border-collapse: separate; border-spacing: 0; overflow: hidden; }
+  .control th { width: 150px; background: var(--paper); text-transform: none; letter-spacing: 0; font-size: var(--fs-label); color: var(--ink-3); font-weight: 500; }
+  .control td, .control th { padding: 9px 14px; border-bottom: 1px solid var(--line-2); }
+  .control tr:last-child td, .control tr:last-child th { border-bottom: 0; }
+  .exec { margin-top: 28px; padding: 22px 24px; border-radius: var(--r-card); background: var(--brand-tint); border: 1px solid var(--brand-soft); }
+  .exec .eyebrow { color: var(--brand-strong); }
+  .exec .rec { font-family: var(--font-display); font-size: 20px; line-height: 1.4; margin-top: 8px; color: var(--ink); }
+  .exec .ask { margin-top: 12px; font-size: var(--fs-label); color: var(--ink-2); }
 
-  /* Glance */
-  .glance { padding-top: 36px; padding-bottom: 8px; }
-  .glance h1 { font-size: clamp(30px, 4.2vw, 46px); max-width: 22ch; margin-top: 8px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
-  .chips span { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 4px 12px; font-size: var(--fs-micro); color: var(--ink-3); }
-  .rec { margin-top: 22px; padding: 26px 28px; }
-  .rec .big { font-family: var(--font-display); font-size: clamp(19px, 2.2vw, 24px); line-height: 1.35; letter-spacing: -.01em; color: var(--white); margin-top: 8px; }
-  .rec .ask { margin-top: 16px; padding-top: 14px; border-top: 1px solid #ffffff24; font-size: var(--fs-label); color: #c9d1d9; }
-  .rec .eyebrow { color: #9fd3b0; }
-  .sum { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
-  .sum .card { padding: 16px 18px; }
-  .sum .card p { font-size: var(--fs-label); color: var(--ink-2); margin-top: 6px; }
-  .gates { display: flex; gap: 6px; margin-top: 18px; flex-wrap: wrap; align-items: center; }
-  .gates .g { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: var(--r-pill); font-size: var(--fs-micro); font-weight: 600; background: var(--white); border: 1px dashed var(--line); color: var(--ink-4); }
-  .gates .g b { font-family: var(--font-display); font-size: 14px; }
-  .gates .g.done { background: var(--brand-tint); border: 1px solid var(--brand-soft); color: var(--brand-strong); }
-
-  /* Chapters */
-  .chapters { position: sticky; top: 60px; z-index: 30; background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); margin-top: 28px; }
-  .chapters .wrap { display: flex; gap: 2px; overflow-x: auto; }
-  .chapters button { border: 0; background: none; padding: 14px 14px 12px; font: 500 var(--fs-ui) var(--font-sans); color: var(--ink-3); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
-  .chapters button .n { font-family: var(--font-display); color: var(--ink-4); margin-right: 6px; }
-  .chapters button[aria-selected="true"] { color: var(--ink); border-color: var(--brand); }
-  .chapter { padding-top: 28px; padding-bottom: 8px; }
-  .chapter[hidden] { display: none; }
-  .ch-head { margin-bottom: 18px; }
-  .ch-head h2 { margin-top: 6px; }
-  .ch-head p { color: var(--ink-3); margin-top: 6px; max-width: 70ch; }
-  .sec { margin-bottom: 16px; padding: 24px 28px; }
-  .sec > h2 { font-size: 21px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .sec > h2 .num { flex: none; width: 28px; height: 28px; border-radius: 8px; background: var(--paper); color: var(--ink-3); display: grid; place-items: center; font: 600 13px var(--font-sans); }
-  .sec.pending { background: transparent; box-shadow: none; border: 1.5px dashed var(--line); }
-  .sec.pending > h2 { color: var(--ink-4); }
-  .sec.flash { animation: flash 1.6s var(--ease-out); }
-  @keyframes flash { 0% { box-shadow: 0 0 0 3px var(--brand-soft); } 100% { box-shadow: var(--shadow-float); } }
-
-  /* Markdown body */
-  .md h3 { font-size: 16px; margin: 18px 0 8px; }
-  .md h4 { font: 600 var(--fs-eyebrow)/1.4 var(--font-sans); letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--ink-4); margin: 16px 0 6px; }
-  .md p, .md li { color: var(--ink-2); max-width: 78ch; }
-  .md p { margin: 8px 0; }
-  .md ul, .md ol { padding-left: 20px; margin: 8px 0; }
-  .md li { margin: 3px 0; }
-  .md .tbl { overflow-x: auto; margin: 12px 0; border: 1px solid var(--line-2); border-radius: var(--r-card); }
-  .md th { background: var(--paper); }
-  .md blockquote { margin: 12px 0; padding: 12px 16px; background: var(--brand-tint); border-radius: var(--r-card); border: 1px solid var(--brand-soft); }
-  .md blockquote p { margin: 2px 0; color: var(--ink); }
-  .md pre { background: var(--dark); color: #dfe6ec; padding: 16px 18px; border-radius: var(--r-card); overflow-x: auto; line-height: 1.5; position: relative; }
-  .md :not(pre) > code { background: var(--line-2); padding: 1px 6px; border-radius: 6px; color: var(--ink); }
-  .pend { display: flex; align-items: center; gap: 10px; color: var(--ink-3); font-size: var(--fs-label); }
-  .rid { display: inline-block; font: 600 11px var(--font-mono); background: var(--dark); color: var(--white); padding: 2px 7px; border-radius: 6px; }
-  .assumed { background: var(--amber-bg); color: var(--amber-strong); border: 1px solid #f1dfc2; padding: 0 6px; border-radius: 6px; font-size: .9em; }
+  /* Document body */
+  .doc section { scroll-margin-top: 84px; }
+  .doc h2 { font-size: 24px; margin: 44px 0 12px; padding-top: 28px; border-top: 1px solid var(--line-2); display: flex; gap: 12px; align-items: baseline; }
+  .doc h2 .n { color: var(--brand); font-variant-numeric: tabular-nums; }
+  .doc h3 { font-size: 17px; margin: 24px 0 8px; }
+  .doc h4 { font: 600 var(--fs-eyebrow)/1.4 var(--font-sans); letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--ink-4); margin: 20px 0 6px; }
+  .doc p, .doc li { font-size: 15.5px; line-height: 1.68; color: var(--ink-2); }
+  .doc p { margin: 10px 0; max-width: 72ch; }
+  .doc ul, .doc ol { margin: 10px 0 14px; padding-left: 24px; max-width: 72ch; }
+  .doc ul { list-style: disc; } .doc ol { list-style: decimal; }
+  .doc ul ul { list-style: circle; } .doc li { margin: 4px 0; padding-left: 4px; }
+  .doc li::marker { color: var(--brand); }
+  .doc strong { color: var(--ink); font-weight: 600; }
+  .doc .tw { overflow-x: auto; margin: 14px 0 18px; border: 1px solid var(--line-2); border-radius: var(--r-card); }
+  .doc table { font-size: 13.5px; }
+  .doc th { background: var(--paper); text-transform: none; letter-spacing: 0; font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
+  .doc td { color: var(--ink-2); }
+  .doc td:first-child { color: var(--ink); }
+  .doc blockquote { margin: 14px 0; padding: 12px 16px; background: var(--paper); border-left: 3px solid var(--brand); border-radius: 0 var(--r-card) var(--r-card) 0; }
+  .doc blockquote p { margin: 4px 0; }
+  .doc pre { background: var(--dark); color: #dfe6ec; padding: 16px 18px; border-radius: var(--r-card); overflow-x: auto; line-height: 1.55; position: relative; font-size: 12.5px; }
+  .doc :not(pre) > code { background: var(--line-2); padding: 1px 6px; border-radius: 6px; color: var(--ink); font-size: .9em; }
+  .doc hr { border: 0; border-top: 1px solid var(--line); margin: 28px 0; }
+  .doc .pending { display: flex; gap: 10px; align-items: center; padding: 14px 16px; border: 1.5px dashed var(--line); border-radius: var(--r-card); color: var(--ink-3); font-size: var(--fs-label); }
+  .doc .flash { animation: flash 1.8s var(--ease-out); }
+  @keyframes flash { 0% { background: var(--brand-tint); } 100% { background: transparent; } }
+  .rid { display: inline-block; font: 600 11px var(--font-mono); background: var(--paper); color: var(--ink); border: 1px solid var(--line); padding: 1px 6px; border-radius: 6px; white-space: nowrap; }
+  .assumed { background: var(--amber-bg); color: var(--amber-strong); border: 1px solid #f1dfc2; padding: 0 6px; border-radius: 6px; font-size: .85em; white-space: nowrap; }
   .copy { position: absolute; top: 10px; right: 10px; height: 28px; padding: 0 12px; border-radius: var(--r-pill); border: 0; background: var(--brand); color: var(--white); font: 500 12px var(--font-sans); cursor: pointer; }
-  .walk { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 56px; }
-  .walk .muted { font-size: var(--fs-label); }
-  .full .chapter[hidden] { display: block; }
-  .full .walk { display: none; }
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--dark); color: var(--white); padding: 10px 18px; border-radius: var(--r-pill); font-size: var(--fs-label); opacity: 0; transition: opacity var(--dur-base); z-index: 60; pointer-events: none; }
+  .live { display: none; } .live.on { display: inline-flex; }
+  .toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); background: var(--dark); color: var(--white); padding: 10px 18px; border-radius: var(--r-pill); font-size: var(--fs-label); opacity: 0; transition: opacity var(--dur-base); z-index: 60; pointer-events: none; }
   .toast.show { opacity: 1; }
-  @media (max-width: 900px) { .sum { grid-template-columns: 1fr; } .nav-actions .hide-sm { display: none; } .sec { padding: 18px; } }
-  @media print { .site-nav, .chapters, .walk, .copy { display: none !important; } .chapter[hidden] { display: block !important; } body { background: #fff; } .card { box-shadow: none; border: 1px solid #ddd; } }
+  @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } .toc { display: none; } }
+  @media print { .site-nav, .toc, .copy { display: none !important; } .layout { display: block; } .sheet { box-shadow: none; padding: 0; } body { background: #fff; } }
 </style>
 </head>
 <body>
@@ -82,180 +70,118 @@
   <div class="wrap nav-inner">
     <span class="logo"><span class="mark">PRD</span><span id="navTitle" class="hide-sm">Product requirements</span></span>
     <span class="spacer"></span>
-    <div class="nav-actions">
-      <span class="pill ok live" id="live">Live</span>
-      <div class="seg" role="group" aria-label="View"><button id="vWalk" aria-pressed="true">Walk</button><button id="vFull" aria-pressed="false">Full</button></div>
-      <a class="btn ghost sm hide-sm" id="mdLink" href="prd.md" download>.md</a>
-      <a class="btn solid sm" id="protoLink" href="http://localhost:4317">Prototype</a>
-    </div>
+    <span class="pill ok live" id="live">Live: updates as the session decides</span>
+    <a class="btn ghost sm hide-sm" id="mdLink" href="prd.md" download>Markdown</a>
+    <a class="btn solid sm" id="protoLink" href="http://localhost:4317">Open prototype</a>
   </div>
 </nav>
-
-<main>
-  <section class="wrap glance" id="glance"></section>
-  <div class="chapters"><div class="wrap" role="tablist" id="tabs"></div></div>
-  <div class="wrap" id="chapters"></div>
-</main>
-<div class="toast" id="toast"></div>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Contents"><div class="eyebrow">Contents</div><ol id="toc"></ol></aside>
+  <article class="sheet">
+    <div class="doc-kind">Product requirements document</div>
+    <h1 id="title">Product requirements</h1>
+    <table class="control" id="control"></table>
+    <div class="exec" id="exec"></div>
+    <div class="doc" id="doc"></div>
+  </article>
+</div>
+<div class="toast" id="toast" role="status"></div>
 <!--PRD_DATA-->
 <script>
-const CHAPTERS = [
-  { key: "why", title: "Why", line: "The problem, priced, and the people whose work changes.", nums: [2, 3] },
-  { key: "what", title: "What we build", line: "Goals, scope, the solution, and requirements with a test for each.", nums: [4, 5, 6, 7] },
-  { key: "ai", title: "AI and safety", line: "How the AI behaves, where a person decides, the data, and the gates that decide the release.", nums: [8, 9, 10, 11] },
-  { key: "launch", title: "Launch", line: "Quality bars, rollout, governance, risks, and what is still open.", nums: [12, 13, 14, 15, 16] },
-  { key: "build", title: "Build it with AI", line: "The hand-off: a plan a team or a coding agent can build from, task by task.", nums: [17, 99] },
-];
-const GATES = [["V", "Value"], ["A", "AI-fit"], ["L", "Labels"], ["U", "User-in-the-loop"], ["E", "Evals"], ["D", "Deploy"], ["B", "Build"]];
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const GATE_NAME = { V: "Value", A: "AI-fit", L: "Labels", U: "User-in-the-loop", E: "Evals", D: "Deploy and drive", B: "Build" };
 const LIVE = !window.__PRD__ && location.protocol.startsWith("http");
-let current = 0, lastText = "", full = false;
+let lastText = "";
 
-function inline(s) {
-  return esc(s)
-    .replace(/`([^`]+)`/g, "<code>$1</code>")
-    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-    .replace(/(^|[\s(])\*([^*\s][^*]*)\*/g, "$1<em>$2</em>")
-    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>')
-    .replace(/\b((?:FR|NFR|G|M|R|T|Q|US)-\d{1,3})\b/g, '<span class="rid">$1</span>')
-    .replace(/\((assumed)\)/gi, '<span class="assumed">assumed</span>');
+/* Markdown: the marked library when it loads; a plain fallback otherwise. */
+function mdToHtml(text) {
+  if (window.marked) return window.marked.parse(text, { gfm: true, breaks: false });
+  return text.split(/\n{2,}/).map((b) => `<p>${esc(b)}</p>`).join("");
 }
-function md(text) {
-  const lines = text.replace(/\r/g, "").split("\n"); let html = "", i = 0;
-  const isTable = (l) => /^\s*\|.*\|\s*$/.test(l);
-  while (i < lines.length) {
-    const l = lines[i]; let m;
-    if (/^```/.test(l)) { const b = []; i++; while (i < lines.length && !/^```/.test(lines[i])) b.push(lines[i++]); i++; html += `<pre><button class="copy">Copy</button><code>${esc(b.join("\n"))}</code></pre>`; continue; }
-    if ((m = l.match(/^(#{3,4})\s+(.*)$/))) { html += `<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`; i++; continue; }
-    if (/^\s*(-{3,}|\*{3,})\s*$/.test(l)) { i++; continue; }
-    if (isTable(l) && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i + 1] || "")) {
-      const cells = (r) => r.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
-      const head = cells(l); i += 2;
-      let t = head.every((h) => !h) ? "<table><tbody>" : "<table><thead><tr>" + head.map((c) => `<th>${inline(c)}</th>`).join("") + "</tr></thead><tbody>";
-      while (i < lines.length && isTable(lines[i])) t += "<tr>" + cells(lines[i++]).map((c) => `<td>${inline(c)}</td>`).join("") + "</tr>";
-      html += `<div class="tbl">${t}</tbody></table></div>`; continue;
-    }
-    if (/^>\s?/.test(l)) {
-      const b = []; while (i < lines.length && /^>\s?/.test(lines[i])) b.push(lines[i++].replace(/^>\s?/, ""));
-      const pend = b.join(" ").match(/^Pending: fills at gate (\w)/i);
-      html += pend ? `<div class="pend"><span class="pill plain">Gate ${pend[1]}</span>Fills in when gate ${pend[1]} is decided.</div>` : `<blockquote>${b.map((x) => `<p>${inline(x)}</p>`).join("")}</blockquote>`;
-      continue;
-    }
-    if (/^\s*([-*]|\d+\.)\s+/.test(l)) {
-      const ol = /^\s*\d+\./.test(l), b = [];
-      while (i < lines.length && /^\s*([-*]|\d+\.)\s+/.test(lines[i])) b.push(lines[i++].replace(/^\s*([-*]|\d+\.)\s+/, ""));
-      html += `<${ol ? "ol" : "ul"}>${b.map((x) => `<li>${inline(x)}</li>`).join("")}</${ol ? "ol" : "ul"}>`; continue;
-    }
-    if (!l.trim()) { i++; continue; }
-    const b = []; while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|```|>|\s*\||\s*([-*]|\d+\.)\s)/.test(lines[i])) b.push(lines[i++]);
-    if (!b.length) b.push(lines[i++]);
-    html += `<p>${inline(b.join(" "))}</p>`;
+function mdInline(s) { return window.marked ? window.marked.parseInline(s) : esc(s.replace(/\*\*/g, "")); }
+/* Light touches on text only: requirement IDs and (assumed) markers; tables get a scroll wrapper. */
+function decorate(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: (n) => (n.parentElement.closest("pre, code, .rid, .assumed") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT) });
+  const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const n of nodes) {
+    if (!/\b(?:FR|NFR|G|M|R|T|Q|US)-\d{1,3}\b|\(assumed\)/i.test(n.nodeValue)) continue;
+    const span = document.createElement("span");
+    span.innerHTML = esc(n.nodeValue).replace(/\b((?:FR|NFR|G|M|R|T|Q|US)-\d{1,3})\b/g, '<span class="rid">$1</span>').replace(/\((assumed)\)/gi, '<span class="assumed">assumed</span>');
+    n.replaceWith(...span.childNodes);
   }
-  return html;
+  root.querySelectorAll("table").forEach((t) => { if (!t.parentElement.classList.contains("tw") && !t.classList.contains("control")) { const w = document.createElement("div"); w.className = "tw"; t.replaceWith(w); w.appendChild(t); } });
+  root.querySelectorAll("pre").forEach((p) => { if (!p.querySelector(".copy")) { const b = document.createElement("button"); b.className = "copy"; b.textContent = "Copy"; p.prepend(b); } });
 }
 
 function parse(text) {
   const parts = text.replace(/\r/g, "").split(/^## /m);
   const head = parts.shift();
-  const title = (head.match(/^#\s+(.*)$/m) || [, "Product requirements"])[1];
-  const meta = (head.match(/^\*\*Client:\*\*.*$/m) || [""])[0];
+  const title = (head.match(/^#\s+(.*)$/m) || [, "Product requirements"])[1].replace(/:\s*product requirements$/i, "");
+  const metaLine = (head.match(/^\*\*Client:\*\*.*$/m) || [""])[0];
+  const meta = metaLine.split("·").map((x) => x.trim()).filter(Boolean).map((x) => { const m = x.match(/^\*\*([^*]+?):?\*\*:?\s*(.*)$/); return m ? [m[1], m[2]] : null; }).filter(Boolean);
   const quote = head.split("\n").filter((l) => /^>/.test(l)).map((l) => l.replace(/^>\s?/, ""));
   const sections = parts.map((p) => {
-    const nl = p.indexOf("\n"), heading = p.slice(0, nl).trim(), body = p.slice(nl + 1);
-    const num = /^appendix/i.test(heading) ? 99 : parseInt(heading, 10);
-    const gate = (body.match(/Pending: fills at gate (\w)/i) || [])[1] || null;
-    return { heading: heading.replace(/^\d+\.\s*/, ""), num, body, pending: Boolean(gate), gate };
+    const nl = p.indexOf("\n"), heading = (nl < 0 ? p : p.slice(0, nl)).trim(), body = nl < 0 ? "" : p.slice(nl + 1).trim();
+    const m = heading.match(/^(\d+)\.\s*(.*)$/);
+    const gate = (body.match(/^>\s*Pending: fills at gate (\w)/im) || [])[1] || null;
+    return { num: m ? m[1] : "A", name: m ? m[2] : heading, body, gate, id: "s-" + (m ? m[1] : "appendix") };
   });
   return { title, meta, quote, sections };
 }
 
-function summaryCards(sec) {
-  if (!sec || sec.pending) return `<div class="card flat pend" style="grid-column:1/-1"><span class="pill plain">Gate ${sec ? sec.gate : "V"}</span>The summary fills in as the gates are decided.</div>`;
-  return sec.body.split("\n").filter((l) => /^\|[^|]+\|[^|]+\|\s*$/.test(l) && !/^\|\s*(-+|)\s*\|/.test(l))
-    .map((l) => l.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim())).filter(([k, v]) => k && v)
-    .map(([k, v]) => `<div class="card"><div class="eyebrow">${esc(k)}</div><p>${inline(v)}</p></div>`).join("");
-}
-
-function render(text) {
+function render(text, flashIds = []) {
   const d = parse(text);
-  document.title = d.title; $("#navTitle").textContent = d.title;
-  const metaChips = d.meta.split("·").map((x) => x.replace(/\*\*/g, "").trim()).filter(Boolean).map((x) => `<span>${inline(x)}</span>`).join("");
-  const rec = d.quote.find((q) => /Recommendation/.test(q)) || "", ask = d.quote.find((q) => /Decision asked/.test(q)) || "";
-  const pendingGates = new Set(d.sections.filter((s) => s.pending).map((s) => s.gate));
-  $("#glance").innerHTML = `
-    <div class="eyebrow brand">Product requirements</div>
-    <h1>${esc(d.title.replace(/:\s*product requirements$/i, ""))}</h1>
-    <div class="chips">${metaChips}</div>
-    <div class="band-dark rec">
-      <div class="eyebrow">Recommendation</div>
-      <div class="big">${rec ? inline(rec.replace(/\*\*Recommendation\.\*\*\s*/, "")) : "Forming as the gates are decided."}</div>
-      ${ask ? `<div class="ask">${inline(ask)}</div>` : ""}
-    </div>
-    <div class="sum">${summaryCards(d.sections.find((s) => s.num === 1))}</div>
-    <div class="gates" aria-label="Gate progress">${GATES.map(([k, n]) => `<span class="g ${pendingGates.has(k) ? "" : "done"}"><b>${k}</b>${n}</span>`).join("")}</div>`;
-  $("#tabs").innerHTML = CHAPTERS.map((c, i) => `<button role="tab" data-ch="${i}" aria-selected="${i === current}"><span class="n">${i + 1}</span>${c.title}</button>`).join("");
-  $("#chapters").innerHTML = CHAPTERS.map((c, i) => {
-    const secs = d.sections.filter((s) => c.nums.includes(s.num));
-    return `<section class="chapter" id="ch-${c.key}" ${i === current ? "" : "hidden"}>
-      <div class="ch-head"><div class="eyebrow">Chapter ${i + 1} of ${CHAPTERS.length}</div><h2>${c.title}</h2><p>${c.line}</p></div>
-      ${secs.map((s) => `<article class="card sec ${s.pending ? "pending" : ""}" data-num="${s.num}"><h2><span class="num">${s.num === 99 ? "A" : s.num}</span>${esc(s.heading)}</h2><div class="md">${md(s.body)}</div></article>`).join("")}
-      <div class="walk">
-        ${i > 0 ? `<button class="btn ghost" data-go="${i - 1}">Back: ${CHAPTERS[i - 1].title}</button>` : "<span></span>"}
-        <span class="muted">Use the arrow keys to walk</span>
-        ${i < CHAPTERS.length - 1 ? `<button class="btn solid" data-go="${i + 1}">Next: ${CHAPTERS[i + 1].title}</button>` : "<span></span>"}
-      </div>
-    </section>`;
-  }).join("");
+  document.title = `${d.title}: PRD`; $("#title").textContent = d.title; $("#navTitle").textContent = d.title;
+  const done = d.sections.filter((s) => !s.gate).length;
+  const status = done === d.sections.length ? "Draft for client review" : `Live draft: ${done} of ${d.sections.length} sections complete`;
+  const version = String((d.meta.find(([k]) => /^version$/i.test(k)) || [, "0.1"])[1]).split(",")[0];
+  const rows = [...d.meta.filter(([k]) => !/^version$/i.test(k)), ["Version", version], ["Status", status]];
+  $("#control").innerHTML = rows.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${mdInline(v)}</td></tr>`).join("");
+  const rec = d.quote.find((q) => /Recommendation/.test(q)), ask = d.quote.find((q) => /Decision asked/.test(q));
+  $("#exec").innerHTML = rec
+    ? `<div class="eyebrow">Executive summary</div><div class="rec">${mdInline(rec.replace(/\*\*Recommendation\.\*\*\s*/, ""))}</div>${ask ? `<div class="ask">${mdInline(ask)}</div>` : ""}`
+    : `<div class="eyebrow">Executive summary</div><div class="rec" style="color:var(--ink-3)">The recommendation is written once every gate has been decided.</div>`;
+  $("#toc").innerHTML = d.sections.map((s) => `<li><a href="#${s.id}" class="${s.gate ? "pending" : ""}"><span class="n">${s.num === "A" ? "" : s.num + "."}</span><span>${esc(s.name)}</span></a></li>`).join("");
+  $("#doc").innerHTML = d.sections.map((s) => `<section id="${s.id}"><h2>${s.num === "A" ? "" : `<span class="n">${s.num}.</span>`}<span>${esc(s.name)}</span></h2>${s.gate
+    ? `<div class="pending"><span class="pill plain">Gate ${esc(s.gate)}</span>To be completed when gate ${esc(s.gate)}, ${esc(GATE_NAME[s.gate] || "")}, is decided.</div>`
+    : `<div class="body">${mdToHtml(s.body)}</div>`}</section>`).join("");
+  decorate($("#doc")); decorate($("#exec")); decorate($("#control"));
+  flashIds.forEach((id) => document.getElementById(id)?.classList.add("flash"));
+  spy();
   return d;
 }
 
-function go(i, scroll = true) {
-  current = Math.max(0, Math.min(CHAPTERS.length - 1, i));
-  document.querySelectorAll("#tabs button").forEach((b) => b.setAttribute("aria-selected", Number(b.dataset.ch) === current));
-  document.querySelectorAll(".chapter").forEach((c, k) => (c.hidden = k !== current));
-  if (full) { $("#ch-" + CHAPTERS[current].key).scrollIntoView({ behavior: "smooth" }); return; }
-  if (scroll) $(".chapters").scrollIntoView({ behavior: "smooth" });
+let observer;
+function spy() {
+  observer?.disconnect();
+  const links = [...document.querySelectorAll("#toc a")];
+  observer = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); }), { rootMargin: "-15% 0px -75% 0px" });
+  document.querySelectorAll(".doc section").forEach((s) => observer.observe(s));
 }
-function setFull(on) {
-  full = on; document.body.classList.toggle("full", on);
-  $("#vFull").setAttribute("aria-pressed", on); $("#vWalk").setAttribute("aria-pressed", !on);
-}
-function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2400); }
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2600); }
 
 async function poll() {
   try {
     const text = await fetch("/prd.md", { cache: "no-store" }).then((r) => r.text());
-    if (text !== lastText) {
-      const before = lastText ? parse(lastText).sections.filter((s) => !s.pending).map((s) => s.num) : null;
-      const y = scrollY; lastText = text; const d = render(text); scrollTo(0, y);
-      if (before) {
-        const fresh = d.sections.filter((s) => !s.pending && !before.includes(s.num));
-        fresh.forEach((s) => document.querySelector(`.sec[data-num="${s.num}"]`)?.classList.add("flash"));
-        if (fresh.length) toast(`Updated: ${fresh.map((s) => s.heading).join(", ")}`);
-      }
-    }
+    if (text === lastText) return;
+    const before = lastText ? parse(lastText).sections.filter((s) => !s.gate).map((s) => s.id) : null;
+    const y = scrollY; lastText = text;
+    const fresh = before ? parse(text).sections.filter((s) => !s.gate && !before.includes(s.id)) : [];
+    render(text, fresh.map((s) => s.id)); scrollTo(0, y);
+    if (fresh.length) toast(`Updated: ${fresh.map((s) => s.name).join(", ")}`);
   } catch {}
 }
-
 document.addEventListener("click", (e) => {
-  const t = e.target.closest("button"); if (!t) return;
-  if (t.dataset.ch !== undefined) go(Number(t.dataset.ch));
-  else if (t.dataset.go !== undefined) go(Number(t.dataset.go));
-  else if (t.id === "vWalk") { setFull(false); go(current); }
-  else if (t.id === "vFull") setFull(true);
-  else if (t.classList.contains("copy")) navigator.clipboard.writeText(t.nextElementSibling.textContent).then(() => { t.textContent = "Copied"; setTimeout(() => (t.textContent = "Copy"), 1500); });
-});
-document.addEventListener("keydown", (e) => {
-  if (e.target.closest("input, textarea")) return;
-  if (e.key === "ArrowRight") go(current + 1); else if (e.key === "ArrowLeft") go(current - 1);
+  const b = e.target.closest(".copy"); if (!b) return;
+  navigator.clipboard.writeText(b.parentElement.querySelector("code")?.textContent || "").then(() => { b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1500); }).catch(() => {});
 });
 
 if (LIVE) {
   $("#live").classList.add("on"); if ($("#mdLink")) $("#mdLink").href = "/prd.md"; $("#protoLink").href = "/";
   poll(); setInterval(poll, 3000);
 } else {
-  lastText = window.__PRD__ || "# Product requirements\n\n> Pending: fills at gate V."; render(lastText);
+  lastText = window.__PRD__ || "# Product requirements"; render(lastText);
   if (window.__PROTO__) { $("#protoLink").href = window.__PROTO__; $("#protoLink").target = "_blank"; const md = $("#mdLink"); if (md) md.hidden = true; }
 }
 </script>

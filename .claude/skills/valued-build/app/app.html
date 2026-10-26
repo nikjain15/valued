@@ -52,6 +52,15 @@
   .tbl tr.sel td { background: var(--brand-tint); }
   .tbl tr.click { cursor: pointer; }
   .num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 12.5px; }
+  .design { text-align: left; border: 1.5px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; background: var(--white); cursor: pointer; font: inherit; color: inherit; }
+  .design[aria-pressed="true"] { border-color: var(--brand); box-shadow: var(--focus-ring); }
+  .design .t { font-weight: 600; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .design .path { font: 500 11.5px var(--font-mono); color: var(--ink-3); margin-top: 8px; background: var(--paper); border-radius: 8px; padding: 6px 8px; }
+  .design p { font-size: var(--fs-label); color: var(--ink-2); margin-top: 8px; }
+  .design .pro { color: var(--brand-strong); } .design .con { color: var(--error); }
+  .linkbtn { background: none; border: 0; color: var(--ink-3); cursor: pointer; font: 500 var(--fs-label) var(--font-sans); text-decoration: underline; }
+  .drop { border: 1.5px dashed var(--line); border-radius: var(--r-card); padding: 18px; text-align: center; color: var(--ink-3); background: var(--paper); }
+  .drop.over { border-color: var(--brand); background: var(--brand-tint); }
   .gate { border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; background: var(--white); }
   .gate .top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
   .gate .q { font-weight: 600; }
@@ -110,6 +119,7 @@
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" aria-selected="true" data-tab="work">Workbench</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="evals">Evals</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="data">Your data</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="gov">Governance</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="audit">Audit log</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="how">How it works</button>
@@ -143,13 +153,12 @@
       <div class="card emph stack">
         <div class="row between">
           <div><div class="eyebrow">Release readiness</div><h2 style="margin-top:6px">Is it safe to release?</h2></div>
-          <div class="seg" role="group" aria-label="Test set"><button data-set="golden" aria-pressed="true" id="setDev">Development set</button><button data-set="holdout" aria-pressed="false" id="setHold">Sealed holdout</button></div>
+          <div class="seg" role="group" aria-label="Test set"><button data-set="golden" aria-pressed="true" id="setDev">Development set</button><button data-set="holdout" aria-pressed="false" id="setHold">Sealed holdout</button><button data-set="custom" aria-pressed="false" id="setCustom" hidden>Your data</button></div>
         </div>
         <p class="small muted" id="setInfo"></p>
-        <div class="row">
-          <div class="seg" role="group" aria-label="Engine" id="engineSeg"></div>
-          <span class="small muted" id="engineDesc"></span>
-        </div>
+        <div><div class="label">Which design are we testing?</div><p class="small muted" style="margin-top:2px">Three ways to build the same product. Run each on the same test set and compare them on the scoreboard below.</p></div>
+        <div class="three" id="engineSeg" role="group" aria-label="Design"></div>
+        <p class="small muted" id="engineDesc"></p>
         <div class="row"><button class="btn solid" id="runTest">Run test</button><button class="btn ghost sm" id="stopTest" hidden>Stop</button><span class="small muted" id="runNote"></span></div>
         <div class="progress" id="prog" hidden><div></div></div>
       </div>
@@ -164,6 +173,31 @@
       </div>
 
       <div id="detail"></div>
+    </div>
+  </section>
+
+  <!-- Your data -->
+  <section class="panel" id="data" hidden>
+    <div class="stack">
+      <div class="banner ok">Files you add here stay in this browser tab. Nothing is uploaded or stored. For PDFs, Word files or real client data, put them in the session's <strong>&nbsp;inputs&nbsp;</strong> folder instead; VALUED reads them during the run and de-identifies before anything is published.</div>
+      <div class="two">
+        <div class="card stack">
+          <div><div class="eyebrow">Test with your own cases</div><h3 style="margin-top:6px">Labelled requests</h3>
+          <p class="small muted" style="margin-top:4px">A CSV or JSON file of real requests, each with the right outcome. The same release gates then run on your data, for every design and model.</p></div>
+          <label class="drop" id="caseDrop"><input type="file" id="caseFile" accept=".csv,.json,text/csv,application/json" hidden>Drop a file here, or <strong>choose a file</strong></label>
+          <div><div class="label">Format</div><pre class="num" style="background:var(--paper);border-radius:8px;padding:10px;margin-top:6px;overflow-x:auto">text,expected,source,language
+"How much is an international wire?",answer,S2-wires,en
+"I never authorised this payment",escalate,,en</pre>
+          <p class="small muted">expected is answer, human or escalate. source is the approved source id for answers. Any extra column (language, channel, segment) becomes a group the gates check.</p></div>
+          <div id="caseSummary"></div>
+        </div>
+        <div class="card stack">
+          <div><div class="eyebrow">Ground it in your documents</div><h3 style="margin-top:6px">Knowledge sources</h3>
+          <p class="small muted" style="margin-top:4px">Text or Markdown policy documents. Designs B and C read them at once; design A only knows the sources it was built with, so its rules need a rebuild to use them.</p></div>
+          <label class="drop" id="srcDrop"><input type="file" id="srcFile" accept=".txt,.md,text/plain,text/markdown" multiple hidden>Drop files here, or <strong>choose files</strong></label>
+          <div class="tbl"><table><thead><tr><th>Source</th><th>Origin</th><th>Excerpt</th><th></th></tr></thead><tbody id="srcList"></tbody></table></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -230,12 +264,13 @@ const MODELS = [
   { id: "claude-opus-5-5", name: "Claude Opus 5.5", short: "Opus 5.5", tier: "complex", pin: 4, pout: 20, note: "most capable" },
 ];
 const ENGINES = [
-  { id: "rules", name: "Rules only", desc: "Deterministic triggers and source matching. No AI." },
-  { id: "ai", name: "AI only", desc: "The selected model reads each request and decides, with nothing in front of it." },
-  { id: "guard", name: "AI with rules guard", desc: "The model decides; the rules' escalation check overrides it, and no answer ships without a valid source." },
+  { id: "rules", letter: "A", name: "Rules only", path: "request > rules > outcome", what: "Keyword rules written from the session's escalation triggers and approved sources decide everything. No AI.", pro: "Predictable, instant, free, easy to explain.", con: "Misses phrasing nobody wrote a rule for." },
+  { id: "ai", letter: "B", name: "AI only", path: "request > model > outcome", what: "The selected model reads each request and decides on its own.", pro: "Understands any phrasing.", con: "If it misses an escalation, nothing catches it." },
+  { id: "guard", letter: "C", name: "AI with rules guard", rec: true, path: "request > rules check > model > source check > outcome", what: "Rules check every request for escalations first and overrule the model; the model handles the rest; no answer ships without an approved source.", pro: "Flexible like AI, safe like rules.", con: "Costs and latency of a model call on most requests." },
 ];
-let CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules" }, ROUTER = null, AI = null, READY = false, GOLDEN = [], HOLDOUT = [];
+let CUSTOM = [], BASE_SOURCES = 0, CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules" }, ROUTER = null, AI = null, READY = false, GOLDEN = [], HOLDOUT = [];
 let current = null, stats = { decisions: 0, approved: 0, edited: 0, escalated: 0 }, LOG = [], evalSet = "golden", engine = "rules", RUNS = [], selRun = null, ctl = null;
+const rowsFor = (set) => (set === "golden" ? GOLDEN : set === "holdout" ? HOLDOUT : CUSTOM);
 const model = () => MODELS.find((m) => m.id === $("#model").value) || MODELS[0];
 
 async function load(name, fallback) {
@@ -305,7 +340,7 @@ async function boot() {
   $("#enginePill").textContent = ENGINE_LABEL[BUILD.engine] || "Rules decide";
   $("#foot").textContent = `${c.title || "Prototype"} · version ${c.version || "proto-0.1"} · synthetic data, not for production use.`;
   if (HOSTED) { const prd = window.__VALUED__.prdUrl; $("#prdLink").hidden = !prd; if (prd) $("#prdLink").href = prd; }
-  renderHow(); renderFaq(); renderGov(); renderEvalControls(); renderBoard();
+  renderHow(); renderFaq(); renderGov(); renderEvalControls(); renderBoard(); renderSources();
   if (!current) $("#result").innerHTML = READY
     ? `<div class="empty"><div class="ring">?</div><p>Run a request to see the decision, the cited source, the draft and who signs it off.</p></div>`
     : `<div class="empty"><div class="ring">·</div><p>The decision logic is built at gate E, from the labels and the never list decided in the session.</p></div>`;
@@ -379,7 +414,7 @@ function renderLog() {
 const norm = (g) => Object.fromEntries(Object.entries(g || {}).map(([k, v]) => [k.replace(/_/g, "").toLowerCase(), v]));
 const pct = (a, b) => (b ? Math.round((a / b) * 100) : 100);
 function gateDefs() {
-  const g = norm(GATES), lang = g.riskiestslice || "group";
+  const g = norm(GATES), lang = ({ lang: "languages", language: "languages", channel: "channels", region: "regions", segment: "segments" })[g.riskiestslice] || g.riskiestslice || "groups";
   return [
     { key: "escRecall", q: "Catches every escalation", bar: g.escalationrecall, kind: "min", why: "A missed complaint, fraud or vulnerability case is the costliest error, so it carries the highest bar." },
     { key: "escPrecision", q: "Keeps false alarms low", bar: g.escalationprecision, kind: "min", why: "Too many false escalations swamp the team and people stop trusting the flag." },
@@ -401,7 +436,7 @@ function score(rows, preds) {
   for (const r of expEsc) for (const [k, v] of Object.entries(r.slices || {})) (groups[`${k}=${v}`] ||= []).push(r);
   const allGroups = Object.entries(groups).map(([k, set]) => ({ k, hit: set.filter((r) => P(r).verdict === "escalate").length, n: set.length })).map((x) => ({ ...x, v: x.n ? x.hit / x.n : 1 }));
   const slice = g.riskiestslice, sl = allGroups.filter((x) => x.k.startsWith(slice + "="));
-  const worst = allGroups.reduce((a, b) => (b.v < a.v ? b : a), { k: "none", v: 1, hit: 0, n: 0 });
+  const worst = allGroups.length ? allGroups.reduce((a, b) => (b.v < a.v || (b.v === a.v && b.n < a.n) ? b : a)) : { k: "none", v: 1, hit: 0, n: 0 };
   const correct = rows.filter((r) => P(r).verdict === r.expected && (r.expected !== "answer" || P(r).source === r.source)).length;
   const noSource = rows.filter((r) => P(r).verdict === "answer" && !ids.has(P(r).source));
   const never = rows.filter((r) => isNever(r) && P(r).verdict === "answer");
@@ -425,14 +460,16 @@ const barText = (d) => (d.kind === "min" ? `must be at least ${Math.round(d.bar 
 const valText = (d) => (d.kind === "min" ? `${Math.round(d.value * 100)}%` : d.kind === "max" ? `${Math.round(d.value * 100)} pts` : String(d.value));
 
 function renderEvalControls() {
-  const rows = evalSet === "golden" ? GOLDEN : HOLDOUT, esc_ = rows.filter((r) => r.expected === "escalate").length;
+  const rows = rowsFor(evalSet), esc_ = rows.filter((r) => r.expected === "escalate").length;
   $("#setDev").textContent = `Development set (${GOLDEN.length})`; $("#setHold").textContent = `Sealed holdout (${HOLDOUT.length})`;
-  $("#setInfo").textContent = evalSet === "golden"
+  $("#setCustom").hidden = !CUSTOM.length; $("#setCustom").textContent = `Your data (${CUSTOM.length})`;
+  $("#setInfo").textContent = evalSet === "custom" ? `${rows.length} requests from your file: ${esc_} should escalate, ${rows.filter((r) => r.expected === "answer").length} should be answered, ${rows.filter((r) => r.expected === "human").length} need a person.` : evalSet === "golden"
     ? `${rows.length} test requests, each labelled with the right outcome before anything was built: ${esc_} should escalate, ${rows.filter((r) => r.expected === "answer").length} should be answered, ${rows.filter((r) => r.expected === "human").length} need a person. The system was tuned on these.`
     : `${rows.length} requests the system never saw while it was being built or fixed. This is the honest score; individual requests stay hidden here so nobody tunes to them.`;
-  $("#engineSeg").innerHTML = ENGINES.map((e) => `<button data-engine="${e.id}" aria-pressed="${e.id === engine}">${e.name}</button>`).join("");
-  const e = ENGINES.find((x) => x.id === engine);
-  $("#engineDesc").textContent = e.desc + (engine !== "rules" ? ` Model: ${model().name}.` : "");
+  $("#engineSeg").innerHTML = ENGINES.map((e) => `<button class="design" data-engine="${e.id}" aria-pressed="${e.id === engine}">
+      <span class="t">Design ${e.letter}: ${e.name}${e.rec ? ' <span class="pill ok">Recommended</span>' : ""}</span>
+      <div class="path">${esc(e.path)}</div><p>${esc(e.what)}</p><p><span class="pro">+</span> ${esc(e.pro)}<br><span class="con">-</span> ${esc(e.con)}</p></button>`).join("");
+  $("#engineDesc").textContent = engine !== "rules" ? `Model for designs B and C: ${model().name}. Change it in the top bar.` : "Design A uses no model.";
   $("#runTest").disabled = !READY || (engine !== "rules" && !AI);
   $("#runNote").textContent = engine !== "rules" && !AI ? (HOSTED ? "AI needs this page opened in Claude." : "AI runs in the published version, or here with an API key.") : "";
 }
@@ -446,7 +483,7 @@ function classifyPrompt(r) {
 }
 const parseJson = (t) => { try { return JSON.parse(t.slice(t.indexOf("{"), t.lastIndexOf("}") + 1)); } catch { return null; } };
 async function runTest() {
-  const rows = evalSet === "golden" ? GOLDEN : HOLDOUT, m = model(), useAI = engine !== "rules";
+  const rows = rowsFor(evalSet), m = model(), useAI = engine !== "rules";
   const rec = { id: Date.now(), set: evalSet, engine, model: useAI ? m : null, preds: {}, lat: {}, cost: 0, answeredBy: new Set(), at: new Date() };
   ctl = new AbortController(); $("#runTest").disabled = true; $("#stopTest").hidden = !useAI; $("#prog").hidden = false;
   const prog = (k) => { $("#prog").firstElementChild.style.width = `${Math.round((k / rows.length) * 100)}%`; $("#runNote").textContent = `${k} of ${rows.length} requests${useAI ? ` scored by ${m.short}` : ""}`; };
@@ -484,7 +521,7 @@ async function runTest() {
   $("#runTest").disabled = false; $("#stopTest").hidden = true; $("#prog").hidden = true;
   renderBoard();
 }
-function runName(r) { const e = ENGINES.find((x) => x.id === r.engine); return `${e.name}${r.model ? ` · ${r.model.short}` : ""}`; }
+function runName(r) { const e = ENGINES.find((x) => x.id === r.engine); return `Design ${e.letter}: ${e.name}${r.model ? ` · ${r.model.short}` : ""}`; }
 function renderBoard() {
   const runs = RUNS.filter((r) => r.set === evalSet);
   $("#board").innerHTML = runs.length ? runs.map((r) => `<tr class="click ${r.id === selRun ? "sel" : ""}" data-run="${r.id}">
@@ -502,7 +539,7 @@ function renderBoard() {
 function renderDetail() {
   const r = RUNS.find((x) => x.id === selRun && x.set === evalSet);
   if (!r) { $("#detail").innerHTML = ""; return; }
-  const rows = evalSet === "golden" ? GOLDEN : HOLDOUT, sealed = evalSet === "holdout";
+  const rows = rowsFor(evalSet), sealed = evalSet === "holdout";
   const failing = r.gates.filter((g) => !g.pass);
   const verdicts = ["answer", "human", "escalate"];
   const headline = r.pass ? `<div class="banner ok"><strong>Ready to release.</strong> All ${r.gates.length} gates pass on ${r.n} ${sealed ? "unseen" : "development"} requests.</div>`
@@ -529,6 +566,57 @@ function renderDetail() {
     <p class="small muted">Reproduce: the same ${r.n} labelled requests and gates are in the PRD's evaluation section; locally, <span class="num">node out/proto/eval.js${sealed ? " holdout.json" : ""}</span> scores the rules.</p>
   </div>`;
 }
+
+/* ---------- Your data (browser only) ---------- */
+function parseCsv(text) {
+  const rows = []; let row = [], cell = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) { if (ch === '"' && text[i + 1] === '"') { cell += '"'; i++; } else if (ch === '"') q = false; else cell += ch; }
+    else if (ch === '"') q = true; else if (ch === ",") { row.push(cell); cell = ""; }
+    else if (ch === "\n" || ch === "\r") { if (ch === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+    else cell += ch;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  const head = (rows.shift() || []).map((h) => h.trim().toLowerCase());
+  return rows.filter((r) => r.some((c) => c.trim())).map((r) => Object.fromEntries(head.map((h, i) => [h, (r[i] || "").trim()])));
+}
+async function loadCases(file) {
+  const text = await file.text();
+  let raw = [];
+  try { raw = file.name.toLowerCase().endsWith(".json") ? JSON.parse(text) : parseCsv(text); } catch { raw = []; }
+  const allowed = ["answer", "human", "escalate"];
+  CUSTOM = (Array.isArray(raw) ? raw : []).map((r, i) => {
+    const slices = { ...(r.slices || {}) };
+    for (const [k, v] of Object.entries(r)) if (!["text", "expected", "source", "id", "slices"].includes(k) && v !== "") slices[k] = String(v);
+    return { id: r.id || `c${String(i + 1).padStart(2, "0")}`, text: String(r.text || ""), expected: String(r.expected || "").toLowerCase(), source: r.source || null, slices };
+  }).filter((r) => r.text && allowed.includes(r.expected));
+  const bad = (Array.isArray(raw) ? raw.length : 0) - CUSTOM.length;
+  $("#caseSummary").innerHTML = CUSTOM.length
+    ? `<div class="banner ok"><strong>${CUSTOM.length} cases loaded</strong> from ${esc(file.name)}: ${CUSTOM.filter((r) => r.expected === "escalate").length} escalate, ${CUSTOM.filter((r) => r.expected === "answer").length} answer, ${CUSTOM.filter((r) => r.expected === "human").length} person.${bad ? ` ${bad} rows skipped (missing text or an outcome other than answer, human, escalate).` : ""}</div><button class="btn solid" id="toEvals" style="margin-top:10px">Run evals on your data</button>`
+    : `<div class="banner bad">No usable rows in ${esc(file.name)}. Check the format above.</div>`;
+  renderEvalControls();
+}
+async function loadSources(files) {
+  let n = SOURCES.filter((x) => x.uploaded).length;
+  for (const f of files) {
+    const text = (await f.text()).replace(/\s+/g, " ").trim().slice(0, 2500);
+    if (text) SOURCES.push({ id: `U${++n}-${f.name.replace(/\.[^.]+$/, "").replace(/[^a-z0-9]+/gi, "-").slice(0, 24).toLowerCase()}`, text, uploaded: true, file: f.name });
+  }
+  renderSources(); toast(`${files.length} document${files.length === 1 ? "" : "s"} added as sources`);
+}
+function renderSources() {
+  $("#srcList").innerHTML = SOURCES.map((x) => `<tr><td class="num">${esc(x.id)}</td><td>${x.uploaded ? `<span class="pill info">${esc(x.file)}</span>` : `<span class="pill plain">session</span>`}</td><td class="small">${esc(x.text.slice(0, 90))}${x.text.length > 90 ? "..." : ""}</td><td>${x.uploaded ? `<button class="linkbtn" data-rmsrc="${esc(x.id)}">Remove</button>` : ""}</td></tr>`).join("");
+  renderHow();
+}
+function wireDrop(label, input, handler) {
+  input.addEventListener("change", () => input.files.length && handler(input.files));
+  label.addEventListener("dragover", (e) => { e.preventDefault(); label.classList.add("over"); });
+  label.addEventListener("dragleave", () => label.classList.remove("over"));
+  label.addEventListener("drop", (e) => { e.preventDefault(); label.classList.remove("over"); if (e.dataTransfer.files.length) handler(e.dataTransfer.files); });
+}
+wireDrop($("#caseDrop"), $("#caseFile"), (fs) => loadCases(fs[0]));
+wireDrop($("#srcDrop"), $("#srcFile"), (fs) => loadSources([...fs]));
 
 /* ---------- Governance ---------- */
 function renderGov() {
@@ -583,13 +671,15 @@ document.addEventListener("click", async (e) => {
   const tr = e.target.closest("tr[data-run]"); if (tr) { selRun = Number(tr.dataset.run); renderBoard(); return; }
   const t = e.target.closest("button"); if (!t) return;
   if (t.dataset.tab) return showTab(t.dataset.tab);
-  if (t.dataset.sample !== undefined) { $("#input").value = CASE.samples[t.dataset.sample].text; return run(); }
+  if (t.dataset.sample !== undefined) { $("#input").value = CASE.samples[t.dataset.sample].text; $("#input").focus(); return; }
   if (t.id === "run") return run();
   if (t.id === "editBtn") { const d = $("#draft"); d.dataset.original = d.dataset.original ?? d.innerText; d.contentEditable = "true"; d.focus(); t.textContent = "Editing"; return; }
   if (t.dataset.act) return act(t.dataset.act);
-  if (t.dataset.set) { evalSet = t.dataset.set; $("#setDev").setAttribute("aria-pressed", evalSet === "golden"); $("#setHold").setAttribute("aria-pressed", evalSet === "holdout"); renderEvalControls(); renderBoard(); return; }
+  if (t.dataset.set) { evalSet = t.dataset.set; $("#setDev").setAttribute("aria-pressed", evalSet === "golden"); $("#setHold").setAttribute("aria-pressed", evalSet === "holdout"); $("#setCustom").setAttribute("aria-pressed", evalSet === "custom"); renderEvalControls(); renderBoard(); return; }
   if (t.dataset.engine) { engine = t.dataset.engine; renderEvalControls(); return; }
   if (t.id === "runTest") return runTest();
+  if (t.dataset.rmsrc) { SOURCES = SOURCES.filter((x) => x.id !== t.dataset.rmsrc); renderSources(); return; }
+  if (t.id === "toEvals") { evalSet = "custom"; showTab("evals"); renderEvalControls(); renderBoard(); document.querySelectorAll("[data-set]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.set === "custom")); return; }
   if (t.id === "stopTest") return ctl?.abort();
 });
 document.addEventListener("change", (e) => { if (e.target.id === "missOnly") renderDetail(); if (e.target.id === "model") { renderEvalControls(); renderHow(); } });

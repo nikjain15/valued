@@ -25,8 +25,15 @@ description: VALUED gate L. Define ground truth before any model is built, recom
 2. **Labelling-approach recommendation** in the standard format: for example two labellers with
    adjudication, one expert labeller with spot checks, or synthetic now and real data later; each with
    its trade-off (quality, cost, speed, privacy). Our preference, why, what would change our mind.
-3. Write `out/proto/sources.json`: 6 to 8 short synthetic source items, each with an `id` and `text`.
-4. Write `out/proto/golden.json` **now, before any system exists**: 40 rows, each
+3. Write `out/proto/sources.json`: 6 to 8 short source items, each with an `id` and `text`. **If `inputs/`
+   holds client documents, build the sources from them** (one item per policy or article that the
+   first-wave use case needs, quoting the governing passage, with `"origin": "inputs/<file>"`); read PDFs
+   directly and Word files via `textutil -convert txt -stdout <file>`. Otherwise write synthetic items.
+4. **If `inputs/` holds sample requests or transcripts**, draw the golden rows from them first:
+   de-identify (names, account and card numbers, addresses, dates of birth), keep the phrasing, and set
+   `"origin"`. Propose each row's label from the label spec and mark it `"label": "proposed"` until the
+   client's labeller confirms it; fill the remaining rows synthetically and say how many are real.
+   Write `out/proto/golden.json` **now, before any system exists**: 40 rows, each
    `{ "id", "text", "expected": "answer|human|escalate", "source": "<id or null>", "slices": {...} }`.
    At least 8 rows in a second language the client serves, at least 6 implied complaints or distress
    without the obvious keyword, at least 5 adversarial rows. Hand-written variety.

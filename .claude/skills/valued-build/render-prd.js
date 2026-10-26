@@ -28,6 +28,7 @@ if (!artifact) {
   html = [
     `<title>${title} PRD</title>`,
     '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap">',
+    '<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>',
     `<style>\n:root { color-scheme: light; }\n${css.replace(/^@import[^\n]*\n/m, "")}\n${style}\n</style>`,
     body.replace(/<a class="btn ghost sm hide-sm" id="mdLink"[^>]*>[^<]*<\/a>/, "").replace("<!--PRD_DATA-->", () => dataTag),
   ].join("\n");
