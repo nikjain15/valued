@@ -67,7 +67,8 @@ client to accept or overrule.
    Write `"shape"` to `out/proto/case.json`.
    **Assistants** (an output): design the first wave as 3 to 6 named assistants, one job each, in the
    order they run. The first check is always a fixed-rules safety guard (escalation and the never list);
-   every assistant that reads or writes language is a model; matching, completeness and ranking stay on
+   every assistant that reads or writes free language is a model, except the safety guard and the matchers,
+   which stay on fixed rules; matching, completeness and ranking stay on
    rules unless the rules demonstrably fail. Show them as a table (assistant, rules or AI, job, may,
    never, which release check measures it) and write them to `case.json` as `agents`:
    `{ "name", "kind": "rules" | "model", "job", "may": [], "never": [], "gate" }`, using the client's words

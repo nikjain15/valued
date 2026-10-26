@@ -23,9 +23,11 @@ const SECTIONS = [
   [16, "Dependencies, open questions and assumptions", "B"],
   [17, "Build it with AI", "B"],
 ];
-const today = new Date().toISOString().slice(0, 10);
+const d = new Date(), today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const out = [
-  `# ${caseLine.replace(/\s+--\S+/g, "").trim()}: product requirements`,
+  "# (use case, from gate V): product requirements",
+  "",
+  `<!-- Case: ${caseLine.replace(/\s+--\S+/g, "").trim()} -->`,
   "",
   `**Client:** (from gate V) · **Version:** 0.1, live draft · **Owner:** product lead · **Date:** ${today} · **Source:** VALUED run`,
   "",

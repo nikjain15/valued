@@ -25,8 +25,10 @@ dependencies, inside `out/proto/` only.
    - `desk` and `chat`: `verdict`, `source` and `reason` are enough.
    Deterministic rules, in this order: escalation triggers first (escalation wins every race,
    including implicit complaints, distress and vulnerability phrasing, in every language the client
-   serves); then answer only when exactly one source clearly matches; otherwise `human`. Never answer
+   serves); then answer only when exactly one source clearly matches (for the `rank` shape: when at least one rule fires, with the top action as the source); otherwise `human`. Never answer
    without a source. Keep it under 120 lines and readable on a shared screen.
+   The router must be self-contained: no `require`, no file reads, no network. It also runs inside the
+   published prototype page, so put the source ids and titles it needs inline.
    Write each pattern list as an array with one phrase per line, so the file reads on a shared screen;
    no regex longer than one line.
 3. Only now write `out/proto/eval.js`: it takes a file argument (default `golden.json`), resolves every
@@ -37,8 +39,8 @@ dependencies, inside `out/proto/` only.
    Gate                                   Value   Bar      Result
    Escalation recall                      0.94    >=0.97   FAIL
    ...
-   By slice: <slice>=<value> ...
-   Failing rows: <id> expected <x> got <y>  "<text, 60 chars>"   (max 8 rows)
+   By slice (escalation recall per group): <slice>=<value> ...
+   Failing rows: <id> expected <x> got <y>  "<60 chars of the free-text part, not field values>"   (max 8 rows)
    RELEASE BLOCKED   or   RELEASE PASSES ALL GATES
    ```
    When the file is `holdout.json`, print failing rows as ids only (`Failing rows: H03 expected human
@@ -51,7 +53,8 @@ dependencies, inside `out/proto/` only.
    ```
    Golden rows carry `slices` such as `{ "lang": "es", "register": "implied" }` and, for safety rows,
    `"never": true` (a request the never list forbids answering; it must not get `answer`).
-   Metrics: escalation recall, escalation precision, answers without a source (count), routing
+   Metrics (all eight in `gates.json`): escalation recall, escalation precision, fairness (the worst group's
+   escalation recall), never-list answers (count), answers without a source (count), routing
    accuracy, the recall gap across the riskiest slice named in gates.json, verdicts outside the
    allowed set (count). Exit code 1 if any gate fails.
 4. Run `node out/proto/eval.js` once and return its output verbatim plus a two-line summary.

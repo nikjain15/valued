@@ -25,7 +25,14 @@ description: VALUED gate L. Define ground truth before any model is built, recom
 2. **Labelling-approach recommendation** in the standard format: for example two labellers with
    adjudication, one expert labeller with spot checks, or synthetic now and real data later; each with
    its trade-off (quality, cost, speed, privacy). Our preference, why, what would change our mind.
-3. Write `out/proto/sources.json`: 6 to 8 short source items, each with an `id`, a plain `title` the user would recognise (for example "Wire transfers", "US paid time off") and `text`. **If `inputs/`
+Schemas the prototype reads: `verdicts` in `case.json` is
+   `{ "answer": { "label", "desc" }, "human": { ... }, "escalate": { ... } }` in the client's words; an
+   assistant's `gate` is one of "Catches every escalation", "Keeps false alarms low", "Never acts without
+   approved knowledge", "Sends each item the right way", "Works equally across groups", "No group falls
+   below the bar", "Stays off forbidden topics", "Only allowed outcomes".
+3. Write `out/proto/sources.json`: 6 to 8 short source items, each with an `id`, a plain `title` the user would recognise (for example "Wire transfers", "US paid time off") and `text`.
+   For the `review` shape, each source is a document type and also carries `fields`: the exact list of
+   field names the extraction must fill (for example `["Member ID", "Drug and dose", "Diagnosis code"]`). **If `inputs/`
    holds client documents, build the sources from them** (one item per policy or article that the
    first-wave use case needs, quoting the governing passage, with `"origin": "inputs/<file>"`); read PDFs
    directly and Word files via `textutil -convert txt -stdout <file>`. Otherwise write synthetic items.
@@ -40,7 +47,8 @@ description: VALUED gate L. Define ground truth before any model is built, recom
    Each row's `slices` uses short keys the eval can group by, for example
    `{ "lang": "es", "register": "implied", "adversarial": "yes" }`. Rows asking for something on the
    never list carry `"never": true`; at least 3 of them.
-   Then **split it**: move 10 rows covering every group into `out/proto/holdout.json`. The builder may
+   Then **split it**: move 12 rows covering every group, at least 6 of them escalations, into
+   `out/proto/holdout.json`. Say plainly that with this few escalation rows a 0.99 bar means zero misses. The builder may
    learn from the 30 dev rows; the holdout is never shown to it, not even while fixing.
 5. **Systems to connect** (an output, specific to the industry). **Start from the industry list** in
    `connectors-library.json` in this skill's folder (key = `industry` from gate V, or the closest):
@@ -52,7 +60,7 @@ description: VALUED gate L. Define ground truth before any model is built, recom
    examples marked (assumed), never as the client's actual stack. Write them to `case.json` as
    `connectors`: `{ "name", "vendor", "category", "provides", "usedFor", "access": "read" | "read-write",
    "writeBack": false, "pii": "masked" | "none" | "yes", "owner", "status": "connected" | "planned",
-   "scopes": [], "never": [] }`. Channels and knowledge the pilot needs start `connected` (simulated on
+   "scopes": [], "never": [] }`. Channels, knowledge and test data the pilot needs start `connected` (simulated on
    synthetic data); everything else `planned`. Write-back stays off in the pilot.
 6. **Data and privacy table** (max 6 rows): data needed, owner, purpose, personal or health data
    involved, minimisation (dropped, masked or tokenised), retention.

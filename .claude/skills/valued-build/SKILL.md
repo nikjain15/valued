@@ -24,8 +24,8 @@ in the orchestrator). This step fills what needs every gate at once. Target: 3 m
    is not running, start it in the background: `node out/proto/server.js`. If `router.js` uses `export`,
    convert it to `module.exports = { decide }`. Fill any `case.json` field a gate left empty (fields
    listed in the orchestrator's table). If `connectors` is missing or has fewer than 6, fill it from
-   `.claude/skills/valued-labels/connectors-library.json` for the case's `industry`: channels and
-   knowledge `connected`, the rest `planned`. The Data and tools page must never be empty.
+   `.claude/skills/valued-labels/connectors-library.json` for the case's `industry`: channels,
+   knowledge and test data `connected`, the rest `planned`. The Data and tools page must never be empty.
    For each sweep in `sweeps`, write 2 to 3 `findings` from the synthetic world of this run:
    `{ "title", "why", "cite", "due" }`, where `why` states the facts the sweep read, `cite` names the
    rule or source, and `due` is a clock when one applies ("Due in 2 days"). If `clocks` is missing,
@@ -51,7 +51,8 @@ in the orchestrator). This step fills what needs every gate at once. Target: 3 m
      misses by id only, never their text. Row counts are current counts.
    - Section 17 is for a coding agent: concrete tasks in order, each with the requirement it implements
      and a command that proves it is done. Fill the kickoff prompt with the real use case.
-   - Tables at most 12 rows. Telegraphic, verb-first. No em-dashes.
+   - Tables at most 12 rows; where a gate produced more (governance often does), put open items first and
+     merge the rest. Telegraphic, verb-first. No em-dashes.
 4. **Render the standalone copy:** `node .claude/skills/valued-build/render-prd.js out/prd.md
    out/prd.html`.
 5. **Publish the hosted versions** (about a minute), so the client sees a real product and a real document:

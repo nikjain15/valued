@@ -122,7 +122,11 @@ request ─▶ escalation guard ─▶ router (one source?) ─▶ draft (cited 
 **Never list**
 - <item>
 
-**Model contract (if the engine uses a model):** input = request + one cited source; output = 2 to 4 sentences from that source only, or `NO_ANSWER`; refusal or error falls back to a person, never to a guess. Model: <id>, low effort, server-side fallback on.
+**Model contract (one per shape; keep the one that applies):**
+- desk and chat: input = the request + one cited source; output = 2 to 4 sentences from that source only, or `NO_ANSWER`.
+- review: input = the document + the type's field list; output = each field's value with the exact evidence span, empty when absent; a value without evidence is dropped.
+- rank: input = the record's facts + the rule that fired; output = a two-sentence talking point using only those facts.
+In every shape, a refusal or error falls back to a person, never to a guess. Model: <id>, low effort, server-side fallback on.
 
 ## 9. Human in the loop
 
@@ -152,7 +156,7 @@ request ─▶ escalation guard ─▶ router (one source?) ─▶ draft (cited 
 
 | System | Category | Provides | Access | Personal data | Owner | Pilot status |
 |---|---|---|---|---|---|---|
-| <system (vendor e.g., assumed)> | <channel / knowledge / record / testing / people> | <what> | <read-only> | <masked> | <role> | <connected / planned> |
+| <system (vendor e.g., assumed)> | <channel / knowledge / record / testing / collab> | <what> | <read-only> | <masked> | <role> | <connected / planned> |
 
 **Golden set:** <n> dev rows plus <n> sealed holdout rows; groups: <list with counts>. Labelled <approach>. Synthetic until <client decision>.
 

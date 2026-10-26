@@ -429,9 +429,15 @@ async function load(name, fallback) {
   if (HOSTED) return window.__VALUED__[name] ?? fallback;
   try { const r = await fetch("/" + name, { cache: "no-store" }); if (!r.ok) return fallback; return name.endsWith(".js") ? r.text() : r.json(); } catch { return fallback; }
 }
+/* The router also runs in the browser. If it reads its data files from disk anyway, hand it the copies already loaded. */
 function compileRouter(src) {
   if (!src) return null;
-  try { const module = { exports: {} }; new Function("module", "exports", src)(module, module.exports); return typeof module.exports.decide === "function" ? module.exports : null; } catch (e) { console.error("router", e); return null; }
+  const files = { "sources.json": SOURCES, "gates.json": GATES, "case.json": CASE, "build.json": BUILD };
+  const base = (p) => String(p).split(/[\\/]/).pop();
+  const shim = (name) => name === "fs" ? { readFileSync: (p) => JSON.stringify(files[base(p)] ?? null), existsSync: (p) => base(p) in files }
+    : name === "path" ? { join: (...a) => a.join("/"), resolve: (...a) => a.join("/"), dirname: () => "", basename: base }
+    : /\.json$/.test(name) ? files[base(name)] : {};
+  try { const module = { exports: {} }; new Function("module", "exports", "require", "__dirname", src)(module, module.exports, shim, ""); return typeof module.exports.decide === "function" ? module.exports : null; } catch (e) { console.error("router", e); return null; }
 }
 async function connectAI() {
   if (HOSTED) {
@@ -475,7 +481,7 @@ const triggerOf = (d) => { const q = [...String(d.reason || "").matchAll(/"([^"]
 async function boot() {
   [CASE, SOURCES, GATES, BUILD, GOLDEN, HOLDOUT] = await Promise.all([load("case.json", {}), load("sources.json", []), load("gates.json", {}), load("build.json", { engine: "rules" }), load("golden.json", []), load("holdout.json", [])]);
   ROUTER = compileRouter(await load("router.js", ""));
-  SHAPE = SHAPES[CASE.shape] || SHAPES.desk;
+  SHAPE = { ...(SHAPES[CASE.shape] || SHAPES.desk) }; if (Array.isArray(CASE.itemNoun)) SHAPE.noun = CASE.itemNoun;
   const persona = CASE.persona || { name: "Maya Brooks", role: SHAPE.personaRole };
   document.title = CASE.title || "Prototype";
   $("#pname").textContent = CASE.title || "Prototype"; $("#pclient").textContent = CASE.client || "";
@@ -702,7 +708,7 @@ async function draftReply(it, s) {
 }
 
 /* Review: the document beside a field-by-field form, every value tied to its evidence. */
-const fieldListFor = (s) => { const m = (s?.text || "").match(/requires?:\s*([^.]+)/i); return m ? m[1].split(/,\s*|\s+and\s+/).map((x) => x.trim().replace(/^the\s+/i, "")).filter(Boolean).map((x) => x[0].toUpperCase() + x.slice(1)) : []; };
+const fieldListFor = (s) => { if (Array.isArray(s?.fields) && s.fields.length) return s.fields; const m = (s?.text || "").match(/requires?:\s*([^.]+)/i); return m ? m[1].split(/,\s*|\s+and\s+/).map((x) => x.trim().replace(/^the\s+/i, "")).filter(Boolean).map((x) => x[0].toUpperCase() + x.slice(1)) : []; };
 function reviewView(it, V) {
   const s = srcOf(it.d.source) || srcOf((SOURCES.find((x) => (it.d.reason || "").includes(x.id)) || {}).id);
   const fields = it.ai?.fields || it.d.fields || fieldListFor(s).map((n) => ({ name: n, value: "", evidence: "" }));
@@ -744,7 +750,7 @@ function rankView(it, V) {
   const actions = it.d.actions || (it.d.source ? [{ source: it.d.source, why: it.d.reason, must: true }] : []);
   const facts = it.text.split(/\.\s+/).map((x) => x.replace(/\.$/, "").trim()).filter(Boolean).slice(0, 5);
   $("#item").innerHTML = `<div class="stack">
-    <div class="card"><div class="hh"><span class="av">${initials(it.who.name)}</span><div><h2 style="font-size:22px">${esc(it.who.name)}${/household/i.test(it.who.name) ? "" : " household"}</h2><div class="meta">${esc(it.who.id)} · ${esc(it.who.ago)}</div></div></div>
+    <div class="card"><div class="hh"><span class="av">${initials(it.who.name)}</span><div><h2 style="font-size:22px">${esc(it.who.name)}${CASE.recordSuffix === undefined ? (/household/i.test(it.who.name) ? "" : " household") : (CASE.recordSuffix ? " " + esc(CASE.recordSuffix) : "")}</h2><div class="meta">${esc(it.who.id)} · ${esc(it.who.ago)}</div></div></div>
       <div class="facts" style="margin-top:12px">${facts.map((f) => `<span class="fact">${esc(f)}</span>`).join("")}</div></div>
     ${outcomeHead(it, V)}
     ${it.d.verdict === "escalate" ? escBanner(it) + `<div class="row"><button class="btn danger" data-act="Sent to supervisor">Send to ${esc(CASE.escalationOwner || "supervisor")}</button></div>`
@@ -753,13 +759,13 @@ function rankView(it, V) {
           <div class="row between"><h4>${esc(a.title || srcTitle(s))}</h4><span class="pill ${a.must !== false ? "bad" : "plain"}">${a.must !== false ? "Must do" : "Should do"}</span></div>
           <p class="small">${esc(a.why || "")}</p><div class="src"><b>Rule.</b> ${esc(s?.text || "")}</div>
           <div><div class="label">Talking point</div><div class="bubble ai" id="tp${i}" style="margin-top:6px">${esc(it.ai?.["tp" + i] || `${a.title || srcTitle(s)}: ${a.why || ""}`)}</div></div>
-          <div class="row"><button class="btn solid sm" data-accept="${i}">Accept</button><select data-dismiss="${i}" aria-label="Dismiss with a reason"><option value="">Dismiss with a reason</option><option>Already handled</option><option>Client declined</option><option>Not suitable for this client</option><option>Discuss at next review</option></select>${AI && BUILD.engine !== "rules" ? `<button class="linkbtn" data-tp="${i}">Draft talking point with ${esc(model().short)}</button>` : ""}</div></div></div>`; }).join("")}
+          <div class="row"><button class="btn solid sm" data-accept="${i}">Accept</button><select data-dismiss="${i}" aria-label="Dismiss with a reason"><option value="">Dismiss with a reason</option>${(CASE.dismissReasons || ["Already handled", "Client declined", "Not suitable for this client", "Discuss at next review"]).map((r) => `<option>${esc(r)}</option>`).join("")}</select>${AI && BUILD.engine !== "rules" ? `<button class="linkbtn" data-tp="${i}">Draft talking point with ${esc(model().short)}</button>` : ""}</div></div></div>`; }).join("")}
   </div>`;
 }
 async function talkingPoint(i) {
   const it = OPEN, a = (it.d.actions || [{ source: it.d.source }])[i], s = srcOf(a.source), m = model();
   $("#tp" + i).textContent = "Thinking...";
-  try { const out = await AI.call(`Write one talking point (two sentences) for an advisor raising this with the client. Use only these facts and this rule. No product names, no promises.\nFACTS: ${it.text}\nRULE: ${s?.text}`, m, { onText: ({ text }) => { $("#tp" + i).textContent = text; } });
+  try { const out = await AI.call(`Write one talking point (two sentences) for a ${(CASE.persona || {}).role || "colleague"} raising this with the ${CASE.recordSuffix || "client"}. Use only these facts and this rule. No promises beyond the rule.\nFACTS: ${it.text}\nRULE: ${s?.text}`, m, { onText: ({ text }) => { $("#tp" + i).textContent = text; } });
     (it.ai ||= {})["tp" + i] = out.text.trim(); $("#tp" + i).textContent = out.text.trim(); toast(`Drafted by ${out.by} in ${fmtMs(out.ms)}`); }
   catch (e) { $("#tp" + i).textContent = aiErr(e); }
 }

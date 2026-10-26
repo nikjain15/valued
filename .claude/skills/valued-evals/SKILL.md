@@ -30,7 +30,10 @@ the ship-or-fix decision go to the client, because they trade customer harm agai
    with its trade-off (a higher bar sends more cases to people and costs more; a lower one misses more).
    Our preference first, with why and what would change our mind.
 3. Write all thresholds to `out/proto/gates.json`.
-4. **Launch the `prototype-builder` subagent in the background** (always a separate subagent: the seal on
+4. **Launch the `prototype-builder` subagent in the background** (**single-context mode**, when subagents are
+   unavailable: write the router before opening `golden.json`, never open `holdout.json` while building,
+   and label the holdout result "not independent" in the eval output, the evidence pack and the PRD from the
+   start; otherwise always a separate subagent: the seal on
    the golden set and holdout only means something if the builder is not the agent that wrote them; if
    you ever build it in the same context, say "holdout not independent" in the evidence pack) with the use case, the verdicts,
    `out/proto/sources.json`, `out/proto/gates.json`, and the escalation triggers and never list from
@@ -45,7 +48,7 @@ the ship-or-fix decision go to the client, because they trade customer harm agai
      router **without editing golden.json**, rerun, then run the sealed holdout yourself:
      `node out/proto/eval.js holdout.json`. Show both; if the holdout is lower, say so: that gap is how
      much the fix was fitted.
-   - **If all gates pass:** say it is a smoke test on 30 rows, not a release; have the builder add four
+   - **If all gates pass:** say it is a smoke test on 30 rows, not a release; have the builder add four (one round only; after a fix and a holdout pass, do not add more)
      harder rows to the dev set and rerun.
 7. **Evidence pack** in `out/5-evals.md`: gates and reasons, the client's bar, every run's output, the
    holdout result, the remaining misses, and **how to reproduce** (exact commands, file names, the

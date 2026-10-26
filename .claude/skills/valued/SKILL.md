@@ -25,7 +25,7 @@ Each ends with its own-words format: client context "industry, size, and the uni
 (e.g. 'P&C insurer, 40k claims a month, claims operations')"; business problem "the process, how it
 shows up, and a rough number (e.g. 'FNOL setup, 20 fields re-keyed, 18 minutes a claim')"; success and
 timeline "a metric, a target and a date (e.g. 'setup under 10 minutes, pilot in 8 weeks')".
-Add a fourth card when `inputs/` is empty or missing: **"Material": "What real material can we work
+Whenever `inputs/` is empty or missing, ask this card even if the case line is complete: **"Material": "What real material can we work
 from?"** Options: "Documents in inputs/ (policies, knowledge articles)", "Sample requests or transcripts,
 de-identified", "Both", "Synthetic only for now (Recommended when nothing is ready)". If none fits,
 answer with: the material, its rough size and who owns it (e.g. "300 policy PDFs, owned by HR
@@ -37,7 +37,8 @@ this before gate V; gate V's draft marks everything else (assumed).
 ## Roles on screen
 
 - **The product lead** drives. **The person watching is the client** (COO, sponsor, risk lead: name the
-  role on each card's header). Cards go to the client; the product lead reads them out and enters the
+  role on each card's header). Card headers in the gate skills say "COO" as an example: always use the
+  sponsor and owner roles of this case (a CMO, a CIO, a head of claims). Cards go to the client; the product lead reads them out and enters the
   client's choice.
 - The first option on every card is our preference, labelled "(Recommended)", with its trade-off. Every
   other option carries its trade-off too. That is how the lead's judgement stays visible while the client
@@ -53,9 +54,10 @@ this before gate V; gate V's draft marks everything else (assumed).
    cp $B/app/app.html $B/app/server.js $B/app/ff.css $B/prd-viewer.html out/proto/
    echo '{}' > out/proto/case.json
    node $B/prd-skeleton.js "<the case line>" out/prd.md
-   pkill -f "out/proto/server.js"; node out/proto/server.js   # run in the background
+   P=${PORT:-4317}; lsof -ti :$P | xargs kill 2>/dev/null; PORT=$P node out/proto/server.js   # run in the background
    ```
-   Then `open http://localhost:4317/prd` (skip under `--no-open`). Print one line:
+   Use that port everywhere below (written as 4317). Then `open http://localhost:4317/prd` (skip under
+   `--no-open`). Print one line:
    `VALUED · 6 gates · governed at every gate · the system drafts, the client decides · live PRD: localhost:4317/prd`.
 2. **Run the gates in order**, each by invoking its skill and waiting for it to finish:
    `valued-value`, `valued-ai-fit`, `valued-labels`, `valued-user-loop`, `valued-evals`,
@@ -66,7 +68,7 @@ this before gate V; gate V's draft marks everything else (assumed).
 3. **Between gates**, print nothing but the gate header. No recaps.
 4. **After B**, build the brief: copy `brief-template.html` from this skill's folder to
    `out/brief.html` and replace every `{{...}}` placeholder from `out/state.md` and the gate files.
-   Keep each cell to one line. Then run `open out/brief.html`.
+   Keep each cell to one line. Then run `open out/brief.html` (skip under `--no-open`).
    The template follows the **Relay design system**; do not restyle it. Keep the tokens and classes as
    they are, sentence case everywhere, no new colours. Status pills always carry the word (`Passed`,
    `Blocked`). The agent sentence states the figures. The three stats are the figures the page is about.
@@ -76,6 +78,10 @@ this before gate V; gate V's draft marks everything else (assumed).
 5. Print the closing line, nothing else: `Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Feedback: /valued-revise <what to change>`.
 
 ## Rules for every gate (pass these on)
+
+- **Single-context mode.** If subagents cannot run, do the scorer and builder work inline: score each lens
+  separately before merging; write the router before opening `golden.json`; never open `holdout.json`
+  while building; label the holdout result "not independent" wherever it appears.
 
 - **Draft first, then ask.** A gate shows its draft table **before** its cards, so the client is choosing
   between concrete things, never answering a blank question.
@@ -107,8 +113,8 @@ this before gate V; gate V's draft marks everything else (assumed).
 
   | Gate | PRD sections it fills | Prototype fields it writes |
   |---|---|---|
-  | V | 2, 3, 4, and `Client:` in the meta line | `title`, `client`, `useCase`, `headline`, `scenario`, `user`, `inputLabel`, `persona` (`{ "name", "role" }`: a synthetic name for the first-wave user, the person the prototype greets), `industry` (one key of `.claude/skills/valued-labels/connectors-library.json`, or the closest), `labels` (the industry's words for the oversight pages: `section`, `evals`, `gov`, `audit`, `agents`, `data`, `how`, `faq`; for example a wealth firm says "Supervision" and "Suitability checks") |
-  | A | 5, 6 | `out/proto/build.json` engine; `promise`; `shape` (desk, review, rank or chat); `agents`; `sweeps` |
+  | V | 2, 3, 4, the title (replace "(use case, from gate V)" with the use case name), and `Client:` in the meta line | `title`, `client`, `useCase`, `headline`, `scenario`, `user`, `inputLabel`, `persona` (`{ "name", "role" }`: a synthetic name for the first-wave user, the person the prototype greets), `industry` (one key of `.claude/skills/valued-labels/connectors-library.json`, or the closest), `labels` (the industry's words for the oversight pages: `section`, `evals`, `gov`, `audit`, `agents`, `data`, `how`, `faq`; for example a wealth firm says "Supervision" and "Suitability checks") |
+  | A | 5, 6 | `out/proto/build.json` engine; `promise`; `shape` (desk, review, rank or chat); `agents`; `sweeps`; `itemNoun` (the user's word for one item and many, e.g. `["claim", "claims"]`); for `rank`, `recordSuffix` (e.g. "household", "account", or "" for a person) and `dismissReasons` (4 reasons in the industry's words) |
   | L | 10 | `verdicts`, `samples` (6, from `golden.json` only, each with `expect`), `connectors` |
   | U | 8, 9 | `clocks`, `neverList`, `escalationOwner`, `escalationSla`, `autonomy`, `disclosure`, `approverRole`, `draftOpener` |
   | E | 11 | `gates.json`, `router.js`, `eval.js` (the Workbench and Evals tabs come alive) |
