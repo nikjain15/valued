@@ -175,11 +175,43 @@
   .code { font: 600 12px var(--font-mono); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
   .stats { display: flex; gap: 8px; flex-wrap: wrap; }
   .statb { background: var(--paper); border-radius: var(--r-card); padding: 8px 12px; min-width: 92px; } .statb b { display: block; font-family: var(--font-display); font-size: 20px; } .statb span { font-size: var(--fs-micro); color: var(--ink-3); }
+  .overnight { margin-top: 18px; background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; }
+  .overnight .ic { width: 34px; height: 34px; border-radius: 10px; background: var(--dark); color: var(--white); display: grid; place-items: center; flex: none; }
+  .overnight b { font-size: 15px; } .overnight p { font-size: var(--fs-label); color: var(--ink-2); margin-top: 4px; }
+  .trail { list-style: none; margin: 0; padding: 0; }
+  .trail li { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 8px 0; border-bottom: 1px dashed var(--line-2); font-size: var(--fs-label); }
+  .trail li:last-child { border-bottom: 0; }
+  .trail .k { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--white); background: var(--ink-3); }
+  .trail .k.rules { background: var(--dark); } .trail .k.model { background: var(--brand); } .trail .k.person { background: var(--amber); } .trail .k.stop { background: var(--error); }
+  .agent { background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 16px 18px; display: grid; gap: 10px; }
+  .agent ul { margin: 2px 0 0; padding-left: 18px; font-size: var(--fs-label); color: var(--ink-2); }
+  .qtabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin-bottom: 16px; overflow-x: auto; }
+  .qtabs button { background: none; border: 0; padding: 10px 14px; font: 500 var(--fs-ui) var(--font-sans); color: var(--ink-3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; display: flex; gap: 8px; align-items: center; }
+  .qtabs button[aria-selected="true"] { color: var(--ink); border-color: var(--brand); }
+  .qtabs .n { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: var(--r-pill); background: var(--line-2); color: var(--ink-3); }
+  .qtabs .n.bad { background: var(--error); color: var(--white); }
+  .conn-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .conn { background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+  .conn.on { border-color: var(--brand-soft); }
+  .conn-h { display: flex; gap: 12px; align-items: flex-start; }
+  .logo { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-weight: 700; font-size: 13px; color: var(--white); flex: none; }
+  .conn-h b { display: block; font-size: 15px; }
+  .conn-h .meta { margin-top: 2px; }
+  .conn p { font-size: var(--fs-label); color: var(--ink-2); }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip-s { font-size: 11.5px; padding: 2px 9px; border-radius: var(--r-pill); background: var(--paper); border: 1px solid var(--line-2); color: var(--ink-3); }
+  .chip-s.ok { background: var(--brand-tint); border-color: var(--brand-soft); color: var(--brand-strong); }
+  .chip-s.warn { background: var(--amber-bg); border-color: #f1dfc2; color: var(--amber-strong); }
+  .connect-panel { border-top: 1px solid var(--line-2); padding-top: 12px; display: grid; gap: 10px; }
+  .connect-panel ul { margin: 4px 0 0; padding-left: 18px; font-size: var(--fs-label); color: var(--ink-2); }
+  .catgroup { margin-top: 22px; } .catgroup h3 { font-size: 17px; margin-bottom: 4px; } .catgroup > p { font-size: var(--fs-label); color: var(--ink-3); margin-bottom: 10px; }
+  .preview td { font-size: 12.5px; }
   .srcitem { padding: 12px 0; border-bottom: 1px solid var(--line-2); } .srcitem:last-child { border-bottom: 0; } .srcitem p { margin-top: 6px; font-size: var(--fs-label); color: var(--ink-2); }
   details.more summary { cursor: pointer; font-size: var(--fs-label); color: var(--ink-3); padding: 8px 0; }
   .toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); background: var(--dark); color: var(--white); padding: 10px 18px; border-radius: var(--r-pill); font-size: var(--fs-label); opacity: 0; transition: opacity var(--dur-base); z-index: 60; pointer-events: none; }
   .toast.show { opacity: 1; }
   @media (max-width: 1000px) {
+    .conn-grid { grid-template-columns: 1fr; }
     .shell { grid-template-columns: 1fr; }
     .side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 12px 16px; }
     .nav { flex-direction: row; flex-wrap: wrap; } .nav .eyebrow, .me { display: none; }
@@ -197,14 +229,16 @@
     <nav class="nav" aria-label="Work">
       <div class="eyebrow">Work</div>
       <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span id="navHome">Today</span><span class="count" id="cntEsc"></span></button>
+      <button data-go="queue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l2-8h12l2 8"/><path d="M4 13v6h16v-6h-5l-1 2h-4l-1-2z"/></svg><span id="navQueue">Queue</span><span class="count soft" id="cntQueue"></span></button>
       <button data-go="new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="navNew">New item</span></button>
     </nav>
     <nav class="nav" aria-label="Trust">
       <div class="eyebrow">Trust</div>
       <button data-go="evals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Evals</button>
+      <button data-go="agents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 16.5h5"/></svg>Rules and agents</button>
       <button data-go="gov"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Governance</button>
       <button data-go="audit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>Audit log<span class="count soft" id="cntLog"></span></button>
-      <button data-go="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>Your data</button>
+      <button data-go="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>Data and tools<span class="count soft" id="cntConn"></span></button>
       <button data-go="how"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>How it works</button>
       <button data-go="faq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17v.01"/></svg>FAQ</button>
     </nav>
@@ -226,11 +260,18 @@
         <div class="hello"><span class="spark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></span>
           <div><h2 id="greet">Good morning.</h2><p id="greetSub"></p></div></div>
         <div class="tiles" id="tiles"></div>
+        <div class="overnight" id="overnight"></div>
         <div id="queues"></div>
       </section>
 
+      <!-- Queue -->
+      <section class="page" id="p-queue" hidden>
+        <div class="qtabs" role="tablist" id="qtabs"></div>
+        <div class="queue" id="qlist"></div>
+      </section>
+
       <!-- Item detail -->
-      <section class="page" id="p-item" hidden><button class="back" data-go="home">Back to the queue</button><div id="item"></div></section>
+      <section class="page" id="p-item" hidden><button class="back" data-go="queue">Back to the queue</button><div id="item"></div></section>
 
       <!-- New item -->
       <section class="page" id="p-new" hidden>
@@ -266,6 +307,14 @@
         </div>
       </section>
 
+      <!-- Rules and agents -->
+      <section class="page" id="p-agents" hidden>
+        <div class="stack">
+          <div><h2 id="agentsTitle">Assistants and rules</h2><p class="muted" style="margin-top:6px;max-width:72ch" id="agentsIntro"></p></div>
+          <div class="two" id="agentCards"></div>
+        </div>
+      </section>
+
       <!-- Governance -->
       <section class="page" id="p-gov" hidden>
         <div class="stack">
@@ -281,10 +330,14 @@
           <div class="tbl" style="margin-top:12px"><table><thead><tr><th>Time</th><th>Item</th><th>Outcome</th><th>Action</th><th>By</th><th>Edited</th><th>AI</th></tr></thead><tbody id="logRows"></tbody></table></div></div>
       </section>
 
-      <!-- Your data -->
+      <!-- Data and tools -->
       <section class="page" id="p-data" hidden>
         <div class="stack">
-          <div><h2>Test it on your own data</h2><p class="muted" style="margin-top:8px;max-width:70ch">Add real items with known outcomes, or your own policy documents. The same release gates then run on your data, for every design and model. Files stay in this browser tab; nothing is uploaded or stored. For PDFs, Word files or confidential client data, use the session's inputs folder.</p></div>
+          <div class="row between"><div><h2>Data and tools</h2><p class="muted" style="margin-top:6px;max-width:72ch" id="connIntro"></p></div></div>
+          <div class="tiles" id="connTiles" style="margin-top:0"></div>
+          <div id="connGroups"></div>
+          <details class="more card" style="margin-top:8px"><summary><strong>Bring your own files</strong> · test with your own labelled items or policy documents</summary>
+            <div style="margin-top:14px">
           <div class="two">
             <div class="card stack">
               <h3>Labelled items</h3><p class="small muted">A CSV or JSON file with <span class="code">text</span> and <span class="code">expected</span> (answer, human or escalate), optional <span class="code">source</span>, and any other column as a group.</p>
@@ -297,6 +350,8 @@
               <div id="srcList"></div>
             </div>
           </div>
+            </div>
+          </details>
         </div>
       </section>
 
@@ -417,8 +472,9 @@ async function boot() {
   $("#newTitle").textContent = `New ${SHAPE.noun[0]}`; $("#newHelp").textContent = SHAPE.newHelp; $("#newText").placeholder = (CASE.samples || [])[0]?.text || "";
   $("#foot").textContent = `${CASE.title || "Prototype"} · ${CASE.client || ""} · version ${CASE.version || "proto-0.1"} · synthetic data, not for production use.`;
   if (HOSTED) { const prd = window.__VALUED__.prdUrl; $("#prdLink").hidden = !prd; if (prd) $("#prdLink").href = prd; }
+  applyLabels();
   buildQueue(persona);
-  renderHome(persona); renderHow(); renderFaq(); renderGov(); renderEvalControls(); renderBoard(); renderSources();
+  renderHome(persona); renderHow(); renderFaq(); renderGov(); renderEvalControls(); renderBoard(); renderSources(); renderConnectors();
 }
 function identity(row, i) {
   const lang = row.slices?.lang || row.slices?.language || row.slices?.region || "en";
@@ -439,18 +495,19 @@ function renderHome(persona = CASE.persona || { name: "there" }) {
   $("#greetSub").textContent = `${total} ${SHAPE.noun[1]} ${SHAPE.greetLine("").trim()} ${c.escalate} to escalate first, ${c.human} need you, ${c.answer} ready for your review.`;
   $("#tiles").innerHTML = [["bad", c.escalate, V.escalate?.label || "Escalate"], ["warn", c.human, V.human?.label || "Need you"], ["ok", c.answer, V.answer?.label || "Ready"], ["", stats.approved, `Handled this session${stats.approved ? ` · edit rate ${Math.round((stats.edited / stats.approved) * 100)}%` : ""}`]]
     .map(([k, n, l]) => `<div class="tile ${k}"><b>${n}</b><span>${esc(l)}</span></div>`).join("");
-  const sec = (v, title, sub) => {
-    const list = ITEMS.filter((it) => it.d.verdict === v && it.state === "open");
-    if (!list.length) return "";
-    const shown = list.slice(0, 6);
-    return `<div class="qhead"><h3>${esc(title)}</h3><span>${esc(sub)} · ${list.length}</span></div><div class="queue">${shown.map(qcard).join("")}</div>${list.length > shown.length ? `<button class="btn ghost sm more-btn" data-more="${v}">Show all ${list.length}</button>` : ""}`;
-  };
-  $("#queues").innerHTML = ITEMS.length ? [
-    sec("escalate", V.escalate?.label || "Escalate first", `Goes to ${CASE.escalationOwner || "a specialist"}`),
-    sec("human", V.human?.label || "Needs you", "No clear rule or source"),
-    sec("answer", V.answer?.label || "Ready", CASE.shape === "rank" ? "Ranked actions prepared" : "Prepared for your review"),
-  ].join("") : `<div class="card" style="margin-top:18px"><p class="muted">The queue fills when the decision logic is built at gate E.</p></div>`;
+  const urgent = ["escalate", "human", "answer"].flatMap((v) => ITEMS.filter((it) => it.d.verdict === v && it.state === "open")).slice(0, 3);
+  $("#queues").innerHTML = ITEMS.length ? `<div class="qhead"><h3>Needs you now</h3><span>The ${urgent.length} most urgent of ${c.escalate + c.human + c.answer} open</span></div><div class="queue">${urgent.map(qcard).join("")}</div>
+    <button class="btn ghost sm more-btn" data-go="queue">Open the full queue</button>` : `<div class="card" style="margin-top:18px"><p class="muted">The queue fills when the agents are built at gate E.</p></div>`;
+  $("#cntQueue").textContent = c.escalate + c.human + c.answer || "";
   $("#cntEsc").textContent = c.escalate || ""; $("#cntEsc").hidden = !c.escalate;
+}
+let qTab = "escalate";
+function renderQueue() {
+  const V = CASE.verdicts || {}, tabs = [["escalate", V.escalate?.label || "Escalate", "bad"], ["human", V.human?.label || "Needs you", ""], ["answer", V.answer?.label || "Ready", ""], ["done", "Done", ""]];
+  const list = (k) => ITEMS.filter((it) => (k === "done" ? it.state !== "open" : it.d.verdict === k && it.state === "open"));
+  $("#qtabs").innerHTML = tabs.map(([k, l, cls]) => `<button role="tab" data-qtab="${k}" aria-selected="${k === qTab}">${esc(l)}<span class="n ${cls && list(k).length ? cls : ""}">${list(k).length}</span></button>`).join("");
+  const items = list(qTab);
+  $("#qlist").innerHTML = items.length ? items.map(qcard).join("") : `<div class="card"><p class="muted">Nothing here right now.</p></div>`;
 }
 function qcard(it) {
   const trig = triggerOf(it.d), V = CASE.verdicts || {};
@@ -462,14 +519,85 @@ function qcard(it) {
     <div class="qside"><span class="pill ${VSTYLE[it.d.verdict]}">${esc(V[it.d.verdict]?.label || it.d.verdict)}</span>${it.state !== "open" ? `<span class="meta">${esc(it.state)}</span>` : ""}</div></button>`;
 }
 
+/* ---------- Agents: agentic by design, deterministic where it must be ---------- */
+const DEFAULT_AGENTS = {
+  desk: [["Intake assistant", "rules", "Reads each message as it arrives and tags channel and language.", ["Read the message and its channel"], ["Read anything outside the message"], "Only allowed outcomes"],
+         ["Safety guard", "rules", "Checks every message for complaint, fraud, vulnerability and legal signals before anything else. Nothing overrides it.", ["Stop the item and route it to a person"], ["Draft anything once a signal fires"], "Catches every escalation"],
+         ["Routing assistant", "rules", "Matches the message to exactly one approved source, or hands it to a person.", ["Pick one approved source"], ["Guess when no source matches"], "Sends each item the right way"],
+         ["Drafting assistant", "model", "Writes the reply from the cited source only, in the customer's language.", ["Draft for review"], ["Send anything", "Use facts outside the source"], "Never acts without approved knowledge"]],
+  review: [["Intake assistant", "rules", "Reads each notice from email, PDF text or call notes.", ["Read the notice"], ["Contact the claimant"], "Only allowed outcomes"],
+           ["Safety guard", "rules", "Checks for injury, litigation and fraud indicators first; nothing is pre-filled once one fires.", ["Route to a senior adjuster or SIU"], ["Accuse or refer a claimant"], "Catches every escalation"],
+           ["Extraction assistant", "model", "Pulls each required field with the exact words it came from; a value without evidence is dropped.", ["Pre-fill fields for confirmation"], ["File a claim", "Infer a value not in the notice"], "Never acts without approved knowledge"],
+           ["Completeness check", "rules", "Checks the fields against the claim type's intake rule and lists what is missing.", ["Request missing details"], ["Decide coverage"], "Sends each item the right way"]],
+  rank: [["Safety guard", "rules", "Checks notes for vulnerability, exploitation and conduct signals first.", ["Route to the supervisor"], ["Show a recommendation once a signal fires"], "Catches every escalation"],
+         ["Detectors", "rules", "One per rule: RMD, beneficiary, drift, cash. Each fires with the facts it read.", ["Raise an action with its rule"], ["Recommend a product"], "Sends each item the right way"],
+         ["Ranking assistant", "rules", "Orders the actions, must-do first.", ["Rank actions"], ["Hide an action"], "Sends each item the right way"],
+         ["Talking-point assistant", "model", "Drafts what the advisor might say, from the household facts and the rule only.", ["Draft a talking point"], ["Contact the client", "Place a trade"], "Never acts without approved knowledge"]],
+  chat: [["Safety guard", "rules", "Sends harassment, safety, health, legal and fraud questions straight to people.", ["Route to HR"], ["Answer a sensitive question"], "Catches every escalation"],
+         ["Policy finder", "rules", "Finds the one policy for the employee's region, or hands off.", ["Pick one regional policy"], ["Use another region's policy"], "Sends each item the right way"],
+         ["Answer assistant", "model", "Answers from the cited policy only, in the employee's language.", ["Answer routine questions directly"], ["Advise beyond the policy"], "Never acts without approved knowledge"],
+         ["Hand-off assistant", "rules", "Opens a ticket with the desk when no policy covers the question.", ["Open a ticket"], ["Close a ticket"], "Sends each item the right way"]],
+};
+/* Words the client's industry uses for the oversight pages; a run can override them in case.json "labels". */
+const DEFAULT_LABELS = {
+  desk: { section: "Oversight", evals: "Quality and release", gov: "Controls and compliance", audit: "Activity record", agents: "Assistants and rules", data: "Data and tools", how: "How it works", faq: "Questions" },
+  review: { section: "Oversight", evals: "Accuracy and release", gov: "Claims controls", audit: "Claim activity", agents: "Assistants and rules", data: "Data and tools", how: "How it works", faq: "Questions" },
+  rank: { section: "Supervision", evals: "Suitability checks", gov: "Supervision and compliance", audit: "Advice record", agents: "Assistants and rules", data: "Data and tools", how: "How it works", faq: "Questions" },
+  chat: { section: "Oversight", evals: "Answer quality", gov: "Policy and privacy", audit: "Activity record", agents: "Assistants and rules", data: "Data and tools", how: "How it works", faq: "Questions" },
+};
+const LBL = () => ({ ...(DEFAULT_LABELS[CASE.shape || "desk"] || DEFAULT_LABELS.desk), ...(CASE.labels || {}) });
+function applyLabels() {
+  const L = LBL();
+  document.querySelectorAll(".nav")[1].querySelector(".eyebrow").textContent = L.section;
+  for (const k of ["evals", "gov", "audit", "agents", "data", "how", "faq"]) {
+    const b = document.querySelector(`.nav [data-go="${k}"]`); if (!b) continue;
+    const textNode = [...b.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim()); if (textNode) textNode.textContent = L[k];
+    TITLES[k] = L[k];
+  }
+}
+function agentsFor() { return CASE.agents || (DEFAULT_AGENTS[CASE.shape || "desk"] || DEFAULT_AGENTS.desk).map(([name, kind, job, may, never, gate]) => ({ name, kind, job, may, never, gate })); }
+function renderAgents() {
+  const A = agentsFor(), models = A.filter((a) => a.kind === "model").length;
+  $("#agentsTitle").textContent = LBL().agents;
+  $("#agentsIntro").textContent = `${A.length} assistants work every ${SHAPE.noun[0]}: ${A.length - models} on fixed rules, ${models} on a Claude model (${model().short} now). They prepare; ${(CASE.persona || {}).role || "a person"} decides. Each one is measured on the ${LBL().evals} page.`;
+  $("#agentCards").innerHTML = A.map((a) => `<div class="agent"><div class="row between"><b>${esc(a.name)}</b><span class="pill ${a.kind === "model" ? "ok" : "plain"}">${a.kind === "model" ? `AI · ${esc(model().short)}` : "Fixed rules"}</span></div>
+    <p class="small">${esc(a.job)}</p><div class="two"><div><div class="label">May</div><ul>${a.may.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div><div><div class="label">Never</div><ul>${a.never.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div></div>
+    <div class="meta">Checked by: ${esc(a.gate)}</div></div>`).join("");
+}
+function renderOvernight() {
+  const c = counts(), A = agentsFor(), drafter = A.find((a) => a.kind === "model");
+  $("#overnight").innerHTML = `<span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01"/></svg></span>
+    <div><b>${A.length} assistants worked the queue.</b><p>The safety guard checked all ${ITEMS.length} ${SHAPE.noun[1]} first and stopped ${c.escalate} for a person. ${c.answer} were matched to approved knowledge${drafter ? ` and prepared by the ${drafter.name.toLowerCase()}` : ""}; ${c.human} had no clear match and wait for you. Nothing was sent or filed without you.</p>
+    <p style="margin-top:6px"><button class="linkbtn" data-go="agents">What each assistant does, and what it may never do</button></p></div>`;
+}
+function trailFor(it) {
+  const A = agentsFor(), guard = A.find((a) => /guard/i.test(a.name)), rulesSteps = A.filter((a) => a.kind === "rules" && a !== guard), mdl = A.find((a) => a.kind === "model");
+  const steps = [];
+  if (rulesSteps[0] && A.indexOf(rulesSteps[0]) < A.indexOf(guard)) steps.push([rulesSteps.shift(), "rules", `Read the ${SHAPE.noun[0]} from ${it.who.channel}.`]);
+  if (guard) steps.push([guard, it.d.verdict === "escalate" ? "stop" : "rules", it.d.verdict === "escalate" ? `Stopped it. ${it.d.reason}` : "No escalation signal."]);
+  if (it.d.verdict !== "escalate") {
+    if (rulesSteps[0]) steps.push([rulesSteps[0], "rules", it.d.verdict === "answer" ? `Matched approved knowledge: ${srcTitle(srcOf(it.d.source))}.` : it.d.reason]);
+    if (it.d.verdict === "answer" && mdl) steps.push([mdl, it.ai?.by && !/template|rules/.test(it.ai.by) ? "model" : "rules", it.ai?.meta || (AI && BUILD.engine !== "rules" ? "Working..." : "AI is off here, so it is assembled from the approved source by rule.")]);
+  }
+  steps.push([{ name: (CASE.persona || {}).name || "You" }, "person", it.state !== "open" ? `${it.state}.` : "Waiting for your decision."]);
+  return `<div><div class="label">How this was prepared</div><ol class="trail" style="margin-top:6px">${steps.map(([a, k, txt]) => `<li><span class="k ${k}">${k === "model" ? "AI" : k === "person" ? "P" : k === "stop" ? "!" : "R"}</span><span><b>${esc(a.name)}</b> · ${esc(txt)}</span><span class="meta">${k === "model" ? esc(model().short) : k === "person" ? "you" : "rules"}</span></li>`).join("")}</ol></div>`;
+}
+function addTrail(it) {
+  const host = document.querySelector("#item .assist") || document.querySelector("#item .stack");
+  if (!host || !OPEN) return;
+  document.querySelector("#trailBox")?.remove();
+  const d = document.createElement("div"); d.id = "trailBox"; d.innerHTML = trailFor(it); host.appendChild(d);
+}
+
 /* ---------- Navigation ---------- */
-const TITLES = { home: "Today", new: "New", evals: "Evals", gov: "Governance", audit: "Audit log", data: "Your data", how: "How it works", faq: "FAQ" };
+
+let TITLES = { queue: "Queue", agents: "Rules and agents", home: "Today", new: "New", evals: "Evals", gov: "Governance", audit: "Audit log", data: "Data and tools", how: "How it works", faq: "FAQ" };
 function go(view, key) {
   document.querySelectorAll(".page").forEach((p) => (p.hidden = true));
   document.querySelectorAll(".nav button").forEach((b) => b.removeAttribute("aria-current"));
   if (view === "item") { $("#p-item").hidden = false; openItem(key); document.querySelector('[data-go="home"]').setAttribute("aria-current", "page"); }
   else { $("#p-" + view).hidden = false; document.querySelector(`.nav [data-go="${view}"]`)?.setAttribute("aria-current", "page"); $("#pageTitle").textContent = TITLES[view] || ""; $("#pageCtx").textContent = view === "home" ? `${CASE.client || ""} · ${new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}` : ""; }
-  if (view === "home") renderHome(); if (view === "audit") renderLog(); if (view === "gov") renderGov();
+  if (view === "home") { renderHome(); renderOvernight(); } if (view === "queue") renderQueue(); if (view === "audit") renderLog(); if (view === "gov") renderGov(); if (view === "agents") renderAgents();
   scrollTo(0, 0);
 }
 function logAction(it, action, extra = {}) {
@@ -485,7 +613,7 @@ function openItem(key) {
   OPEN = it; const V = CASE.verdicts || {};
   $("#pageTitle").textContent = it.who.name; $("#pageCtx").textContent = `${it.who.id} · ${it.who.channel} · ${it.who.ago}`;
   const view = { desk: deskView, review: reviewView, rank: rankView, chat: chatView }[CASE.shape] || deskView;
-  view(it, V);
+  view(it, V); addTrail(it);
 }
 function outcomeHead(it, V) {
   return `<div class="panel-h"><span class="pill ${VSTYLE[it.d.verdict]}">${esc(V[it.d.verdict]?.label || it.d.verdict)}</span></div><p class="small muted" style="margin-top:6px">${esc(V[it.d.verdict]?.desc || "")}</p>`;
@@ -525,7 +653,7 @@ async function draftReply(it, s) {
     const meta = `Drafted by ${out.by} in ${fmtMs(out.ms)} · ${fmtUsd(costOf(m, out.inTok, out.outTok))}${AI.exact ? "" : " (estimated)"} · from the cited source only`;
     it.ai = { draft: /NO_ANSWER/.test(out.text) ? tmpl : out.text.trim(), meta, by: out.by };
   } catch (e) { it.ai = { draft: tmpl, meta: `${aiErr(e)} Template draft from the cited source.`, by: "template" }; }
-  if (OPEN === it) { $("#draft").textContent = it.ai.draft; $("#aiMeta").textContent = it.ai.meta; $("#draftLabel").textContent = "Draft reply"; }
+  if (OPEN === it) { $("#draft").textContent = it.ai.draft; $("#aiMeta").textContent = it.ai.meta; $("#draftLabel").textContent = "Draft reply"; addTrail(it); }
 }
 
 /* Review: the document beside a field-by-field form, every value tied to its evidence. */
@@ -563,7 +691,7 @@ async function extract(it, s) {
     it.ai = { fields: names.map((n) => { const f = got.find((g) => String(g.name).toLowerCase() === n.toLowerCase()) || {}; const evOk = f.evidence && low.includes(String(f.evidence).toLowerCase()); if (f.value && !evOk) dropped++; return { name: n, value: evOk ? String(f.value) : "", evidence: evOk ? String(f.evidence) : "" }; }),
       meta: `Extracted by ${out.by} in ${fmtMs(out.ms)} · ${fmtUsd(costOf(m, out.inTok, out.outTok))}${AI.exact ? "" : " (estimated)"}${dropped ? ` · ${dropped} value${dropped === 1 ? "" : "s"} dropped: evidence not found in the notice` : ""}`, by: out.by };
   } catch (e) { it.ai = { fields: it.d.fields || names.map((n) => ({ name: n, value: "", evidence: "" })), meta: aiErr(e), by: "rules" }; }
-  if (OPEN === it) reviewView(it, CASE.verdicts || {});
+  if (OPEN === it) { reviewView(it, CASE.verdicts || {}); addTrail(it); }
 }
 
 /* Rank: the household with every applicable action, worst first. */
@@ -770,6 +898,46 @@ function renderSources() {
 function wireDrop(label, input, handler) { input.addEventListener("change", () => input.files.length && handler(input.files)); label.addEventListener("dragover", (e) => { e.preventDefault(); label.classList.add("over"); }); label.addEventListener("dragleave", () => label.classList.remove("over")); label.addEventListener("drop", (e) => { e.preventDefault(); label.classList.remove("over"); if (e.dataTransfer.files.length) handler(e.dataTransfer.files); }); }
 wireDrop($("#caseDrop"), $("#caseFile"), (fs) => loadCases(fs[0])); wireDrop($("#srcDrop"), $("#srcFile"), (fs) => loadSources([...fs]));
 
+/* ---------- Data and tools: the client's systems, recommended at gate L; connections are simulated ---------- */
+const CATS = [["channel", "Where work arrives", "The channels that feed the queue."], ["knowledge", "Knowledge", "Approved content the product may cite."], ["record", "Systems of record", "Where the outcome is filed or read from."], ["testing", "Test and labelling data", "What the release gates are measured on."], ["collab", "People and alerts", "Where hand-offs and escalations reach a person."]];
+const LOGO_COLORS = ["#32854c", "#4a6fa5", "#c97d1a", "#9c4a6b", "#2b7a78", "#6b5ca5", "#28323f"];
+function renderConnectors() {
+  const list = CASE.connectors || [];
+  $("#connIntro").textContent = list.length ? `The systems this product reads from and hands off to at ${CASE.client || "the client"}, recommended in the working session. Connections here are simulated on synthetic data; nothing leaves this page.` : "Systems are recommended at gate L of the working session. Until then, bring your own files below.";
+  const on = list.filter((c) => c.status === "connected").length;
+  $("#connTiles").innerHTML = [["ok", on, "Connected (simulated)"], ["warn", list.filter((c) => c.status !== "connected").length, "Planned"], ["", list.filter((c) => c.access !== "read-write").length, "Read-only"], ["", list.filter((c) => c.pii === "masked").length, "Personal data masked"]].map(([k, n, l]) => `<div class="tile ${k}"><b>${n}</b><span>${l}</span></div>`).join("");
+  $("#cntConn").textContent = list.length ? `${on}/${list.length}` : "";
+  $("#connGroups").innerHTML = CATS.map(([cat, title, sub]) => {
+    const items = list.filter((c) => c.category === cat); if (!items.length) return "";
+    return `<div class="catgroup"><h3>${esc(title)}</h3><p>${esc(sub)}</p><div class="conn-grid">${items.map(connCard).join("")}</div></div>`;
+  }).join("");
+}
+function connCard(c) {
+  const i = (CASE.connectors || []).indexOf(c), on = c.status === "connected";
+  const chips = [[c.access === "read-write" ? "Reads and writes" : "Read-only", c.access === "read-write" ? "warn" : "ok"], [c.pii === "masked" ? "Personal data masked" : c.pii === "none" ? "No personal data" : "Personal data", c.pii === "yes" ? "warn" : "ok"], c.writeBack === false && c.access === "read-write" ? ["Write-back off in pilot", "warn"] : null].filter(Boolean);
+  return `<div class="conn ${on ? "on" : ""}" id="conn${i}">
+    <div class="conn-h"><span class="logo" style="background:${LOGO_COLORS[i % LOGO_COLORS.length]}">${esc(initials(c.name))}</span><div style="flex:1;min-width:0"><b>${esc(c.name)}</b><div class="meta">${esc(c.vendor || "")}</div></div><span class="pill ${on ? "ok" : "plain"}">${on ? "Connected" : c.status === "planned" ? "Planned" : "Available"}</span></div>
+    <p><strong>Provides:</strong> ${esc(c.provides)}</p><p><strong>Powers:</strong> ${esc(c.usedFor)}</p>
+    <div class="chips">${chips.map(([t, k]) => `<span class="chip-s ${k}">${esc(t)}</span>`).join("")}<span class="chip-s">Owner: ${esc(c.owner || "to confirm")}</span></div>
+    <div class="row">${on ? `<button class="btn ghost sm" data-conn="${i}" data-mode="view">View sync</button>` : `<button class="btn solid sm" data-conn="${i}" data-mode="setup">Connect</button>`}</div>
+    <div id="cp${i}"></div></div>`;
+}
+function connPanel(i, mode) {
+  const c = CASE.connectors[i], el = $("#cp" + i);
+  if (el.innerHTML) { el.innerHTML = ""; return; }
+  if (mode === "setup") {
+    el.innerHTML = `<div class="connect-panel"><div><div class="label">It would access</div><ul>${(c.scopes || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div><div class="label">It never takes</div><ul>${(c.never || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>
+      <p class="small muted">Approval needed from <strong>${esc(c.owner || "the system owner")}</strong> before a real connection. In this prototype it connects to synthetic data only.</p>
+      <div class="row"><button class="btn solid sm" data-connect="${i}">Connect with synthetic data</button><button class="linkbtn" data-conn="${i}" data-mode="setup">Cancel</button></div></div>`;
+  } else {
+    const rows = c.category === "knowledge" ? SOURCES.slice(0, 4).map((x) => [x.id, srcTitle(x), x.text.slice(0, 70) + "..."]) : ITEMS.slice(0, 4).map((it) => [it.who.id, it.who.name, clean(it.text).slice(0, 70) + "..."]);
+    const n = c.category === "knowledge" ? SOURCES.length : c.category === "testing" ? GOLDEN.length + HOLDOUT.length : ITEMS.length;
+    el.innerHTML = `<div class="connect-panel"><div class="row between"><span class="small"><strong>${n} records synced</strong> · just now · synthetic</span><span class="chip-s ok">Healthy</span></div>
+      <div class="tbl preview"><table><tbody>${rows.map((r) => `<tr><td class="num">${esc(r[0])}</td><td>${esc(r[1])}</td><td class="muted">${esc(r[2])}</td></tr>`).join("")}</tbody></table></div></div>`;
+  }
+}
+
 /* ---------- Governance, audit, how it works, FAQ ---------- */
 function renderGov() {
   const items = CASE.governance || [], count = (s) => items.filter((i) => (i.status || "").toLowerCase().startsWith(s)).length;
@@ -796,9 +964,10 @@ document.addEventListener("click", async (e) => {
   const tr = e.target.closest("tr[data-run]"); if (tr) { selRun = Number(tr.dataset.run); return renderBoard(); }
   const t = e.target.closest("button"); if (!t) return;
   if (t.dataset.go) return go(t.dataset.go);
+  if (t.dataset.qtab) { qTab = t.dataset.qtab; return renderQueue(); }
   if (t.dataset.open) return go("item", t.dataset.open);
   if (t.dataset.more) { const v = t.dataset.more; t.previousElementSibling.innerHTML = ITEMS.filter((it) => it.d.verdict === v && it.state === "open").map(qcard).join(""); t.remove(); return; }
-  if (t.dataset.act) { const d = $("#draft"); const edited = Boolean(d && d.dataset.original !== undefined && d.innerText.trim() !== d.dataset.original.trim()); if (/Sent|Filed|Accepted/.test(t.dataset.act)) { stats.approved++; if (edited) stats.edited++; } logAction(OPEN, t.dataset.act, { edited, ai: OPEN.ai?.by || "none" }); return go("home"); }
+  if (t.dataset.act) { const d = $("#draft"); const edited = Boolean(d && d.dataset.original !== undefined && d.innerText.trim() !== d.dataset.original.trim()); if (/Sent|Filed|Accepted/.test(t.dataset.act)) { stats.approved++; if (edited) stats.edited++; } logAction(OPEN, t.dataset.act, { edited, ai: OPEN.ai?.by || "none" }); return go("queue"); }
   if (t.id === "editBtn") { const d = $("#draft"); d.dataset.original = d.dataset.original ?? d.innerText; d.contentEditable = "true"; d.focus(); t.textContent = "Editing"; return; }
   if (t.id === "confirmAll") { document.querySelectorAll(".fconf:not(:disabled)").forEach((b) => { b.checked = true; b.dispatchEvent(new Event("change")); }); return; }
   if (t.dataset.accept !== undefined) { const el = $("#act" + t.dataset.accept); el.classList.add("done"); logAction(OPEN, "Accepted", { ai: OPEN.ai ? "talking point" : "none" }); stats.approved++; OPEN.state = "open"; return; }
@@ -811,6 +980,8 @@ document.addEventListener("click", async (e) => {
   if (t.id === "stopTest") return ctl?.abort();
   if (t.id === "loadExample") return loadCases(new File([JSON.stringify((CASE.samples || []).map((x) => ({ text: x.text, expected: x.expect || "human" })))], "example.json"));
   if (t.id === "toEvals") { evalSet = "custom"; go("evals"); document.querySelectorAll("[data-set]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.set === "custom")); renderEvalControls(); return renderBoard(); }
+  if (t.dataset.conn !== undefined) return connPanel(Number(t.dataset.conn), t.dataset.mode);
+  if (t.dataset.connect !== undefined) { const c = CASE.connectors[Number(t.dataset.connect)]; c.status = "connected"; LOG.unshift({ at: new Date().toISOString(), item: c.name, verdict: "", action: "Connected (simulated)", by: (CASE.persona || {}).name || "Reviewer", edited: false, ai: "none" }); $("#cntLog").textContent = LOG.length; renderConnectors(); connPanel(Number(t.dataset.connect), "view"); return toast(`${c.name} connected with synthetic data`); }
   if (t.dataset.rmsrc) { SOURCES = SOURCES.filter((x) => x.id !== t.dataset.rmsrc); return renderSources(); }
 });
 document.addEventListener("change", (e) => {

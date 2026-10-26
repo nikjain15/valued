@@ -12,7 +12,7 @@ by one agent (a skill).
 | Gate | The agent's job | Prevents |
 |---|---|---|
 | **V** Value | Price the problem before anyone talks about AI | AI nobody can prove paid back |
-| **A** AI-fit | Use the least AI that works; recommend build, buy or partner | A model where a rule would do |
+| **A** AI-fit | Design the agents: which jobs AI does, which stay on rules; recommend build, buy or partner | A model where a rule would do, or a rule where an agent would serve better |
 | **L** Labels | Write the answer key, split by group, with a sealed holdout | The system grading itself |
 | **U** User-in-the-loop | Decide where a person decides, and what AI never does | AI doing more than anyone agreed |
 | **E** Evals | Let a number decide the release, group by group | An average hiding the group that breaks |
@@ -42,7 +42,7 @@ checked inside each gate, never reviewed at the end.
 - **The system drafts, the client decides.** Never decide on the client's behalf; record every decision
   and who made it.
 - **Mark every assumed fact (assumed).** Never invent client facts as if known.
-- **Least AI that works.** Deterministic first, a model only where the rung below fails.
+- **Agentic by design, deterministic where it must be.** Agents do the work; fixed rules guard escalation, evidence and the never list; a model takes each job a rule cannot do well.
 
 ## Governance check format (every gate)
 

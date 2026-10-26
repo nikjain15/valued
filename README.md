@@ -8,7 +8,7 @@ case clears six gates, in order:
 | Gate | The question it answers |
 |---|---|
 | **V** Value | Whose decision or work changes, how often, what it costs today, how big the prize is |
-| **A** AI-fit | Is it AI-shaped at all? The least-AI ladder (rules, classic ML, retrieval plus a model, an agent); rank on value, feasibility, risk and reuse; a build, buy or partner recommendation; the cost, latency and quality trade |
+| **A** AI-fit | Which jobs do agents take, and which stay on fixed rules? The ladder (rules, classic ML, retrieval plus a model, an agent) for each job; rank on value, feasibility, risk and reuse; a build, buy or partner recommendation; the cost, latency and quality trade |
 | **L** Labels | Ground truth before the model: a golden set, the slices that matter, a sealed holdout |
 | **U** User-in-the-loop | Per action: suggest, draft, act with approval, or act. What the AI never does. Escalation wins every race |
 | **E** Evals | Release thresholds set first, metrics by slice, a missed gate blocks the release |
@@ -51,7 +51,7 @@ Production misses become new labels, so D loops back to L.
 - **The system drafts, the client decides.** No gate makes a judgement call on the client's behalf.
 - **Ask only what the client owns.** Priorities, risk appetite and facts only they know are questions. Everything else (sourcing, architecture, thresholds) is a recommendation: the options, their trade-offs, our preference, why, and what would change our mind.
 - **Governed at every gate.** Each gate answers its own governance questions (regulatory exposure, data rights, human accountability, signable evidence, sign-off and audit trail), and open items appear in the brief.
-- **Least AI that works.** Deterministic first; a model only where the rung below fails.
+- **Agentic by design, deterministic where it must be.** Agents do the work; fixed rules guard escalation, evidence and the never list; a model takes each job a rule cannot do well.
 - **Labels before the model.** Otherwise you grade the system against itself.
 - **The builder never sees the holdout.** A fix is scored on the rows it learned from and on ten it never
   saw. The second number is the honest one.

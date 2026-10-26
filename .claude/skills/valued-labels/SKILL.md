@@ -42,22 +42,32 @@ description: VALUED gate L. Define ground truth before any model is built, recom
    never list carry `"never": true`; at least 3 of them.
    Then **split it**: move 10 rows covering every group into `out/proto/holdout.json`. The builder may
    learn from the 30 dev rows; the holdout is never shown to it, not even while fixing.
-5. **Data and privacy table** (max 6 rows): data needed, owner, purpose, personal or health data
+5. **Systems to connect** (an output, specific to the industry): 5 to 8 systems the first wave reads
+   from or hands off to, grouped as where work arrives (`channel`), approved knowledge (`knowledge`),
+   systems of record (`record`), test and labelling data (`testing`), and people and alerts (`collab`).
+   Name each by what it is ("Claims system", "Contact-centre platform"); put vendor names only as
+   examples marked (assumed), never as the client's actual stack. Write them to `case.json` as
+   `connectors`: `{ "name", "vendor", "category", "provides", "usedFor", "access": "read" | "read-write",
+   "writeBack": false, "pii": "masked" | "none" | "yes", "owner", "status": "connected" | "planned",
+   "scopes": [], "never": [] }`. Channels and knowledge the pilot needs start `connected` (simulated on
+   synthetic data); everything else `planned`. Write-back stays off in the pilot.
+6. **Data and privacy table** (max 6 rows): data needed, owner, purpose, personal or health data
    involved, minimisation (dropped, masked or tokenised), retention.
-6. **Ask the client (max 2 cards):**
+7. **Ask the client (max 2 cards):**
    - **"Ops lead": "Which group worries you most?"** Groups from step 1, our preference first (the one
      whose silent failure would hurt most), each with why it matters.
-   - **"Data owner": "What can we label from?"** Options such as real interactions with consent, a sample
-     with personal data removed, synthetic only for now; each with its trade-off. Our preference is the
-     fastest safe option.
-7. **Governance check** in `out/3-labels.md` (question, answer, status):
+   - **"Data owner": "What can the pilot connect to?"** Options such as: read-only channels and knowledge
+     with synthetic test labels (Recommended for a first pilot); read-only including systems of record
+     with personal data masked; file uploads only for now. Each with its trade-off. The labelling
+     source follows from the answer and is stated as a recommendation, not asked.
+8. **Governance check** in `out/3-labels.md` (question, answer, status):
    - Purpose: is this use covered by the consent or policy the data was collected under? Status "client
      to confirm" unless the client said so.
    - Minimisation: what personal or health data the labels need, and what is masked or excluded.
    - Fairness: which groups the golden set covers, and the minimum rows per group for a gate to mean
      something. Flag any group too thin to evaluate.
    Add open items to the "Governance log" in `out/state.md`.
-8. **Finalize** `out/3-labels.md` (spec, groups, counts per group, data table, recommendation); update
+9. **Finalize** `out/3-labels.md` (spec, groups, counts per group, data table, recommendation); update
    `out/state.md`.
-9. **Say it** (three lines): labels before the model; the group you split by and why; why the holdout
+10. **Say it** (three lines): labels before the model; the group you split by and why; why the holdout
    stays sealed.

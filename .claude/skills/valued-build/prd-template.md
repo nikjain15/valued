@@ -77,6 +77,13 @@ request ─▶ escalation guard ─▶ router (one source?) ─▶ draft (cited 
         <escalation owner>       person handles
 ```
 
+**Assistants (agentic design)**
+
+| Assistant | Rules or AI | Job | Never | Measured by |
+|---|---|---|---|---|
+| Safety guard | Rules | <escalation and never-list check> | <never> | Catches every escalation |
+| <assistant> | <AI / rules> | <job> | <never> | <release check> |
+
 **Alternatives considered**
 
 | Alternative | Why not now | When we would revisit |
@@ -124,6 +131,12 @@ request ─▶ escalation guard ─▶ router (one source?) ─▶ draft (cited 
 | Data | Owner | Purpose | Personal data | Minimisation | Retention |
 |---|---|---|---|---|---|
 | <data> | <owner> | <purpose> | <yes/no> | <masked/dropped> | <period> |
+
+**Systems to connect**
+
+| System | Category | Provides | Access | Personal data | Owner | Pilot status |
+|---|---|---|---|---|---|---|
+| <system (vendor e.g., assumed)> | <channel / knowledge / record / testing / people> | <what> | <read-only> | <masked> | <role> | <connected / planned> |
 
 **Golden set:** <n> dev rows plus <n> sealed holdout rows; groups: <list with counts>. Labelled <approach>. Synthetic until <client decision>.
 

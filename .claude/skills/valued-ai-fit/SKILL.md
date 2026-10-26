@@ -5,7 +5,7 @@ description: VALUED gate A. Decide which candidates need AI at all, rank them, r
 
 # A: AI-fit agent
 
-**Job:** use the least AI that works.
+**Job:** design the agents. AI takes each job a rule cannot do well; fixed rules guard escalation, evidence and the never list.
 **Prevents:** a model where a rule would do.
 
 | | |
@@ -65,6 +65,14 @@ client to accept or overrule.
    | `chat` | The end user asks and gets an answer directly | Conversation with cited answers; sensitive topics routed to people |
 
    Write `"shape"` to `out/proto/case.json`.
+   **Assistants** (an output): design the first wave as 3 to 6 named assistants, one job each, in the
+   order they run. The first check is always a fixed-rules safety guard (escalation and the never list);
+   every assistant that reads or writes language is a model; matching, completeness and ranking stay on
+   rules unless the rules demonstrably fail. Show them as a table (assistant, rules or AI, job, may,
+   never, which release check measures it) and write them to `case.json` as `agents`:
+   `{ "name", "kind": "rules" | "model", "job", "may": [], "never": [], "gate" }`, using the client's words
+   ("Safety guard", "Extraction assistant"), never "agent 1". When the client allows a hosted model,
+   recommend design C (AI with a rules guard) for the release.
 7. **Governance check** in `out/2-ai-fit.md` (question, answer, status):
    - Human judgement required: decisions in scope that a regulation or policy reserves for a person
      (for example coverage, credit, suitability, clinical). They stay **off AI**: the AI may prepare,

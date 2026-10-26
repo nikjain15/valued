@@ -107,9 +107,9 @@ this before gate V; gate V's draft marks everything else (assumed).
 
   | Gate | PRD sections it fills | Prototype fields it writes |
   |---|---|---|
-  | V | 2, 3, 4, and `Client:` in the meta line | `title`, `client`, `useCase`, `headline`, `scenario`, `user`, `inputLabel`, `persona` (`{ "name", "role" }`: a synthetic name for the first-wave user, the person the prototype greets) |
-  | A | 5, 6 | `out/proto/build.json` engine; `promise`; `shape` (desk, review, rank or chat) |
-  | L | 10 | `verdicts`, `samples` (6, from `golden.json` only, each with `expect`) |
+  | V | 2, 3, 4, and `Client:` in the meta line | `title`, `client`, `useCase`, `headline`, `scenario`, `user`, `inputLabel`, `persona` (`{ "name", "role" }`: a synthetic name for the first-wave user, the person the prototype greets), `labels` (the industry's words for the oversight pages: `section`, `evals`, `gov`, `audit`, `agents`, `data`, `how`, `faq`; for example a wealth firm says "Supervision" and "Suitability checks") |
+  | A | 5, 6 | `out/proto/build.json` engine; `promise`; `shape` (desk, review, rank or chat); `agents` |
+  | L | 10 | `verdicts`, `samples` (6, from `golden.json` only, each with `expect`), `connectors` |
   | U | 8, 9 | `neverList`, `escalationOwner`, `escalationSla`, `autonomy`, `disclosure`, `approverRole`, `draftOpener` |
   | E | 11 | `gates.json`, `router.js`, `eval.js` (the Workbench and Evals tabs come alive) |
   | D | 13, 14 | none |
