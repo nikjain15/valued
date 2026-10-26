@@ -39,7 +39,7 @@ function templateDraft(sourceId) {
   return `${caseInfo.draftOpener || "Thanks for reaching out."} ${text}`;
 }
 
-async function callModel(system, user) {
+async function callModel(system, user, model = MODEL) {
   if (!KEY) return { ok: false, why: "no ANTHROPIC_API_KEY set" };
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -51,7 +51,7 @@ async function callModel(system, user) {
         "anthropic-beta": "server-side-fallback-2026-07-01",
       },
       body: JSON.stringify({
-        model: MODEL,
+        model,
         max_tokens: 4096,
         output_config: { effort: "low" },
         fallbacks: "default",
@@ -63,7 +63,7 @@ async function callModel(system, user) {
     if (!res.ok) return { ok: false, why: `API ${res.status}: ${body.error?.message || "error"}` };
     if (body.stop_reason === "refusal") return { ok: false, why: "model declined" };
     const text = (body.content || []).filter((b) => b.type === "text").map((b) => b.text).join("").trim();
-    return { ok: true, text, model: body.model };
+    return { ok: true, text, model: body.model, usage: body.usage };
   } catch (e) {
     return { ok: false, why: `network: ${e.message}` };
   }
@@ -159,9 +159,10 @@ http.createServer(async (req, res) => {
       return send(res, 200, await decide(String(text).slice(0, 2000)));
     }
     if (req.method === "POST" && url.pathname === "/api/ai") {
-      const { prompt } = await readBody(req);
+      const { prompt, model } = await readBody(req);
       if (!prompt) return send(res, 400, { ok: false, why: "empty prompt" });
-      return send(res, 200, await callModel("You are a careful assistant inside a prototype. Follow the user's format exactly.", String(prompt).slice(0, 60000)));
+      const allowed = ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5"];
+      return send(res, 200, await callModel("You are a careful assistant inside a prototype. Follow the user's format exactly.", String(prompt).slice(0, 60000), allowed.includes(model) ? model : MODEL));
     }
     if (url.pathname === "/api/eval") return send(res, 200, await runEval(url.searchParams.get("file")));
     if (req.method === "POST" && url.pathname === "/api/log") {

@@ -109,7 +109,7 @@ const CHAPTERS = [
 const GATES = [["V", "Value"], ["A", "AI-fit"], ["L", "Labels"], ["U", "User-in-the-loop"], ["E", "Evals"], ["D", "Deploy"], ["B", "Build"]];
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const LIVE = location.protocol.startsWith("http");
+const LIVE = !window.__PRD__ && location.protocol.startsWith("http");
 let current = 0, lastText = "", full = false;
 
 function inline(s) {
@@ -252,10 +252,11 @@ document.addEventListener("keydown", (e) => {
 });
 
 if (LIVE) {
-  $("#live").classList.add("on"); $("#mdLink").href = "/prd.md"; $("#protoLink").href = "/";
+  $("#live").classList.add("on"); if ($("#mdLink")) $("#mdLink").href = "/prd.md"; $("#protoLink").href = "/";
   poll(); setInterval(poll, 3000);
 } else {
   lastText = window.__PRD__ || "# Product requirements\n\n> Pending: fills at gate V."; render(lastText);
+  if (window.__PROTO__) { $("#protoLink").href = window.__PROTO__; $("#protoLink").target = "_blank"; const md = $("#mdLink"); if (md) md.hidden = true; }
 }
 </script>
 </body>

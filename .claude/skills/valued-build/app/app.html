@@ -7,9 +7,9 @@
 <link rel="stylesheet" href="/ff.css">
 <style>
   /* App layer on the founderfirst.one tokens in ff.css: paper ground, white working cards, sage for the AI's voice. */
-  .hero { padding-top: 28px; padding-bottom: 8px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 28px; align-items: end; }
+  .hero { padding-block: 28px 4px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 28px; align-items: end; }
   .hero h1 { text-wrap: balance; }
-  .hero-sub { margin-top: 10px; color: var(--ink-3); font-size: 16px; max-width: 58ch; }
+  .hero-sub { margin-top: 10px; color: var(--ink-3); font-size: 16px; max-width: 60ch; }
   .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .kpi { background: var(--white); border-radius: var(--r-card); border: 1px solid var(--line-2); padding: 12px 14px; }
   .kpi .v { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: var(--ls-tight); font-variant-numeric: tabular-nums; }
@@ -18,8 +18,11 @@
   .tab { background: none; border: 0; padding: 12px 14px; font: 500 var(--fs-ui) var(--font-sans); color: var(--ink-3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
   .tab[aria-selected="true"] { color: var(--ink); border-color: var(--brand); }
   .grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 20px; align-items: start; }
-  .grid > * { min-width: 0; }
+  .grid > *, .two > *, .three > * { min-width: 0; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   textarea { width: 100%; min-height: 110px; resize: vertical; border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px; font: 400 16px/1.5 var(--font-sans); color: var(--ink); background: var(--white); margin-top: 12px; }
+  select { height: 36px; border: 1px solid var(--line); border-radius: var(--r-pill); padding: 0 34px 0 14px; font: 500 var(--fs-label) var(--font-sans); color: var(--ink); background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%235b636e' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 14px center; appearance: none; cursor: pointer; }
   .samples { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; }
   .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .between { justify-content: space-between; }
@@ -31,38 +34,34 @@
   .source { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px; font-size: var(--fs-label); color: var(--ink-2); }
   .bubble { background: var(--brand-tint); border-radius: var(--r-bubble-ai); padding: 14px 16px; color: var(--ink); white-space: pre-wrap; min-height: 48px; }
   .bubble[contenteditable="true"] { background: var(--white); outline: 2px solid var(--brand-soft); }
+  .meta { font-size: var(--fs-micro); color: var(--ink-3); font-variant-numeric: tabular-nums; }
   .banner { border-radius: var(--r-card); padding: 12px 14px; font-size: var(--fs-label); display: flex; gap: 10px; align-items: center; }
   .banner.bad { background: var(--error-bg); color: var(--error); border: 1px solid #f1cfcb; }
   .banner.warn { background: var(--amber-bg); color: var(--amber-strong); border: 1px solid #f1dfc2; }
   .banner.ok { background: var(--brand-tint); color: var(--brand-strong); border: 1px solid var(--brand-soft); }
   .notes { font-size: var(--fs-micro); color: var(--ink-3); padding-left: 18px; margin: 0; }
   .never li { margin: 4px 0; }
-  .intro { margin-top: 20px; padding: 22px 24px; }
-  .intro-grid { display: grid; grid-template-columns: 1.2fr 1fr 1.3fr; gap: 24px; margin-top: 12px; }
-  .intro-grid > * { min-width: 0; }
-  .intro h3 { font-size: 16px; margin-bottom: 6px; }
-  .outcome { display: flex; gap: 10px; align-items: flex-start; margin: 6px 0; font-size: var(--fs-label); }
-  .outcome .pill { flex: none; margin-top: 1px; }
-  .tour { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line-2); }
-  .tour .n { width: 22px; height: 22px; border-radius: 50%; background: var(--brand); color: var(--white); display: inline-grid; place-items: center; font-size: 12px; font-weight: 600; margin-right: 6px; }
-  .linkbtn { background: none; border: 0; color: var(--ink-4); cursor: pointer; font: 500 var(--fs-label) var(--font-sans); }
-  /* Eval dashboard */
-  .seg { display: inline-flex; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 3px; }
+  .seg { display: inline-flex; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 3px; flex-wrap: wrap; }
   .seg button { border: 0; background: none; height: 32px; padding: 0 14px; border-radius: var(--r-pill); font: 500 var(--fs-label) var(--font-sans); color: var(--ink-3); cursor: pointer; }
   .seg button[aria-pressed="true"] { background: var(--white); color: var(--ink); box-shadow: var(--shadow-card); }
-  .engines { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .engine { border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; background: var(--white); }
-  .engine .name { font-weight: 600; }
-  .engine .desc { font-size: var(--fs-micro); color: var(--ink-3); margin-top: 2px; min-height: 32px; }
-  .engine .res { margin-top: 10px; font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
-  .engine .res.ok { color: var(--brand-strong); } .engine .res.bad { color: var(--error); } .engine .res.idle { color: var(--ink-4); }
-  .engine .meta { font-size: var(--fs-micro); color: var(--ink-3); margin-top: 4px; font-variant-numeric: tabular-nums; }
-  .progress { height: 6px; background: var(--line-2); border-radius: var(--r-pill); overflow: hidden; margin-top: 10px; }
+  .label { font-size: var(--fs-micro); font-weight: 600; color: var(--ink-3); }
+  .progress { height: 6px; background: var(--line-2); border-radius: var(--r-pill); overflow: hidden; }
   .progress > div { height: 100%; width: 0; background: var(--brand); transition: width var(--dur-base) var(--ease-out); }
   .tbl { overflow-x: auto; border: 1px solid var(--line-2); border-radius: var(--r-card); }
   .tbl th { background: var(--paper); }
+  .tbl tr.sel td { background: var(--brand-tint); }
+  .tbl tr.click { cursor: pointer; }
   .num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 12.5px; }
-  .cell { display: inline-flex; gap: 8px; align-items: center; }
+  .gate { border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 14px 16px; background: var(--white); }
+  .gate .top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+  .gate .q { font-weight: 600; }
+  .gate .big { font-family: var(--font-display); font-size: 24px; font-weight: 600; letter-spacing: -.01em; margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .gate .bar { font-size: var(--fs-label); color: var(--ink-2); margin-top: 2px; }
+  .gate .why { font-size: var(--fs-micro); color: var(--ink-3); margin-top: 8px; }
+  .matrix td, .matrix th { text-align: center; }
+  .matrix td.hit { background: var(--brand-tint); color: var(--brand-strong); font-weight: 600; }
+  .matrix td.miss { background: var(--error-bg); color: var(--error); font-weight: 600; }
+  .ok-t { color: var(--brand-strong); font-weight: 600; } .bad-t { color: var(--error); font-weight: 600; }
   .flow { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
   .step { background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 14px; }
   .step .n { width: 24px; height: 24px; border-radius: 50%; background: var(--dark); color: var(--white); display: grid; place-items: center; font-size: 12px; font-weight: 600; margin-bottom: 8px; }
@@ -73,10 +72,11 @@
   .faq summary::after { content: "+"; color: var(--ink-4); font-weight: 400; }
   .faq details[open] summary::after { content: "-"; }
   .faq details p { margin-top: 8px; color: var(--ink-2); font-size: var(--fs-label); max-width: 75ch; }
+  .from { display: inline-block; margin-top: 8px; font-size: var(--fs-micro); color: var(--ink-3); background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 2px 10px; }
   .toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); background: var(--dark); color: var(--white); padding: 10px 18px; border-radius: var(--r-pill); font-size: var(--fs-label); opacity: 0; transition: opacity var(--dur-base); z-index: 60; pointer-events: none; }
   .toast.show { opacity: 1; }
   footer { padding-block: 32px 48px; color: var(--ink-4); font-size: var(--fs-micro); }
-  @media (max-width: 900px) { .hero, .grid, .intro-grid, .engines { grid-template-columns: 1fr; } .flow { grid-template-columns: 1fr 1fr; } .kpis { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 900px) { .hero, .grid, .two, .three { grid-template-columns: 1fr; } .flow { grid-template-columns: 1fr 1fr; } .kpis { grid-template-columns: repeat(2, 1fr); } }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
@@ -85,28 +85,14 @@
   <div class="wrap nav-inner">
     <span class="logo"><span class="mark" id="mark">AI</span><span id="navTitle">Prototype</span></span>
     <span class="spacer"></span>
-    <span class="pill plain hide-sm">Synthetic data</span>
     <span class="pill info hide-sm" id="enginePill">Rules</span>
-    <span class="pill plain" id="aiPill">AI: checking</span>
+    <label class="label hide-sm" for="model">Model</label>
+    <select id="model" aria-label="Model"></select>
     <a class="btn ghost sm hide-sm" id="prdLink" href="/prd" target="_blank" rel="noopener">PRD</a>
   </div>
 </nav>
 
 <main class="wrap">
-  <section class="card emph intro" id="intro" aria-label="What you are looking at">
-    <div class="row between">
-      <div class="eyebrow brand">What you are looking at</div>
-      <button class="linkbtn" id="introClose">Hide</button>
-    </div>
-    <div class="intro-grid">
-      <div><h3>The situation</h3><p class="small muted" id="iScenario"></p></div>
-      <div><h3>Who uses this screen</h3><p class="small muted" id="iUser"></p></div>
-      <div><h3>What it decides, every time</h3><div id="iOutcomes"></div></div>
-    </div>
-    <div class="tour" id="iTour"></div>
-  </section>
-  <button class="btn ghost sm" id="introOpen" hidden style="margin-top:16px">What am I looking at?</button>
-
   <section class="hero">
     <div>
       <div class="eyebrow brand" id="eyebrow">Prototype</div>
@@ -114,28 +100,30 @@
       <p class="hero-sub" id="promise"></p>
     </div>
     <div class="kpis" aria-label="Session metrics">
-      <div class="kpi"><div class="v" id="kDecisions">0</div><div class="l">Decisions</div></div>
-      <div class="kpi"><div class="v" id="kApproved">0</div><div class="l">Approved</div></div>
+      <div class="kpi"><div class="v" id="kDecisions">0</div><div class="l">Requests handled</div></div>
+      <div class="kpi"><div class="v" id="kApproved">0</div><div class="l">Drafts approved</div></div>
       <div class="kpi"><div class="v" id="kEdit">0%</div><div class="l">Edit rate</div></div>
       <div class="kpi"><div class="v" id="kEsc">0</div><div class="l">Escalated</div></div>
     </div>
   </section>
 
   <div class="tabs" role="tablist">
-    <button class="tab" role="tab" aria-selected="true" data-tab="work">Try it</button>
+    <button class="tab" role="tab" aria-selected="true" data-tab="work">Workbench</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="evals">Evals</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="gov">Governance</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="audit">Audit log</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="how">How it works</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="faq">FAQ</button>
   </div>
 
+  <!-- Workbench -->
   <section class="panel" id="work">
     <div class="grid">
       <div class="stack">
         <div class="card">
           <div class="eyebrow">Incoming</div>
           <h3 style="margin-top:6px" id="inputLabel">Request</h3>
-          <textarea id="input" placeholder="Type a request, or pick a sample below"></textarea>
+          <textarea id="input" placeholder="Type a request, or pick an example below"></textarea>
           <div class="samples" id="samples"></div>
           <div class="row"><button class="btn solid" id="run">Run it</button><span class="small muted">Ctrl + Enter</span></div>
         </div>
@@ -149,54 +137,78 @@
     </div>
   </section>
 
+  <!-- Evals -->
   <section class="panel" id="evals" hidden>
-    <div class="card emph stack">
-      <div class="row between">
-        <div><div class="eyebrow">Release gates</div><h2 style="margin-top:6px">A number decides the release</h2></div>
-        <div class="seg" role="group" aria-label="Test set"><button data-set="golden" aria-pressed="true" id="setDev">Dev set</button><button data-set="holdout" aria-pressed="false" id="setHold">Sealed holdout</button></div>
+    <div class="stack">
+      <div class="card emph stack">
+        <div class="row between">
+          <div><div class="eyebrow">Release readiness</div><h2 style="margin-top:6px">Is it safe to release?</h2></div>
+          <div class="seg" role="group" aria-label="Test set"><button data-set="golden" aria-pressed="true" id="setDev">Development set</button><button data-set="holdout" aria-pressed="false" id="setHold">Sealed holdout</button></div>
+        </div>
+        <p class="small muted" id="setInfo"></p>
+        <div class="row">
+          <div class="seg" role="group" aria-label="Engine" id="engineSeg"></div>
+          <span class="small muted" id="engineDesc"></span>
+        </div>
+        <div class="row"><button class="btn solid" id="runTest">Run test</button><button class="btn ghost sm" id="stopTest" hidden>Stop</button><span class="small muted" id="runNote"></span></div>
+        <div class="progress" id="prog" hidden><div></div></div>
       </div>
-      <p class="muted small" id="evalIntro">Every row has a known right answer, written before anything was built. Each engine runs every row; the gates were set before the build and are checked group by group.</p>
-      <div class="engines" id="engines"></div>
-      <div class="row">
-        <button class="btn dark" id="runRules">Run rules</button>
-        <button class="btn solid" id="runAI">Run with real AI</button>
-        <button class="btn ghost sm" id="stopAI" hidden>Stop</button>
-        <span class="small muted" id="aiNote"></span>
+
+      <div class="card">
+        <div class="eyebrow">Scoreboard</div>
+        <p class="small muted" style="margin-top:4px">Every run on this test set. Click a row for its full results. Latency is measured per request; cost is per 1,000 requests.</p>
+        <div class="tbl" style="margin-top:10px"><table>
+          <thead><tr><th>Run</th><th>Release</th><th>Escalations caught</th><th>Routed correctly</th><th>Unsafe answers</th><th>Median latency</th><th>Slowest 5%</th><th>Cost / 1,000</th></tr></thead>
+          <tbody id="board"></tbody></table></div>
+        <p class="small muted" id="costNote" style="margin-top:8px"></p>
       </div>
-      <div id="evalOut"></div>
+
+      <div id="detail"></div>
     </div>
   </section>
 
+  <!-- Governance -->
+  <section class="panel" id="gov" hidden>
+    <div class="stack">
+      <div class="three" id="govStats"></div>
+      <div class="card">
+        <div class="eyebrow">Controls running in this prototype</div>
+        <p class="small muted" style="margin-top:4px">Each control is enforced in the code you just used, with the evidence that shows it.</p>
+        <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Control</th><th>How it is enforced</th><th>Evidence</th></tr></thead><tbody id="controls"></tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Governance checks, gate by gate</div>
+        <p class="small muted" style="margin-top:4px">Asked inside each gate of the working session, not reviewed at the end. Anything not answered has a named owner.</p>
+        <div class="tbl" style="margin-top:10px"><table><thead><tr><th>Gate</th><th>Question</th><th>Answer</th><th>Status</th><th>Closes it</th></tr></thead><tbody id="govRows"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Audit -->
   <section class="panel" id="audit" hidden>
     <div class="card emph">
-      <div class="row between" style="margin-bottom:12px">
-        <div><div class="eyebrow">Audit trail</div><h2 style="margin-top:6px">Every action, with who approved it</h2></div>
-      </div>
-      <div class="tbl"><table><thead><tr><th>Time</th><th>Request</th><th>Decision</th><th>Source</th><th>Action</th><th>Approver</th><th>Edited</th><th>Drafted by</th></tr></thead><tbody id="logRows"></tbody></table></div>
+      <div class="eyebrow">Audit trail</div><h2 style="margin-top:6px">Every action, with who approved it</h2>
+      <div class="tbl" style="margin-top:12px"><table><thead><tr><th>Time</th><th>Request</th><th>Decision</th><th>Source</th><th>Action</th><th>Approver</th><th>Edited</th><th>Drafted by</th></tr></thead><tbody id="logRows"></tbody></table></div>
     </div>
   </section>
 
+  <!-- How it works -->
   <section class="panel" id="how" hidden>
     <div class="stack">
-      <div class="flow">
-        <div class="step"><div class="n">1</div><strong>Request</strong><p class="small muted">Arrives from the channel.</p></div>
-        <div class="step guard"><div class="n">2</div><strong>Escalation guard</strong><p class="small muted">Checked first, by rules. Escalation wins every race.</p></div>
-        <div class="step"><div class="n">3</div><strong>Route</strong><p class="small muted">Answer only when one source clearly matches.</p></div>
-        <div class="step"><div class="n">4</div><strong>Draft</strong><p class="small muted" id="howDraft">From the cited source only.</p></div>
-        <div class="step person"><div class="n">5</div><strong>Person decides</strong><p class="small muted">Approve, edit, or hand off.</p></div>
-        <div class="step"><div class="n">6</div><strong>Log</strong><p class="small muted">Input, source, output, approver, version.</p></div>
-      </div>
-      <div class="card"><div class="eyebrow">Decisions that shaped it</div><p class="small muted" style="margin-top:4px">Every choice made in the working session, who made it, and what it changed here.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Gate</th><th>Decision</th><th>Chosen by</th><th>What it changed</th></tr></thead><tbody id="decisionRows"></tbody></table></div></div>
+      <div class="flow" id="flow"></div>
+      <div class="card"><div class="eyebrow">Decisions that shaped it</div><p class="small muted" style="margin-top:4px">Every choice made in the working session, who made it, and what it changed in this prototype.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Gate</th><th>Decision</th><th>Chosen by</th><th>What it changed</th></tr></thead><tbody id="decisionRows"></tbody></table></div></div>
       <div class="grid">
         <div class="card"><div class="eyebrow">Release gates</div><div class="tbl" style="margin-top:8px"><table><tbody id="gateRows"></tbody></table></div></div>
-        <div class="card"><div class="eyebrow">Knowledge sources</div><div class="tbl" style="margin-top:8px"><table><tbody id="sourceRows"></tbody></table></div></div>
+        <div class="card"><div class="eyebrow">Approved knowledge sources</div><div class="tbl" style="margin-top:8px"><table><tbody id="sourceRows"></tbody></table></div></div>
       </div>
     </div>
   </section>
 
+  <!-- FAQ -->
   <section class="panel" id="faq" hidden>
     <div class="card emph">
       <div class="eyebrow">Questions people ask</div><h2 style="margin-top:6px">FAQ</h2>
+      <p class="small muted" style="margin-top:4px">Every answer comes from a decision made in the working session; the tag shows which.</p>
       <div class="faq" id="faqList" style="margin-top:8px"></div>
     </div>
   </section>
@@ -211,10 +223,21 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const VERDICT_STYLE = { answer: "ok", human: "warn", escalate: "bad" };
 const ENGINE_LABEL = { rules: "Rules decide", "rules+model": "Rules decide, AI drafts", "model-first": "AI proposes, rules guard" };
-let CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules" }, ROUTER = null, AI = null, READY = false;
-let current = null, stats = { decisions: 0, approved: 0, edited: 0, escalated: 0 }, LOG = [], evalSet = "golden", RESULTS = {}, aiCtl = null;
+/* List prices per million tokens (input, output). */
+const MODELS = [
+  { id: "claude-haiku-5-5", name: "Claude Haiku 5.5", short: "Haiku 5.5", tier: "quick", pin: 0.10, pout: 0.50, note: "fastest, lowest cost" },
+  { id: "claude-sonnet-5-5", name: "Claude Sonnet 5.5", short: "Sonnet 5.5", tier: "default", pin: 2, pout: 10, note: "balanced" },
+  { id: "claude-opus-5-5", name: "Claude Opus 5.5", short: "Opus 5.5", tier: "complex", pin: 4, pout: 20, note: "most capable" },
+];
+const ENGINES = [
+  { id: "rules", name: "Rules only", desc: "Deterministic triggers and source matching. No AI." },
+  { id: "ai", name: "AI only", desc: "The selected model reads each request and decides, with nothing in front of it." },
+  { id: "guard", name: "AI with rules guard", desc: "The model decides; the rules' escalation check overrides it, and no answer ships without a valid source." },
+];
+let CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules" }, ROUTER = null, AI = null, READY = false, GOLDEN = [], HOLDOUT = [];
+let current = null, stats = { decisions: 0, approved: 0, edited: 0, escalated: 0 }, LOG = [], evalSet = "golden", engine = "rules", RUNS = [], selRun = null, ctl = null;
+const model = () => MODELS.find((m) => m.id === $("#model").value) || MODELS[0];
 
-/* Data: embedded when published, fetched from the run's server otherwise. */
 async function load(name, fallback) {
   if (HOSTED) return window.__VALUED__[name] ?? fallback;
   try { const r = await fetch("/" + name, { cache: "no-store" }); if (!r.ok) return fallback; return name.endsWith(".js") ? r.text() : r.json(); } catch { return fallback; }
@@ -224,46 +247,54 @@ function compileRouter(src) {
   try { const module = { exports: {} }; new Function("module", "exports", src)(module, module.exports); return typeof module.exports.decide === "function" ? module.exports : null; } catch (e) { console.error("router", e); return null; }
 }
 
-/* Real AI: Claude through the page's own access when published, or the run's server with an API key. */
+/* Real AI. Published: Claude through the page's own access. Localhost: the run's server, with an API key. */
 async function connectAI() {
   if (HOSTED) {
     const sample = window.claude ? await window.claude.use("sample").catch(() => null) : null;
     if (!sample) return null;
     return {
-      where: "Claude (your account)",
-      text: (prompt, opts = {}) => sample(prompt, { modelTier: opts.tier || "quick", onText: opts.onText, signal: opts.signal, cache: opts.cache }).then((r) => r.text),
-      json: (prompt, opts = {}) => sample.json(prompt, { modelTier: opts.tier || "quick", signal: opts.signal }),
+      exact: false,
+      call: async (prompt, m, opts = {}) => {
+        const t = performance.now();
+        const r = await sample(prompt, { model: m.id, modelTier: m.tier, effort: "low", onText: opts.onText, signal: opts.signal, cache: false });
+        return { text: r.text, ms: performance.now() - t, inTok: Math.ceil(prompt.length / 4), outTok: Math.ceil(r.text.length / 4), answeredBy: r.modelApplied ? m.short : `${r.modelTierApplied} tier` };
+      },
     };
   }
   try {
     const s = await fetch("/api/status", { cache: "no-store" }).then((r) => r.json());
     if (!s.modelReady) return null;
-    const call = async (prompt) => { const r = await fetch("/api/ai", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ prompt }) }).then((x) => x.json()); if (!r.ok) throw { code: "upstream_error", message: r.why }; return r.text; };
     return {
-      where: s.model,
-      text: async (prompt, opts = {}) => { const t = await call(prompt); opts.onText?.({ text: t }); return t; },
-      json: async (prompt) => { const t = await call(prompt); return JSON.parse(t.slice(t.search(/[[{]/), Math.max(t.lastIndexOf("]"), t.lastIndexOf("}")) + 1)); },
+      exact: true,
+      call: async (prompt, m, opts = {}) => {
+        const t = performance.now();
+        const r = await fetch("/api/ai", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ prompt, model: m.id }), signal: opts.signal }).then((x) => x.json());
+        if (!r.ok) throw { code: "upstream_error", message: r.why };
+        opts.onText?.({ text: r.text });
+        return { text: r.text, ms: performance.now() - t, inTok: r.usage?.input_tokens ?? Math.ceil(prompt.length / 4), outTok: r.usage?.output_tokens ?? Math.ceil(r.text.length / 4), answeredBy: m.short };
+      },
     };
   } catch { return null; }
 }
-const aiErrorCopy = (e) => ({ not_granted: "AI access was not allowed for this page.", rate_limited: "Too many AI calls right now. Try again in a minute.", sampling_disabled: "AI is not available on this account.", cancelled: "Stopped.", invalid_json: "The AI reply was not in the expected format. Try again." }[e?.code] || `AI call failed${e?.message ? ": " + e.message : ""}.`);
-
+const costOf = (m, inTok, outTok) => (inTok * m.pin + outTok * m.pout) / 1e6;
+const fmtMs = (ms) => (ms < 1 ? "<1 ms" : ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`);
+const fmtUsd = (x) => (x === 0 ? "$0" : x < 0.01 ? `$${x.toFixed(4)}` : `$${x.toFixed(2)}`);
+const aiErrorCopy = (e) => ({ not_granted: "AI access was not allowed for this page.", rate_limited: "Too many AI calls right now. Wait a minute and try again.", sampling_disabled: "AI is not available on this account.", cancelled: "Stopped.", invalid_json: "The AI reply was not in the expected format." }[e?.code] || `The AI call failed${e?.message ? ": " + e.message : ""}.`);
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2400); }
 function renderStats() {
   $("#kDecisions").textContent = stats.decisions; $("#kApproved").textContent = stats.approved;
   $("#kEdit").textContent = stats.approved ? Math.round((stats.edited / stats.approved) * 100) + "%" : "0%"; $("#kEsc").textContent = stats.escalated;
 }
-function toggleIntro(show) { $("#intro").hidden = !show; $("#introOpen").hidden = show; try { localStorage.setItem("introHidden", show ? "0" : "1"); } catch {} }
 
 async function boot() {
-  [CASE, SOURCES, GATES, BUILD] = await Promise.all([load("case.json", {}), load("sources.json", []), load("gates.json", {}), load("build.json", { engine: "rules" })]);
+  [CASE, SOURCES, GATES, BUILD, GOLDEN, HOLDOUT] = await Promise.all([load("case.json", {}), load("sources.json", []), load("gates.json", {}), load("build.json", { engine: "rules" }), load("golden.json", []), load("holdout.json", [])]);
   ROUTER = compileRouter(await load("router.js", ""));
   READY = Boolean(ROUTER && CASE.title);
   const c = CASE;
   document.title = c.title || "Prototype workbench";
   $("#navTitle").textContent = c.title || "Prototype";
   $("#mark").textContent = (c.client || "AI").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-  $("#eyebrow").textContent = `Prototype · ${c.client || "client"} · synthetic data`;
+  $("#eyebrow").textContent = `${c.client || "Client"} · prototype on synthetic data`;
   $("#headline").textContent = c.headline || c.useCase || "Working prototype";
   $("#promise").textContent = c.promise || "";
   $("#inputLabel").textContent = c.inputLabel || "Incoming request";
@@ -272,35 +303,16 @@ async function boot() {
   $("#never").innerHTML = (c.neverList || []).map((n) => `<li>${esc(n)}</li>`).join("");
   $("#samples").innerHTML = (c.samples || []).map((s, i) => `<button class="chip" data-sample="${i}">${esc(s.label)}</button>`).join("");
   $("#enginePill").textContent = ENGINE_LABEL[BUILD.engine] || "Rules decide";
-  $("#howDraft").textContent = BUILD.engine === "rules" ? "Assembled from the cited source by rule." : "AI writes from the cited source only; no source, no draft.";
-  $("#foot").textContent = `${c.title || "Prototype"} · version ${c.version || "proto-0.1"} · synthetic data, not for production use. Built with VALUED.`;
+  $("#foot").textContent = `${c.title || "Prototype"} · version ${c.version || "proto-0.1"} · synthetic data, not for production use.`;
   if (HOSTED) { const prd = window.__VALUED__.prdUrl; $("#prdLink").hidden = !prd; if (prd) $("#prdLink").href = prd; }
-  // Intro
-  $("#iScenario").textContent = c.scenario || c.promise || "";
-  $("#iUser").textContent = c.userIntro || `A ${c.user || "front-line employee"} sees each incoming request here. The system decides what kind of request it is and prepares a draft; the ${c.user || "employee"} decides what is sent.`;
-  $("#iOutcomes").innerHTML = ["answer", "human", "escalate"].filter((k) => (c.verdicts || {})[k]).map((k) => `<div class="outcome"><span class="pill ${VERDICT_STYLE[k]}">${esc(k)}</span><span><strong>${esc(c.verdicts[k].label)}.</strong> ${esc(c.verdicts[k].desc)}</span></div>`).join("");
-  const samples = c.samples || [];
-  const pick = (v, fb) => { const i = samples.findIndex((x) => x.expect === v); return i >= 0 ? i : fb; };
-  const iAns = pick("answer", 0), iEsc = pick("escalate", Math.max(0, samples.length - 2));
-  $("#iTour").innerHTML = `<strong class="small">Try it in 3 clicks</strong>` + [
-    samples[iAns] && `<button class="chip" data-tour="${iAns}"><span class="n">1</span>Run "${esc(samples[iAns].label)}", then approve</button>`,
-    samples[iEsc] && `<button class="chip" data-tour="${iEsc}"><span class="n">2</span>Run "${esc(samples[iEsc].label)}": it escalates</button>`,
-    `<button class="chip" data-tour="evals"><span class="n">3</span>Open the evals</button>`,
-  ].filter(Boolean).join("");
-  try { if (localStorage.getItem("introHidden") === "1") toggleIntro(false); } catch {}
-  // How it works, FAQ
-  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(d.gate)}</span></td><td>${esc(d.decision)}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Decisions appear here as each gate is decided.</td></tr>`;
-  $("#faqList").innerHTML = (c.faq || []).map((f) => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("") || `<p class="muted small">The FAQ is written at the build step, from the decisions in this run.</p>`;
-  $("#gateRows").innerHTML = gateDefs().map((g) => `<tr><td>${esc(g.label)}</td><td class="num">${esc(g.barText)}</td></tr>`).join("");
-  $("#sourceRows").innerHTML = (SOURCES || []).map((s) => `<tr><td class="num">${esc(s.id)}</td><td>${esc(s.text)}</td></tr>`).join("");
+  renderHow(); renderFaq(); renderGov(); renderEvalControls(); renderBoard();
   if (!current) $("#result").innerHTML = READY
     ? `<div class="empty"><div class="ring">?</div><p>Run a request to see the decision, the cited source, the draft and who signs it off.</p></div>`
-    : `<div class="empty"><div class="ring">·</div><p>The decision logic is built at gate E, from the labels and the never list decided in the session.</p>${HOSTED ? "" : `<p style="margin-top:12px"><a class="btn ghost sm" href="/prd">Follow the PRD as it fills in</a></p>`}</div>`;
+    : `<div class="empty"><div class="ring">·</div><p>The decision logic is built at gate E, from the labels and the never list decided in the session.</p></div>`;
   $("#run").disabled = !READY;
-  renderEngines();
 }
 
-/* ---------- Try it ---------- */
+/* ---------- Workbench ---------- */
 const srcText = (id) => (SOURCES.find((s) => s.id === id) || {}).text || "";
 function draftPrompt(input, sourceId) {
   return [`You draft a reply for a ${CASE.user || "front-line employee"} at ${CASE.client || "the client"} to review before anything is sent.`,
@@ -311,23 +323,25 @@ function draftPrompt(input, sourceId) {
 async function run() {
   const text = $("#input").value.trim();
   if (!text || !READY) { $("#input").focus(); return; }
-  const r = { ...ROUTER.decide(text), input: text, notes: [] };
+  const t = performance.now();
+  const r = { ...ROUTER.decide(text), input: text, notes: [], ruleMs: performance.now() - t };
   current = r; stats.decisions++; if (r.verdict === "escalate") stats.escalated++; renderStats();
   if (r.verdict === "answer") {
     r.sourceText = srcText(r.source);
-    if (BUILD.engine !== "rules" && AI) { r.drafter = "AI"; r.draft = ""; renderResult(true); await aiDraft(r); return; }
+    if (BUILD.engine !== "rules" && AI) { r.drafter = model().short; r.draft = ""; renderResult(true); await aiDraft(r); return; }
     r.drafter = "template"; r.draft = `${CASE.draftOpener || "Thanks for reaching out."} ${r.sourceText}`;
     r.notes.push(BUILD.engine === "rules" ? "Rules engine: the draft is assembled from the cited source." : "AI is not connected here, so the draft is assembled from the cited source.");
   }
   renderResult(false);
 }
 async function aiDraft(r) {
-  const el = () => $("#draft");
+  const m = model();
   try {
-    const t = await AI.text(draftPrompt(r.input, r.source), { tier: "quick", cache: false, onText: ({ text }) => { if (current === r && el()) el().textContent = text; } });
+    const out = await AI.call(draftPrompt(r.input, r.source), m, { onText: ({ text }) => { if (current === r && $("#draft")) $("#draft").textContent = text; } });
     if (current !== r) return;
-    if (/NO_ANSWER/.test(t)) { r.verdict = "human"; r.source = null; r.notes.push("The AI found no answer in the source, so a person handles it."); renderResult(false); return; }
-    r.draft = t.trim(); r.notes.push(`Drafted by ${AI.where} from the cited source only.`);
+    r.cost = costOf(m, out.inTok, out.outTok); r.ms = out.ms; r.drafter = out.answeredBy;
+    if (/NO_ANSWER/.test(out.text)) { r.verdict = "human"; r.source = null; r.notes.push("The model found no answer in the source, so a person handles it."); renderResult(false); return; }
+    r.draft = out.text.trim();
   } catch (e) {
     r.drafter = "template"; r.draft = `${CASE.draftOpener || ""} ${r.sourceText}`.trim(); r.notes.push(`${aiErrorCopy(e)} Showing a template draft from the cited source.`);
   }
@@ -335,14 +349,15 @@ async function aiDraft(r) {
 }
 function renderResult(drafting) {
   const r = current, v = (CASE.verdicts || {})[r.verdict] || {};
+  const metaLine = `Decision by rules in ${fmtMs(r.ruleMs)}` + (r.ms ? ` · draft by ${esc(r.drafter)} in ${fmtMs(r.ms)} · ${fmtUsd(r.cost)}${AI && !AI.exact ? " (estimated)" : ""}` : "");
   let body = "";
   if (r.verdict === "escalate") body = `<div class="banner bad"><strong>Escalation wins.</strong> Nothing is drafted. Routed to ${esc(CASE.escalationOwner || "a person")} within ${esc(CASE.escalationSla || "the agreed time")}.</div><div class="row"><button class="btn danger" data-act="escalated">Escalate to ${esc(CASE.escalationOwner || "owner")}</button></div>`;
   else if (r.verdict === "human") body = `<div class="banner warn">No single source answers this clearly, so a person handles it. The system never guesses.</div><div class="row"><button class="btn dark" data-act="assigned">Assign to a person</button></div>`;
   else body = `<div><div class="eyebrow">Cited source · ${esc(r.source)}</div><div class="source" style="margin-top:6px">${esc(r.sourceText)}</div></div>
-    <div><div class="eyebrow">Draft for review · ${drafting ? "AI is writing" : esc(r.drafter)}</div><div class="bubble" id="draft" style="margin-top:6px">${drafting ? "Thinking..." : esc(r.draft)}</div>${CASE.disclosure ? `<p class="small muted" style="margin-top:6px">${esc(CASE.disclosure)}</p>` : ""}</div>
+    <div><div class="eyebrow">Draft for review · ${drafting ? `${esc(model().short)} is writing` : esc(r.drafter)}</div><div class="bubble" id="draft" style="margin-top:6px">${drafting ? "Thinking..." : esc(r.draft)}</div>${CASE.disclosure ? `<p class="small muted" style="margin-top:6px">${esc(CASE.disclosure)}</p>` : ""}</div>
     <div class="row"><button class="btn solid" data-act="approved" ${drafting ? "disabled" : ""}>Approve and send</button><button class="btn ghost" id="editBtn" ${drafting ? "disabled" : ""}>Edit</button><button class="btn ghost" data-act="handed-off">Send to a person</button></div>`;
   const notes = r.notes.length ? `<ul class="notes">${r.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>` : "";
-  $("#result").innerHTML = `<div class="stack"><div class="verdict"><span class="pill ${VERDICT_STYLE[r.verdict] || "plain"}">${esc(r.verdict)}</span><h3>${esc(v.label || r.verdict)}</h3></div><p class="muted small">${esc(v.desc || "")}</p><div><div class="eyebrow">Why</div><p style="margin-top:4px">${esc(r.reason)}</p></div>${body}${notes}</div>`;
+  $("#result").innerHTML = `<div class="stack"><div class="verdict"><span class="pill ${VERDICT_STYLE[r.verdict] || "plain"}">${esc(r.verdict)}</span><h3>${esc(v.label || r.verdict)}</h3></div><p class="muted small">${esc(v.desc || "")}</p><div><div class="eyebrow">Why</div><p style="margin-top:4px">${esc(r.reason)}</p></div>${body}<p class="meta">${metaLine}</p>${notes}</div>`;
 }
 async function act(action) {
   const d = $("#draft");
@@ -353,130 +368,208 @@ async function act(action) {
   if (!HOSTED) fetch("/api/log", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(entry) }).catch(() => {});
   toast(`Logged: ${action}${edited ? " (edited)" : ""} by ${entry.approver}`);
   $("#result").querySelectorAll("button").forEach((b) => (b.disabled = true));
+  renderGov();
 }
 function renderLog() {
   $("#logRows").innerHTML = LOG.length ? LOG.map((r) => `<tr><td class="num">${esc(new Date(r.at).toLocaleTimeString())}</td><td>${esc(r.input)}</td><td><span class="pill ${VERDICT_STYLE[r.verdict] || "plain"}">${esc(r.verdict)}</span></td><td class="num">${esc(r.source || "none")}</td><td>${esc(r.action)}</td><td>${esc(r.approver)}</td><td>${r.edited ? "Yes" : "No"}</td><td>${esc(r.drafter)}</td></tr>`).join("")
-    : `<tr><td colspan="8" class="muted">No actions yet. Approve, edit or escalate something in Try it.</td></tr>`;
+    : `<tr><td colspan="8" class="muted">No actions yet. Approve, edit or escalate something on the Workbench.</td></tr>`;
 }
 
-/* ---------- Evals: three engines, the same gates ---------- */
+/* ---------- Evals ---------- */
 const norm = (g) => Object.fromEntries(Object.entries(g || {}).map(([k, v]) => [k.replace(/_/g, "").toLowerCase(), v]));
+const pct = (a, b) => (b ? Math.round((a / b) * 100) : 100);
 function gateDefs() {
-  const g = norm(GATES), defs = [];
-  const add = (key, label, kind, bar) => { if (bar !== undefined && bar !== null) defs.push({ key, label, kind, bar, barText: (kind === "min" ? ">= " : kind === "zero" ? "= " : "<= ") + bar }); };
-  add("escRecall", "Escalation recall (riskiest miss)", "min", g.escalationrecall);
-  add("escPrecision", "Escalation precision", "min", g.escalationprecision);
-  add("noSource", "Answers without a source", "zero", g.answerswithoutsource);
-  add("routing", "Routing accuracy", "min", g.routingaccuracy);
-  add("gap", `Recall gap across ${g.riskiestslice || "groups"}`, "max", g.recallgapmax);
-  add("fairness", "Worst group escalation recall", "min", g.fairnessmingrouprecall ?? g.fairnessmin);
-  add("never", "Answers on a never-list topic", "zero", g.neverlistanswers);
-  add("outside", "Verdicts outside the allowed set", "zero", g.verdictsoutsideallowed);
-  return defs;
+  const g = norm(GATES), lang = g.riskiestslice || "group";
+  return [
+    { key: "escRecall", q: "Catches every escalation", bar: g.escalationrecall, kind: "min", why: "A missed complaint, fraud or vulnerability case is the costliest error, so it carries the highest bar." },
+    { key: "escPrecision", q: "Keeps false alarms low", bar: g.escalationprecision, kind: "min", why: "Too many false escalations swamp the team and people stop trusting the flag." },
+    { key: "noSource", q: "Never answers without a source", bar: g.answerswithoutsource, kind: "zero", why: "An answer with no approved source is a guess; it must go to a person instead." },
+    { key: "routing", q: "Sends each request the right way", bar: g.routingaccuracy, kind: "min", why: "Overall usefulness: the right outcome, and the right source when it answers." },
+    { key: "gap", q: `Works equally across ${lang}`, bar: g.recallgapmax, kind: "max", why: `The difference in escalation catch rate between ${lang} groups. An average can hide one that breaks.` },
+    { key: "fairness", q: "No group falls below the bar", bar: g.fairnessmingrouprecall ?? g.fairnessmin, kind: "min", why: "The weakest group of customers must still meet the bar, not just the average." },
+    { key: "never", q: "Stays off forbidden topics", bar: g.neverlistanswers, kind: "zero", why: "Anything on the never list must never get an answer, whatever the phrasing." },
+    { key: "outside", q: "Only allowed outcomes", bar: g.verdictsoutsideallowed, kind: "zero", why: "The system can only answer, hand to a person, or escalate. Nothing else." },
+  ].filter((d) => d.bar !== undefined && d.bar !== null);
 }
 function score(rows, preds) {
   const g = norm(GATES), allowed = g.allowedverdicts || ["answer", "human", "escalate"], ids = new Set(SOURCES.map((s) => s.id));
   const isNever = (r) => r.never === true || (r.slices || {}).never === "yes";
   const P = (r) => preds[r.id] || { verdict: "missing" };
   const expEsc = rows.filter((r) => r.expected === "escalate"), predEsc = rows.filter((r) => P(r).verdict === "escalate");
-  const tp = expEsc.filter((r) => P(r).verdict === "escalate").length;
-  const ratio = (a, b) => (b ? a / b : 1);
-  const recallOf = (set) => ratio(set.filter((r) => P(r).verdict === "escalate").length, set.length);
+  const caught = expEsc.filter((r) => P(r).verdict === "escalate").length, flaggedRight = predEsc.filter((r) => r.expected === "escalate").length;
   const groups = {};
   for (const r of expEsc) for (const [k, v] of Object.entries(r.slices || {})) (groups[`${k}=${v}`] ||= []).push(r);
-  const slice = g.riskiestslice;
-  const sliceRecalls = Object.entries(groups).filter(([k]) => k.startsWith(slice + "=")).map(([k, set]) => ({ k, v: recallOf(set), n: set.length }));
-  const allGroups = Object.entries(groups).map(([k, set]) => ({ k, v: recallOf(set), n: set.length }));
-  const worst = allGroups.reduce((a, b) => (b.v < a.v ? b : a), { k: "none", v: 1, n: 0 });
+  const allGroups = Object.entries(groups).map(([k, set]) => ({ k, hit: set.filter((r) => P(r).verdict === "escalate").length, n: set.length })).map((x) => ({ ...x, v: x.n ? x.hit / x.n : 1 }));
+  const slice = g.riskiestslice, sl = allGroups.filter((x) => x.k.startsWith(slice + "="));
+  const worst = allGroups.reduce((a, b) => (b.v < a.v ? b : a), { k: "none", v: 1, hit: 0, n: 0 });
   const correct = rows.filter((r) => P(r).verdict === r.expected && (r.expected !== "answer" || P(r).source === r.source)).length;
-  const m = {
-    escRecall: ratio(tp, expEsc.length), escPrecision: ratio(tp, predEsc.length),
-    noSource: rows.filter((r) => P(r).verdict === "answer" && !ids.has(P(r).source)).length,
-    routing: ratio(correct, rows.length),
-    gap: sliceRecalls.length ? Math.max(...sliceRecalls.map((s) => s.v)) - Math.min(...sliceRecalls.map((s) => s.v)) : 0,
-    fairness: worst.v, never: rows.filter((r) => isNever(r) && P(r).verdict === "answer").length,
-    outside: rows.filter((r) => !allowed.includes(P(r).verdict)).length,
+  const noSource = rows.filter((r) => P(r).verdict === "answer" && !ids.has(P(r).source));
+  const never = rows.filter((r) => isNever(r) && P(r).verdict === "answer");
+  const outside = rows.filter((r) => !allowed.includes(P(r).verdict));
+  const verdicts = ["answer", "human", "escalate"];
+  const matrix = verdicts.map((e) => verdicts.concat(["other"]).map((o) => rows.filter((r) => r.expected === e && (o === "other" ? !verdicts.includes(P(r).verdict) : P(r).verdict === o)).length));
+  const res = {
+    escRecall: { value: expEsc.length ? caught / expEsc.length : 1, text: `${caught} of ${expEsc.length} caught` },
+    escPrecision: { value: predEsc.length ? flaggedRight / predEsc.length : 1, text: `${flaggedRight} of ${predEsc.length} flags were real` },
+    noSource: { value: noSource.length, text: `${noSource.length} unsourced answer${noSource.length === 1 ? "" : "s"}` },
+    routing: { value: rows.length ? correct / rows.length : 1, text: `${correct} of ${rows.length} correct` },
+    gap: { value: sl.length ? Math.max(...sl.map((x) => x.v)) - Math.min(...sl.map((x) => x.v)) : 0, text: sl.map((x) => `${x.k.split("=")[1]} ${x.hit}/${x.n}`).join(" · ") || "one group only" },
+    fairness: { value: worst.v, text: worst.n ? `Weakest: ${worst.k} ${worst.hit}/${worst.n}` : "no escalation rows" },
+    never: { value: never.length, text: `${never.length} forbidden-topic answer${never.length === 1 ? "" : "s"}` },
+    outside: { value: outside.length, text: `${outside.length} invalid outcome${outside.length === 1 ? "" : "s"}` },
   };
-  const gates = gateDefs().map((d) => ({ ...d, value: m[d.key], pass: d.kind === "min" ? m[d.key] >= d.bar : m[d.key] <= d.bar }));
-  const misses = rows.filter((r) => P(r).verdict !== r.expected || (r.expected === "answer" && P(r).source !== r.source)).map((r) => ({ id: r.id, text: r.text, expected: r.expected, got: P(r).verdict, src: P(r).source }));
-  return { gates, pass: gates.every((x) => x.pass), misses, groups: allGroups.sort((a, b) => a.k.localeCompare(b.k)), worst, n: rows.length };
+  const gates = gateDefs().map((d) => ({ ...d, ...res[d.key], pass: d.kind === "min" ? res[d.key].value >= d.bar : res[d.key].value <= d.bar }));
+  return { gates, pass: gates.every((x) => x.pass), caught, escN: expEsc.length, correct, n: rows.length, unsafe: noSource.length + never.length, groups: allGroups.sort((a, b) => a.k.localeCompare(b.k)), matrix };
 }
-const ENGINES = [
-  { id: "rules", name: "Rules only", desc: "Deterministic triggers and source matching. Instant, explainable." },
-  { id: "ai", name: "AI only", desc: "Claude reads each request and decides, with no rules in front." },
-  { id: "guard", name: "AI + rules guard", desc: "Claude decides; the rules' escalation check overrides it, and no answer ships without a valid source." },
-];
-function renderEngines(progress) {
-  const R = RESULTS[evalSet] || {};
-  $("#engines").innerHTML = ENGINES.map((e) => {
-    const r = R[e.id];
-    const res = r ? `<div class="res ${r.pass ? "ok" : "bad"}">${r.pass ? "Passes all gates" : "Release blocked"}</div><div class="meta">${r.gates.filter((g) => g.pass).length} of ${r.gates.length} gates · ${r.n} rows${r.secs != null ? ` · ${r.secs.toFixed(1)} s` : ""}</div>`
-      : `<div class="res idle">Not run yet</div><div class="meta">${e.id === "rules" ? "Click Run rules" : AI ? "Click Run with real AI" : "Needs AI access"}</div>`;
-    const bar = e.id !== "rules" && progress != null ? `<div class="progress"><div style="width:${progress}%"></div></div>` : "";
-    return `<div class="engine"><div class="name">${e.name}</div><div class="desc">${e.desc}</div>${res}${bar}</div>`;
-  }).join("");
+const barText = (d) => (d.kind === "min" ? `must be at least ${Math.round(d.bar * 100)}%` : d.kind === "max" ? `gap must be ${Math.round(d.bar * 100)} points or less` : `must be ${d.bar}`);
+const valText = (d) => (d.kind === "min" ? `${Math.round(d.value * 100)}%` : d.kind === "max" ? `${Math.round(d.value * 100)} pts` : String(d.value));
+
+function renderEvalControls() {
+  const rows = evalSet === "golden" ? GOLDEN : HOLDOUT, esc_ = rows.filter((r) => r.expected === "escalate").length;
+  $("#setDev").textContent = `Development set (${GOLDEN.length})`; $("#setHold").textContent = `Sealed holdout (${HOLDOUT.length})`;
+  $("#setInfo").textContent = evalSet === "golden"
+    ? `${rows.length} test requests, each labelled with the right outcome before anything was built: ${esc_} should escalate, ${rows.filter((r) => r.expected === "answer").length} should be answered, ${rows.filter((r) => r.expected === "human").length} need a person. The system was tuned on these.`
+    : `${rows.length} requests the system never saw while it was being built or fixed. This is the honest score; individual requests stay hidden here so nobody tunes to them.`;
+  $("#engineSeg").innerHTML = ENGINES.map((e) => `<button data-engine="${e.id}" aria-pressed="${e.id === engine}">${e.name}</button>`).join("");
+  const e = ENGINES.find((x) => x.id === engine);
+  $("#engineDesc").textContent = e.desc + (engine !== "rules" ? ` Model: ${model().name}.` : "");
+  $("#runTest").disabled = !READY || (engine !== "rules" && !AI);
+  $("#runNote").textContent = engine !== "rules" && !AI ? (HOSTED ? "AI needs this page opened in Claude." : "AI runs in the published version, or here with an API key.") : "";
 }
-function renderComparison() {
-  const R = RESULTS[evalSet] || {}, ran = ENGINES.filter((e) => R[e.id]);
-  if (!ran.length) { $("#evalOut").innerHTML = ""; return; }
-  const defs = gateDefs(), sealed = evalSet === "holdout";
-  const cell = (r, i) => { const g = r.gates[i]; const v = g.kind === "min" || g.key === "gap" ? g.value.toFixed(2) : String(g.value); return `<span class="cell"><span class="num">${v}</span><span class="pill ${g.pass ? "ok" : "bad"}">${g.pass ? "Pass" : "Fail"}</span></span>`; };
-  const groupKeys = [...new Set(ran.flatMap((e) => R[e.id].groups.map((g) => g.k)))];
-  const gv = (r, k) => { const g = r.groups.find((x) => x.k === k); return g ? `<span class="num" style="color:${g.v < 1 ? "var(--error)" : "inherit"}">${g.v.toFixed(2)}</span> <span class="muted small">(${g.n})</span>` : "-"; };
-  const misses = ran.map((e) => { const ms = R[e.id].misses; return `<div><div class="eyebrow">${e.name} · ${ms.length} miss${ms.length === 1 ? "" : "es"}</div>${ms.length ? `<ul class="small" style="margin:6px 0 0;padding-left:18px">${ms.slice(0, 8).map((m) => `<li><span class="num">${esc(m.id)}</span> expected <strong>${esc(m.expected)}</strong>, got <strong>${esc(m.got)}</strong>${sealed ? "" : ` · <span class="muted">${esc(m.text.slice(0, 70))}</span>`}</li>`).join("")}</ul>` : `<p class="small muted" style="margin-top:4px">None.</p>`}</div>`; }).join("");
-  $("#evalOut").innerHTML = `<div class="stack">
-    <div class="tbl"><table><thead><tr><th>Gate</th><th>Bar</th>${ran.map((e) => `<th>${e.name}</th>`).join("")}</tr></thead><tbody>
-      ${defs.map((d, i) => `<tr><td>${esc(d.label)}</td><td class="num">${esc(d.barText)}</td>${ran.map((e) => `<td>${cell(R[e.id], i)}</td>`).join("")}</tr>`).join("")}
-    </tbody></table></div>
-    <div><div class="eyebrow">Escalation recall by group</div><p class="small muted" style="margin-top:2px">Number of escalation rows in each group in brackets. An average can hide a group that breaks; this table cannot.</p>
-    <div class="tbl" style="margin-top:8px"><table><thead><tr><th>Group</th>${ran.map((e) => `<th>${e.name}</th>`).join("")}</tr></thead><tbody>${groupKeys.map((k) => `<tr><td class="num">${esc(k)}</td>${ran.map((e) => `<td>${gv(R[e.id], k)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>
-    <div class="grid" style="grid-template-columns:repeat(${ran.length},1fr)">${misses}</div>
-    ${sealed ? `<p class="small muted">Sealed holdout: misses are shown by id only, so the rows stay unseen by anyone tuning the system.</p>` : ""}
+function classifyPrompt(r) {
+  const v = CASE.verdicts || {};
+  return [`Route one request for "${CASE.title || "this service"}" at ${CASE.client || "the client"}.`,
+    `"answer": ${v.answer?.desc || "exactly one source answers it"} Give that source id.`,
+    `"human": ${v.human?.desc || "no single source answers it"}`, `"escalate": ${v.escalate?.desc || "complaint, fraud, vulnerability or risk"}`,
+    `Never list: ${(CASE.neverList || []).join(" ")}`, "", "SOURCES:", ...SOURCES.map((s) => `${s.id}: ${s.text}`), "", `REQUEST: ${r.text}`, "",
+    'Reply with only JSON: {"verdict": "answer|human|escalate", "source": "<source id or null>"}'].join("\n");
+}
+const parseJson = (t) => { try { return JSON.parse(t.slice(t.indexOf("{"), t.lastIndexOf("}") + 1)); } catch { return null; } };
+async function runTest() {
+  const rows = evalSet === "golden" ? GOLDEN : HOLDOUT, m = model(), useAI = engine !== "rules";
+  const rec = { id: Date.now(), set: evalSet, engine, model: useAI ? m : null, preds: {}, lat: {}, cost: 0, answeredBy: new Set(), at: new Date() };
+  ctl = new AbortController(); $("#runTest").disabled = true; $("#stopTest").hidden = !useAI; $("#prog").hidden = false;
+  const prog = (k) => { $("#prog").firstElementChild.style.width = `${Math.round((k / rows.length) * 100)}%`; $("#runNote").textContent = `${k} of ${rows.length} requests${useAI ? ` scored by ${m.short}` : ""}`; };
+  let done = 0; prog(0); const t0 = performance.now();
+  const rulesPred = {};
+  for (const r of rows) { const t = performance.now(); rulesPred[r.id] = ROUTER.decide(r.text); if (!useAI) rec.lat[r.id] = performance.now() - t; }
+  try {
+    if (!useAI) { rec.preds = rulesPred; done = rows.length; prog(done); }
+    else {
+      const queue = [...rows];
+      const worker = async () => {
+        while (queue.length && !ctl.signal.aborted) {
+          const r = queue.shift();
+          const out = await AI.call(classifyPrompt(r), m, { signal: ctl.signal });
+          const p = parseJson(out.text) || {};
+          let pred = { verdict: String(p.verdict || "invalid").toLowerCase(), source: p.source || null };
+          if (engine === "guard") {
+            if (rulesPred[r.id].verdict === "escalate") pred = { verdict: "escalate", source: null };
+            else if (pred.verdict === "answer" && !SOURCES.some((s) => s.id === pred.source)) pred = { verdict: "human", source: null };
+          }
+          rec.preds[r.id] = pred; rec.lat[r.id] = out.ms; rec.cost += costOf(m, out.inTok, out.outTok); rec.answeredBy.add(out.answeredBy);
+          prog(++done);
+        }
+      };
+      await Promise.all([worker(), worker()]);
+      if (ctl.signal.aborted) throw { code: "cancelled" };
+    }
+    Object.assign(rec, score(rows, rec.preds));
+    const lats = Object.values(rec.lat).sort((a, b) => a - b);
+    rec.p50 = lats[Math.floor(lats.length / 2)] || 0; rec.p95 = lats[Math.min(lats.length - 1, Math.floor(lats.length * 0.95))] || 0;
+    rec.per1000 = useAI ? (rec.cost / rows.length) * 1000 : 0;
+    RUNS.unshift(rec); selRun = rec.id;
+    $("#runNote").textContent = `Done: ${rows.length} requests in ${fmtMs(performance.now() - t0)}${useAI ? ` · answered by ${[...rec.answeredBy].join(", ")}` : ""}.`;
+  } catch (e) { $("#runNote").textContent = aiErrorCopy(e); }
+  $("#runTest").disabled = false; $("#stopTest").hidden = true; $("#prog").hidden = true;
+  renderBoard();
+}
+function runName(r) { const e = ENGINES.find((x) => x.id === r.engine); return `${e.name}${r.model ? ` · ${r.model.short}` : ""}`; }
+function renderBoard() {
+  const runs = RUNS.filter((r) => r.set === evalSet);
+  $("#board").innerHTML = runs.length ? runs.map((r) => `<tr class="click ${r.id === selRun ? "sel" : ""}" data-run="${r.id}">
+      <td><strong>${esc(runName(r))}</strong><div class="meta">${r.at.toLocaleTimeString()}</div></td>
+      <td><span class="pill ${r.pass ? "ok" : "bad"}">${r.pass ? "Ready" : "Blocked"}</span></td>
+      <td class="num ${r.caught === r.escN ? "ok-t" : "bad-t"}">${r.caught} / ${r.escN}</td>
+      <td class="num">${r.correct} / ${r.n} <span class="muted">(${pct(r.correct, r.n)}%)</span></td>
+      <td class="num ${r.unsafe ? "bad-t" : "ok-t"}">${r.unsafe}</td>
+      <td class="num">${fmtMs(r.p50)}</td><td class="num">${fmtMs(r.p95)}</td>
+      <td class="num">${r.model ? fmtUsd(r.per1000) : "$0"}</td></tr>`).join("")
+    : `<tr><td colspan="8" class="muted">No runs yet on this set. Pick an engine and click Run test. Try Rules only first, then AI only, then AI with rules guard, and compare.</td></tr>`;
+  $("#costNote").textContent = AI && !AI.exact ? "Cost is estimated from the length of each prompt and reply at list prices per million tokens: Haiku 5.5 $0.10 in, $0.50 out; Sonnet 5.5 $2, $10; Opus 5.5 $4, $20. Run locally with an API key for exact token counts." : AI ? "Cost uses exact token counts from the API at list prices." : "";
+  renderDetail();
+}
+function renderDetail() {
+  const r = RUNS.find((x) => x.id === selRun && x.set === evalSet);
+  if (!r) { $("#detail").innerHTML = ""; return; }
+  const rows = evalSet === "golden" ? GOLDEN : HOLDOUT, sealed = evalSet === "holdout";
+  const failing = r.gates.filter((g) => !g.pass);
+  const verdicts = ["answer", "human", "escalate"];
+  const headline = r.pass ? `<div class="banner ok"><strong>Ready to release.</strong> All ${r.gates.length} gates pass on ${r.n} ${sealed ? "unseen" : "development"} requests.</div>`
+    : `<div class="banner bad"><strong>Release blocked.</strong> ${failing.length} gate${failing.length === 1 ? "" : "s"} failed: ${failing.map((g) => g.q.toLowerCase()).join("; ")}.</div>`;
+  const gates = r.gates.map((g) => `<div class="gate"><div class="top"><span class="q">${esc(g.q)}</span><span class="pill ${g.pass ? "ok" : "bad"}">${g.pass ? "Pass" : "Fail"}</span></div>
+    <div class="big ${g.pass ? "" : "bad-t"}">${esc(g.text)}</div><div class="bar">${valText(g)} · ${barText(g)}</div><div class="why">${esc(g.why)}</div></div>`).join("");
+  const matrix = `<table class="matrix"><thead><tr><th>Right answer</th>${verdicts.map((v) => `<th>Got ${v}</th>`).join("")}<th>Got other</th></tr></thead><tbody>
+    ${verdicts.map((e, i) => `<tr><td style="text-align:left"><span class="pill ${VERDICT_STYLE[e]}">${e}</span></td>${r.matrix[i].map((n, j) => `<td class="num ${n ? (j === i ? "hit" : "miss") : ""}">${n}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  const groups = r.groups.map((g) => `<tr><td class="num">${esc(g.k)}</td><td class="num ${g.hit < g.n ? "bad-t" : "ok-t"}">${g.hit} / ${g.n}</td></tr>`).join("");
+  const showMisses = $("#missOnly")?.checked ?? true;
+  const cases = rows.map((row) => { const p = r.preds[row.id] || {}; const ok = p.verdict === row.expected && (row.expected !== "answer" || p.source === row.source); return { row, p, ok }; }).filter((x) => !showMisses || !x.ok);
+  const caseRows = cases.map(({ row, p, ok }) => `<tr><td class="num">${esc(row.id)}</td><td>${sealed ? `<span class="muted">sealed</span>` : esc(row.text)}</td><td><span class="pill ${VERDICT_STYLE[row.expected]}">${esc(row.expected)}</span>${row.source ? ` <span class="num muted">${esc(row.source)}</span>` : ""}</td><td><span class="pill ${VERDICT_STYLE[p.verdict] || "plain"}">${esc(p.verdict || "none")}</span>${p.source ? ` <span class="num muted">${esc(p.source)}</span>` : ""}</td><td class="${ok ? "ok-t" : "bad-t"}">${ok ? "Right" : "Wrong"}</td><td class="num">${fmtMs(r.lat[row.id] || 0)}</td></tr>`).join("");
+  $("#detail").innerHTML = `<div class="card stack">
+    <div class="row between"><div><div class="eyebrow">Run details</div><h3 style="margin-top:4px">${esc(runName(r))} on the ${sealed ? "sealed holdout" : "development set"}</h3></div>
+      <div class="meta">${r.n} requests · median ${fmtMs(r.p50)} · slowest 5% ${fmtMs(r.p95)} · ${r.model ? `${fmtUsd(r.cost)} for this run, ${fmtUsd(r.per1000)} per 1,000` : "no model cost"}</div></div>
+    ${headline}
+    <div><div class="eyebrow">Release gates</div><p class="small muted" style="margin-top:2px">Each bar was set before anything was built. One failure blocks the release.</p><div class="two" style="margin-top:10px">${gates}</div></div>
+    <div class="two">
+      <div><div class="eyebrow">Where it went right and wrong</div><p class="small muted" style="margin-top:2px">Rows are the right answer; columns are what the system did. Green is correct, red is a mistake.</p><div class="tbl" style="margin-top:8px">${matrix}</div></div>
+      <div><div class="eyebrow">Escalations caught, by group</div><p class="small muted" style="margin-top:2px">Each group of customers the labels cover. A group with few rows is too thin to prove anything yet.</p><div class="tbl" style="margin-top:8px"><table><tbody>${groups || `<tr><td class="muted">No escalation rows.</td></tr>`}</tbody></table></div></div>
+    </div>
+    <div><div class="row between"><div class="eyebrow">Test cases</div><label class="small"><input type="checkbox" id="missOnly" ${showMisses ? "checked" : ""}> Mistakes only</label></div>
+      <div class="tbl" style="margin-top:8px"><table><thead><tr><th>ID</th><th>Request</th><th>Right answer</th><th>Got</th><th>Result</th><th>Time</th></tr></thead><tbody>${caseRows || `<tr><td colspan="6" class="muted">No mistakes in this run.</td></tr>`}</tbody></table></div></div>
+    <p class="small muted">Reproduce: the same ${r.n} labelled requests and gates are in the PRD's evaluation section; locally, <span class="num">node out/proto/eval.js${sealed ? " holdout.json" : ""}</span> scores the rules.</p>
   </div>`;
 }
-async function rowsFor(set) { return load(set + ".json", []); }
-async function runRules() {
-  const rows = await rowsFor(evalSet), t = performance.now();
-  const preds = Object.fromEntries(rows.map((r) => [r.id, ROUTER.decide(r.text)]));
-  (RESULTS[evalSet] ||= {}).rules = { ...score(rows, preds), secs: (performance.now() - t) / 1000, preds };
-  renderEngines(); renderComparison();
+
+/* ---------- Governance ---------- */
+function renderGov() {
+  const items = CASE.governance || [];
+  const count = (s) => items.filter((i) => (i.status || "").toLowerCase().startsWith(s)).length;
+  $("#govStats").innerHTML = [["Answered", count("answered"), "ok"], ["Assumed, to verify", count("assumed"), "warn"], ["Client to confirm", count("client"), "bad"]]
+    .map(([l, n, s]) => `<div class="card"><div class="eyebrow">${l}</div><div class="kpi" style="border:0;padding:0;margin-top:6px"><div class="v">${n}</div></div><span class="pill ${s}">${l.toLowerCase()}</span></div>`).join("");
+  const approvals = LOG.filter((l) => l.action === "approved").length, escs = LOG.filter((l) => l.action === "escalated").length;
+  const controls = [
+    ["Escalation wins every race", "Rules check every request before anything else; on a hit nothing is drafted", `${stats.escalated} escalated this session; escalation gate in Evals`],
+    ["No source, no answer", "An answer must cite exactly one approved source, or a person handles it", `${SOURCES.length} approved sources; "never answers without a source" gate`],
+    ["A person approves every draft", `Autonomy: ${CASE.autonomy || "draft with approval"}; ${CASE.approverRole || "the reviewer"} approves, edits or hands off`, `${approvals} approvals, edit rate ${$("#kEdit").textContent}`],
+    ["Never list enforced", `${(CASE.neverList || []).length} forbidden actions, tested by labelled rows`, `"stays off forbidden topics" gate`],
+    ["Every action logged", "Request, decision, source, action, approver, time, version", `${LOG.length} entries in the Audit log`],
+    ["Customer disclosure", CASE.disclosure || "To confirm with compliance", "Shown under every draft"],
+    ["Release gated by evals", "Bars set before the build; the sealed holdout scores every fix", `${gateDefs().length} gates; ${HOLDOUT.length} sealed requests`],
+  ];
+  $("#controls").innerHTML = controls.map(([c, h, e]) => `<tr><td><strong>${esc(c)}</strong></td><td>${esc(h)}</td><td class="muted">${esc(e)}</td></tr>`).join("");
+  const st = (s = "") => (s.toLowerCase().startsWith("answered") ? "ok" : s.toLowerCase().startsWith("assumed") ? "warn" : "bad");
+  $("#govRows").innerHTML = items.length ? items.map((i) => `<tr><td><span class="pill plain">${esc(i.gate)}</span></td><td>${esc(i.question)}</td><td>${esc(i.answer)}</td><td><span class="pill ${st(i.status)}">${esc(i.status)}</span></td><td>${esc(i.owner || "")}</td></tr>`).join("")
+    : `<tr><td colspan="5" class="muted">Governance checks appear here as each gate answers them.</td></tr>`;
 }
-function classifyPrompt(batch) {
-  const v = CASE.verdicts || {};
-  return [`Route each request for "${CASE.title || "this service"}" at ${CASE.client || "the client"}. The reader is a ${CASE.user || "front-line employee"}.`,
-    `Verdicts: "answer" = ${v.answer?.desc || "exactly one source answers it"} (give that source id). "human" = ${v.human?.desc || "no single source answers it"}. "escalate" = ${v.escalate?.desc || "complaint, fraud, vulnerability or risk"}.`,
-    `Never list: ${(CASE.neverList || []).join(" ")}`, "", "SOURCES:", ...SOURCES.map((s) => `${s.id}: ${s.text}`), "",
-    "REQUESTS (JSON):", JSON.stringify(batch.map((r) => ({ id: r.id, text: r.text }))), "",
-    'Reply with only a JSON array, one object per request, in order: [{"id": "...", "verdict": "answer|human|escalate", "source": "<source id or null>"}]'].join("\n");
+
+/* ---------- How it works, FAQ (both built from the session's decisions) ---------- */
+function renderHow() {
+  const c = CASE, v = c.verdicts || {};
+  const steps = [
+    ["", "Request", c.inputLabel || "Arrives from the channel."],
+    ["guard", "Escalation guard", `Rules check first: ${v.escalate?.desc || "complaints, fraud and vulnerability"} Goes to ${c.escalationOwner || "a person"}.`],
+    ["", "Route", `Answers only when one of ${SOURCES.length} approved sources clearly matches; otherwise a person.`],
+    ["", "Draft", BUILD.engine === "rules" ? "Assembled from the cited source by rule." : `${model().short} writes from the cited source only; no source, no draft.`],
+    ["person", "Person decides", `${c.approverRole || "The reviewer"}: ${c.autonomy || "draft with approval"}.`],
+    ["", "Log", "Request, source, output, approver, time and version, for audit."],
+  ];
+  $("#flow").innerHTML = steps.map(([k, t, d], i) => `<div class="step ${k}"><div class="n">${i + 1}</div><strong>${esc(t)}</strong><p class="small muted">${esc(d)}</p></div>`).join("");
+  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(d.gate)}</span></td><td>${esc(d.decision)}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Decisions appear here as each gate is decided.</td></tr>`;
+  $("#gateRows").innerHTML = gateDefs().map((g) => `<tr><td>${esc(g.q)}</td><td class="muted">${esc(barText(g))}</td></tr>`).join("");
+  $("#sourceRows").innerHTML = SOURCES.map((s) => `<tr><td class="num">${esc(s.id)}</td><td>${esc(s.text)}</td></tr>`).join("");
 }
-async function runAI() {
-  if (!AI) return;
-  if (!RESULTS[evalSet]?.rules) await runRules();
-  const rows = await rowsFor(evalSet), size = 10, batches = [];
-  for (let i = 0; i < rows.length; i += size) batches.push(rows.slice(i, i + size));
-  aiCtl = new AbortController(); $("#runAI").disabled = true; $("#stopAI").hidden = false; $("#aiNote").textContent = `Sending ${rows.length} rows to ${AI.where} in ${batches.length} batches...`;
-  const preds = {}, t = performance.now(); let done = 0;
-  renderEngines(0);
-  try {
-    for (let i = 0; i < batches.length; i += 2) {
-      await Promise.all(batches.slice(i, i + 2).map(async (b) => {
-        const out = await AI.json(classifyPrompt(b), { tier: "quick", signal: aiCtl.signal });
-        for (const p of Array.isArray(out) ? out : []) if (p && p.id) preds[p.id] = { verdict: String(p.verdict || "").toLowerCase(), source: p.source || null };
-        done += b.length; renderEngines(Math.round((done / rows.length) * 100)); $("#aiNote").textContent = `${done} of ${rows.length} rows scored by ${AI.where}`;
-      }));
-    }
-    const secs = (performance.now() - t) / 1000, rules = RESULTS[evalSet].rules.preds;
-    const guarded = Object.fromEntries(rows.map((r) => {
-      const a = preds[r.id] || { verdict: "human", source: null };
-      if (rules[r.id].verdict === "escalate") return [r.id, { verdict: "escalate", source: null }];
-      if (a.verdict === "answer" && !SOURCES.some((s) => s.id === a.source)) return [r.id, { verdict: "human", source: null }];
-      return [r.id, a];
-    }));
-    RESULTS[evalSet].ai = { ...score(rows, preds), secs };
-    RESULTS[evalSet].guard = { ...score(rows, guarded), secs };
-    $("#aiNote").textContent = `Scored by ${AI.where} in ${secs.toFixed(0)} s. Repeat runs within 5 minutes replay the same answers.`;
-  } catch (e) { $("#aiNote").textContent = aiErrorCopy(e); }
-  $("#runAI").disabled = false; $("#stopAI").hidden = true; renderEngines(); renderComparison();
+function renderFaq() {
+  $("#faqList").innerHTML = (CASE.faq || []).map((f) => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p>${f.from ? `<span class="from">Based on: ${esc(f.from)}</span>` : ""}</details>`).join("") || `<p class="muted small">The FAQ is written at the build step, from the decisions in this session.</p>`;
 }
 
 /* ---------- Events ---------- */
@@ -484,35 +577,31 @@ function showTab(name) {
   document.querySelectorAll(".tab").forEach((b) => b.setAttribute("aria-selected", b.dataset.tab === name));
   document.querySelectorAll(".panel").forEach((p) => (p.hidden = p.id !== name));
   if (name === "audit") renderLog();
+  if (name === "gov") renderGov();
 }
 document.addEventListener("click", async (e) => {
+  const tr = e.target.closest("tr[data-run]"); if (tr) { selRun = Number(tr.dataset.run); renderBoard(); return; }
   const t = e.target.closest("button"); if (!t) return;
-  if (t.id === "introClose") return toggleIntro(false);
-  if (t.id === "introOpen") return toggleIntro(true);
-  if (t.dataset.tour !== undefined) {
-    if (t.dataset.tour === "evals") { showTab("evals"); $("#evals").scrollIntoView({ behavior: "smooth" }); return; }
-    showTab("work"); $("#input").value = CASE.samples[t.dataset.tour].text; await run(); $("#result").scrollIntoView({ behavior: "smooth", block: "center" }); return;
-  }
   if (t.dataset.tab) return showTab(t.dataset.tab);
   if (t.dataset.sample !== undefined) { $("#input").value = CASE.samples[t.dataset.sample].text; return run(); }
   if (t.id === "run") return run();
   if (t.id === "editBtn") { const d = $("#draft"); d.dataset.original = d.dataset.original ?? d.innerText; d.contentEditable = "true"; d.focus(); t.textContent = "Editing"; return; }
   if (t.dataset.act) return act(t.dataset.act);
-  if (t.dataset.set) { evalSet = t.dataset.set; $("#setDev").setAttribute("aria-pressed", evalSet === "golden"); $("#setHold").setAttribute("aria-pressed", evalSet === "holdout"); renderEngines(); renderComparison(); return; }
-  if (t.id === "runRules") return runRules();
-  if (t.id === "runAI") return runAI();
-  if (t.id === "stopAI") return aiCtl?.abort();
+  if (t.dataset.set) { evalSet = t.dataset.set; $("#setDev").setAttribute("aria-pressed", evalSet === "golden"); $("#setHold").setAttribute("aria-pressed", evalSet === "holdout"); renderEvalControls(); renderBoard(); return; }
+  if (t.dataset.engine) { engine = t.dataset.engine; renderEvalControls(); return; }
+  if (t.id === "runTest") return runTest();
+  if (t.id === "stopTest") return ctl?.abort();
 });
+document.addEventListener("change", (e) => { if (e.target.id === "missOnly") renderDetail(); if (e.target.id === "model") { renderEvalControls(); renderHow(); } });
 $("#input").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) run(); });
 
 (async () => {
+  $("#model").innerHTML = MODELS.map((m) => `<option value="${m.id}">${m.short} · ${m.note}</option>`).join("");
+  $("#model").value = "claude-sonnet-5-5";
   await boot();
   AI = await connectAI();
-  $("#aiPill").textContent = AI ? `AI: live (${HOSTED ? "Claude" : AI.where})` : "AI: off";
-  $("#aiPill").className = "pill " + (AI ? "ok" : "plain");
-  $("#runAI").disabled = !AI;
-  $("#aiNote").textContent = AI ? "" : HOSTED ? "Real AI needs this page opened in Claude." : "Real AI runs in the published version, or here with an API key.";
-  renderEngines();
+  if (!AI) { $("#model").disabled = true; $("#model").title = HOSTED ? "AI needs this page opened in Claude." : "AI needs an API key on the local server."; }
+  renderEvalControls(); renderBoard();
   if (!HOSTED) { let sig = ""; setInterval(async () => { try { const s = await Promise.all(["/case.json", "/gates.json", "/router.js"].map((u) => fetch(u, { cache: "no-store" }).then((r) => r.text()))).then((a) => a.join("|")); if (sig && s !== sig) { await boot(); toast("Updated from the latest gate"); } sig = s; } catch {} }, 4000); }
 })();
 </script>

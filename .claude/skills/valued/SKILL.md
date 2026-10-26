@@ -95,7 +95,9 @@ this before gate V; gate V's draft marks everything else (assumed).
   that section's content, following `.claude/skills/valued-build/prd-template.md` for its tables. In
   `out/proto/case.json`, merge the gate's fields (keep the others), and append one entry per client
   decision to `decisions`: `{ "gate", "decision", "by", "effect" }`, where `effect` says in a few words
-  what the decision changed in the prototype or the PRD. The viewer and the app refresh on their own.
+  what the decision changed in the prototype or the PRD. Also append every row of the gate's governance check
+  to `governance`: `{ "gate", "question", "answer", "status", "owner" }` (owner is the role that closes
+  it; empty when answered). The prototype's Governance tab shows them. The viewer and the app refresh on their own.
 
   | Gate | PRD sections it fills | Prototype fields it writes |
   |---|---|---|

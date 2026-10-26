@@ -29,7 +29,9 @@ in the orchestrator). This step fills what needs every gate at once. Target: 3 m
    alternative); what it never does; what happens when it is unsure; how we know it is safe to launch
    (the client's bar and the latest result); whether it uses a model, and what happens if the model is
    down or declines; who approves and what is logged; what data it uses and what is masked; what would
-   make us stop. Set `version` to `proto-0.1`.
+   make us stop. Each pair also has `"from"`: the gate, the decision and who made it (for example
+   "Gate U: draft with approval (Risk)"), so every answer traces to the session. Set `version` to
+   `proto-0.1`.
 3. **Complete the PRD** in `out/prd.md`, following `prd-template.md`: replace every remaining
    `> Pending: fills at gate B.` line (sections 1, 7, 12, 15, 16, 17 and the appendix), add the
    Recommendation and Decision-asked quote under the meta line, and update `Version` to `0.1, draft for
@@ -46,11 +48,16 @@ in the orchestrator). This step fills what needs every gate at once. Target: 3 m
    - Tables at most 12 rows. Telegraphic, verb-first. No em-dashes.
 4. **Render the standalone copy:** `node .claude/skills/valued-build/render-prd.js out/prd.md
    out/prd.html`.
-5. **Publish the hosted version** (about 30 seconds): `node .claude/skills/valued-build/build-hosted.js out`,
-   then publish `out/hosted/index.html` with the Artifact tool, `capabilities: {"sample": {}}`, a short
-   name as its title, and one sentence as its description. It runs the same router in the browser and
-   uses real Claude for drafts and for the "Run with real AI" eval, with no API key. Print the link
-   and add it to `out/state.md`. If publishing is unavailable, say so in one line and keep localhost.
+5. **Publish the hosted versions** (about a minute), so the client sees a real product and a real document:
+   1. `node .claude/skills/valued-build/build-hosted.js out` and publish `out/hosted/index.html` with the
+      Artifact tool, `capabilities: {"sample": {}}`. Note its URL (the prototype).
+   2. `node .claude/skills/valued-build/render-prd.js out/prd.md out/hosted/prd.html --artifact <prototype URL>`
+      and publish `out/hosted/prd.html` (no capabilities). Note its URL (the PRD).
+   3. `node .claude/skills/valued-build/build-hosted.js out <PRD URL>` and publish `out/hosted/index.html`
+      again to the same path, so the prototype's PRD button opens the PRD.
+   The prototype runs the same router in the browser, lets the client pick Claude Haiku, Sonnet or Opus,
+   and measures latency and estimated cost on every AI call, with no API key. Print both links and add
+   them to `out/state.md`. If publishing is unavailable, say so in one line and keep localhost.
 6. Write `out/proto/CLAUDE.md` with three lines: read `../prd.md` first; work from section 17; never
    edit `golden.json` or read `holdout.json`.
 7. Append to `out/state.md`: `Build: PRD complete (localhost:4317/prd, out/prd.html); prototype on
