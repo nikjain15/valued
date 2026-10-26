@@ -10,8 +10,20 @@ const sealed = /holdout/i.test(file);
 const load = (f) => JSON.parse(fs.readFileSync(path.isAbsolute(f) ? f : path.join(__dirname, f), "utf8"));
 const rows = load(file);
 const normKey = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim();
-// Model backstop: rows the rules guard did not escalate, but the guard model (cached in model-cache.json) did.
-const withBackstop = (r, cache) => (!r ? r : { ...r, decide: (t) => { const d = r.decide(t) || {}; const m = (cache || {})[normKey(t)]; return d.verdict !== "escalate" && m && m.verdict === "escalate" ? { verdict: "escalate", source: null, reason: `model backstop (${m.family || "escalation"}): ${m.reason || ""}`.trim(), backstop: true } : d; } });
+// Model backstop (model-cache.json): escalates what the rules missed, and checks or supplies the one source.
+const withBackstop = (r, raw) => {
+  if (!r) return r;
+  const cache = Object.fromEntries(Object.entries(raw || {}).map(([k, v]) => [normKey(k), v]));
+  return { ...r, decide: (t) => {
+    const d = r.decide(t) || {}, m = cache[normKey(t)];
+    if (!m || d.verdict === "escalate") return d;
+    if (m.verdict === "escalate") return { verdict: "escalate", source: null, reason: `model backstop (${m.family || "escalation"}): ${m.reason || ""}`.trim(), backstop: true };
+    // Source matching: answer when rules and model agree, or when only the model found one source and is sure; else a person.
+    if (d.verdict === "answer" && m.source !== undefined && m.source !== d.source) return { ...d, verdict: "human", source: null, reason: `rules matched ${d.source}, the model ${m.source || "none"}: a person decides`, backstop: true };
+    if (d.verdict === "human" && m.source && m.sure) return { ...d, verdict: "answer", source: m.source, reason: `matched by the model: ${m.reason || m.source}`, backstop: true };
+    return d;
+  } };
+};
 const cache = (() => { try { return load("model-cache.json"); } catch { return {}; } })();
 const { decide } = withBackstop(router, cache);
 const raw = load("gates.json");
@@ -63,7 +75,7 @@ for (const [name, v, b, op, isRatio] of metrics) {
   console.log(`${pad(name, 39)}${pad(isRatio ? v.toFixed(2) : String(v), 8)}${pad(op + b, 9)}${pass ? "PASS" : "FAIL"}`);
 }
 const caught = results.filter((r) => r.got.backstop).length;
-if (Object.keys(cache).length) console.log(`Model backstop: ${caught} row${caught === 1 ? "" : "s"} escalated by the guard model (cached, ${Object.keys(cache).length} texts)`);
+if (Object.keys(cache).length) console.log(`Model backstop: ${caught} row${caught === 1 ? "" : "s"} changed by the guard model (cached, ${Object.keys(cache).length} texts)`);
 console.log(`By slice (escalation recall per group): ${groups.map((x) => `${x.name}=${x.recall.toFixed(2)}`).join(" ")}`);
 if (thin.length) console.log(`Too thin to gate (under ${MIN_GROUP} escalation rows): ${thin.map((x) => x.name).join(", ")}`);
 const fails = results.filter((r) => !correct(r));

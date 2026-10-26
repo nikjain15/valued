@@ -26,8 +26,20 @@ function loadRouter() {
   return withBackstop(require(file), cache);
 }
 const normKey = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim();
-// Model backstop: rows the rules guard did not escalate, but the guard model (cached in model-cache.json) did.
-const withBackstop = (r, cache) => (!r ? r : { ...r, decide: (t) => { const d = r.decide(t) || {}; const m = (cache || {})[normKey(t)]; return d.verdict !== "escalate" && m && m.verdict === "escalate" ? { verdict: "escalate", source: null, reason: `model backstop (${m.family || "escalation"}): ${m.reason || ""}`.trim(), backstop: true } : d; } });
+// Model backstop (model-cache.json): escalates what the rules missed, and checks or supplies the one source.
+const withBackstop = (r, raw) => {
+  if (!r) return r;
+  const cache = Object.fromEntries(Object.entries(raw || {}).map(([k, v]) => [normKey(k), v]));
+  return { ...r, decide: (t) => {
+    const d = r.decide(t) || {}, m = cache[normKey(t)];
+    if (!m || d.verdict === "escalate") return d;
+    if (m.verdict === "escalate") return { verdict: "escalate", source: null, reason: `model backstop (${m.family || "escalation"}): ${m.reason || ""}`.trim(), backstop: true };
+    // Source matching: answer when rules and model agree, or when only the model found one source and is sure; else a person.
+    if (d.verdict === "answer" && m.source !== undefined && m.source !== d.source) return { ...d, verdict: "human", source: null, reason: `rules matched ${d.source}, the model ${m.source || "none"}: a person decides`, backstop: true };
+    if (d.verdict === "human" && m.source && m.sure) return { ...d, verdict: "answer", source: m.source, reason: `matched by the model: ${m.reason || m.source}`, backstop: true };
+    return d;
+  } };
+};
 
 function refresh() {
   sources = readJson("sources.json", []);

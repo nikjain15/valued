@@ -136,7 +136,7 @@ function renderCase(g, ev) {
     title: v.title, client: v.client, useCase: v.useCase, headline: v.headline, scenario: v.scenario, user: v.user, inputLabel: v.inputLabel, persona: v.persona, industry: v.industry, labels: v.labels,
     promise: a.promise, shape: a.shape, agents: a.agents, itemNoun: a.itemNoun, recordSuffix: a.recordSuffix, dismissReasons: a.dismissReasons,
     sweeps: A(a.sweeps).map((s, i) => ({ agent: s.agent, kind: s.kind, schedule: s.schedule, checks: s.checks, findings: A((b.sweepFindings || [])[i] || s.findings) })),
-    verdicts: l.verdicts, samples: A(l.samples).length === 6 ? l.samples : samplesFrom(golden), connectors: fillConnectors(l.connectors, v.industry),
+    verdicts: l.verdicts, samples: A(l.samples).length === 6 ? l.samples.map((x) => ({ text: x.text, expect: x.expect || x.expected })) : samplesFrom(golden), connectors: fillConnectors(l.connectors, v.industry),
     clocks: u.clocks, neverList: u.neverList, escalationOwner: u.escalationOwner, escalationSla: u.escalationSla, autonomy: u.autonomy, disclosure: u.disclosure, approverRole: u.approverRole, draftOpener: u.draftOpener,
     decisions: cs.filter((x) => x.decision).map((x) => ({ gate: x.gate, decision: x.decision, by: x.by || x.role, effect: x.effect || `Sets gate ${x.gate}: ${String(x.question || "").replace(/\?$/, "").toLowerCase()}`, ...(x.revised ? { revised: true, was: x.was } : {}) })),
     governance: Object.entries(g).filter(([, x]) => x).flatMap(([k, x]) => A(x.governance).map((r) => ({ gate: k.toUpperCase(), question: r.question, answer: r.answer, status: r.status, owner: /^answered/i.test(r.status || "") ? "" : r.owner || "" }))),

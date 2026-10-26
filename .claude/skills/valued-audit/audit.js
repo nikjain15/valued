@@ -18,7 +18,8 @@ const STANDARDS = { 1: "Questions", 2: "Agentic by design", 3: "Product shape", 
 const OWNERS = [
   [/Given|requirement ids|section 17|document history|PRD table|Pending|title not set|placeholders|prd\.html/i, "B", "valued-build", "Fix the requirement or section in out/gates/b.json, then render. Never hand-edit prd.md."],
   [/holdout eval|dev eval/i, "E", "valued-evals", "Widen the trigger cues for the failing family (u.json), rerun model-inputs and the guard model, rerun both evals. Never edit labels."],
-  [/golden|holdout has|never-list rows|samples/i, "L", "valued-labels", "Add labelled rows in golden.json (labels before code), keep 30+ dev and 12 holdout, then rerun the evals."],
+  [/samples/i, "L", "valued-labels", "Set l.json samples to 6 { text, expect } picked from golden.json (or drop them and let render pick), then render."],
+  [/golden|holdout has|never-list rows/i, "L", "valued-labels", "Add labelled rows in golden.json (labels before code), keep 30+ dev and 20 holdout, then rerun the evals."],
   [/gates\.json|eval output|evidence pack|not independent/i, "E", "valued-evals", "Use the shared runner (.claude/skills/valued-build/eval.js) and the gates.json keys in prototype-builder.md."],
   [/router\.js|self-contained|module\.exports/i, "E", "prototype-builder", "Make router.js self-contained CommonJS ending module.exports = { decide }."],
   [/assistant|sweep/i, "A", "valued-ai-fit", "Fix agents or sweeps in a.json (first a rules Safety guard; 3 to 6 assistants; 1 to 3 sweeps), then render."],
@@ -31,6 +32,14 @@ const OWNERS = [
   [/app\.html differs/i, "app", "valued-build", "Copy the skill's app.html back into out/proto; case data belongs in case.json, never in the app."],
   [/page missing|console|detail is empty|trail|This is wrong|Design A|quality page|Data and tools|controls page|Needs you now|tiles|sidebar|queue/i, "app", "valued-build", "Open the prototype, reproduce, and fix the case.json field the page reads; app bugs go to /valued-learn."],
 ];
+// For eval issues, name the failing gates and pick the fix that matches them.
+const failing = (file) => { const e = path.join(OUT, "proto", "eval.js"); if (!fs.existsSync(e)) return []; const o = spawnSync("node", [e].concat(file ? [file] : []), { encoding: "utf8", timeout: 60000 }).stdout || ""; return (o.match(/^(.{1,39}?)\s{2,}\S+\s+\S+\s+FAIL\s*$/gm) || []).map((l) => l.replace(/\s{2,}.*$/, "").trim()); };
+const evalFix = (gates) => [
+  gates.some((g) => /recall|Fairness|gap/i.test(g)) && "recall: widen the cues for the failing family in u.json, rerun model-inputs and the guard model",
+  gates.some((g) => /precision/i.test(g)) && "false alarms: sharpen what is and is not each family in u.json triggers, rerun the guard model; process questions route to sources",
+  gates.some((g) => /Routing/i.test(g)) && "routing: widen each source's match list in sources.json and send ties to a person",
+  gates.some((g) => /Never/i.test(g)) && "never list: add the topic to the guard's never cues",
+].filter(Boolean).join("; ") + ". Then rerun both evals; never edit labels.";
 const owner = (msg) => { const o = OWNERS.find(([re]) => re.test(msg)) || [null, "?", "valued", "Investigate."]; return { gate: o[1], skill: o[2], fix: o[3] }; };
 const keyOf = (f) => `${f.std}|${f.msg.replace(/^(local|hosted): /, "").replace(/\d+(\.\d+)?/g, "#")}`;
 
@@ -49,10 +58,14 @@ const seen = new Set();
 for (const f of res.failures) {
   const k = keyOf(f); if (seen.has(k)) continue; seen.add(k);
   let it = prev.issues.find((x) => x.key === k);
-  if (!it) { it = { id: `I-${String(prev.next++).padStart(3, "0")}`, key: k, std: f.std, standard: STANDARDS[f.std] || "Time", issue: f.msg, file: f.file, ...owner(f.msg), opened: now, audits: [] }; prev.issues.push(it); }
+  if (/(dev|holdout) eval does not pass/.test(f.msg)) { const g = failing(/holdout/.test(f.msg) ? "holdout.json" : ""); if (g.length) { f.msg = `${f.msg}: ${g.join(", ")}`; f.fixOverride = evalFix(g); } }
+  if (!it) { it = { id: `I-${String(prev.next++).padStart(3, "0")}`, key: k, std: f.std, standard: STANDARDS[f.std] || "Time", issue: f.msg, file: f.file, ...owner(f.msg), browser: /^(local|hosted): /.test(f.msg), opened: now, audits: [] }; prev.issues.push(it); }
+  if (f.fixOverride) it.fix = f.fixOverride;
   it.status = "open"; it.lastSeen = n; it.audits.push(n); it.issue = f.msg;
 }
-for (const it of prev.issues) if (it.status === "open" && !seen.has(it.key)) { it.status = "closed"; it.closed = now; it.closedIn = n; }
+// An issue closes only when the check that found it ran again: a --no-browser audit cannot close a browser issue.
+const browserRan = !args.includes("--no-browser");
+for (const it of prev.issues) if (it.status === "open" && !seen.has(it.key) && (browserRan || !it.browser)) { it.status = "closed"; it.closed = now; it.closedIn = n; }
 fs.writeFileSync(path.join(AUD, "issues.json"), JSON.stringify(prev, null, 2) + "\n");
 
 const open = prev.issues.filter((x) => x.status === "open"), closed = prev.issues.filter((x) => x.status === "closed");

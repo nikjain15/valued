@@ -83,7 +83,8 @@ the ship-or-fix decision go to the client, because they trade customer harm agai
   `guard-model` subagent alongside the builder (a separate context; it reads texts only, never labels), so the
   builder's first eval already includes the backstop. Its verdicts land in
   `out/proto/model-cache.json`; the shared runner, the server and the app escalate a row when the rules did not
-  but the cached model did, and print how many rows the model caught. Rerun `model-inputs` and the guard model
+  but the cached model did, answer only when the rules and the model name the same source (or only the model
+  found one and is sure), send any disagreement to a person, and print how many rows the model changed. Rerun `model-inputs` and the guard model
   whenever rows are added. Under engine `rules`, the holdout is reported as is.
 - **False alarms.** When precision fails because the guard model escalated rows that are not escalations, sharpen the
   family definitions in `u.json` `triggers` (what is and is not this family), rerun the guard model, and rerun the
