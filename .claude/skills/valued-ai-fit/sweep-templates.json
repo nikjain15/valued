@@ -1,0 +1,103 @@
+{
+  "_about": "Proactive sweeps per industry: assistants that work unprompted on a schedule and hand a decision to a person. Gate A starts from the industry's list (or the closest), keeps 1 to 3, rewrites checks and decision for the case. kind is rules unless a model is needed to read free text.",
+  "banking": [
+    { "agent": "Deadline watch", "kind": "rules", "schedule": "every hour", "checks": "Open disputes and complaints against their regulatory clock (Reg E provisional credit, complaint acknowledgement)", "decision": "Which items to work first before the clock runs out" },
+    { "agent": "Repeat-contact sweep", "kind": "rules", "schedule": "nightly", "checks": "Customers with three or more contacts on the same topic in 30 days", "decision": "Whether to call the customer or open a complaint" },
+    { "agent": "Fraud pattern sweep", "kind": "rules", "schedule": "nightly", "checks": "Clusters of disputes on the same merchant or device in 7 days", "decision": "Whether to refer the cluster to the fraud desk" }
+  ],
+  "commercial_lending": [
+    { "agent": "Covenant test calendar", "kind": "rules", "schedule": "nightly", "checks": "Covenants due to be tested in 30 days without a received certificate", "decision": "Which borrowers the RM chases this week" },
+    { "agent": "Early-warning sweep", "kind": "rules", "schedule": "weekly", "checks": "Leverage, coverage and liquidity ratios drifting toward a threshold over two quarters", "decision": "Whether the credit officer opens a watch-list review" },
+    { "agent": "Borrower news reader", "kind": "model", "schedule": "daily", "checks": "Public filings and news about borrowers for events the policy lists (default, litigation, change of control)", "decision": "Whether an event warrants a credit officer's call" }
+  ],
+  "insurance_pc": [
+    { "agent": "Acknowledgement clock", "kind": "rules", "schedule": "every hour", "checks": "New claims against the state acknowledgement deadline", "decision": "Which claims to acknowledge first" },
+    { "agent": "Missing-document sweep", "kind": "rules", "schedule": "nightly", "checks": "Open claims waiting more than 5 days on a document", "decision": "Whether to chase the claimant or the broker" },
+    { "agent": "Appetite drift sweep", "kind": "rules", "schedule": "weekly", "checks": "Submissions quoted outside appetite rules in the last week", "decision": "Whether the underwriting lead reviews the exceptions" }
+  ],
+  "health_insurance": [
+    { "agent": "Timeframe watch", "kind": "rules", "schedule": "every hour", "checks": "Open prior authorizations against the CMS clock (72 hours expedited, 7 days standard)", "decision": "Which requests a nurse opens first" },
+    { "agent": "Pended-request sweep", "kind": "rules", "schedule": "nightly", "checks": "Requests pended for missing information over 48 hours", "decision": "Whether to call the provider's office" },
+    { "agent": "Criteria change sweep", "kind": "rules", "schedule": "weekly", "checks": "Open requests citing a clinical criterion updated this month", "decision": "Whether a medical director re-reviews them" }
+  ],
+  "wealth_management": [
+    { "agent": "RMD and age sweep", "kind": "rules", "schedule": "nightly", "checks": "Households turning 73 this year, or with an RMD not yet taken by October", "decision": "Which households the advisor calls this month" },
+    { "agent": "Beneficiary gap sweep", "kind": "rules", "schedule": "weekly", "checks": "Accounts with no beneficiary, or a beneficiary older than the owner", "decision": "Whether to raise it at the next review" },
+    { "agent": "Drift sweep", "kind": "rules", "schedule": "nightly", "checks": "Allocations more than 10 points from target, or cash above 15 percent for 90 days", "decision": "Whether to propose a rebalance for approval" }
+  ],
+  "telecom": [
+    { "agent": "Contract-end sweep", "kind": "rules", "schedule": "nightly", "checks": "Customers 60 days from contract end with a price rise ahead", "decision": "Which customers get a retention call" },
+    { "agent": "Repeat-fault sweep", "kind": "rules", "schedule": "nightly", "checks": "Three or more network faults on the same line in 30 days", "decision": "Whether to open a proactive credit or engineer visit" },
+    { "agent": "Offer margin check", "kind": "rules", "schedule": "weekly", "checks": "Offers made last week against the margin floor", "decision": "Whether the offer desk tightens the rules" }
+  ],
+  "hr_it_service": [
+    { "agent": "Policy change sweep", "kind": "model", "schedule": "weekly", "checks": "Approved answers that cite a policy changed this month", "decision": "Which answers HR re-approves" },
+    { "agent": "Repeat-question sweep", "kind": "rules", "schedule": "nightly", "checks": "Questions asked five or more times with no approved answer", "decision": "Which articles to write next" },
+    { "agent": "Access review reminder", "kind": "rules", "schedule": "monthly", "checks": "Access grants past their review date", "decision": "Whether the manager renews or removes them" }
+  ],
+  "retail_ecommerce": [
+    { "agent": "Return-abuse sweep", "kind": "rules", "schedule": "nightly", "checks": "Accounts with return rates or serial refunds above the policy threshold in 90 days", "decision": "Whether the fraud team reviews the account" },
+    { "agent": "Delivery clock sweep", "kind": "rules", "schedule": "every hour", "checks": "Orders past the promised delivery date without a carrier scan", "decision": "Whether to contact the customer before they contact us" },
+    { "agent": "Policy exception sweep", "kind": "rules", "schedule": "weekly", "checks": "Refunds granted outside policy last week", "decision": "Whether to tighten the exception rules" }
+  ],
+  "healthcare_provider": [
+    { "agent": "Red-flag re-check", "kind": "rules", "schedule": "every 15 minutes", "checks": "Unread patient messages carrying clinical red-flag terms older than 30 minutes", "decision": "Which messages the charge nurse opens now" },
+    { "agent": "Unanswered-message sweep", "kind": "rules", "schedule": "nightly", "checks": "Messages open past the clinic's response standard", "decision": "Whether to reassign them" },
+    { "agent": "Result follow-up sweep", "kind": "rules", "schedule": "nightly", "checks": "Abnormal results with no patient contact in 48 hours", "decision": "Whether a nurse calls the patient" }
+  ],
+  "manufacturing": [
+    { "agent": "Safety word sweep", "kind": "rules", "schedule": "every shift", "checks": "Shift logs with safety terms (injury, near miss, lockout, leak) not yet turned into a safety report", "decision": "Which events the safety lead reviews before the next shift" },
+    { "agent": "Repeat-fault sweep", "kind": "rules", "schedule": "nightly", "checks": "The same asset logged three or more times in 14 days", "decision": "Whether the planner opens a root-cause work order" },
+    { "agent": "Overdue preventive maintenance", "kind": "rules", "schedule": "weekly", "checks": "Preventive work orders past due on safety-critical assets", "decision": "Whether to pull the asset from service" }
+  ],
+  "public_sector": [
+    { "agent": "Deadline sweep", "kind": "rules", "schedule": "nightly", "checks": "Applications nearing the statutory decision deadline", "decision": "Which cases the caseworker opens first" },
+    { "agent": "Missing-document sweep", "kind": "rules", "schedule": "nightly", "checks": "Applications waiting more than 10 days on a document", "decision": "Whether to send a reminder or an extension" },
+    { "agent": "Accessibility need sweep", "kind": "rules", "schedule": "nightly", "checks": "Applicants who asked for an accommodation without a recorded response", "decision": "Whether the accessibility officer follows up" }
+  ],
+  "pharmacy": [
+    { "agent": "Refill-due sweep", "kind": "rules", "schedule": "nightly", "checks": "Rejected claims for patients whose supply runs out in 3 days", "decision": "Which rejects a pharmacist fixes first" },
+    { "agent": "Repeat-reject sweep", "kind": "rules", "schedule": "nightly", "checks": "The same reject code on the same plan ten or more times in a week", "decision": "Whether to call the plan or update the playbook" },
+    { "agent": "Prior-authorization clock", "kind": "rules", "schedule": "every hour", "checks": "PA requests open past the plan's turnaround", "decision": "Whether to call the prescriber" }
+  ],
+  "utility": [
+    { "agent": "Storm surge sweep", "kind": "rules", "schedule": "every 15 minutes", "checks": "Chat volume and outage count against the storm threshold", "decision": "Whether to switch the queue to storm mode and bring in staff" },
+    { "agent": "Vulnerable customer sweep", "kind": "rules", "schedule": "every hour during outages", "checks": "Customers on the medical baseline register inside an outage area", "decision": "Which customers the care team calls first" },
+    { "agent": "Promise check", "kind": "rules", "schedule": "nightly", "checks": "Restoration times given in chat against what the OMS showed", "decision": "Whether any wrong promise needs a follow-up" }
+  ],
+  "airline": [
+    { "agent": "Compensation clock", "kind": "rules", "schedule": "every hour", "checks": "Disruption claims against the regulatory response deadline", "decision": "Which claims to answer first" },
+    { "agent": "Stranded passenger sweep", "kind": "rules", "schedule": "every 30 minutes during disruption", "checks": "Passengers with a cancelled segment and no rebooking after 2 hours", "decision": "Which passengers the disruption desk rebooks first" },
+    { "agent": "Special assistance sweep", "kind": "rules", "schedule": "every 30 minutes during disruption", "checks": "Disrupted passengers with an assistance flag or unaccompanied minors", "decision": "Who the special assistance team contacts now" }
+  ],
+  "b2b_saas": [
+    { "agent": "Renewal risk sweep", "kind": "rules", "schedule": "nightly", "checks": "Accounts 90 days from renewal with usage down 30 percent", "decision": "Which accounts the AM calls this week" },
+    { "agent": "Expansion signal sweep", "kind": "rules", "schedule": "weekly", "checks": "Accounts at seat or usage limits for two weeks", "decision": "Whether to propose an expansion conversation" },
+    { "agent": "Silent account sweep", "kind": "rules", "schedule": "weekly", "checks": "Accounts with no login and no contact in 45 days", "decision": "Whether to open a check-in task" }
+  ],
+  "legal": [
+    { "agent": "Playbook change sweep", "kind": "model", "schedule": "weekly", "checks": "Open reviews citing a playbook position updated this month", "decision": "Which reviews an associate re-checks" },
+    { "agent": "Deadline sweep", "kind": "rules", "schedule": "nightly", "checks": "Contracts with a signing date inside 5 days and open deviations", "decision": "Which contracts the partner reviews first" },
+    { "agent": "Unusual-term sweep", "kind": "rules", "schedule": "nightly", "checks": "Clauses outside every playbook position", "decision": "Whether the partner takes the negotiation" }
+  ],
+  "recruiting": [
+    { "agent": "Fairness monitor", "kind": "rules", "schedule": "weekly", "checks": "Shortlist rates by group against the adverse-impact threshold, using audit fields held apart from the ranking", "decision": "Whether Employment Counsel pauses the requisition" },
+    { "agent": "Ageing application sweep", "kind": "rules", "schedule": "nightly", "checks": "Applications with no recruiter decision in 14 days", "decision": "Which applications to review or close with a reply" },
+    { "agent": "Rubric drift sweep", "kind": "rules", "schedule": "weekly", "checks": "Requisitions whose rubric changed after screening began", "decision": "Whether to re-screen the pool" }
+  ],
+  "finance_operations": [
+    { "agent": "Duplicate invoice sweep", "kind": "rules", "schedule": "nightly", "checks": "Invoices matching another on vendor, amount and date within 30 days", "decision": "Whether the analyst blocks the duplicate" },
+    { "agent": "Bank-detail change sweep", "kind": "rules", "schedule": "every hour", "checks": "Vendor bank details changed in the last 7 days with an invoice pending", "decision": "Whether Treasury verifies by phone before any payment" },
+    { "agent": "Discount deadline sweep", "kind": "rules", "schedule": "nightly", "checks": "Exceptions on invoices with an early-payment discount expiring in 3 days", "decision": "Which exceptions the analyst clears first" }
+  ],
+  "education": [
+    { "agent": "Deadline reminder sweep", "kind": "rules", "schedule": "nightly", "checks": "Students who asked about a deadline inside 7 days", "decision": "Whether to send a reminder through the portal" },
+    { "agent": "Repeat-distress sweep", "kind": "rules", "schedule": "nightly", "checks": "Students with two or more wellbeing escalations in 30 days", "decision": "Whether the counselling centre reaches out" },
+    { "agent": "Unanswered hand-off sweep", "kind": "rules", "schedule": "nightly", "checks": "Hand-off tickets open past 2 business days", "decision": "Which tickets student services reassigns" }
+  ],
+  "asset_management_compliance": [
+    { "agent": "Lexicon false-positive sweep", "kind": "rules", "schedule": "weekly", "checks": "Lexicon rules whose alerts were closed as false positives more than 98 percent of the time", "decision": "Which rules the surveillance lead retires or rewrites" },
+    { "agent": "Trade-near-message sweep", "kind": "rules", "schedule": "nightly", "checks": "Messages mentioning an instrument traded by the sender within 24 hours", "decision": "Whether a reviewer opens a case" },
+    { "agent": "Off-channel hint sweep", "kind": "model", "schedule": "nightly", "checks": "Messages suggesting a move to an uncaptured channel (text me, WhatsApp, personal email)", "decision": "Whether compliance contacts the advisor" }
+  ]
+}

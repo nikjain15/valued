@@ -1,126 +1,176 @@
 ---
 name: valued
-description: Run a client AI case end to end through the six VALUED gates (Value, AI-fit, Labels, User-in-the-loop, Evals, Deploy and drive), governed at every gate. Each gate's agent drafts first, recommends with trade-offs, asks the client only what the client owns, answers its governance questions, and the run ends with a build step: a PRD a coding agent can build from, a working eval-gated prototype app, and a one-page brief. Use when the user types /valued, with or without a case.
+description: Run a client AI case end to end through the six VALUED gates (Value, AI-fit, Labels, User-in-the-loop, Evals, Deploy and drive) plus Build, governed at every gate, in about 28 minutes. A conductor runs the gates in phases on a clock, asks the client's cards in two rounds, runs independent gates in parallel, and renders the PRD, prototype and brief from each gate's JSON. Use when the user types /valued, with or without a case. Add --teach for the slow, narrated pace.
 ---
 
-# /valued: the orchestrator
+# /valued: the conductor
 
-The argument is a one-line case, for example `/valued regional bank, 2M customers, contact centre
-cost pressure, 30 GenAI ideas, COO wants a plan in six weeks`. If the argument ends with `--auto`,
-run without asking: take the recommended option at every card and log it as "(auto)". If it contains
-`--no-open`, skip every `open` command (here and in `valued-build`) and print the paths instead.
+The argument is a one-line case, for example `/valued regional bank, 2M customers, contact centre cost
+pressure, 30 GenAI ideas, COO wants a plan in six weeks`. Flags:
+- `--teach`: stop reading here and follow `teach.md` in this folder (one gate at a time, cards at every gate).
+- `--auto`: take the recommended option on every card (`conductor.js cards auto <round>`), logged "(auto)".
+- `--no-open`: never run `open`; print paths instead.
 
-**No case given, or only a rough one.** In a live session the client describes the case out loud and the
-product lead may type nothing, or a few words. If the argument is empty or missing the client, the
-business problem, or the success measure and deadline, open with one short framing message ("Before we
-start, three questions to frame the engagement") and up to three cards, each with 3 to 4 typical options
-and room for the client's own words:
-- **"Client context": "Which organization and business area are we working with?"** (industry, size,
-  the unit that owns the problem)
-- **"Business problem": "Which process or decision is underperforming today, and how does it show up?"**
-  (cost, cycle time, error rate, risk or customer impact)
-- **"Success and timeline": "What outcome would the sponsor call success, and by when?"** (the metric
-  that must move, the deadline, the decision this work feeds)
-Each ends with its own-words format: client context "industry, size, and the unit that owns it
-(e.g. 'P&C insurer, 40k claims a month, claims operations')"; business problem "the process, how it
-shows up, and a rough number (e.g. 'FNOL setup, 20 fields re-keyed, 18 minutes a claim')"; success and
-timeline "a metric, a target and a date (e.g. 'setup under 10 minutes, pilot in 8 weeks')".
-Whenever `inputs/` is empty or missing, ask this card even if the case line is complete: **"Material": "What real material can we work
-from?"** Options: "Documents in inputs/ (policies, knowledge articles)", "Sample requests or transcripts,
-de-identified", "Both", "Synthetic only for now (Recommended when nothing is ready)". If none fits,
-answer with: the material, its rough size and who owns it (e.g. "300 policy PDFs, owned by HR
-operations"). If files are already in `inputs/`, list them in one table (file, type, size, likely use)
-instead of asking, and print `Grounded in: <n> client files`.
-Build the case line from the answers, print it as `Engagement: <case line>`, and go. Never ask more than
-this before gate V; gate V's draft marks everything else (assumed).
+Below, `$C` stands for `node .claude/skills/valued/conductor.js`: type it in full every time (a shell variable holding a command with a space does not run in zsh). Run it from the workspace root, with the
+port `P=${PORT:-4317}` (written as 4317 in the skills).
 
-## Roles on screen
+## How a run is built
 
-- **The product lead** drives. **The person watching is the client** (COO, sponsor, risk lead: name the
-  role on each card's header). Card headers in the gate skills say "COO" as an example: always use the
-  sponsor and owner roles of this case (a CMO, a CIO, a head of claims). Cards go to the client; the product lead reads them out and enters the
-  client's choice.
-- The first option on every card is our preference, labelled "(Recommended)", with its trade-off. Every
-  other option carries its trade-off too. That is how the lead's judgement stays visible while the client
-  makes an informed call.
+**Structured first.** Every gate writes one JSON file, `out/gates/<v|a|l|u|e|d|b>.json`, with the keys its
+skill lists under "Output". Cards live in one file, `out/cards.json`. `$C render` turns them into the gate
+files `out/1-value.md` to `out/6-deploy.md`, `out/state.md`, `out/prd.md` (every section), `out/proto/case.json`,
+`out/prd.html` and `out/brief.html`. **Never hand-edit those rendered files**: change the JSON and render again.
+The model writes judgement only: drafts, options and trade-offs, reasons, the summary, the recommendation and
+section 17. `$C check` lists what is still missing, by standard; a run is done when it prints `All checks pass.`
 
-## Run
+**The client decides; the system drafts.** The rules in `CLAUDE.md` hold in every phase: ask only what the
+client owns, every recommendation shows its trade-offs, mark every assumed fact (assumed), synthetic data
+only, no em-dashes, tables of at most 12 rows.
 
-1. **Set up (under 30 seconds).** Create `out/`, `out/proto/` and, if missing, `inputs/`. Write `out/state.md` with four
-   sections: the case line, "Client decisions", "Assumptions", and "Governance log". Then start the
-   live outputs, so the client watches the PRD and the prototype take shape gate by gate:
+**Card schema** (`out/cards.json`, an array; append, never rewrite answered cards):
+`{ "id": "R1-1", "round": 0|1|2|3, "gate": "Frame|V|A|L|U|E|D", "role": "<this case's sponsor or owner role>",
+"question": "...", "format": "<own-words answer shape, with an example>", "options": [{ "label", "tradeoff" }],
+"decision": null, "by": null, "effect": "<what the answer changes, a few words>" }`. The first option is our
+recommendation. Roles are this case's people (head of card operations, chief nursing officer, controller),
+never a generic "COO" unless the case says COO. 2 to 4 options per card.
+
+## The run plan (28 minutes)
+
+| Phase | Work | Budget | Who |
+|---|---|---|---|
+| 0 Frame | framing cards only for what is missing; workspace, server, live PRD | 3 min | you |
+| 1 Round 1 | 5 cards: outcome, hard constraint, hosted model, autonomy, escalation owner | 2 min | client |
+| 2 V then A | value frame; then assistants, shape, sweeps, three scorers in parallel | 7 min | `valued-value`, `valued-ai-fit` |
+| 3 Round 2 | 6 cards: first wave, riskiest group, what to connect, release bar, pilot scope, stop rule | 2 min | client |
+| 4 L and U in parallel | golden set, holdout, systems; autonomy table, never list, clocks | 5 min | `valued-labels` and `valued-user-loop` |
+| 5 E and D in parallel | builder writes the router, evals run; rollout and drive | 6 min | `valued-evals` and `valued-deploy` |
+| 6 B | PRD and prototype rendered from gate data; hosted page; run report | 3 min | `valued-build` |
+
+Cards in total: 11 in the two rounds, plus framing (0 to 4) and E's "Ship anyway, or fix first?" only when a
+release is blocked: 11 to 16. Start and end every phase with `$C clock <phase> start|end`; the start prints
+the header line (`[2] V then A · budget 7 min`). Between phases print nothing else.
+
+**Graceful overrun.** Before each phase starts and whenever a phase feels long, run `$C clock status`. If the
+running phase is past its budget, cut the next item in its cut order (`$C clock status` prints it), record it
+with `$C cut <phase> <what>`, which prints the one line to say, and keep going. Cut order: fewer candidates,
+fewer wave options, a smaller golden set (never under 30 dev rows and 12 holdout rows), the harder-rows
+round, shorter prose. **Never cut** governance checks, the evals, the holdout or the never list.
+
+**Parallel work.** Where a phase runs two gates in parallel, launch both as subagents **in one message**
+(each reads its own gate skill, writes only its own files, and does not run `render`), then wait for both and run `$C render` once. If you cannot launch
+subagents, run them one after the other without stopping for cards, and follow the single-context rules:
+score each lens separately before merging; write the router before opening `golden.json`; never open
+`holdout.json` while building or fixing; set `"independent": false` in `e.json` so every place that shows the
+holdout says "not independent".
+
+## Phase 0: Frame (3 min)
+
+1. `$C clock 0 start`. If the argument is empty or lacks the client, the business problem, or the success
+   measure and deadline, ask only the missing framing cards (round 0), each 3 to 4 typical options:
+   **"Client context"** (industry, size, the unit that owns the problem; format "industry, size, and the unit
+   that owns it (e.g. 'P&C insurer, 40k claims a month, claims operations')"), **"Business problem"** (format
+   "the process, how it shows up, and a rough number (e.g. 'FNOL setup, 20 fields re-keyed, 18 minutes a
+   claim')"), **"Success and timeline"** (format "a metric, a target and a date (e.g. 'setup under 10
+   minutes, pilot in 8 weeks')"). Whenever `inputs/` is empty, also ask **"Material": "What real material
+   can we work from?"** ("Synthetic only for now" recommended when nothing is ready; "Documents in inputs/";
+   "Sample requests or transcripts, de-identified"; "Both"; format "the material, its rough size and who
+   owns it (e.g. '300 policy PDFs, owned by HR operations')"). If files are in `inputs/`, list them in one
+   table instead and print `Grounded in: <n> client files`. Under `--auto` take the first option of each.
+   Print `Engagement: <case line>` when you built it from answers.
+2. Set up:
    ```bash
-   B=.claude/skills/valued-build
-   cp $B/app/app.html $B/app/server.js $B/app/ff.css $B/prd-viewer.html out/proto/
-   echo '{}' > out/proto/case.json
+   B=.claude/skills/valued-build; mkdir -p out/proto out/gates inputs
+   cp $B/app/app.html $B/app/server.js $B/app/ff.css $B/prd-viewer.html $B/eval.js out/proto/
+   echo '{}' > out/proto/case.json; echo '[]' > out/cards.json
+   echo "<the case line>" > out/case-line.txt; echo "orchestrated" > out/mode.txt
    node $B/prd-skeleton.js "<the case line>" out/prd.md
-   P=${PORT:-4317}; lsof -ti :$P | xargs kill 2>/dev/null; PORT=$P node out/proto/server.js   # run in the background
+   P=${PORT:-4317}; lsof -ti :$P | xargs kill 2>/dev/null; PORT=$P node out/proto/server.js   # in the background
    ```
-   Use that port everywhere below (written as 4317). Then `open http://localhost:4317/prd` (skip under
-   `--no-open`). Print one line:
+   `open http://localhost:4317/prd` (skip under `--no-open`). Print:
    `VALUED · 6 gates · governed at every gate · the system drafts, the client decides · live PRD: localhost:4317/prd`.
-2. **Run the gates in order**, each by invoking its skill and waiting for it to finish:
-   `valued-value`, `valued-ai-fit`, `valued-labels`, `valued-user-loop`, `valued-evals`,
-   `valued-deploy`. Before each, print a single header line:
-   `[V] Value · target 6 min` (A 8, L 6, U 5, E 9, D 6).
-   After D, run the build step the same way: `[B] Build: PRD and prototype · target 3 min`, invoking
-   `valued-build`. It completes the PRD, writes the prototype's FAQ, and renders `out/prd.html`.
-3. **Between gates**, print nothing but the gate header. No recaps.
-4. **After B**, build the brief: copy `brief-template.html` from this skill's folder to
-   `out/brief.html` and replace every `{{...}}` placeholder from `out/state.md` and the gate files.
-   Keep each cell to one line. Then run `open out/brief.html` (skip under `--no-open`).
-   The template follows the **Relay design system**; do not restyle it. Keep the tokens and classes as
-   they are, sentence case everywhere, no new colours. Status pills always carry the word (`Passed`,
-   `Blocked`). The agent sentence states the figures. The three stats are the figures the page is about.
-   Each client decision says which role chose what, with our recommendation in the caption. The
-   governance section lists each gate's open items from the "Governance log" with the role to close
-   them; if none are open, say so.
-5. Print the closing line, nothing else: `Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Feedback: /valued-revise <what to change>`.
+3. Pick the industry key now: `$C seed <industry>` (a key of `.claude/skills/valued-labels/connectors-library.json`,
+   or the closest) prints the systems, golden-set seeds and sweep templates every later gate starts from.
+   `$C clock 0 end`.
+
+## Phase 1: Round 1 (2 min)
+
+`$C clock 1 start`. Draft five cards from the case line alone (no gate has run yet, so options come from
+the case, the industry and the seed library), append them to `out/cards.json` with `"round": 1`, then
+`$C cards print 1` (or `$C cards auto 1` under `--auto`) and record each answer as `decision` and `by`:
+
+| Card | Gate | Header role | Question | Options come from |
+|---|---|---|---|---|
+| R1-1 | V | sponsor | Which outcome must move first? | 2 to 3 north-star metrics with what each rewards and can hide |
+| R1-2 | V | sponsor | What is the hard constraint? | e.g. nothing customer-facing unreviewed, existing platform only, data stays in; each with what it rules out |
+| R1-3 | A | IT and risk | May the prototype call a hosted model? | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
+| R1-4 | U | risk owner | How much autonomy in the first 90 days? | suggest only, draft with approval, act on low-risk actions |
+| R1-5 | U | operations owner | Who owns an escalation? | the existing path, a specialist team, the risk desk |
+
+Recommend: the outcome tied to the sponsor's stated goal; the constraint that de-risks a first wave; a hosted
+model on synthetic data whenever a free-text job exists (rules only when the case is mostly rules); draft with
+approval; the existing escalation path. `$C clock 1 end`.
+
+## Phase 2: V then A (7 min)
+
+`$C clock 2 start`. Run `valued-value` (it reads round 1, never asks), then `valued-ai-fit` (three
+`use-case-scorer` subagents in parallel, then the merge, shape, assistants and sweeps). Each writes its JSON
+and runs `$C render`. `$C clock 2 end`.
+
+## Phase 3: Round 2 (2 min)
+
+`$C clock 3 start`. Draft six cards from the rendered gate files (V's priced problem, A's waves and
+assistants, the seed groups), append with `"round": 2`, print or auto, record answers:
+
+| Card | Gate | Header role | Question |
+|---|---|---|---|
+| R2-1 | A | sponsor | Which ideas go first? (A's wave options) |
+| R2-2 | L | operations owner | Which group worries you most? |
+| R2-3 | L | data owner | What can the pilot connect to? |
+| R2-4 | E | risk owner | Bar for the riskiest miss? (0.99 / 0.97 / 0.95) |
+| R2-5 | D | sponsor | What is the pilot scope? |
+| R2-6 | D | sponsor | What would make you stop? |
+
+If the client picks a different first wave than A recommended, update `a.json` (`waves.preferred`, the
+`wave` field on scores) and render before phase 4. `$C clock 3 end`.
+
+## Phase 4: L and U in parallel (5 min)
+
+`$C clock 4 start`. Launch `valued-labels` and `valued-user-loop` together. Both read `out/gates/v.json`,
+`a.json` and the answered cards; neither asks the client anything. L writes `l.json`, `golden.json`,
+`holdout.json`, `sources.json`; U writes `u.json`. When both are back, `$C render`. `$C clock 4 end`.
+
+## Phase 5: E and D in parallel (6 min)
+
+`$C clock 5 start`. Launch `valued-evals` (which launches `prototype-builder` and runs the evals) and
+`valued-deploy` together. If the dev eval is blocked, E asks the one extra card **"Ship anyway, or fix
+first?"** (round 3; "Fix first" recommended), fixes the router, never the labels, and runs the holdout. When
+both are back, `$C render`. `$C clock 5 end`.
+
+## Phase 6: B (3 min)
+
+`$C clock 6 start`. Run `valued-build`: it writes `b.json` (summary, recommendation, requirements, FAQ, sweep
+findings, section 17), runs `$C render`, `$C check` until it prints `All checks pass.` (fix the JSON, never
+the rendered files), builds the hosted page, and publishes (or, if publishing is unavailable or not allowed,
+says so in one line and keeps localhost). Then `$C clock 6 end` and `$C report` (writes
+`out/run-report.json`: time per phase, questions, revisions, flags, eval blocks and fixes, cuts). Print
+`$C clock status` and the closing line, nothing else:
+
+`Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Feedback: /valued-revise <what to change>`
+
+Under `--no-open` skip every `open`; otherwise `open out/brief.html`.
 
 ## Rules for every gate (pass these on)
 
-- **Single-context mode.** If subagents cannot run, do the scorer and builder work inline: score each lens
-  separately before merging; write the router before opening `golden.json`; never open `holdout.json`
-  while building; label the holdout result "not independent" wherever it appears.
-
-- **Draft first, then ask.** A gate shows its draft table **before** its cards, so the client is choosing
-  between concrete things, never answering a blank question.
-- **Every card says how to answer in your own words.** The question text ends with one line,
-  `If none fits, answer with: <format>`, naming the shape that lets the agent use the answer at once,
-  with a short example. For instance: a metric, a target and a date ("claim setup under 10 minutes by
-  Q2"); a ranked pair ("speed first, accuracy second"); a role and a team ("claims team lead, Midwest
-  hub"); a threshold ("no lower than 0.97"). A free answer that misses the shape is restated in that
-  shape and confirmed in one line before the gate continues.
-- **Ask only what the client owns:** a priority, a risk appetite, or a fact only they know. **At most 2
-  cards per gate, 2 to 4 options each**, answerable in 10 seconds. Never ask the client to choose
-  something the agent can reason about (sourcing, architecture, tooling, which metric is better on
-  paper): give it as a recommendation with trade-offs instead.
-- **Every recommendation** uses the format in `CLAUDE.md`: options with trade-offs, our preference, why
-  we prefer it, what would change our mind.
-- **Every gate ends with its governance check** (question, answer, status) and adds open items to the
-  "Governance log".
-- After the cards, finalize the gate file `out/<n>-<gate>.md`, append the choices to "Client decisions"
-  in `out/state.md`, then **update the live outputs** (next rule), and print a **"Say it"** block: three
-  lines the product lead can say out loud, in first person, plain, no em-dashes.
-- **Live outputs: every answer lands in the PRD and the prototype before the next gate starts.** In
-  `out/prd.md`, replace the `> Pending: fills at gate <X>.` line under each section the gate owns with
-  that section's content, following `.claude/skills/valued-build/prd-template.md` for its tables. In
-  `out/proto/case.json`, merge the gate's fields (keep the others), and append one entry per client
-  decision to `decisions`: `{ "gate", "decision", "by", "effect" }`, where `effect` says in a few words
-  what the decision changed in the prototype or the PRD. Also append every row of the gate's governance check
-  to `governance`: `{ "gate", "question", "answer", "status", "owner" }` (owner is the role that closes
-  it; empty when answered). The prototype's Governance tab shows them. The viewer and the app refresh on their own.
-
-  | Gate | PRD sections it fills | Prototype fields it writes |
-  |---|---|---|
-  | V | 2, 3, 4, the title (replace "(use case, from gate V)" with the use case name), and `Client:` in the meta line | `title`, `client`, `useCase`, `headline`, `scenario`, `user`, `inputLabel`, `persona` (`{ "name", "role" }`: a synthetic name for the first-wave user, the person the prototype greets), `industry` (one key of `.claude/skills/valued-labels/connectors-library.json`, or the closest), `labels` (the industry's words for the oversight pages: `section`, `evals`, `gov`, `audit`, `agents`, `data`, `how`, `faq`; for example a wealth firm says "Supervision" and "Suitability checks") |
-  | A | 5, 6 | `out/proto/build.json` engine; `promise`; `shape` (desk, review, rank or chat); `agents`; `sweeps`; `itemNoun` (the user's word for one item and many, e.g. `["claim", "claims"]`); for `rank`, `recordSuffix` (e.g. "household", "account", or "" for a person) and `dismissReasons` (4 reasons in the industry's words) |
-  | L | 10 | `verdicts`, `samples` (6, from `golden.json` only, each with `expect`), `connectors` |
-  | U | 8, 9 | `clocks`, `neverList`, `escalationOwner`, `escalationSla`, `autonomy`, `disclosure`, `approverRole`, `draftOpener` |
-  | E | 11 | `gates.json`, `router.js`, `eval.js` (the Workbench and Evals tabs come alive) |
-  | D | 13, 14 | none |
-  | B | 1, 7, 12, 15, 16, 17, the appendix, and the recommendation at the top | `faq`, `version` |
-- Never exceed 12 table rows. Mark assumed numbers (assumed). Synthetic data only.
-- If a step is taking too long, cut scope and say so in one line. Never stall the room.
-- **If the client changes an earlier answer mid-run**, apply it with the `valued-revise` skill before
-  continuing, then resume at the current gate. After the run, any feedback goes through `/valued-revise`.
+- **Output contract.** Write `out/gates/<k>.json` with every key the gate's skill lists; keep each string one
+  line; then `$C render`. `$C check` names any key you missed.
+- **Cards only in the rounds.** A gate never asks a card itself in the default mode; it reads the answered
+  cards in `out/cards.json`. The one exception is E's ship-or-fix card on a blocked release.
+- **Draft first.** Every recommendation is a table of options with trade-offs, our preference, why, and what
+  would change our mind (`{ "options": [{ "label", "tradeoff" }], "preferred", "why", "changeMind" }`).
+- **Governance at every gate.** `governance`: rows `{ "question", "answer", "status": "answered" | "assumed" |
+  "client to confirm", "owner": "<role that closes it>" }`. Render puts open rows in the Governance log.
+- **Say it.** `sayIt`: three first-person lines the product lead can say out loud.
+- **Assumptions.** `assumptions`: one-line strings, each fact marked (assumed).
+- **Revisions.** If the client changes an earlier answer mid-run, use `valued-revise`, then resume. After the
+  run, all feedback goes through `/valued-revise`, and each revision is a learning signal (see
+  `.claude/skills/valued-learn/SKILL.md`).

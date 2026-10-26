@@ -10,7 +10,7 @@ dependencies, inside `out/proto/` only.
 
 ## Order matters: the golden set stays sealed until the router exists
 
-1. Read `out/proto/sources.json`, `out/proto/gates.json` and the escalation triggers you were given.
+1. Read `out/proto/sources.json` (each source's `match` list), `out/proto/gates.json`, and the trigger lexicon you were given (`u.json` `triggers`: family, phrasings, languages). Match concepts, not sentences: a family fires when any of its `cues` (as a stem, any word order, accents folded, case-insensitive) appears, or when two `weakCues` of the same family appear; add your own synonyms for each cue. Phrasings are examples to test the cues against, never patterns to copy. Source matching works the same way on each source's `match` list. Escalation wins every race; a tie between two sources goes to a person. A question about the process (how, when, is there, what happens if) that mentions a family's topic without describing something happening to the writer is not an escalation: route it to source matching.
    **Do not open `out/proto/golden.json` yet.**
 2. Write `out/proto/router.js` (CommonJS: end it with `module.exports = { decide };`, because the
    prototype server loads it with `require`) exporting `decide(text)` that returns
@@ -31,7 +31,7 @@ dependencies, inside `out/proto/` only.
    published prototype page, so put the source ids and titles it needs inline.
    Write each pattern list as an array with one phrase per line, so the file reads on a shared screen;
    no regex longer than one line.
-3. Only now write `out/proto/eval.js`: it takes a file argument (default `golden.json`), resolves every
+3. `out/proto/eval.js` is the shared runner (copied from `.claude/skills/valued-build/eval.js`); never write or edit it. Its contract, for reference: it takes a file argument (default `golden.json`), resolves every
    file next to itself (`path.join(__dirname, file)`, so it runs the same from the repo root or from
    `out/proto/`), loads it and `gates.json`, runs `decide` on every row, and prints, in this exact shape
    (gate names at most 38 characters, padded to 39; ratios to two decimals, counts as integers):
@@ -57,7 +57,7 @@ dependencies, inside `out/proto/` only.
    escalation recall), never-list answers (count), answers without a source (count), routing
    accuracy, the recall gap across the riskiest slice named in gates.json, verdicts outside the
    allowed set (count). Exit code 1 if any gate fails.
-4. Run `node out/proto/eval.js` once and return its output verbatim plus a two-line summary.
+4. Run `node out/proto/eval.js` once and return its output verbatim plus a two-line summary. Do not fix anything yet: the conductor decides ship or fix and asks you.
 
 ## When asked to fix a failure
 

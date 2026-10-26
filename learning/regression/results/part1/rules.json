@@ -1,0 +1,134 @@
+{
+  "dir": "valued-audit-rules",
+  "shape": "desk",
+  "questions": 14,
+  "agents": 5,
+  "sweeps": 2,
+  "systems": 8,
+  "pending": 0,
+  "golden": 32,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "fail",
+    "4": "pass",
+    "5": "fail",
+    "6": "pass",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 3,
+      "msg": "a connector names a vendor without (assumed)",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4418/",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":17,\"human\":6,\"answer\":9}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 11 controls still open, owned by ",
+      "overnight": 315,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New request|Release checks|Assistants|Compliance and controls|Audit log|Data and systems4/|How it works|FAQ",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 876
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 581
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1446
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 8,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-rules/out/hosted/index.html",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":17,\"human\":6,\"answer\":9}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 11 controls still open, owned by ",
+      "overnight": 315,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New request|Release checks|Assistants|Compliance and controls|Audit log|Data and systems4/|How it works|FAQ",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 876
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 581
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1446
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 8,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4418/prd",
+      "errors": [],
+      "text": 23447,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": 68,
+    "V": 26,
+    "A": 60,
+    "L": 74,
+    "U": 35,
+    "E": 73,
+    "D": 35,
+    "B": 71
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": 7.366666666666666
+}

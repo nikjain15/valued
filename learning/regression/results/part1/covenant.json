@@ -1,0 +1,159 @@
+{
+  "dir": "valued-audit-covenant",
+  "shape": "review",
+  "questions": 12,
+  "agents": 6,
+  "sweeps": 3,
+  "systems": 10,
+  "pending": 0,
+  "golden": 32,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "fail",
+    "4": "pass",
+    "5": "fail",
+    "6": "fail",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 3,
+      "msg": "clocks missing hours for escalate, human or answer",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 3,
+      "msg": "a connector names a vendor without (assumed)",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 6,
+      "msg": "holdout eval does not pass all gates",
+      "file": "out/proto/router.js"
+    },
+    {
+      "std": 3,
+      "msg": "local: Close to their clock shows nothing",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 3,
+      "msg": "hosted: Close to their clock shows nothing",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 3,
+      "msg": "shape review, expected rank",
+      "file": "out/gates/a.json"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4402/",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":12,\"human\":9,\"answer\":11}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 9 controls still open, owned by H",
+      "overnight": 322,
+      "away": 4,
+      "clocks": 0,
+      "top": 3,
+      "sidebar": "Today|Queue|New certificate|Monitoring checks|Assistants and rules|Credit controls|Monitoring record|Data and systems5/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 1002
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 1145
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1385
+        }
+      },
+      "agentCards": 6,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 10,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-covenant/out/hosted/index.html",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":12,\"human\":9,\"answer\":11}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 9 controls still open, owned by H",
+      "overnight": 322,
+      "away": 4,
+      "clocks": 0,
+      "top": 3,
+      "sidebar": "Today|Queue|New certificate|Monitoring checks|Assistants and rules|Credit controls|Monitoring record|Data and systems5/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 1002
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 1145
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1385
+        }
+      },
+      "agentCards": 6,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 10,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4402/prd",
+      "errors": [],
+      "text": 29738,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": null,
+    "V": null,
+    "A": null,
+    "L": null,
+    "U": null,
+    "E": 151,
+    "D": 38,
+    "B": 86
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE BLOCKED",
+  "minutes": null
+}

@@ -1,0 +1,134 @@
+{
+  "dir": "valued-audit-airline",
+  "shape": "desk",
+  "questions": 13,
+  "agents": 5,
+  "sweeps": 3,
+  "systems": 9,
+  "pending": 0,
+  "golden": 32,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "fail",
+    "4": "pass",
+    "5": "fail",
+    "6": "pass",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 3,
+      "msg": "a connector names a vendor without (assumed)",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4407/",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":11,\"human\":9,\"answer\":12}",
+      "greet": "Good morning, Maya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 12 controls still open, owned by ",
+      "overnight": 311,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New request|Release checks|Assistants|Passenger-rights governance|Decision log|Data and systems4/|How it works|FAQ",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 737
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 686
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1564
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 9,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-airline/out/hosted/index.html",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":11,\"human\":9,\"answer\":12}",
+      "greet": "Good morning, Maya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 12 controls still open, owned by ",
+      "overnight": 311,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New request|Release checks|Assistants|Passenger-rights governance|Decision log|Data and systems4/|How it works|FAQ",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 737
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 686
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1564
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 9,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4407/prd",
+      "errors": [],
+      "text": 23092,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": 36,
+    "V": 56,
+    "A": 60,
+    "L": 82,
+    "U": 32,
+    "E": 89,
+    "D": 37,
+    "B": 91
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": 8.05
+}

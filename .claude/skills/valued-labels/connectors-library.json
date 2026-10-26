@@ -1,1399 +1,2574 @@
 {
- "banking": [
-  {
-   "category": "channel",
-   "name": "Contact-centre platform",
-   "vendor": "e.g. Genesys, NICE or Amazon Connect (assumed)",
-   "provides": "Chat, email and call transcripts as they arrive",
-   "usedFor": "Feeds the agent queue",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Head of Contact Centre",
-   "scopes": [
-    "Transcript text",
-    "Channel, queue, timestamp",
-    "Language"
-   ],
-   "never": [
-    "Call audio",
-    "Card numbers, PINs",
-    "Security answers"
-   ]
-  },
-  {
-   "category": "channel",
-   "name": "Online and mobile banking messages",
-   "vendor": "e.g. the digital banking platform (assumed)",
-   "provides": "Secure messages from online banking",
-   "usedFor": "Second channel",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Head of Digital",
-   "scopes": [
-    "Message text"
-   ],
-   "never": [
-    "Login credentials",
-    "Device data"
-   ]
-  },
-  {
-   "category": "knowledge",
-   "name": "Policy and fee library",
-   "vendor": "e.g. ServiceNow Knowledge or Confluence (assumed)",
-   "provides": "Approved policies and fee schedules with owner and version",
-   "usedFor": "Cited source for every answer",
-   "access": "read",
-   "pii": "none",
-   "owner": "Head of Product Policy",
-   "scopes": [
-    "Published articles and versions"
-   ],
-   "never": [
-    "Unpublished drafts"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "CRM customer record",
-   "vendor": "e.g. Salesforce Financial Services Cloud or Microsoft Dynamics (assumed)",
-   "provides": "Tenure, products, last contact, preferred language",
-   "usedFor": "Customer context; case notes later",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "CRM product owner",
-   "scopes": [
-    "Tenure, products, contact history"
-   ],
-   "never": [
-    "Balances",
-    "Date of birth, address"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "record",
-   "name": "Core banking system",
-   "vendor": "e.g. Fiserv, FIS, Jack Henry or Temenos (assumed)",
-   "provides": "Accounts, fee postings, account status",
-   "usedFor": "Confirms facts before a person decides",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Head of Core Banking",
-   "scopes": [
-    "Fee postings for the account in question"
-   ],
-   "never": [
-    "Moving money",
-    "Full transaction history"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Card management and disputes",
-   "vendor": "e.g. TSYS or the card processor portal (assumed)",
-   "provides": "Card status and dispute cases",
-   "usedFor": "Routes disputes and lost cards",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Head of Cards",
-   "scopes": [
-    "Card status",
-    "Dispute case status"
-   ],
-   "never": [
-    "Full card numbers",
-    "Blocking or reissuing cards"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Fraud case management",
-   "vendor": "e.g. NICE Actimize or Feedzai (assumed)",
-   "provides": "Open fraud alerts and cases",
-   "usedFor": "Fraud signals go straight to the fraud team",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Head of Fraud",
-   "scopes": [
-    "Alert exists, case owner"
-   ],
-   "never": [
-    "Model scores",
-    "Case decisions"
-   ]
-  },
-  {
-   "category": "collab",
-   "name": "Complaints case system",
-   "vendor": "e.g. the complaints management tool (assumed)",
-   "provides": "Complaint cases with owner and regulatory clock",
-   "usedFor": "Escalations open a complaint case",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "Head of Complaints",
-   "scopes": [
-    "Create case with message and trigger"
-   ],
-   "never": [
-    "Closing cases"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "collab",
-   "name": "Team messaging and alerts",
-   "vendor": "e.g. Microsoft Teams or Slack (assumed)",
-   "provides": "Alerts to team leaders",
-   "usedFor": "Escalation alerts reach a person fast",
-   "access": "read-write",
-   "pii": "none",
-   "owner": "Head of Contact Centre",
-   "scopes": [
-    "Post to the escalation channel"
-   ],
-   "never": [
-    "Reading other channels"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "testing",
-   "name": "Labelled conversation sample",
-   "vendor": "300 de-identified transcripts (assumed)",
-   "provides": "Real conversations with agreed outcomes",
-   "usedFor": "Development set and sealed holdout",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Data owner",
-   "scopes": [
-    "De-identified text and labels"
-   ],
-   "never": [
-    "Anything not de-identified"
-   ]
-  }
- ],
- "insurance_pc": [
-  {
-   "category": "channel",
-   "name": "FNOL email inbox",
-   "vendor": "e.g. a shared Microsoft Exchange mailbox (assumed)",
-   "provides": "First notices of loss by email with attachments",
-   "usedFor": "Feeds the claims queue",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Claims operations lead",
-   "scopes": [
-    "Email body and attachment text"
-   ],
-   "never": [
-    "Other mailboxes"
-   ]
-  },
-  {
-   "category": "channel",
-   "name": "Phone call notes",
-   "vendor": "e.g. Genesys or the claims call platform (assumed)",
-   "provides": "Notes typed by phone reps",
-   "usedFor": "Feeds the queue",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Claims call centre manager",
-   "scopes": [
-    "Call note text"
-   ],
-   "never": [
-    "Call recordings"
-   ]
-  },
-  {
-   "category": "channel",
-   "name": "Customer portal and app submissions",
-   "vendor": "e.g. Guidewire CustomerEngage or the insurer's app (assumed)",
-   "provides": "Claims submitted online with photos",
-   "usedFor": "Feeds the queue",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Head of Digital",
-   "scopes": [
-    "Form fields",
-    "Photo metadata"
-   ],
-   "never": [
-    "Device location history"
-   ]
-  },
-  {
-   "category": "channel",
-   "name": "Document text extraction",
-   "vendor": "e.g. ABBYY, Hyperscience or Amazon Textract (assumed)",
-   "provides": "Text from PDFs and scans",
-   "usedFor": "Lets PDFs be read like emails",
-   "access": "read",
-   "pii": "masked",
-   "owner": "IT document services",
-   "scopes": [
-    "Page text"
-   ],
-   "never": [
-    "Originals after extraction"
-   ]
-  },
-  {
-   "category": "knowledge",
-   "name": "Claim-type intake rules",
-   "vendor": "Maintained by claims operations (assumed)",
-   "provides": "Required fields per claim type and state",
-   "usedFor": "Which fields to pull and when a claim is complete",
-   "access": "read",
-   "pii": "none",
-   "owner": "Claims operations lead",
-   "scopes": [
-    "Rule text and version"
-   ],
-   "never": [
-    "Draft rules"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Claims system",
-   "vendor": "e.g. Guidewire ClaimCenter, Duck Creek or Sapiens (assumed)",
-   "provides": "Claim record and status",
-   "usedFor": "Confirm and file creates the claim",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "Claims system owner",
-   "scopes": [
-    "Create claim with confirmed fields"
-   ],
-   "never": [
-    "Reserves, payments, coverage decisions"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "record",
-   "name": "Policy administration system",
-   "vendor": "e.g. Guidewire PolicyCenter or Majesco (assumed)",
-   "provides": "Policy status and coverage period",
-   "usedFor": "Checks the policy was in force on the date of loss",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Policy systems owner",
-   "scopes": [
-    "Policy number, status, dates"
-   ],
-   "never": [
-    "Premium and billing"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Third-party data",
-   "vendor": "e.g. LexisNexis or ISO ClaimSearch (assumed)",
-   "provides": "Prior claims and vehicle history",
-   "usedFor": "Repeat-claim indicators for SIU",
-   "access": "read",
-   "pii": "masked",
-   "owner": "SIU lead",
-   "scopes": [
-    "Match exists, count of prior claims"
-   ],
-   "never": [
-    "Full reports outside SIU"
-   ]
-  },
-  {
-   "category": "collab",
-   "name": "SIU referral queue",
-   "vendor": "Special investigations unit (assumed)",
-   "provides": "Referral queue",
-   "usedFor": "Flagged claims arrive with the indicator",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "SIU lead",
-   "scopes": [
-    "Create referral with trigger"
-   ],
-   "never": [
-    "Contacting the claimant"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "testing",
-   "name": "De-identified FNOL sample",
-   "vendor": "300 notices (assumed)",
-   "provides": "Real notices with field labels",
-   "usedFor": "Development set and sealed holdout",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Data owner",
-   "scopes": [
-    "De-identified text and labels"
-   ],
-   "never": [
-    "Anything not de-identified"
-   ]
-  }
- ],
- "health_insurance": [
-  {
-   "category": "channel",
-   "name": "Fax and document intake",
-   "vendor": "e.g. a fax server with OCR such as Kofax (assumed)",
-   "provides": "Faxed authorization requests as text",
-   "usedFor": "Feeds the review queue",
-   "access": "read",
-   "pii": "yes",
-   "owner": "Utilization management lead",
-   "scopes": [
-    "Request text and attachments"
-   ],
-   "never": [
-    "Unrelated faxes"
-   ]
-  },
-  {
-   "category": "channel",
-   "name": "Provider portal submissions",
-   "vendor": "e.g. Availity or the payer's provider portal (assumed)",
-   "provides": "Electronic authorization requests",
-   "usedFor": "Feeds the review queue",
-   "access": "read",
-   "pii": "yes",
-   "owner": "Provider operations",
-   "scopes": [
-    "Request form fields"
-   ],
-   "never": [
-    "Provider credentials"
-   ]
-  },
-  {
-   "category": "channel",
-   "name": "Electronic prior authorization (ePA)",
-   "vendor": "e.g. CoverMyMeds or Surescripts (assumed)",
-   "provides": "Pharmacy prior authorizations",
-   "usedFor": "Feeds the pharmacy review queue",
-   "access": "read",
-   "pii": "yes",
-   "owner": "Pharmacy benefits lead",
-   "scopes": [
-    "Drug, diagnosis, prescriber"
-   ],
-   "never": [
-    "Full medical history"
-   ]
-  },
-  {
-   "category": "knowledge",
-   "name": "Clinical criteria",
-   "vendor": "e.g. InterQual or MCG (assumed)",
-   "provides": "Licensed medical-necessity criteria",
-   "usedFor": "The criteria every recommendation cites",
-   "access": "read",
-   "pii": "none",
-   "owner": "Medical director",
-   "scopes": [
-    "Criteria for the service requested"
-   ],
-   "never": [
-    "Copying criteria outside the tool"
-   ]
-  },
-  {
-   "category": "knowledge",
-   "name": "Medical and pharmacy policies",
-   "vendor": "e.g. the payer's policy library (assumed)",
-   "provides": "Coverage policies with version",
-   "usedFor": "Cited policy per decision",
-   "access": "read",
-   "pii": "none",
-   "owner": "Medical policy committee",
-   "scopes": [
-    "Published policies"
-   ],
-   "never": [
-    "Drafts"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Utilization management system",
-   "vendor": "e.g. Cohere Health, HealthEdge GuidingCare or Epic Tapestry (assumed)",
-   "provides": "Case record, clock and status",
-   "usedFor": "Reviews are prepared here; nurses decide",
-   "access": "read-write",
-   "pii": "yes",
-   "owner": "Utilization management lead",
-   "scopes": [
-    "Read case; write prepared summary"
-   ],
-   "never": [
-    "Approving or denying"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "record",
-   "name": "Member eligibility and benefits",
-   "vendor": "e.g. HealthEdge, Facets or QNXT (assumed)",
-   "provides": "Eligibility and plan benefits",
-   "usedFor": "Checks coverage before review",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Core admin systems owner",
-   "scopes": [
-    "Eligibility on the service date"
-   ],
-   "never": [
-    "Claims history"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Provider directory",
-   "vendor": "e.g. the payer's provider data system (assumed)",
-   "provides": "Network status and specialty",
-   "usedFor": "In-network checks",
-   "access": "read",
-   "pii": "none",
-   "owner": "Provider data lead",
-   "scopes": [
-    "Network status"
-   ],
-   "never": [
-    "Contract rates"
-   ]
-  },
-  {
-   "category": "collab",
-   "name": "Medical director queue",
-   "vendor": "Physician reviewers (assumed)",
-   "provides": "Cases needing a physician",
-   "usedFor": "Anything not clearly approvable goes to a physician",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "Medical director",
-   "scopes": [
-    "Route case with summary"
-   ],
-   "never": [
-    "Issuing denials"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "testing",
-   "name": "De-identified case sample",
-   "vendor": "500 past requests with outcomes (assumed)",
-   "provides": "Real requests with agreed outcomes",
-   "usedFor": "Development set and sealed holdout",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Privacy officer",
-   "scopes": [
-    "De-identified text and labels"
-   ],
-   "never": [
-    "Anything not de-identified"
-   ]
-  }
- ],
- "wealth_management": [
-  {
-   "category": "record",
-   "name": "Portfolio and custodian data",
-   "vendor": "e.g. Schwab, Pershing or LPL feeds (assumed)",
-   "provides": "Holdings, cash, allocation",
-   "usedFor": "Drift and cash detectors",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Head of operations",
-   "scopes": [
-    "Positions, cash, allocation"
-   ],
-   "never": [
-    "Placing trades"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "CRM client record",
-   "vendor": "e.g. Salesforce Financial Services Cloud or Wealthbox (assumed)",
-   "provides": "Household, contacts, life events, notes",
-   "usedFor": "Household facts and talking points",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "CRM product owner",
-   "scopes": [
-    "Household, notes, last meeting"
-   ],
-   "never": [
-    "Editing client profiles"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "record",
-   "name": "Financial planning system",
-   "vendor": "e.g. eMoney or MoneyGuidePro (assumed)",
-   "provides": "Goals, plans, beneficiaries",
-   "usedFor": "Beneficiary and goal checks",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Head of planning",
-   "scopes": [
-    "Goals and beneficiary fields"
-   ],
-   "never": [
-    "Changing plans"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Portfolio management and rebalancing",
-   "vendor": "e.g. Orion, Envestnet or Black Diamond (assumed)",
-   "provides": "Target models and drift",
-   "usedFor": "Drift actions",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Investment operations",
-   "scopes": [
-    "Model and drift"
-   ],
-   "never": [
-    "Running rebalances"
-   ]
-  },
-  {
-   "category": "knowledge",
-   "name": "Firm action rules",
-   "vendor": "Maintained by the advice office (assumed)",
-   "provides": "RMD, beneficiary, drift and cash rules",
-   "usedFor": "Every action cites its rule",
-   "access": "read",
-   "pii": "none",
-   "owner": "Head of advice",
-   "scopes": [
-    "Rule text and version"
-   ],
-   "never": [
-    "Draft rules"
-   ]
-  },
-  {
-   "category": "knowledge",
-   "name": "Approved product shelf",
-   "vendor": "e.g. the firm's product governance list (assumed)",
-   "provides": "Products advisors may discuss",
-   "usedFor": "Talking points never name off-shelf products",
-   "access": "read",
-   "pii": "none",
-   "owner": "Product governance",
-   "scopes": [
-    "Approved list"
-   ],
-   "never": [
-    "Pricing agreements"
-   ]
-  },
-  {
-   "category": "collab",
-   "name": "Supervision queue",
-   "vendor": "e.g. Smarsh or the firm's supervision tool (assumed)",
-   "provides": "Items for branch supervisors",
-   "usedFor": "Vulnerability and conduct signals land here",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "Chief compliance officer",
-   "scopes": [
-    "Create review item"
-   ],
-   "never": [
-    "Closing reviews"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "collab",
-   "name": "Calendar and tasks",
-   "vendor": "e.g. Microsoft 365 (assumed)",
-   "provides": "Advisor tasks and meetings",
-   "usedFor": "Accepted actions become tasks",
-   "access": "read-write",
-   "pii": "none",
-   "owner": "Advisor",
-   "scopes": [
-    "Create a task"
-   ],
-   "never": [
-    "Reading email"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "testing",
-   "name": "Labelled household sample",
-   "vendor": "200 de-identified households (assumed)",
-   "provides": "Households with agreed actions",
-   "usedFor": "Development set and sealed holdout",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Data owner",
-   "scopes": [
-    "De-identified facts and labels"
-   ],
-   "never": [
-    "Anything not de-identified"
-   ]
-  }
- ],
- "telecom": [
-  {
-   "category": "record",
-   "name": "Billing and subscription system",
-   "vendor": "e.g. Amdocs or Netcracker (assumed)",
-   "provides": "Plan, tenure, bill, contract end",
-   "usedFor": "Churn signals and offer eligibility",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Billing systems owner",
-   "scopes": [
-    "Plan, tenure, contract end"
-   ],
-   "never": [
-    "Payment details"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "CRM and care history",
-   "vendor": "e.g. Salesforce or Pega (assumed)",
-   "provides": "Contacts, complaints, sentiment",
-   "usedFor": "Context for the agent",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Care operations lead",
-   "scopes": [
-    "Last contacts and reasons"
-   ],
-   "never": [
-    "Call recordings"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Network experience data",
-   "vendor": "e.g. the network analytics platform (assumed)",
-   "provides": "Dropped calls and speed issues",
-   "usedFor": "Service-issue churn signals",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Network analytics lead",
-   "scopes": [
-    "Experience score per subscriber"
-   ],
-   "never": [
-    "Location history"
-   ]
-  },
-  {
-   "category": "knowledge",
-   "name": "Offer catalog and margin rules",
-   "vendor": "e.g. the offer management system (assumed)",
-   "provides": "Retention offers with eligibility and margin floor",
-   "usedFor": "Every offer cites its rule and stays within margin",
-   "access": "read",
-   "pii": "none",
-   "owner": "Retention offers manager",
-   "scopes": [
-    "Active offers and rules"
-   ],
-   "never": [
-    "Unapproved offers"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Churn propensity scores",
-   "vendor": "e.g. the data science platform (assumed)",
-   "provides": "Risk score per subscriber",
-   "usedFor": "Who is at risk this week",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Head of data science",
-   "scopes": [
-    "Score and top drivers"
-   ],
-   "never": [
-    "Raw features"
-   ]
-  },
-  {
-   "category": "channel",
-   "name": "Contact-centre platform",
-   "vendor": "e.g. Genesys or Avaya (assumed)",
-   "provides": "Incoming retention calls and chats",
-   "usedFor": "Feeds the agent queue",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Care operations lead",
-   "scopes": [
-    "Call reason and transcript"
-   ],
-   "never": [
-    "Audio"
-   ]
-  },
-  {
-   "category": "collab",
-   "name": "Offer approval workflow",
-   "vendor": "Team leaders (assumed)",
-   "provides": "Offers above the margin floor",
-   "usedFor": "Exceptions need a team leader",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "Retention manager",
-   "scopes": [
-    "Request approval"
-   ],
-   "never": [
-    "Self-approving"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "testing",
-   "name": "Labelled retention outcomes",
-   "vendor": "Past offers and outcomes (assumed)",
-   "provides": "Which offers kept which customers",
-   "usedFor": "Development set and sealed holdout",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Data owner",
-   "scopes": [
-    "De-identified outcomes"
-   ],
-   "never": [
-    "Anything not de-identified"
-   ]
-  }
- ],
- "hr_it_service": [
-  {
-   "category": "channel",
-   "name": "Collaboration chat",
-   "vendor": "e.g. Microsoft Teams or Slack (assumed)",
-   "provides": "Employee questions as they are asked",
-   "usedFor": "Feeds the assistant",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Workplace technology lead",
-   "scopes": [
-    "Messages sent to the assistant"
-   ],
-   "never": [
-    "Other conversations"
-   ]
-  },
-  {
-   "category": "channel",
-   "name": "Service portal",
-   "vendor": "e.g. ServiceNow Employee Center or Jira Service Management (assumed)",
-   "provides": "Requests submitted on the portal",
-   "usedFor": "Second channel",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Service desk manager",
-   "scopes": [
-    "Request text and category"
-   ],
-   "never": [
-    "Attachments with personal data"
-   ]
-  },
-  {
-   "category": "knowledge",
-   "name": "Policy library",
-   "vendor": "e.g. SharePoint or Confluence (assumed)",
-   "provides": "HR and IT policies by region, with version",
-   "usedFor": "Cited source for every answer",
-   "access": "read",
-   "pii": "none",
-   "owner": "HR policy lead",
-   "scopes": [
-    "Published policies"
-   ],
-   "never": [
-    "Drafts"
-   ]
-  },
-  {
-   "category": "knowledge",
-   "name": "IT knowledge base",
-   "vendor": "e.g. ServiceNow Knowledge (assumed)",
-   "provides": "How-to articles",
-   "usedFor": "Cited source for IT answers",
-   "access": "read",
-   "pii": "none",
-   "owner": "Service desk manager",
-   "scopes": [
-    "Published articles"
-   ],
-   "never": [
-    "Internal notes"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "HR system",
-   "vendor": "e.g. Workday or SAP SuccessFactors (assumed)",
-   "provides": "Employee region, role, leave balance",
-   "usedFor": "Answers the right regional policy",
-   "access": "read",
-   "pii": "masked",
-   "owner": "HRIS lead",
-   "scopes": [
-    "Region, job family, leave balance"
-   ],
-   "never": [
-    "Pay, performance, health data"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Identity and access",
-   "vendor": "e.g. Okta or Microsoft Entra ID (assumed)",
-   "provides": "Who is asking, group membership",
-   "usedFor": "Permission checks",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Identity lead",
-   "scopes": [
-    "User and groups"
-   ],
-   "never": [
-    "Passwords or MFA secrets"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "IT service management",
-   "vendor": "e.g. ServiceNow ITSM (assumed)",
-   "provides": "Tickets and status",
-   "usedFor": "Hand-offs open a ticket",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "Service desk manager",
-   "scopes": [
-    "Create ticket, read status"
-   ],
-   "never": [
-    "Closing tickets"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "collab",
-   "name": "HR case management",
-   "vendor": "e.g. ServiceNow HR Service Delivery (assumed)",
-   "provides": "Confidential HR cases",
-   "usedFor": "Sensitive questions open a case",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "Head of employee relations",
-   "scopes": [
-    "Create a confidential case"
-   ],
-   "never": [
-    "Reading other cases"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "testing",
-   "name": "Labelled question sample",
-   "vendor": "300 past questions with outcomes (assumed)",
-   "provides": "Real questions with agreed answers",
-   "usedFor": "Development set and sealed holdout",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Data owner",
-   "scopes": [
-    "De-identified questions and labels"
-   ],
-   "never": [
-    "Anything not de-identified"
-   ]
-  }
- ],
- "retail_ecommerce": [
-  {
-   "category": "channel",
-   "name": "Customer service platform",
-   "vendor": "e.g. Zendesk, Gorgias or Salesforce Service Cloud (assumed)",
-   "provides": "Tickets and chats",
-   "usedFor": "Feeds the agent queue",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Head of customer service",
-   "scopes": [
-    "Ticket text"
-   ],
-   "never": [
-    "Payment data"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Order management",
-   "vendor": "e.g. Shopify, Salesforce Commerce Cloud or Manhattan (assumed)",
-   "provides": "Orders, status, returns",
-   "usedFor": "Order facts for every answer",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "E-commerce operations",
-   "scopes": [
-    "Order status and items"
-   ],
-   "never": [
-    "Issuing refunds"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "record",
-   "name": "Shipping and carrier tracking",
-   "vendor": "e.g. ShipStation or carrier APIs (assumed)",
-   "provides": "Tracking events",
-   "usedFor": "Where-is-my-order answers",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Logistics lead",
-   "scopes": [
-    "Tracking status"
-   ],
-   "never": [
-    "Changing delivery"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Product catalog and inventory",
-   "vendor": "e.g. Akeneo or the ERP (assumed)",
-   "provides": "Products, stock, availability",
-   "usedFor": "Product answers",
-   "access": "read",
-   "pii": "none",
-   "owner": "Merchandising lead",
-   "scopes": [
-    "Catalog and stock"
-   ],
-   "never": [
-    "Prices changes"
-   ]
-  },
-  {
-   "category": "knowledge",
-   "name": "Returns and policy library",
-   "vendor": "e.g. Zendesk Guide (assumed)",
-   "provides": "Return, warranty and delivery policies",
-   "usedFor": "Cited policy",
-   "access": "read",
-   "pii": "none",
-   "owner": "Head of customer service",
-   "scopes": [
-    "Published articles"
-   ],
-   "never": [
-    "Drafts"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Payments and fraud",
-   "vendor": "e.g. Stripe, Adyen or Signifyd (assumed)",
-   "provides": "Payment status and fraud flags",
-   "usedFor": "Fraud signals go to a person",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Payments lead",
-   "scopes": [
-    "Status and flag"
-   ],
-   "never": [
-    "Card data"
-   ]
-  },
-  {
-   "category": "collab",
-   "name": "Escalation queue",
-   "vendor": "Team leads (assumed)",
-   "provides": "Complaints and exceptions",
-   "usedFor": "Escalations reach a person",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "Head of customer service",
-   "scopes": [
-    "Create escalation"
-   ],
-   "never": [
-    "Closing it"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "testing",
-   "name": "Labelled ticket sample",
-   "vendor": "500 de-identified tickets (assumed)",
-   "provides": "Tickets with agreed outcomes",
-   "usedFor": "Development set and sealed holdout",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Data owner",
-   "scopes": [
-    "De-identified text and labels"
-   ],
-   "never": [
-    "Anything not de-identified"
-   ]
-  }
- ],
- "healthcare_provider": [
-  {
-   "category": "record",
-   "name": "Electronic health record",
-   "vendor": "e.g. Epic or Oracle Health (assumed)",
-   "provides": "Problems, orders, notes (minimum necessary)",
-   "usedFor": "Clinical context for prepared summaries",
-   "access": "read",
-   "pii": "yes",
-   "owner": "CMIO",
-   "scopes": [
-    "Minimum necessary fields for the task"
-   ],
-   "never": [
-    "Writing orders",
-    "Full chart export"
-   ]
-  },
-  {
-   "category": "channel",
-   "name": "Patient messages",
-   "vendor": "e.g. Epic MyChart (assumed)",
-   "provides": "Patient portal messages",
-   "usedFor": "Feeds the nurse inbox",
-   "access": "read",
-   "pii": "yes",
-   "owner": "Nursing director",
-   "scopes": [
-    "Message text"
-   ],
-   "never": [
-    "Unrelated messages"
-   ]
-  },
-  {
-   "category": "channel",
-   "name": "Ambient clinical documentation",
-   "vendor": "e.g. Nuance DAX or Abridge (assumed)",
-   "provides": "Visit transcripts",
-   "usedFor": "Note drafting",
-   "access": "read",
-   "pii": "yes",
-   "owner": "CMIO",
-   "scopes": [
-    "Transcript for the visit"
-   ],
-   "never": [
-    "Audio retention"
-   ]
-  },
-  {
-   "category": "knowledge",
-   "name": "Clinical protocols",
-   "vendor": "e.g. the hospital's protocol library (assumed)",
-   "provides": "Approved protocols with version",
-   "usedFor": "Cited protocol",
-   "access": "read",
-   "pii": "none",
-   "owner": "Clinical governance",
-   "scopes": [
-    "Published protocols"
-   ],
-   "never": [
-    "Drafts"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Scheduling and referrals",
-   "vendor": "e.g. Epic Cadence (assumed)",
-   "provides": "Appointments and referrals",
-   "usedFor": "Routing and follow-up",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "Access center lead",
-   "scopes": [
-    "Read slots; propose booking"
-   ],
-   "never": [
-    "Booking without staff"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "collab",
-   "name": "Clinical escalation",
-   "vendor": "On-call clinician (assumed)",
-   "provides": "Urgent symptoms",
-   "usedFor": "Red-flag symptoms reach a clinician",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "Nursing director",
-   "scopes": [
-    "Page on-call"
-   ],
-   "never": [
-    "Clinical advice"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "testing",
-   "name": "De-identified message sample",
-   "vendor": "500 messages with triage labels (assumed)",
-   "provides": "Agreed triage outcomes",
-   "usedFor": "Development set and sealed holdout",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Privacy officer",
-   "scopes": [
-    "De-identified text and labels"
-   ],
-   "never": [
-    "Anything not de-identified"
-   ]
-  }
- ],
- "manufacturing": [
-  {
-   "category": "record",
-   "name": "ERP",
-   "vendor": "e.g. SAP S/4HANA or Oracle (assumed)",
-   "provides": "Orders, materials, suppliers",
-   "usedFor": "Facts for planning answers",
-   "access": "read",
-   "pii": "none",
-   "owner": "ERP owner",
-   "scopes": [
-    "Orders and materials"
-   ],
-   "never": [
-    "Posting transactions"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Manufacturing execution",
-   "vendor": "e.g. Siemens Opcenter or Rockwell (assumed)",
-   "provides": "Line status and defects",
-   "usedFor": "Quality and downtime signals",
-   "access": "read",
-   "pii": "none",
-   "owner": "Plant IT",
-   "scopes": [
-    "Line events"
-   ],
-   "never": [
-    "Controlling equipment"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Maintenance management",
-   "vendor": "e.g. IBM Maximo or SAP PM (assumed)",
-   "provides": "Work orders and asset history",
-   "usedFor": "Maintenance recommendations",
-   "access": "read-write",
-   "pii": "none",
-   "owner": "Maintenance manager",
-   "scopes": [
-    "Create draft work order"
-   ],
-   "never": [
-    "Releasing work orders"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "knowledge",
-   "name": "SOPs and safety procedures",
-   "vendor": "e.g. the document control system (assumed)",
-   "provides": "Approved procedures",
-   "usedFor": "Cited procedure",
-   "access": "read",
-   "pii": "none",
-   "owner": "EHS lead",
-   "scopes": [
-    "Published SOPs"
-   ],
-   "never": [
-    "Drafts"
-   ]
-  },
-  {
-   "category": "channel",
-   "name": "Shift logs and tickets",
-   "vendor": "e.g. ServiceNow or shift log tool (assumed)",
-   "provides": "Operator notes",
-   "usedFor": "Feeds the queue",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Plant manager",
-   "scopes": [
-    "Log text"
-   ],
-   "never": [
-    "Personal notes"
-   ]
-  },
-  {
-   "category": "collab",
-   "name": "Safety escalation",
-   "vendor": "EHS on call (assumed)",
-   "provides": "Safety events",
-   "usedFor": "Safety signals reach EHS at once",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "EHS lead",
-   "scopes": [
-    "Raise incident"
-   ],
-   "never": [
-    "Closing incidents"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "testing",
-   "name": "Labelled event sample",
-   "vendor": "Past events with outcomes (assumed)",
-   "provides": "Agreed outcomes",
-   "usedFor": "Development set and sealed holdout",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Data owner",
-   "scopes": [
-    "Labelled events"
-   ],
-   "never": [
-    "Unreviewed data"
-   ]
-  }
- ],
- "public_sector": [
-  {
-   "category": "channel",
-   "name": "Citizen contact channels",
-   "vendor": "e.g. Salesforce Public Sector or a 311 platform (assumed)",
-   "provides": "Requests by web, phone and email",
-   "usedFor": "Feeds the caseworker queue",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Contact centre director",
-   "scopes": [
-    "Request text"
-   ],
-   "never": [
-    "Unrelated records"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Case management",
-   "vendor": "e.g. the agency case system (assumed)",
-   "provides": "Case history and status",
-   "usedFor": "Context and filing",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "Program director",
-   "scopes": [
-    "Case status; draft notes"
-   ],
-   "never": [
-    "Eligibility decisions"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "knowledge",
-   "name": "Regulations and program rules",
-   "vendor": "e.g. the agency policy manual (assumed)",
-   "provides": "Statutes, rules, guidance",
-   "usedFor": "Cited rule for every answer",
-   "access": "read",
-   "pii": "none",
-   "owner": "Policy office",
-   "scopes": [
-    "Published guidance"
-   ],
-   "never": [
-    "Drafts"
-   ]
-  },
-  {
-   "category": "record",
-   "name": "Identity verification",
-   "vendor": "e.g. Login.gov or ID.me (assumed)",
-   "provides": "Verified identity",
-   "usedFor": "Before any personal answer",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Identity lead",
-   "scopes": [
-    "Verified flag"
-   ],
-   "never": [
-    "Documents"
-   ]
-  },
-  {
-   "category": "collab",
-   "name": "Supervisor review",
-   "vendor": "Supervisors (assumed)",
-   "provides": "Exceptions and appeals",
-   "usedFor": "Escalations reach a person",
-   "access": "read-write",
-   "pii": "masked",
-   "owner": "Program director",
-   "scopes": [
-    "Route case"
-   ],
-   "never": [
-    "Deciding appeals"
-   ],
-   "writeBack": false
-  },
-  {
-   "category": "testing",
-   "name": "Labelled request sample",
-   "vendor": "De-identified past requests (assumed)",
-   "provides": "Agreed outcomes",
-   "usedFor": "Development set and sealed holdout",
-   "access": "read",
-   "pii": "masked",
-   "owner": "Privacy officer",
-   "scopes": [
-    "De-identified text and labels"
-   ],
-   "never": [
-    "Anything not de-identified"
-   ]
-  }
- ]
+  "banking": [
+    {
+      "category": "channel",
+      "name": "Contact-centre platform",
+      "vendor": "e.g. Genesys, NICE or Amazon Connect (assumed)",
+      "provides": "Chat, email and call transcripts as they arrive",
+      "usedFor": "Feeds the agent queue",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of Contact Centre",
+      "scopes": [
+        "Transcript text",
+        "Channel, queue, timestamp",
+        "Language"
+      ],
+      "never": [
+        "Call audio",
+        "Card numbers, PINs",
+        "Security answers"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Online and mobile banking messages",
+      "vendor": "e.g. the digital banking platform (assumed)",
+      "provides": "Secure messages from online banking",
+      "usedFor": "Second channel",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of Digital",
+      "scopes": [
+        "Message text"
+      ],
+      "never": [
+        "Login credentials",
+        "Device data"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Policy and fee library",
+      "vendor": "e.g. ServiceNow Knowledge or Confluence (assumed)",
+      "provides": "Approved policies and fee schedules with owner and version",
+      "usedFor": "Cited source for every answer",
+      "access": "read",
+      "pii": "none",
+      "owner": "Head of Product Policy",
+      "scopes": [
+        "Published articles and versions"
+      ],
+      "never": [
+        "Unpublished drafts"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "CRM customer record",
+      "vendor": "e.g. Salesforce Financial Services Cloud or Microsoft Dynamics (assumed)",
+      "provides": "Tenure, products, last contact, preferred language",
+      "usedFor": "Customer context; case notes later",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "CRM product owner",
+      "scopes": [
+        "Tenure, products, contact history"
+      ],
+      "never": [
+        "Balances",
+        "Date of birth, address"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "record",
+      "name": "Core banking system",
+      "vendor": "e.g. Fiserv, FIS, Jack Henry or Temenos (assumed)",
+      "provides": "Accounts, fee postings, account status",
+      "usedFor": "Confirms facts before a person decides",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of Core Banking",
+      "scopes": [
+        "Fee postings for the account in question"
+      ],
+      "never": [
+        "Moving money",
+        "Full transaction history"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Card management and disputes",
+      "vendor": "e.g. TSYS or the card processor portal (assumed)",
+      "provides": "Card status and dispute cases",
+      "usedFor": "Routes disputes and lost cards",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of Cards",
+      "scopes": [
+        "Card status",
+        "Dispute case status"
+      ],
+      "never": [
+        "Full card numbers",
+        "Blocking or reissuing cards"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Fraud case management",
+      "vendor": "e.g. NICE Actimize or Feedzai (assumed)",
+      "provides": "Open fraud alerts and cases",
+      "usedFor": "Fraud signals go straight to the fraud team",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of Fraud",
+      "scopes": [
+        "Alert exists, case owner"
+      ],
+      "never": [
+        "Model scores",
+        "Case decisions"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Complaints case system",
+      "vendor": "e.g. the complaints management tool (assumed)",
+      "provides": "Complaint cases with owner and regulatory clock",
+      "usedFor": "Escalations open a complaint case",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Head of Complaints",
+      "scopes": [
+        "Create case with message and trigger"
+      ],
+      "never": [
+        "Closing cases"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "collab",
+      "name": "Team messaging and alerts",
+      "vendor": "e.g. Microsoft Teams or Slack (assumed)",
+      "provides": "Alerts to team leaders",
+      "usedFor": "Escalation alerts reach a person fast",
+      "access": "read-write",
+      "pii": "none",
+      "owner": "Head of Contact Centre",
+      "scopes": [
+        "Post to the escalation channel"
+      ],
+      "never": [
+        "Reading other channels"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "testing",
+      "name": "Labelled conversation sample",
+      "vendor": "300 de-identified transcripts (assumed)",
+      "provides": "Real conversations with agreed outcomes",
+      "usedFor": "Development set and sealed holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Data owner",
+      "scopes": [
+        "De-identified text and labels"
+      ],
+      "never": [
+        "Anything not de-identified"
+      ]
+    }
+  ],
+  "insurance_pc": [
+    {
+      "category": "channel",
+      "name": "FNOL email inbox",
+      "vendor": "e.g. a shared Microsoft Exchange mailbox (assumed)",
+      "provides": "First notices of loss by email with attachments",
+      "usedFor": "Feeds the claims queue",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Claims operations lead",
+      "scopes": [
+        "Email body and attachment text"
+      ],
+      "never": [
+        "Other mailboxes"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Phone call notes",
+      "vendor": "e.g. Genesys or the claims call platform (assumed)",
+      "provides": "Notes typed by phone reps",
+      "usedFor": "Feeds the queue",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Claims call centre manager",
+      "scopes": [
+        "Call note text"
+      ],
+      "never": [
+        "Call recordings"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Customer portal and app submissions",
+      "vendor": "e.g. Guidewire CustomerEngage or the insurer's app (assumed)",
+      "provides": "Claims submitted online with photos",
+      "usedFor": "Feeds the queue",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of Digital",
+      "scopes": [
+        "Form fields",
+        "Photo metadata"
+      ],
+      "never": [
+        "Device location history"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Document text extraction",
+      "vendor": "e.g. ABBYY, Hyperscience or Amazon Textract (assumed)",
+      "provides": "Text from PDFs and scans",
+      "usedFor": "Lets PDFs be read like emails",
+      "access": "read",
+      "pii": "masked",
+      "owner": "IT document services",
+      "scopes": [
+        "Page text"
+      ],
+      "never": [
+        "Originals after extraction"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Claim-type intake rules",
+      "vendor": "Maintained by claims operations (assumed)",
+      "provides": "Required fields per claim type and state",
+      "usedFor": "Which fields to pull and when a claim is complete",
+      "access": "read",
+      "pii": "none",
+      "owner": "Claims operations lead",
+      "scopes": [
+        "Rule text and version"
+      ],
+      "never": [
+        "Draft rules"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Claims system",
+      "vendor": "e.g. Guidewire ClaimCenter, Duck Creek or Sapiens (assumed)",
+      "provides": "Claim record and status",
+      "usedFor": "Confirm and file creates the claim",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Claims system owner",
+      "scopes": [
+        "Create claim with confirmed fields"
+      ],
+      "never": [
+        "Reserves, payments, coverage decisions"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "record",
+      "name": "Policy administration system",
+      "vendor": "e.g. Guidewire PolicyCenter or Majesco (assumed)",
+      "provides": "Policy status and coverage period",
+      "usedFor": "Checks the policy was in force on the date of loss",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Policy systems owner",
+      "scopes": [
+        "Policy number, status, dates"
+      ],
+      "never": [
+        "Premium and billing"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Third-party data",
+      "vendor": "e.g. LexisNexis or ISO ClaimSearch (assumed)",
+      "provides": "Prior claims and vehicle history",
+      "usedFor": "Repeat-claim indicators for SIU",
+      "access": "read",
+      "pii": "masked",
+      "owner": "SIU lead",
+      "scopes": [
+        "Match exists, count of prior claims"
+      ],
+      "never": [
+        "Full reports outside SIU"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "SIU referral queue",
+      "vendor": "Special investigations unit (assumed)",
+      "provides": "Referral queue",
+      "usedFor": "Flagged claims arrive with the indicator",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "SIU lead",
+      "scopes": [
+        "Create referral with trigger"
+      ],
+      "never": [
+        "Contacting the claimant"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "testing",
+      "name": "De-identified FNOL sample",
+      "vendor": "300 notices (assumed)",
+      "provides": "Real notices with field labels",
+      "usedFor": "Development set and sealed holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Data owner",
+      "scopes": [
+        "De-identified text and labels"
+      ],
+      "never": [
+        "Anything not de-identified"
+      ]
+    }
+  ],
+  "health_insurance": [
+    {
+      "category": "channel",
+      "name": "Fax and document intake",
+      "vendor": "e.g. a fax server with OCR such as Kofax (assumed)",
+      "provides": "Faxed authorization requests as text",
+      "usedFor": "Feeds the review queue",
+      "access": "read",
+      "pii": "yes",
+      "owner": "Utilization management lead",
+      "scopes": [
+        "Request text and attachments"
+      ],
+      "never": [
+        "Unrelated faxes"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Provider portal submissions",
+      "vendor": "e.g. Availity or the payer's provider portal (assumed)",
+      "provides": "Electronic authorization requests",
+      "usedFor": "Feeds the review queue",
+      "access": "read",
+      "pii": "yes",
+      "owner": "Provider operations",
+      "scopes": [
+        "Request form fields"
+      ],
+      "never": [
+        "Provider credentials"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Electronic prior authorization (ePA)",
+      "vendor": "e.g. CoverMyMeds or Surescripts (assumed)",
+      "provides": "Pharmacy prior authorizations",
+      "usedFor": "Feeds the pharmacy review queue",
+      "access": "read",
+      "pii": "yes",
+      "owner": "Pharmacy benefits lead",
+      "scopes": [
+        "Drug, diagnosis, prescriber"
+      ],
+      "never": [
+        "Full medical history"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Clinical criteria",
+      "vendor": "e.g. InterQual or MCG (assumed)",
+      "provides": "Licensed medical-necessity criteria",
+      "usedFor": "The criteria every recommendation cites",
+      "access": "read",
+      "pii": "none",
+      "owner": "Medical director",
+      "scopes": [
+        "Criteria for the service requested"
+      ],
+      "never": [
+        "Copying criteria outside the tool"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Medical and pharmacy policies",
+      "vendor": "e.g. the payer's policy library (assumed)",
+      "provides": "Coverage policies with version",
+      "usedFor": "Cited policy per decision",
+      "access": "read",
+      "pii": "none",
+      "owner": "Medical policy committee",
+      "scopes": [
+        "Published policies"
+      ],
+      "never": [
+        "Drafts"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Utilization management system",
+      "vendor": "e.g. Cohere Health, HealthEdge GuidingCare or Epic Tapestry (assumed)",
+      "provides": "Case record, clock and status",
+      "usedFor": "Reviews are prepared here; nurses decide",
+      "access": "read-write",
+      "pii": "yes",
+      "owner": "Utilization management lead",
+      "scopes": [
+        "Read case; write prepared summary"
+      ],
+      "never": [
+        "Approving or denying"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "record",
+      "name": "Member eligibility and benefits",
+      "vendor": "e.g. HealthEdge, Facets or QNXT (assumed)",
+      "provides": "Eligibility and plan benefits",
+      "usedFor": "Checks coverage before review",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Core admin systems owner",
+      "scopes": [
+        "Eligibility on the service date"
+      ],
+      "never": [
+        "Claims history"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Provider directory",
+      "vendor": "e.g. the payer's provider data system (assumed)",
+      "provides": "Network status and specialty",
+      "usedFor": "In-network checks",
+      "access": "read",
+      "pii": "none",
+      "owner": "Provider data lead",
+      "scopes": [
+        "Network status"
+      ],
+      "never": [
+        "Contract rates"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Medical director queue",
+      "vendor": "Physician reviewers (assumed)",
+      "provides": "Cases needing a physician",
+      "usedFor": "Anything not clearly approvable goes to a physician",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Medical director",
+      "scopes": [
+        "Route case with summary"
+      ],
+      "never": [
+        "Issuing denials"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "testing",
+      "name": "De-identified case sample",
+      "vendor": "500 past requests with outcomes (assumed)",
+      "provides": "Real requests with agreed outcomes",
+      "usedFor": "Development set and sealed holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Privacy officer",
+      "scopes": [
+        "De-identified text and labels"
+      ],
+      "never": [
+        "Anything not de-identified"
+      ]
+    }
+  ],
+  "wealth_management": [
+    {
+      "category": "record",
+      "name": "Portfolio and custodian data",
+      "vendor": "e.g. Schwab, Pershing or LPL feeds (assumed)",
+      "provides": "Holdings, cash, allocation",
+      "usedFor": "Drift and cash detectors",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of operations",
+      "scopes": [
+        "Positions, cash, allocation"
+      ],
+      "never": [
+        "Placing trades"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "CRM client record",
+      "vendor": "e.g. Salesforce Financial Services Cloud or Wealthbox (assumed)",
+      "provides": "Household, contacts, life events, notes",
+      "usedFor": "Household facts and talking points",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "CRM product owner",
+      "scopes": [
+        "Household, notes, last meeting"
+      ],
+      "never": [
+        "Editing client profiles"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "record",
+      "name": "Financial planning system",
+      "vendor": "e.g. eMoney or MoneyGuidePro (assumed)",
+      "provides": "Goals, plans, beneficiaries",
+      "usedFor": "Beneficiary and goal checks",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of planning",
+      "scopes": [
+        "Goals and beneficiary fields"
+      ],
+      "never": [
+        "Changing plans"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Portfolio management and rebalancing",
+      "vendor": "e.g. Orion, Envestnet or Black Diamond (assumed)",
+      "provides": "Target models and drift",
+      "usedFor": "Drift actions",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Investment operations",
+      "scopes": [
+        "Model and drift"
+      ],
+      "never": [
+        "Running rebalances"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Firm action rules",
+      "vendor": "Maintained by the advice office (assumed)",
+      "provides": "RMD, beneficiary, drift and cash rules",
+      "usedFor": "Every action cites its rule",
+      "access": "read",
+      "pii": "none",
+      "owner": "Head of advice",
+      "scopes": [
+        "Rule text and version"
+      ],
+      "never": [
+        "Draft rules"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Approved product shelf",
+      "vendor": "e.g. the firm's product governance list (assumed)",
+      "provides": "Products advisors may discuss",
+      "usedFor": "Talking points never name off-shelf products",
+      "access": "read",
+      "pii": "none",
+      "owner": "Product governance",
+      "scopes": [
+        "Approved list"
+      ],
+      "never": [
+        "Pricing agreements"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Supervision queue",
+      "vendor": "e.g. Smarsh or the firm's supervision tool (assumed)",
+      "provides": "Items for branch supervisors",
+      "usedFor": "Vulnerability and conduct signals land here",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Chief compliance officer",
+      "scopes": [
+        "Create review item"
+      ],
+      "never": [
+        "Closing reviews"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "collab",
+      "name": "Calendar and tasks",
+      "vendor": "e.g. Microsoft 365 (assumed)",
+      "provides": "Advisor tasks and meetings",
+      "usedFor": "Accepted actions become tasks",
+      "access": "read-write",
+      "pii": "none",
+      "owner": "Advisor",
+      "scopes": [
+        "Create a task"
+      ],
+      "never": [
+        "Reading email"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "testing",
+      "name": "Labelled household sample",
+      "vendor": "200 de-identified households (assumed)",
+      "provides": "Households with agreed actions",
+      "usedFor": "Development set and sealed holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Data owner",
+      "scopes": [
+        "De-identified facts and labels"
+      ],
+      "never": [
+        "Anything not de-identified"
+      ]
+    }
+  ],
+  "telecom": [
+    {
+      "category": "record",
+      "name": "Billing and subscription system",
+      "vendor": "e.g. Amdocs or Netcracker (assumed)",
+      "provides": "Plan, tenure, bill, contract end",
+      "usedFor": "Churn signals and offer eligibility",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Billing systems owner",
+      "scopes": [
+        "Plan, tenure, contract end"
+      ],
+      "never": [
+        "Payment details"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "CRM and care history",
+      "vendor": "e.g. Salesforce or Pega (assumed)",
+      "provides": "Contacts, complaints, sentiment",
+      "usedFor": "Context for the agent",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Care operations lead",
+      "scopes": [
+        "Last contacts and reasons"
+      ],
+      "never": [
+        "Call recordings"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Network experience data",
+      "vendor": "e.g. the network analytics platform (assumed)",
+      "provides": "Dropped calls and speed issues",
+      "usedFor": "Service-issue churn signals",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Network analytics lead",
+      "scopes": [
+        "Experience score per subscriber"
+      ],
+      "never": [
+        "Location history"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Offer catalog and margin rules",
+      "vendor": "e.g. the offer management system (assumed)",
+      "provides": "Retention offers with eligibility and margin floor",
+      "usedFor": "Every offer cites its rule and stays within margin",
+      "access": "read",
+      "pii": "none",
+      "owner": "Retention offers manager",
+      "scopes": [
+        "Active offers and rules"
+      ],
+      "never": [
+        "Unapproved offers"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Churn propensity scores",
+      "vendor": "e.g. the data science platform (assumed)",
+      "provides": "Risk score per subscriber",
+      "usedFor": "Who is at risk this week",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of data science",
+      "scopes": [
+        "Score and top drivers"
+      ],
+      "never": [
+        "Raw features"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Contact-centre platform",
+      "vendor": "e.g. Genesys or Avaya (assumed)",
+      "provides": "Incoming retention calls and chats",
+      "usedFor": "Feeds the agent queue",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Care operations lead",
+      "scopes": [
+        "Call reason and transcript"
+      ],
+      "never": [
+        "Audio"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Offer approval workflow",
+      "vendor": "Team leaders (assumed)",
+      "provides": "Offers above the margin floor",
+      "usedFor": "Exceptions need a team leader",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Retention manager",
+      "scopes": [
+        "Request approval"
+      ],
+      "never": [
+        "Self-approving"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "testing",
+      "name": "Labelled retention outcomes",
+      "vendor": "Past offers and outcomes (assumed)",
+      "provides": "Which offers kept which customers",
+      "usedFor": "Development set and sealed holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Data owner",
+      "scopes": [
+        "De-identified outcomes"
+      ],
+      "never": [
+        "Anything not de-identified"
+      ]
+    }
+  ],
+  "hr_it_service": [
+    {
+      "category": "channel",
+      "name": "Collaboration chat",
+      "vendor": "e.g. Microsoft Teams or Slack (assumed)",
+      "provides": "Employee questions as they are asked",
+      "usedFor": "Feeds the assistant",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Workplace technology lead",
+      "scopes": [
+        "Messages sent to the assistant"
+      ],
+      "never": [
+        "Other conversations"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Service portal",
+      "vendor": "e.g. ServiceNow Employee Center or Jira Service Management (assumed)",
+      "provides": "Requests submitted on the portal",
+      "usedFor": "Second channel",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Service desk manager",
+      "scopes": [
+        "Request text and category"
+      ],
+      "never": [
+        "Attachments with personal data"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Policy library",
+      "vendor": "e.g. SharePoint or Confluence (assumed)",
+      "provides": "HR and IT policies by region, with version",
+      "usedFor": "Cited source for every answer",
+      "access": "read",
+      "pii": "none",
+      "owner": "HR policy lead",
+      "scopes": [
+        "Published policies"
+      ],
+      "never": [
+        "Drafts"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "IT knowledge base",
+      "vendor": "e.g. ServiceNow Knowledge (assumed)",
+      "provides": "How-to articles",
+      "usedFor": "Cited source for IT answers",
+      "access": "read",
+      "pii": "none",
+      "owner": "Service desk manager",
+      "scopes": [
+        "Published articles"
+      ],
+      "never": [
+        "Internal notes"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "HR system",
+      "vendor": "e.g. Workday or SAP SuccessFactors (assumed)",
+      "provides": "Employee region, role, leave balance",
+      "usedFor": "Answers the right regional policy",
+      "access": "read",
+      "pii": "masked",
+      "owner": "HRIS lead",
+      "scopes": [
+        "Region, job family, leave balance"
+      ],
+      "never": [
+        "Pay, performance, health data"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Identity and access",
+      "vendor": "e.g. Okta or Microsoft Entra ID (assumed)",
+      "provides": "Who is asking, group membership",
+      "usedFor": "Permission checks",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Identity lead",
+      "scopes": [
+        "User and groups"
+      ],
+      "never": [
+        "Passwords or MFA secrets"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "IT service management",
+      "vendor": "e.g. ServiceNow ITSM (assumed)",
+      "provides": "Tickets and status",
+      "usedFor": "Hand-offs open a ticket",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Service desk manager",
+      "scopes": [
+        "Create ticket, read status"
+      ],
+      "never": [
+        "Closing tickets"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "collab",
+      "name": "HR case management",
+      "vendor": "e.g. ServiceNow HR Service Delivery (assumed)",
+      "provides": "Confidential HR cases",
+      "usedFor": "Sensitive questions open a case",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Head of employee relations",
+      "scopes": [
+        "Create a confidential case"
+      ],
+      "never": [
+        "Reading other cases"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "testing",
+      "name": "Labelled question sample",
+      "vendor": "300 past questions with outcomes (assumed)",
+      "provides": "Real questions with agreed answers",
+      "usedFor": "Development set and sealed holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Data owner",
+      "scopes": [
+        "De-identified questions and labels"
+      ],
+      "never": [
+        "Anything not de-identified"
+      ]
+    }
+  ],
+  "retail_ecommerce": [
+    {
+      "category": "channel",
+      "name": "Customer service platform",
+      "vendor": "e.g. Zendesk, Gorgias or Salesforce Service Cloud (assumed)",
+      "provides": "Tickets and chats",
+      "usedFor": "Feeds the agent queue",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of customer service",
+      "scopes": [
+        "Ticket text"
+      ],
+      "never": [
+        "Payment data"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Order management",
+      "vendor": "e.g. Shopify, Salesforce Commerce Cloud or Manhattan (assumed)",
+      "provides": "Orders, status, returns",
+      "usedFor": "Order facts for every answer",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "E-commerce operations",
+      "scopes": [
+        "Order status and items"
+      ],
+      "never": [
+        "Issuing refunds"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "record",
+      "name": "Shipping and carrier tracking",
+      "vendor": "e.g. ShipStation or carrier APIs (assumed)",
+      "provides": "Tracking events",
+      "usedFor": "Where-is-my-order answers",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Logistics lead",
+      "scopes": [
+        "Tracking status"
+      ],
+      "never": [
+        "Changing delivery"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Product catalog and inventory",
+      "vendor": "e.g. Akeneo or the ERP (assumed)",
+      "provides": "Products, stock, availability",
+      "usedFor": "Product answers",
+      "access": "read",
+      "pii": "none",
+      "owner": "Merchandising lead",
+      "scopes": [
+        "Catalog and stock"
+      ],
+      "never": [
+        "Prices changes"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Returns and policy library",
+      "vendor": "e.g. Zendesk Guide (assumed)",
+      "provides": "Return, warranty and delivery policies",
+      "usedFor": "Cited policy",
+      "access": "read",
+      "pii": "none",
+      "owner": "Head of customer service",
+      "scopes": [
+        "Published articles"
+      ],
+      "never": [
+        "Drafts"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Payments and fraud",
+      "vendor": "e.g. Stripe, Adyen or Signifyd (assumed)",
+      "provides": "Payment status and fraud flags",
+      "usedFor": "Fraud signals go to a person",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Payments lead",
+      "scopes": [
+        "Status and flag"
+      ],
+      "never": [
+        "Card data"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Escalation queue",
+      "vendor": "Team leads (assumed)",
+      "provides": "Complaints and exceptions",
+      "usedFor": "Escalations reach a person",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Head of customer service",
+      "scopes": [
+        "Create escalation"
+      ],
+      "never": [
+        "Closing it"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "testing",
+      "name": "Labelled ticket sample",
+      "vendor": "500 de-identified tickets (assumed)",
+      "provides": "Tickets with agreed outcomes",
+      "usedFor": "Development set and sealed holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Data owner",
+      "scopes": [
+        "De-identified text and labels"
+      ],
+      "never": [
+        "Anything not de-identified"
+      ]
+    }
+  ],
+  "healthcare_provider": [
+    {
+      "category": "record",
+      "name": "Electronic health record",
+      "vendor": "e.g. Epic or Oracle Health (assumed)",
+      "provides": "Problems, orders, notes (minimum necessary)",
+      "usedFor": "Clinical context for prepared summaries",
+      "access": "read",
+      "pii": "yes",
+      "owner": "CMIO",
+      "scopes": [
+        "Minimum necessary fields for the task"
+      ],
+      "never": [
+        "Writing orders",
+        "Full chart export"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Patient messages",
+      "vendor": "e.g. Epic MyChart (assumed)",
+      "provides": "Patient portal messages",
+      "usedFor": "Feeds the nurse inbox",
+      "access": "read",
+      "pii": "yes",
+      "owner": "Nursing director",
+      "scopes": [
+        "Message text"
+      ],
+      "never": [
+        "Unrelated messages"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Ambient clinical documentation",
+      "vendor": "e.g. Nuance DAX or Abridge (assumed)",
+      "provides": "Visit transcripts",
+      "usedFor": "Note drafting",
+      "access": "read",
+      "pii": "yes",
+      "owner": "CMIO",
+      "scopes": [
+        "Transcript for the visit"
+      ],
+      "never": [
+        "Audio retention"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Clinical protocols",
+      "vendor": "e.g. the hospital's protocol library (assumed)",
+      "provides": "Approved protocols with version",
+      "usedFor": "Cited protocol",
+      "access": "read",
+      "pii": "none",
+      "owner": "Clinical governance",
+      "scopes": [
+        "Published protocols"
+      ],
+      "never": [
+        "Drafts"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Scheduling and referrals",
+      "vendor": "e.g. Epic Cadence (assumed)",
+      "provides": "Appointments and referrals",
+      "usedFor": "Routing and follow-up",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Access center lead",
+      "scopes": [
+        "Read slots; propose booking"
+      ],
+      "never": [
+        "Booking without staff"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "collab",
+      "name": "Clinical escalation",
+      "vendor": "On-call clinician (assumed)",
+      "provides": "Urgent symptoms",
+      "usedFor": "Red-flag symptoms reach a clinician",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Nursing director",
+      "scopes": [
+        "Page on-call"
+      ],
+      "never": [
+        "Clinical advice"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "testing",
+      "name": "De-identified message sample",
+      "vendor": "500 messages with triage labels (assumed)",
+      "provides": "Agreed triage outcomes",
+      "usedFor": "Development set and sealed holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Privacy officer",
+      "scopes": [
+        "De-identified text and labels"
+      ],
+      "never": [
+        "Anything not de-identified"
+      ]
+    }
+  ],
+  "manufacturing": [
+    {
+      "category": "record",
+      "name": "ERP",
+      "vendor": "e.g. SAP S/4HANA or Oracle (assumed)",
+      "provides": "Orders, materials, suppliers",
+      "usedFor": "Facts for planning answers",
+      "access": "read",
+      "pii": "none",
+      "owner": "ERP owner",
+      "scopes": [
+        "Orders and materials"
+      ],
+      "never": [
+        "Posting transactions"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Manufacturing execution",
+      "vendor": "e.g. Siemens Opcenter or Rockwell (assumed)",
+      "provides": "Line status and defects",
+      "usedFor": "Quality and downtime signals",
+      "access": "read",
+      "pii": "none",
+      "owner": "Plant IT",
+      "scopes": [
+        "Line events"
+      ],
+      "never": [
+        "Controlling equipment"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Maintenance management",
+      "vendor": "e.g. IBM Maximo or SAP PM (assumed)",
+      "provides": "Work orders and asset history",
+      "usedFor": "Maintenance recommendations",
+      "access": "read-write",
+      "pii": "none",
+      "owner": "Maintenance manager",
+      "scopes": [
+        "Create draft work order"
+      ],
+      "never": [
+        "Releasing work orders"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "knowledge",
+      "name": "SOPs and safety procedures",
+      "vendor": "e.g. the document control system (assumed)",
+      "provides": "Approved procedures",
+      "usedFor": "Cited procedure",
+      "access": "read",
+      "pii": "none",
+      "owner": "EHS lead",
+      "scopes": [
+        "Published SOPs"
+      ],
+      "never": [
+        "Drafts"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Shift logs and tickets",
+      "vendor": "e.g. ServiceNow or shift log tool (assumed)",
+      "provides": "Operator notes",
+      "usedFor": "Feeds the queue",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Plant manager",
+      "scopes": [
+        "Log text"
+      ],
+      "never": [
+        "Personal notes"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Safety escalation",
+      "vendor": "EHS on call (assumed)",
+      "provides": "Safety events",
+      "usedFor": "Safety signals reach EHS at once",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "EHS lead",
+      "scopes": [
+        "Raise incident"
+      ],
+      "never": [
+        "Closing incidents"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "testing",
+      "name": "Labelled event sample",
+      "vendor": "Past events with outcomes (assumed)",
+      "provides": "Agreed outcomes",
+      "usedFor": "Development set and sealed holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Data owner",
+      "scopes": [
+        "Labelled events"
+      ],
+      "never": [
+        "Unreviewed data"
+      ]
+    }
+  ],
+  "public_sector": [
+    {
+      "category": "channel",
+      "name": "Citizen contact channels",
+      "vendor": "e.g. Salesforce Public Sector or a 311 platform (assumed)",
+      "provides": "Requests by web, phone and email",
+      "usedFor": "Feeds the caseworker queue",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Contact centre director",
+      "scopes": [
+        "Request text"
+      ],
+      "never": [
+        "Unrelated records"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Case management",
+      "vendor": "e.g. the agency case system (assumed)",
+      "provides": "Case history and status",
+      "usedFor": "Context and filing",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Program director",
+      "scopes": [
+        "Case status; draft notes"
+      ],
+      "never": [
+        "Eligibility decisions"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "knowledge",
+      "name": "Regulations and program rules",
+      "vendor": "e.g. the agency policy manual (assumed)",
+      "provides": "Statutes, rules, guidance",
+      "usedFor": "Cited rule for every answer",
+      "access": "read",
+      "pii": "none",
+      "owner": "Policy office",
+      "scopes": [
+        "Published guidance"
+      ],
+      "never": [
+        "Drafts"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Identity verification",
+      "vendor": "e.g. Login.gov or ID.me (assumed)",
+      "provides": "Verified identity",
+      "usedFor": "Before any personal answer",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Identity lead",
+      "scopes": [
+        "Verified flag"
+      ],
+      "never": [
+        "Documents"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Supervisor review",
+      "vendor": "Supervisors (assumed)",
+      "provides": "Exceptions and appeals",
+      "usedFor": "Escalations reach a person",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Program director",
+      "scopes": [
+        "Route case"
+      ],
+      "never": [
+        "Deciding appeals"
+      ],
+      "writeBack": false
+    },
+    {
+      "category": "testing",
+      "name": "Labelled request sample",
+      "vendor": "De-identified past requests (assumed)",
+      "provides": "Agreed outcomes",
+      "usedFor": "Development set and sealed holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Privacy officer",
+      "scopes": [
+        "De-identified text and labels"
+      ],
+      "never": [
+        "Anything not de-identified"
+      ]
+    }
+  ],
+  "commercial_lending": [
+    {
+      "category": "record",
+      "name": "Loan origination and servicing system",
+      "vendor": "e.g. nCino, Finastra or FIS (assumed)",
+      "provides": "Facilities, covenants, test dates, borrower contacts",
+      "usedFor": "The book the sweeps run over",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of Credit Operations",
+      "scopes": [
+        "Facility terms",
+        "Covenant definitions and test dates",
+        "Relationship manager"
+      ],
+      "never": [
+        "Approve or amend a facility",
+        "Change a rating"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Borrower financial statements",
+      "vendor": "e.g. spreading tool or document store (assumed)",
+      "provides": "Quarterly financials and compliance certificates",
+      "usedFor": "Covenant tests and early-warning signals",
+      "access": "read",
+      "pii": "none",
+      "owner": "Credit Analysis",
+      "scopes": [
+        "Spread financials",
+        "Certificate dates"
+      ],
+      "never": [
+        "Edit a spread"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Covenant compliance certificates inbox",
+      "vendor": "e.g. shared mailbox (assumed)",
+      "provides": "Certificates and borrower letters as they arrive",
+      "usedFor": "Where work arrives",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Credit Operations",
+      "scopes": [
+        "Certificate text",
+        "Received date"
+      ],
+      "never": [
+        "Reply to a borrower"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Credit policy and covenant playbook",
+      "vendor": "internal (assumed)",
+      "provides": "Breach definitions, cure periods, waiver rules",
+      "usedFor": "The rules the detectors cite",
+      "access": "read",
+      "pii": "none",
+      "owner": "Chief Credit Officer",
+      "scopes": [
+        "Policy text"
+      ],
+      "never": [
+        "Interpret policy beyond its text"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "CRM relationship record",
+      "vendor": "e.g. Salesforce FSC or Dynamics (assumed)",
+      "provides": "RM, contacts, last touch, notes",
+      "usedFor": "Who owns the borrower",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of Relationship Management",
+      "scopes": [
+        "Owner",
+        "Last contact"
+      ],
+      "never": [
+        "Write notes"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Credit officer review queue",
+      "vendor": "e.g. workflow tool or Teams (assumed)",
+      "provides": "Where a credit decision is made by a person",
+      "usedFor": "Every escalation lands here",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Chief Credit Officer",
+      "scopes": [
+        "Open a review item"
+      ],
+      "never": [
+        "Close a review",
+        "Record a decision"
+      ]
+    },
+    {
+      "category": "testing",
+      "name": "Labelled breach history",
+      "vendor": "internal sample (assumed)",
+      "provides": "Past breaches and false alarms, labelled",
+      "usedFor": "Golden set and holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Credit Risk",
+      "scopes": [
+        "Labels"
+      ],
+      "never": [
+        "Live data"
+      ]
+    }
+  ],
+  "pharmacy": [
+    {
+      "category": "channel",
+      "name": "Pharmacy management system claim queue",
+      "vendor": "e.g. the dispensing system (assumed)",
+      "provides": "Rejected claims with reject codes and messages",
+      "usedFor": "Where work arrives",
+      "access": "read",
+      "pii": "masked",
+      "owner": "VP Pharmacy Operations",
+      "scopes": [
+        "Reject code and text",
+        "Drug, quantity, days supply",
+        "Plan"
+      ],
+      "never": [
+        "Resubmit a claim",
+        "Change a prescription"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Reject-code playbook",
+      "vendor": "internal, built from pharmacists' knowledge (assumed)",
+      "provides": "What each reject code means and the approved fix",
+      "usedFor": "The approved knowledge a fix cites",
+      "access": "read",
+      "pii": "none",
+      "owner": "Pharmacy Operations",
+      "scopes": [
+        "Playbook text"
+      ],
+      "never": [
+        "Invent a fix"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Payer and PBM rules",
+      "vendor": "e.g. payer sheets and formulary files (assumed)",
+      "provides": "Formulary, prior authorization and quantity limits by plan",
+      "usedFor": "Checks a fix against the plan",
+      "access": "read",
+      "pii": "none",
+      "owner": "Managed Care",
+      "scopes": [
+        "Formulary status",
+        "Limits"
+      ],
+      "never": [
+        "Override a limit"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Patient profile and prescription record",
+      "vendor": "e.g. the pharmacy system (assumed)",
+      "provides": "Prescriptions, fills, allergies, prescriber",
+      "usedFor": "Facts a fix needs, masked",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Pharmacist in Charge",
+      "scopes": [
+        "Prescription",
+        "Fill history"
+      ],
+      "never": [
+        "Clinical data beyond the claim",
+        "Edit a profile"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Prior authorization portal",
+      "vendor": "e.g. CoverMyMeds or Surescripts (assumed)",
+      "provides": "PA status per claim",
+      "usedFor": "Routes PA rejects",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Pharmacy Operations",
+      "scopes": [
+        "PA status"
+      ],
+      "never": [
+        "Submit a PA"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Pharmacist review queue",
+      "vendor": "e.g. the pharmacy workflow tool (assumed)",
+      "provides": "Where a pharmacist confirms or escalates",
+      "usedFor": "Every item ends with a pharmacist",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Pharmacist in Charge",
+      "scopes": [
+        "Open an item"
+      ],
+      "never": [
+        "Close an item"
+      ]
+    },
+    {
+      "category": "testing",
+      "name": "Labelled reject sample",
+      "vendor": "internal sample (assumed)",
+      "provides": "Past rejects with the fix that worked",
+      "usedFor": "Golden set and holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Pharmacy Operations",
+      "scopes": [
+        "Labels"
+      ],
+      "never": [
+        "Live data"
+      ]
+    }
+  ],
+  "utility": [
+    {
+      "category": "channel",
+      "name": "Customer chat and messaging platform",
+      "vendor": "e.g. Genesys, Sprinklr or the app's chat (assumed)",
+      "provides": "Chats as they arrive",
+      "usedFor": "Where work arrives",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Customer Operations Director",
+      "scopes": [
+        "Chat text",
+        "Channel, time"
+      ],
+      "never": [
+        "Send a chat",
+        "Account numbers"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Outage management system",
+      "vendor": "e.g. OMS from the grid vendor (assumed)",
+      "provides": "Known outages, crews, estimated restoration",
+      "usedFor": "The only source for outage facts",
+      "access": "read",
+      "pii": "none",
+      "owner": "Grid Operations",
+      "scopes": [
+        "Outage area and status",
+        "Estimated restoration"
+      ],
+      "never": [
+        "Promise a time the OMS does not show",
+        "Dispatch a crew"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Customer information and billing system",
+      "vendor": "e.g. SAP IS-U or Oracle CC&B (assumed)",
+      "provides": "Accounts, bills, payment plans, meter reads",
+      "usedFor": "Billing questions, masked",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Billing Operations",
+      "scopes": [
+        "Bill amount and due date",
+        "Plan status"
+      ],
+      "never": [
+        "Change a bill",
+        "Take a payment",
+        "Disconnect"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Tariffs, programs and policy library",
+      "vendor": "internal (assumed)",
+      "provides": "Rates, assistance programs, storm policies",
+      "usedFor": "Approved answers",
+      "access": "read",
+      "pii": "none",
+      "owner": "Regulatory Affairs",
+      "scopes": [
+        "Policy text"
+      ],
+      "never": [
+        "Quote a rate not in the library"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Medical baseline and vulnerable customer register",
+      "vendor": "e.g. a flag in the CIS (assumed)",
+      "provides": "Customers on life-support equipment or registered vulnerable",
+      "usedFor": "Escalation first, always",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Customer Care",
+      "scopes": [
+        "Flag only"
+      ],
+      "never": [
+        "Medical detail"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Care team escalation queue",
+      "vendor": "e.g. the contact-centre workflow (assumed)",
+      "provides": "Where a person takes over",
+      "usedFor": "Escalations and hand-offs",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Customer Operations Director",
+      "scopes": [
+        "Open a case"
+      ],
+      "never": [
+        "Close a case"
+      ]
+    },
+    {
+      "category": "testing",
+      "name": "Labelled chat sample",
+      "vendor": "internal sample, de-identified (assumed)",
+      "provides": "Past chats with the right outcome",
+      "usedFor": "Golden set and holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Quality team",
+      "scopes": [
+        "Labels"
+      ],
+      "never": [
+        "Live data"
+      ]
+    }
+  ],
+  "airline": [
+    {
+      "category": "channel",
+      "name": "Customer contact platform",
+      "vendor": "e.g. Salesforce Service Cloud or Amadeus Contact (assumed)",
+      "provides": "Chats, emails and call notes as they arrive",
+      "usedFor": "Where work arrives",
+      "access": "read",
+      "pii": "masked",
+      "owner": "VP Customer Care",
+      "scopes": [
+        "Message text",
+        "Channel, time"
+      ],
+      "never": [
+        "Send a message",
+        "Payment card data"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Reservation system (PSS)",
+      "vendor": "e.g. Amadeus Altea or Sabre (assumed)",
+      "provides": "Bookings, segments, status, fare rules",
+      "usedFor": "Facts about the trip, masked",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Reservations",
+      "scopes": [
+        "PNR segments and status",
+        "Fare family"
+      ],
+      "never": [
+        "Rebook",
+        "Refund",
+        "Issue a voucher"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Operations and disruption feed",
+      "vendor": "e.g. the ops control system (assumed)",
+      "provides": "Delays, cancellations, causes, reaccommodation options",
+      "usedFor": "Why a flight is disrupted and what is open",
+      "access": "read",
+      "pii": "none",
+      "owner": "Operations Control",
+      "scopes": [
+        "Flight status and cause code"
+      ],
+      "never": [
+        "Change a flight"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Disruption, compensation and rebooking policy",
+      "vendor": "internal plus regulation text (assumed)",
+      "provides": "Duty of care, compensation rules, rebooking entitlements by cause",
+      "usedFor": "Approved answers and clocks",
+      "access": "read",
+      "pii": "none",
+      "owner": "Customer Policy",
+      "scopes": [
+        "Policy text"
+      ],
+      "never": [
+        "Decide compensation"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Loyalty and customer profile",
+      "vendor": "e.g. the loyalty platform (assumed)",
+      "provides": "Tier, special assistance flags",
+      "usedFor": "Priority and vulnerability routing",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Loyalty",
+      "scopes": [
+        "Tier",
+        "Assistance flag"
+      ],
+      "never": [
+        "Award or remove points"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Disruption desk and special assistance queue",
+      "vendor": "e.g. the care workflow tool (assumed)",
+      "provides": "Where agents and the special assistance team work",
+      "usedFor": "Escalations and approvals",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Customer Care Operations",
+      "scopes": [
+        "Open a case"
+      ],
+      "never": [
+        "Close a case"
+      ]
+    },
+    {
+      "category": "testing",
+      "name": "Labelled disruption request sample",
+      "vendor": "internal sample, de-identified (assumed)",
+      "provides": "Past requests with the right outcome",
+      "usedFor": "Golden set and holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Quality team",
+      "scopes": [
+        "Labels"
+      ],
+      "never": [
+        "Live data"
+      ]
+    }
+  ],
+  "b2b_saas": [
+    {
+      "category": "record",
+      "name": "CRM accounts and opportunities",
+      "vendor": "e.g. Salesforce or HubSpot (assumed)",
+      "provides": "Accounts, owners, renewal dates, open deals",
+      "usedFor": "The book the actions rank over",
+      "access": "read",
+      "pii": "masked",
+      "owner": "RevOps",
+      "scopes": [
+        "Account, owner, ARR, renewal date"
+      ],
+      "never": [
+        "Create or close an opportunity",
+        "Email a customer"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Product usage analytics",
+      "vendor": "e.g. Amplitude, Pendo or the warehouse (assumed)",
+      "provides": "Seats, active users, feature adoption, trends",
+      "usedFor": "Expansion and churn signals",
+      "access": "read",
+      "pii": "none",
+      "owner": "Product Analytics",
+      "scopes": [
+        "Account-level usage"
+      ],
+      "never": [
+        "Individual user tracking beyond the account"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Billing and subscriptions",
+      "vendor": "e.g. Stripe, Zuora or Chargebee (assumed)",
+      "provides": "Plan, invoices, overdue status",
+      "usedFor": "Renewal and payment signals",
+      "access": "read",
+      "pii": "none",
+      "owner": "Finance",
+      "scopes": [
+        "Plan and status"
+      ],
+      "never": [
+        "Change a plan",
+        "Issue credit"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Support tickets and health",
+      "vendor": "e.g. Zendesk, Intercom or Gainsight (assumed)",
+      "provides": "Open tickets, CSAT, health score",
+      "usedFor": "Risk signals",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Customer Success",
+      "scopes": [
+        "Ticket counts and severity"
+      ],
+      "never": [
+        "Reply to a ticket"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Playbook of account actions",
+      "vendor": "internal (assumed)",
+      "provides": "The approved actions, when each applies, and what to say",
+      "usedFor": "The rules the detectors cite",
+      "access": "read",
+      "pii": "none",
+      "owner": "CRO",
+      "scopes": [
+        "Playbook text"
+      ],
+      "never": [
+        "Offer a discount not in the playbook"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Account manager task queue",
+      "vendor": "e.g. CRM tasks or Slack (assumed)",
+      "provides": "Where an AM accepts or dismisses an action",
+      "usedFor": "Every action ends with a person",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "VP Sales",
+      "scopes": [
+        "Create a task"
+      ],
+      "never": [
+        "Complete a task"
+      ]
+    },
+    {
+      "category": "testing",
+      "name": "Labelled account outcome sample",
+      "vendor": "internal sample (assumed)",
+      "provides": "Past accounts with what happened and what should have been done",
+      "usedFor": "Golden set and holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "RevOps",
+      "scopes": [
+        "Labels"
+      ],
+      "never": [
+        "Live data"
+      ]
+    }
+  ],
+  "legal": [
+    {
+      "category": "channel",
+      "name": "Document management system",
+      "vendor": "e.g. iManage or NetDocuments (assumed)",
+      "provides": "Contracts and versions as they arrive",
+      "usedFor": "Where work arrives",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Knowledge Management Partner",
+      "scopes": [
+        "Contract text",
+        "Matter, version"
+      ],
+      "never": [
+        "File a document",
+        "Share outside the matter"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Clause playbook and fallback positions",
+      "vendor": "internal (assumed)",
+      "provides": "Preferred, acceptable and walk-away positions per clause",
+      "usedFor": "The rule every deviation cites",
+      "access": "read",
+      "pii": "none",
+      "owner": "Practice Group Head",
+      "scopes": [
+        "Playbook text"
+      ],
+      "never": [
+        "Negotiate beyond the playbook"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Precedent and clause bank",
+      "vendor": "e.g. the firm's precedent library (assumed)",
+      "provides": "Approved clause language",
+      "usedFor": "Suggested replacements, cited",
+      "access": "read",
+      "pii": "none",
+      "owner": "Knowledge Management",
+      "scopes": [
+        "Clause text"
+      ],
+      "never": [
+        "Draft from outside the bank"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Matter management and conflicts",
+      "vendor": "e.g. Intapp or Elite (assumed)",
+      "provides": "Matter, client, privilege status, responsible partner",
+      "usedFor": "Routing and privilege",
+      "access": "read",
+      "pii": "masked",
+      "owner": "General Counsel",
+      "scopes": [
+        "Matter and partner"
+      ],
+      "never": [
+        "Open a matter"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Associate and partner review queue",
+      "vendor": "e.g. the firm's workflow tool (assumed)",
+      "provides": "Where a lawyer confirms each finding",
+      "usedFor": "Every item ends with a lawyer",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Managing Partner",
+      "scopes": [
+        "Open a review"
+      ],
+      "never": [
+        "Send advice to a client"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Risk and privilege escalation",
+      "vendor": "e.g. General Counsel's office (assumed)",
+      "provides": "Where privilege, conflicts and unusual terms go",
+      "usedFor": "Escalations",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "General Counsel",
+      "scopes": [
+        "Raise an issue"
+      ],
+      "never": [
+        "Resolve an issue"
+      ]
+    },
+    {
+      "category": "testing",
+      "name": "Labelled contract sample",
+      "vendor": "internal sample, client-anonymised (assumed)",
+      "provides": "Past reviews with findings confirmed by lawyers",
+      "usedFor": "Golden set and holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Knowledge Management",
+      "scopes": [
+        "Labels"
+      ],
+      "never": [
+        "Live client documents"
+      ]
+    }
+  ],
+  "recruiting": [
+    {
+      "category": "channel",
+      "name": "Applicant tracking system",
+      "vendor": "e.g. Greenhouse, Workday Recruiting or Lever (assumed)",
+      "provides": "Applications, resumes, job requisitions",
+      "usedFor": "Where work arrives",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Head of Talent",
+      "scopes": [
+        "Resume text with identifiers removed",
+        "Requisition and requirements"
+      ],
+      "never": [
+        "Reject or advance a candidate",
+        "Protected characteristics",
+        "Photos, names, addresses"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Job requirements and scoring rubric",
+      "vendor": "internal (assumed)",
+      "provides": "Must-have and nice-to-have criteria per requisition, agreed with the hiring manager",
+      "usedFor": "The only criteria the ranking may use",
+      "access": "read",
+      "pii": "none",
+      "owner": "Talent Acquisition Lead",
+      "scopes": [
+        "Rubric text"
+      ],
+      "never": [
+        "Infer criteria beyond the rubric"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "HR system",
+      "vendor": "e.g. Workday or SAP SuccessFactors (assumed)",
+      "provides": "Roles, levels, locations",
+      "usedFor": "Requisition context",
+      "access": "read",
+      "pii": "none",
+      "owner": "HR Operations",
+      "scopes": [
+        "Role definitions"
+      ],
+      "never": [
+        "Employee data"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Recruiter review queue",
+      "vendor": "e.g. the ATS workflow (assumed)",
+      "provides": "Where a recruiter reads the shortlist and decides",
+      "usedFor": "Every decision is a person's",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Head of Talent",
+      "scopes": [
+        "Create a review task"
+      ],
+      "never": [
+        "Change candidate status"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Fairness and legal review",
+      "vendor": "e.g. Employment Counsel and People Analytics (assumed)",
+      "provides": "Where adverse impact and complaints go",
+      "usedFor": "Escalations and monitoring",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Employment Counsel",
+      "scopes": [
+        "Raise a finding"
+      ],
+      "never": [
+        "Decide a case"
+      ]
+    },
+    {
+      "category": "testing",
+      "name": "Labelled application sample",
+      "vendor": "internal sample, de-identified (assumed)",
+      "provides": "Past applications with recruiter decisions and the rubric score",
+      "usedFor": "Golden set and holdout, with group audits",
+      "access": "read",
+      "pii": "masked",
+      "owner": "People Analytics",
+      "scopes": [
+        "Labels",
+        "Group audit fields held separately"
+      ],
+      "never": [
+        "Live applications"
+      ]
+    }
+  ],
+  "finance_operations": [
+    {
+      "category": "channel",
+      "name": "Accounts payable workflow and invoice capture",
+      "vendor": "e.g. Coupa, SAP Ariba or Basware (assumed)",
+      "provides": "Invoices with extracted fields and match status",
+      "usedFor": "Where exceptions arrive",
+      "access": "read",
+      "pii": "none",
+      "owner": "Controller",
+      "scopes": [
+        "Invoice fields",
+        "Match status and reason"
+      ],
+      "never": [
+        "Approve an invoice",
+        "Release a payment"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "ERP purchase orders and receipts",
+      "vendor": "e.g. SAP S/4HANA, Oracle or NetSuite (assumed)",
+      "provides": "POs, goods receipts, vendor master",
+      "usedFor": "The other two legs of the three-way match",
+      "access": "read",
+      "pii": "none",
+      "owner": "Finance Systems",
+      "scopes": [
+        "PO lines",
+        "Receipt lines",
+        "Vendor record"
+      ],
+      "never": [
+        "Change a PO",
+        "Edit the vendor master",
+        "Bank details"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "AP policy and tolerance rules",
+      "vendor": "internal (assumed)",
+      "provides": "Match tolerances, approval limits, duplicate rules",
+      "usedFor": "The rules every exception cites",
+      "access": "read",
+      "pii": "none",
+      "owner": "Controller",
+      "scopes": [
+        "Policy text"
+      ],
+      "never": [
+        "Change a tolerance"
+      ]
+    },
+    {
+      "category": "channel",
+      "name": "Vendor correspondence inbox",
+      "vendor": "e.g. shared mailbox (assumed)",
+      "provides": "Vendor emails about invoices",
+      "usedFor": "Context for exceptions",
+      "access": "read",
+      "pii": "masked",
+      "owner": "AP Team Lead",
+      "scopes": [
+        "Email text"
+      ],
+      "never": [
+        "Reply to a vendor"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "AP analyst and approver queue",
+      "vendor": "e.g. the AP workflow (assumed)",
+      "provides": "Where an analyst resolves and an approver signs",
+      "usedFor": "Every resolution is a person's",
+      "access": "read-write",
+      "pii": "none",
+      "owner": "AP Team Lead",
+      "scopes": [
+        "Create a task"
+      ],
+      "never": [
+        "Approve",
+        "Pay"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Fraud and vendor-change escalation",
+      "vendor": "e.g. Internal Audit and Treasury (assumed)",
+      "provides": "Where suspected fraud and bank-detail changes go",
+      "usedFor": "Escalations",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Treasury",
+      "scopes": [
+        "Raise a case"
+      ],
+      "never": [
+        "Clear a case"
+      ]
+    },
+    {
+      "category": "testing",
+      "name": "Labelled exception sample",
+      "vendor": "internal sample (assumed)",
+      "provides": "Past exceptions with how they were resolved",
+      "usedFor": "Golden set and holdout",
+      "access": "read",
+      "pii": "none",
+      "owner": "AP Team Lead",
+      "scopes": [
+        "Labels"
+      ],
+      "never": [
+        "Live invoices"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "category": "channel",
+      "name": "Student portal and chat",
+      "vendor": "e.g. the student portal or a campus chat tool (assumed)",
+      "provides": "Questions as students ask them",
+      "usedFor": "Where work arrives",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Dean of Students",
+      "scopes": [
+        "Question text",
+        "Channel, time"
+      ],
+      "never": [
+        "Student records",
+        "Health information"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Policies, deadlines and FAQ library",
+      "vendor": "e.g. the registrar's and financial aid knowledge base (assumed)",
+      "provides": "Approved answers on admissions, aid, registration, housing",
+      "usedFor": "Approved knowledge an answer cites",
+      "access": "read",
+      "pii": "none",
+      "owner": "Registrar",
+      "scopes": [
+        "Policy text"
+      ],
+      "never": [
+        "Interpret a policy for one student"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Student information system",
+      "vendor": "e.g. Banner, PeopleSoft or Workday Student (assumed)",
+      "provides": "Enrolment, age flag, holds",
+      "usedFor": "Minor flag and routing, nothing else",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Registrar",
+      "scopes": [
+        "Minor flag",
+        "Enrolment status"
+      ],
+      "never": [
+        "Grades",
+        "Financial detail",
+        "Edit a record"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Financial aid system",
+      "vendor": "e.g. the aid office's system (assumed)",
+      "provides": "Aid status and deadlines",
+      "usedFor": "Aid questions, masked",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Director of Financial Aid",
+      "scopes": [
+        "Status and dates"
+      ],
+      "never": [
+        "Amounts",
+        "Change an award"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Wellbeing and counselling on-call",
+      "vendor": "e.g. the counselling centre's intake line (assumed)",
+      "provides": "Where wellbeing and safety concerns go, at once",
+      "usedFor": "Escalation wins every race",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Director of Counselling",
+      "scopes": [
+        "Open an urgent referral"
+      ],
+      "never": [
+        "Give advice",
+        "Close a referral"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Student services ticketing",
+      "vendor": "e.g. ServiceNow or the help desk (assumed)",
+      "provides": "Where hand-offs become tickets",
+      "usedFor": "Human hand-offs",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Student Services",
+      "scopes": [
+        "Open a ticket"
+      ],
+      "never": [
+        "Close a ticket"
+      ]
+    },
+    {
+      "category": "testing",
+      "name": "Labelled question sample",
+      "vendor": "internal sample, de-identified (assumed)",
+      "provides": "Past questions with the right outcome",
+      "usedFor": "Golden set and holdout",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Student Services",
+      "scopes": [
+        "Labels"
+      ],
+      "never": [
+        "Live data"
+      ]
+    }
+  ],
+  "asset_management_compliance": [
+    {
+      "category": "channel",
+      "name": "Communications archive",
+      "vendor": "e.g. Smarsh, Global Relay or Proofpoint (assumed)",
+      "provides": "Email, chat and voice transcripts captured for supervision",
+      "usedFor": "Where work arrives",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Chief Compliance Officer",
+      "scopes": [
+        "Message text",
+        "Sender role, channel, time"
+      ],
+      "never": [
+        "Delete or alter a record",
+        "Personal messages outside the captured channels"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Existing surveillance lexicon and alerts",
+      "vendor": "e.g. the current surveillance tool (assumed)",
+      "provides": "Today's alerts and lexicon hits",
+      "usedFor": "Baseline and false-positive history",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Surveillance Lead",
+      "scopes": [
+        "Alert id, rule, disposition"
+      ],
+      "never": [
+        "Close an alert"
+      ]
+    },
+    {
+      "category": "knowledge",
+      "name": "Compliance manual and conduct rules",
+      "vendor": "internal plus regulator guidance (assumed)",
+      "provides": "What counts as a reportable issue, by rule",
+      "usedFor": "The rule every escalation cites",
+      "access": "read",
+      "pii": "none",
+      "owner": "Chief Compliance Officer",
+      "scopes": [
+        "Manual text"
+      ],
+      "never": [
+        "Interpret a rule beyond its text"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Trade and order records",
+      "vendor": "e.g. the OMS and trade blotter (assumed)",
+      "provides": "Trades near the time of a message",
+      "usedFor": "Context for a possible issue",
+      "access": "read",
+      "pii": "none",
+      "owner": "Trading Compliance",
+      "scopes": [
+        "Trade time, instrument, side"
+      ],
+      "never": [
+        "Client identities beyond the message"
+      ]
+    },
+    {
+      "category": "record",
+      "name": "Employee and advisor registry",
+      "vendor": "e.g. HR system and licensing register (assumed)",
+      "provides": "Role, licences, restricted lists",
+      "usedFor": "Routing and context",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Compliance Operations",
+      "scopes": [
+        "Role and licence"
+      ],
+      "never": [
+        "Performance data"
+      ]
+    },
+    {
+      "category": "collab",
+      "name": "Compliance reviewer and case management",
+      "vendor": "e.g. the compliance case tool (assumed)",
+      "provides": "Where a reviewer dispositions each item and escalates to the CCO",
+      "usedFor": "Every disposition is a person's",
+      "access": "read-write",
+      "pii": "masked",
+      "owner": "Surveillance Lead",
+      "scopes": [
+        "Open a case"
+      ],
+      "never": [
+        "Close a case",
+        "File a report"
+      ]
+    },
+    {
+      "category": "testing",
+      "name": "Labelled alert history",
+      "vendor": "internal sample (assumed)",
+      "provides": "Past alerts with reviewer dispositions",
+      "usedFor": "Golden set and holdout; false-positive baseline",
+      "access": "read",
+      "pii": "masked",
+      "owner": "Surveillance Lead",
+      "scopes": [
+        "Labels"
+      ],
+      "never": [
+        "Live data"
+      ]
+    }
+  ]
 }

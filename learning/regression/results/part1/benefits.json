@@ -1,0 +1,144 @@
+{
+  "dir": "valued-audit-benefits",
+  "shape": "review",
+  "questions": 13,
+  "agents": 5,
+  "sweeps": 3,
+  "systems": 8,
+  "pending": 0,
+  "golden": 34,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "fail",
+    "4": "pass",
+    "5": "fail",
+    "6": "pass",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 3,
+      "msg": "a connector names a vendor without (assumed)",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 3,
+      "msg": "local: Close to their clock shows nothing",
+      "file": "out/proto/case.json"
+    },
+    {
+      "std": 3,
+      "msg": "hosted: Close to their clock shows nothing",
+      "file": "out/proto/case.json"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4410/",
+      "errors": [],
+      "items": 34,
+      "counts": "{\"escalate\":13,\"human\":9,\"answer\":12}",
+      "greet": "Good morning, Maren. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
+      "overnight": 322,
+      "away": 4,
+      "clocks": 0,
+      "top": 3,
+      "sidebar": "Today|Queue|New application|Release checks|Assistants|Governance and civil rights|Case audit log|Data and systems4/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 740
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 651
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 967
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 8,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-benefits/out/hosted/index.html",
+      "errors": [],
+      "items": 34,
+      "counts": "{\"escalate\":13,\"human\":9,\"answer\":12}",
+      "greet": "Good morning, Maren. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 14 controls still open, owned by ",
+      "overnight": 322,
+      "away": 4,
+      "clocks": 0,
+      "top": 3,
+      "sidebar": "Today|Queue|New application|Release checks|Assistants|Governance and civil rights|Case audit log|Data and systems4/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 740
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 651
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 967
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 8,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4410/prd",
+      "errors": [],
+      "text": 24104,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": 19,
+    "V": 69,
+    "A": 63,
+    "L": 97,
+    "U": 34,
+    "E": 85,
+    "D": 38,
+    "B": 92
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": 8.283333333333333
+}

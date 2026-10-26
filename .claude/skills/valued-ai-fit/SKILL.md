@@ -18,6 +18,14 @@ description: VALUED gate A. Decide which candidates need AI at all, rank them, r
 **Build, buy or partner is never a question.** It is our recommendation, with trade-offs, for the
 client to accept or overrule.
 
+> **Mode.** In the default run the conductor (`valued/SKILL.md`) asks this gate's cards in its rounds: skip
+> the "Ask the client" step, read the answered cards for gate A in `out/cards.json`, and never ask a card
+> yourself. Under `--teach`, ask them as written and append each card, with its answer, to `out/cards.json`
+> in the card schema. Either way, end by writing `out/gates/a.json` (below) and running
+> `node .claude/skills/valued/conductor.js render` (skip the render when the conductor launched you in a parallel
+> phase; it renders once both gates are back). Never hand-edit the rendered files: wherever a step below says to
+> write a gate file, `case.json`, `state.md` or a PRD section, put that content in the gate JSON instead.
+
 ## Steps
 
 1. **Score in parallel.** Launch three `use-case-scorer` subagents **in a single message**, each given
@@ -42,9 +50,9 @@ client to accept or overrule.
    - End the table with one line, `Numbers to quote:` latency budget per surface and cost per resolved
      task (assumed where assumed). Gate E's "Say it while it builds" reads from this line.
 5. **Ask the client (2 cards):**
-   - **"COO": "Which ideas go first?"** The wave options from step 3, our preference first
+   - **"<sponsor role>": "Which ideas go first?"** The wave options from step 3, our preference first
      "(Recommended)", each with its trade-off.
-   - **"IT and risk": "May the prototype call a hosted model?"** This sets the build engine; the client
+   - **"<IT and risk role>": "May the prototype call a hosted model?"** This sets the build engine; the client
      owns it because it is a data and vendor-approval fact. Options, our preference first, chosen from
      the ladder in step 2 (a model on rung 3 or above means "Yes, on synthetic data"):
      - "Yes, on synthetic data": rules decide, the model drafts from the cited source only. Better
@@ -53,7 +61,7 @@ client to accept or overrule.
        stiff. Engine `rules`.
      - "Yes, and let it lead": the model proposes the verdict, rules guard escalation. Handles varied
        phrasing; harder to explain, and needs its own eval before release. Engine `model-first`.
-     Record `Build engine: <engine> (chosen by IT and risk)` under "Client decisions" in `out/state.md`.
+     Set `engine` and `engineBy` in `a.json`; render records `Build engine: <engine> (chosen by IT and risk)`.
 6. **Product shape** (an output, never a card): pick the screen the first-wave user actually works in,
    and say why in one line. It decides how the prototype looks:
 
@@ -64,7 +72,10 @@ client to accept or overrule.
    | `rank` | A person picks next steps for a record (client, account, case) | Record with ranked action cards; accept or dismiss with a reason |
    | `chat` | The end user asks and gets an answer directly | Conversation with cited answers; sensitive topics routed to people |
 
-   Write `"shape"` to `out/proto/case.json`.
+   When two shapes fit, the user's decision wins over the input: documents that feed a next-step decision on a
+   record over time (a loan, an account, a household) are `rank`; a document whose fields a person confirms
+   once is `review`. A customer conversation under draft-with-approval is `desk`; `chat` only when answers
+   reach the end user directly. Write `shape` to `a.json`.
    **Assistants** (an output): design the first wave as 3 to 6 named assistants, one job each, in the
    order they run. The first check is always a fixed-rules safety guard (escalation and the never list);
    every assistant that reads or writes free language is a model, except the safety guard and the matchers,
@@ -87,7 +98,11 @@ client to accept or overrule.
    - Model-risk scope: a proposed tier per first-wave component (low, medium, high) with the reason.
    - Explainability: how each first-wave output is explained (cited source, rule path, reason codes).
      A component that cannot be explained cannot ship in a regulated flow.
-   Add open items to the "Governance log" in `out/state.md`.
-8. **Finalize** `out/2-ai-fit.md`, update `out/state.md`.
+   Put the rows in `governance`; render adds open ones to the Governance log.
+8. **Write** `out/gates/<k>.json` (see Output) and run `node .claude/skills/valued/conductor.js render`; it writes the gate file, state.md, the PRD sections and case.json.
 9. **Say it** (three lines): why most of the list is not GenAI; why this first wave; the build, buy or
    partner call and its main trade-off, and what the engine choice means for the prototype.
+
+## Output: `out/gates/a.json`
+
+Keys (render and `conductor.js check` read them; keep strings to one line): `scores` (rows `{ id, name, rung, value, feasibility, risk, reuse, overall, reason, wave: 1|2|null, notGenAI: true|false, instead }`; at least one `notGenAI`), `waves` (a recommendation), `sourcing` (`{ component, rung, choice, why, changeMind, routing, latency }`), `numbersToQuote`, `engine` (`rules` | `rules+model` | `model-first`, from card R1-3), `engineBy`, `engineWhy`, `shape` (`desk` | `review` | `rank` | `chat`), `shapeWhy`, `agents` (3 to 6 `{ name, kind, job, may, never, gate }`, the first a `rules` "Safety guard"), `triggerFamilies` (4 to 8 short keys for the kinds of escalation the guard catches, e.g. `fraud`, `complaint`, `distress`, `legal_threat`; gates L and U both use exactly these keys), `sweeps` (1 to 3 `{ agent, kind, schedule, checks, decision }`, start from `sweep-templates.json`), `itemNoun` (`["claim", "claims"]`), `promise`, `recordSuffix` and `dismissReasons` (4) for `rank`, `alternatives` (`{ alternative, whyNot, revisit }`), `latency`, `cost`, `flow` (optional one-line pipeline); plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.

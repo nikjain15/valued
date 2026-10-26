@@ -1,0 +1,134 @@
+{
+  "dir": "valued-audit-pharmacy",
+  "shape": "desk",
+  "questions": 13,
+  "agents": 5,
+  "sweeps": 3,
+  "systems": 11,
+  "pending": 0,
+  "golden": 36,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "fail",
+    "6": "fail",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    },
+    {
+      "std": 6,
+      "msg": "holdout eval does not pass all gates",
+      "file": "out/proto/router.js"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4405/",
+      "errors": [],
+      "items": 36,
+      "counts": "{\"escalate\":15,\"human\":7,\"answer\":14}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
+      "overnight": 311,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New rejection|Accuracy and release|Assistants and rules|Pharmacy controls and compliance|Claim activity record|Data and tools6/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 795
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 684
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 2262
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 11,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-pharmacy/out/hosted/index.html",
+      "errors": [],
+      "items": 36,
+      "counts": "{\"escalate\":15,\"human\":7,\"answer\":14}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
+      "overnight": 311,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New rejection|Accuracy and release|Assistants and rules|Pharmacy controls and compliance|Claim activity record|Data and tools6/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 795
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 684
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 2262
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 11,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4405/prd",
+      "errors": [],
+      "text": 29061,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": null,
+    "V": null,
+    "A": null,
+    "L": null,
+    "U": null,
+    "E": 118,
+    "D": 44,
+    "B": 77
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE BLOCKED",
+  "minutes": null
+}

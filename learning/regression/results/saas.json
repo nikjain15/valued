@@ -1,0 +1,129 @@
+{
+  "dir": "valued-audit-saas",
+  "shape": "rank",
+  "questions": 13,
+  "agents": 5,
+  "sweeps": 3,
+  "systems": 9,
+  "pending": 0,
+  "golden": 34,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "fail",
+    "6": "pass",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4409/",
+      "errors": [],
+      "items": 34,
+      "counts": "{\"escalate\":16,\"human\":4,\"answer\":14}",
+      "greet": "Good morning, Maya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 12 controls still open, owned by ",
+      "overnight": 321,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New account|Release checks|Assistants and rules|Revenue governance|Action log|Data and tools6/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 516
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 417
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 879
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 9,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-saas/out/hosted/index.html",
+      "errors": [],
+      "items": 34,
+      "counts": "{\"escalate\":16,\"human\":4,\"answer\":14}",
+      "greet": "Good morning, Maya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 12 controls still open, owned by ",
+      "overnight": 321,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New account|Release checks|Assistants and rules|Revenue governance|Action log|Data and tools6/|How it works|Questions",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 516
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 417
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 879
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 9,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4409/prd",
+      "errors": [],
+      "text": 21112,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": 30,
+    "V": 56,
+    "A": 55,
+    "L": 94,
+    "U": 32,
+    "E": 71,
+    "D": 29,
+    "B": 78
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": 7.416666666666667
+}

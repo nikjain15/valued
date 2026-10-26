@@ -22,8 +22,13 @@ function loadRouter() {
   const file = path.join(DIR, "router.js");
   if (!fs.existsSync(file)) return null;
   delete require.cache[require.resolve(file)];
-  return require(file);
+  let cache = {}; try { cache = JSON.parse(fs.readFileSync(path.join(DIR, "model-cache.json"), "utf8")); } catch {}
+  return withBackstop(require(file), cache);
 }
+const normKey = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim();
+// Model backstop: rows the rules guard did not escalate, but the guard model (cached in model-cache.json) did.
+const withBackstop = (r, cache) => (!r ? r : { ...r, decide: (t) => { const d = r.decide(t) || {}; const m = (cache || {})[normKey(t)]; return d.verdict !== "escalate" && m && m.verdict === "escalate" ? { verdict: "escalate", source: null, reason: `model backstop (${m.family || "escalation"}): ${m.reason || ""}`.trim(), backstop: true } : d; } });
+
 function refresh() {
   sources = readJson("sources.json", []);
   build = readJson("build.json", { engine: "rules" });
@@ -136,7 +141,7 @@ function runEval(file) {
 }
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".md": "text/markdown; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml" };
-const PUBLIC = new Set(["app.html", "ff.css", "case.json", "build.json", "sources.json", "gates.json", "router.js", "golden.json", "holdout.json"]);
+const PUBLIC = new Set(["app.html", "ff.css", "case.json", "build.json", "sources.json", "gates.json", "router.js", "golden.json", "holdout.json", "model-cache.json"]);
 
 function send(res, code, body, type = "application/json") {
   res.writeHead(code, { "content-type": type, "cache-control": "no-store" });

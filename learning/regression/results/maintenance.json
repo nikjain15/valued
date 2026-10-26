@@ -1,0 +1,129 @@
+{
+  "dir": "valued-audit-maintenance",
+  "shape": "review",
+  "questions": 13,
+  "agents": 5,
+  "sweeps": 3,
+  "systems": 8,
+  "pending": 0,
+  "golden": 32,
+  "holdout": 12,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "fail",
+    "6": "pass",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 5,
+      "msg": "fewer than 3 Given / When / Then acceptance criteria",
+      "file": "out/prd.md"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4413/",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":13,\"human\":7,\"answer\":12}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 11 controls still open, owned by ",
+      "overnight": 317,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New entry|Release checks|Assistants|EHS and governance|Work order audit log|Plant systems3/|How it works|Questions from the plants",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 600
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 617
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 940
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 8,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-audit-maintenance/out/hosted/index.html",
+      "errors": [],
+      "items": 32,
+      "counts": "{\"escalate\":13,\"human\":7,\"answer\":12}",
+      "greet": "Good morning, Dana. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 11 controls still open, owned by ",
+      "overnight": 317,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Today|Queue|New entry|Release checks|Assistants|EHS and governance|Work order audit log|Plant systems3/|How it works|Questions from the plants",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 600
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 617
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 940
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 8,
+      "govRows": 24,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4413/prd",
+      "errors": [],
+      "text": 21096,
+      "pending": 0
+    }
+  },
+  "timing": {
+    "setup": 39,
+    "V": 46,
+    "A": 54,
+    "L": 75,
+    "U": 31,
+    "E": 72,
+    "D": 34,
+    "B": 92
+  },
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "RELEASE PASSES ALL GATES",
+  "minutes": 7.383333333333334
+}

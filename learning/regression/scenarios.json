@@ -1,0 +1,581 @@
+{
+ "_about": "The 18 audit scenarios as a regression suite. Expected properties, never exact text. run.js scores each workspace with check.js and these expectations.",
+ "scenarios": [
+  {
+   "n": 1,
+   "slug": "card-dispute",
+   "port": 4401,
+   "case": "retail bank, card dispute claims arrive as chats and forms, 9k a month, disputes team misses Reg E clocks, head of card operations wants a pilot in 8 weeks",
+   "stresses": "Reg E clocks, fraud escalation",
+   "expect": {
+    "shape": [
+     "review"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 2,
+   "slug": "covenant",
+   "port": 4402,
+   "case": "commercial lender, relationship managers miss covenant breaches across 1,200 loans, credit decisions stay with credit officers, chief credit officer wants early warning in a quarter",
+   "stresses": "proactive sweeps, regulated credit decisions off AI",
+   "expect": {
+    "shape": [
+     "rank"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 3,
+   "slug": "underwriting",
+   "port": 4403,
+   "case": "specialty insurer, underwriting submissions arrive as broker emails with PDFs, underwriters re-key 30 fields per submission, head of underwriting wants quote turnaround halved by Q2",
+   "stresses": "many fields, appetite rules",
+   "expect": {
+    "shape": [
+     "review"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 4,
+   "slug": "portal",
+   "port": 4404,
+   "case": "hospital, patient portal messages to nurses, 20k a month, nurses triage by hand and clinical red flags get buried, chief nursing officer wants a pilot in 10 weeks",
+   "stresses": "clinical red flags, health data",
+   "expect": {
+    "shape": [
+     "desk"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 5,
+   "slug": "pharmacy",
+   "port": 4405,
+   "case": "pharmacy chain, insurance claim rejections that pharmacists fix by hand, 60k rejections a month, reject codes live in people's heads, VP pharmacy operations wants rework cut by a third this year",
+   "stresses": "reject codes as knowledge",
+   "expect": {
+    "shape": [
+     "desk",
+     "review"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 6,
+   "slug": "utility",
+   "port": 4406,
+   "case": "utility, outage and billing questions from customers in chat, 150k a month with storm surges, customer operations director wants faster answers without wrong outage promises",
+   "stresses": "customer-facing, storm surge volume",
+   "expect": {
+    "shape": [
+     "chat",
+     "desk"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28,
+    "shapeNote": "desk when autonomy is draft with approval; chat when answers go to the end user directly"
+   }
+  },
+  {
+   "n": 7,
+   "slug": "airline",
+   "port": 4407,
+   "case": "airline, disruption rebooking requests during irregular operations, 40k a day on bad days, agents miss compensation rules and time limits, VP customer care wants a pilot before summer",
+   "stresses": "time clocks, compensation rules",
+   "expect": {
+    "shape": [
+     "desk"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 8,
+   "slug": "returns",
+   "port": 4408,
+   "case": "e-commerce retailer, returns and refund requests, 300k a month, refund fraud and policy exceptions handled by hand, head of customer service wants refund cost and handle time down by Q3",
+   "stresses": "refund fraud, policy exceptions",
+   "expect": {
+    "shape": [
+     "desk",
+     "review"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 9,
+   "slug": "saas",
+   "port": 4409,
+   "case": "B2B SaaS company, account managers need next-best actions on 3,000 accounts, churn and expansion signals sit in five tools, chief revenue officer wants net revenue retention up this year",
+   "stresses": "signals across tools, next-best action",
+   "expect": {
+    "shape": [
+     "rank"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 10,
+   "slug": "benefits",
+   "port": 4410,
+   "case": "state agency, caseworkers review benefits applications, 50k a month, backlog drives appeals and complaints, agency director wants decisions faster with accessibility and fair treatment guaranteed",
+   "stresses": "accessibility, fair treatment",
+   "expect": {
+    "shape": [
+     "review"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 11,
+   "slug": "contracts",
+   "port": 4411,
+   "case": "law firm, contract clause review against a playbook, 2,000 contracts a year, associates miss deviations and work is privileged, managing partner wants review time halved with citations",
+   "stresses": "privilege, citations",
+   "expect": {
+    "shape": [
+     "review"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 12,
+   "slug": "recruiting",
+   "port": 4412,
+   "case": "recruiting team, screening 40k applications a year, recruiters cannot read them all and fairness is a legal risk, head of talent wants time to shortlist halved and AI never deciding",
+   "stresses": "fairness, AI never decides",
+   "expect": {
+    "shape": [
+     "rank",
+     "review"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 13,
+   "slug": "maintenance",
+   "port": 4413,
+   "case": "manufacturer, maintenance work orders from operator shift logs across 12 plants, safety issues get lost in free text, VP operations wants safety escalations caught and planner time cut",
+   "stresses": "safety escalation in free text",
+   "expect": {
+    "shape": [
+     "desk",
+     "review"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 14,
+   "slug": "ap",
+   "port": 4414,
+   "case": "finance team, accounts payable invoice matching exceptions, 25k invoices a month with 15% exceptions, three-way match failures handled by email, controller wants exception handling time halved with no payment made by AI",
+   "stresses": "no payment by AI",
+   "expect": {
+    "shape": [
+     "review",
+     "desk"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 15,
+   "slug": "university",
+   "port": 4415,
+   "case": "university, student support questions to an assistant, 80k a year across admissions, financial aid and wellbeing, some students are minors, dean of students wants faster answers with wellbeing escalated to people",
+   "stresses": "minors, wellbeing escalation",
+   "expect": {
+    "shape": [
+     "chat",
+     "desk"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28,
+    "shapeNote": "desk when autonomy is draft with approval; chat when answers go to the end user directly"
+   }
+  },
+  {
+   "n": 16,
+   "slug": "surveillance",
+   "port": 4416,
+   "case": "asset manager, compliance surveillance of advisor communications, 2M messages a month with 98% false positives, reviewers burn out, chief compliance officer wants true escalations caught with far fewer false alarms",
+   "stresses": "false positives, regulated supervision",
+   "expect": {
+    "shape": [
+     "review",
+     "desk"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28
+   }
+  },
+  {
+   "n": 17,
+   "slug": "nocase",
+   "port": 4417,
+   "case": "",
+   "stresses": "framing cards path",
+   "expect": {
+    "shape": [
+     "desk",
+     "review",
+     "rank",
+     "chat"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28,
+    "framingCards": true
+   }
+  },
+  {
+   "n": 18,
+   "slug": "rules",
+   "port": 4418,
+   "case": "credit union, member requests for password resets and address changes, 30k a month handled by agents, head of member services wants them automated but the team is not sure AI is even needed",
+   "stresses": "honest not-GenAI verdict",
+   "expect": {
+    "shape": [
+     "desk",
+     "review",
+     "rank",
+     "chat"
+    ],
+    "minSystems": 6,
+    "assistants": [
+     3,
+     6
+    ],
+    "sweeps": [
+     1,
+     3
+    ],
+    "cards": [
+     11,
+     16
+    ],
+    "evalGates": 8,
+    "pendingSections": 0,
+    "consoleErrors": 0,
+    "devPass": true,
+    "holdoutPass": true,
+    "maxMinutes": 28,
+    "notGenAIFirst": true
+   }
+  }
+ ]
+}

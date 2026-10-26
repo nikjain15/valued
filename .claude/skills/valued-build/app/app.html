@@ -429,6 +429,9 @@ async function load(name, fallback) {
   if (HOSTED) return window.__VALUED__[name] ?? fallback;
   try { const r = await fetch("/" + name, { cache: "no-store" }); if (!r.ok) return fallback; return name.endsWith(".js") ? r.text() : r.json(); } catch { return fallback; }
 }
+const normKey = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim();
+// Model backstop: rows the rules guard did not escalate, but the guard model (cached in model-cache.json) did.
+const withBackstop = (r, cache) => (!r ? r : { ...r, decide: (t) => { const d = r.decide(t) || {}; const m = (cache || {})[normKey(t)]; return d.verdict !== "escalate" && m && m.verdict === "escalate" ? { verdict: "escalate", source: null, reason: `model backstop (${m.family || "escalation"}): ${m.reason || ""}`.trim(), backstop: true } : d; } });
 /* The router also runs in the browser. If it reads its data files from disk anyway, hand it the copies already loaded. */
 function compileRouter(src) {
   if (!src) return null;
@@ -480,7 +483,7 @@ const triggerOf = (d) => { const q = [...String(d.reason || "").matchAll(/"([^"]
 /* ---------- Data and queue ---------- */
 async function boot() {
   [CASE, SOURCES, GATES, BUILD, GOLDEN, HOLDOUT] = await Promise.all([load("case.json", {}), load("sources.json", []), load("gates.json", {}), load("build.json", { engine: "rules" }), load("golden.json", []), load("holdout.json", [])]);
-  ROUTER = compileRouter(await load("router.js", ""));
+  ROUTER = withBackstop(compileRouter(await load("router.js", "")), await load("model-cache.json", {}));
   SHAPE = { ...(SHAPES[CASE.shape] || SHAPES.desk) }; if (Array.isArray(CASE.itemNoun)) SHAPE.noun = CASE.itemNoun;
   const persona = CASE.persona || { name: "Maya Brooks", role: SHAPE.personaRole };
   document.title = CASE.title || "Prototype";
@@ -500,8 +503,11 @@ function identity(row, i) {
   const pool = NAMES[lang] || NAMES.en;
   const name = pool[i % pool.length];
   const channel = row.slices?.channel || ({ desk: "chat", review: "email", rank: "book", chat: (row.slices?.region || "").toUpperCase() || "Teams" })[CASE.shape || "desk"];
-  const mins = 4 + ((i * 37) % 300);
-  return { name, id: `${SHAPE.idp}${26104 + i * 7}`, channel, mins, ago: mins < 60 ? `${mins} min ago` : `${Math.floor(mins / 60)} h ago` };
+  // Ages are a share of the item's own clock, so a few items always sit close to their deadline.
+  const ck = (CASE.clocks || {})[row.expected], hrs = typeof ck === "number" ? ck : (ck || {}).hours;
+  const share = [0.12, 0.45, 0.82, 0.3, 0.9, 0.6, 0.2, 1.04][i % 8];
+  const mins = hrs ? Math.max(4, Math.round(hrs * 60 * share)) : 4 + ((i * 37) % 300);
+  return { name, id: `${SHAPE.idp}${26104 + i * 7}`, channel, mins, ago: mins < 60 ? `${mins} min ago` : mins < 2880 ? `${Math.floor(mins / 60)} h ago` : `${Math.floor(mins / 1440)} d ago` };
 }
 function buildQueue() {
   ITEMS = (ROUTER ? GOLDEN : []).map((row, i) => ({ key: row.id, row, text: row.text, who: identity(row, i), d: ROUTER.decide(row.text), state: "open", ai: null }));
@@ -545,7 +551,7 @@ function renderQueue() {
 }
 /* Clocks: each outcome has a response deadline set at gate U; items count down from arrival. */
 function clockOf(it) {
-  const c = (CASE.clocks || {})[it.d.verdict]; if (!c || !c.hours || it.state !== "open") return null;
+  const raw = (CASE.clocks || {})[it.d.verdict], c = typeof raw === "number" ? { hours: raw } : raw; if (!c || !c.hours || it.state !== "open") return null;
   const left = c.hours * 60 - (it.who.mins || 0), total = c.hours * 60;
   const txt = left <= 0 ? `Overdue ${fmtDur(-left)}` : `Due in ${fmtDur(left)}`;
   return { left, cls: left <= 0 ? "late" : left < total * 0.25 ? "soon" : "", txt, label: c.label || "" };
