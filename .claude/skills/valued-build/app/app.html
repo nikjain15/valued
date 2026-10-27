@@ -245,17 +245,28 @@
     <div class="brand"><span class="mark" id="mark">AI</span><div><b id="pname">Prototype</b><small id="pclient">Client</small></div></div>
     <nav class="nav" aria-label="Work">
       <div class="eyebrow">Work</div>
-      <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span id="navHome">Today</span><span class="count" id="cntEsc"></span></button>
+      <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span id="navHome">Overview</span><span class="count" id="cntEsc"></span></button>
       <button data-go="queue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l2-8h12l2 8"/><path d="M4 13v6h16v-6h-5l-1 2h-4l-1-2z"/></svg><span id="navQueue">Queue</span><span class="count soft" id="cntQueue"></span></button>
       <button data-go="new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="navNew">New item</span></button>
     </nav>
-    <nav class="nav" aria-label="Trust">
-      <div class="eyebrow">Trust</div>
-      <button data-go="evals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Evals</button>
+    <nav class="nav" aria-label="Insight">
+      <div class="eyebrow">Insight</div>
+      <button data-go="evals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Answer quality</button>
+      <button data-go="obs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 15l4-4 3 3 5-6 4 4"/></svg>Observability</button>
+    </nav>
+    <nav class="nav" aria-label="Govern">
+      <div class="eyebrow">Govern</div>
       <button data-go="agents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 16.5h5"/></svg>Rules and agents</button>
       <button data-go="gov"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Governance</button>
       <button data-go="audit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>Audit log<span class="count soft" id="cntLog"></span></button>
-      <button data-go="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>Data and tools<span class="count soft" id="cntConn"></span></button>
+    </nav>
+    <nav class="nav" aria-label="Library">
+      <div class="eyebrow">Library</div>
+      <button data-go="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h8l6 6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M14 3v6h6"/></svg>Documents<span class="count soft" id="cntConn"></span></button>
+      <button data-go="models"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="4"/><path d="M10.5 11.5A4 4 0 1 0 16 17"/></svg>Models and cost</button>
+    </nav>
+    <nav class="nav" aria-label="Help">
+      <div class="eyebrow">Help</div>
       <button data-go="how"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>How it works</button>
       <button data-go="faq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17v.01"/></svg>FAQ</button>
     </nav>
@@ -276,6 +287,7 @@
       <section class="page" id="p-home">
         <div class="hello"><span class="spark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></span>
           <div><h2 id="greet">Good morning.</h2><p id="greetSub"></p></div></div>
+        <div class="tiles" id="kpis"></div>
         <div id="hero"></div>
         <div id="decided"></div>
         <div class="tiles" id="tiles"></div>
@@ -358,6 +370,7 @@
           <div class="row between"><div><h2>Data and tools</h2><p class="muted" style="margin-top:6px;max-width:72ch" id="connIntro"></p></div></div>
           <div class="tiles" id="connTiles" style="margin-top:0"></div>
           <div id="connGroups"></div>
+          <div id="toolCatalog"></div>
           <details class="more card" style="margin-top:8px"><summary><strong>Bring your own files</strong> · test with your own labelled items or policy documents</summary>
             <div style="margin-top:14px">
           <div class="two">
@@ -393,6 +406,22 @@
       <!-- FAQ -->
       <section class="page" id="p-faq" hidden>
         <div class="card"><p class="small muted">Every answer comes from a decision made in the working session; the tag shows which.</p><div class="faq" id="faqList" style="margin-top:8px"></div></div>
+      </section>
+
+      <!-- Observability -->
+      <section class="page" id="p-obs" hidden>
+        <div class="stack">
+          <div><h2>Observability</h2><p class="muted" style="margin-top:6px;max-width:72ch">What we watch once the agents are live: quality and safety, cost and tokens, speed and volume, and the load on your team.</p></div>
+          <div id="obsBody"></div>
+        </div>
+      </section>
+
+      <!-- Models and cost -->
+      <section class="page" id="p-models" hidden>
+        <div class="stack">
+          <div><h2>Models and cost</h2><p class="muted" style="margin-top:6px;max-width:72ch">The models you can choose, which to use for which job, what it costs, and how we keep tokens down.</p></div>
+          <div id="modelsBody"></div>
+        </div>
       </section>
 
       <p class="meta" id="foot" style="margin-top:32px"></p>
@@ -512,14 +541,14 @@ async function boot() {
   $("#pname").textContent = CASE.title || "Prototype"; $("#pclient").textContent = CASE.client || "";
   $("#mark").textContent = initials(CASE.title || "AI");
   $("#meAv").textContent = initials(persona.name); $("#meName").textContent = persona.name; $("#meRole").textContent = persona.role || SHAPE.personaRole;
-  $("#navHome").textContent = "Today"; $("#navNew").textContent = `New ${SHAPE.noun[0]}`;
+  $("#navHome").textContent = "Overview"; $("#navNew").textContent = `New ${SHAPE.noun[0]}`;
   $("#newTitle").textContent = `New ${SHAPE.noun[0]}`; $("#newHelp").textContent = SHAPE.newHelp; $("#newText").placeholder = (CASE.samples || [])[0]?.text || "";
   $("#foot").textContent = `${CASE.title || "Prototype"} · ${CASE.client || ""} · version ${CASE.version || "proto-0.1"} · synthetic data, not for production use.`;
   if (HOSTED) { const prd = window.__VALUED__.prdUrl; $("#prdLink").hidden = !prd; if (prd) $("#prdLink").href = prd; }
   applyAccent();
   applyLabels();
   buildQueue(persona);
-  renderHome(persona); renderHow(); renderFaq(); renderGov(); renderEvalControls(); renderBoard(); renderSources(); renderConnectors();
+  renderHome(persona); renderKpis(); renderHow(); renderFaq(); renderGov(); renderEvalControls(); renderBoard(); renderSources(); renderConnectors(); renderObs(); renderModels();
 }
 function identity(row, i) {
   const lang = row.slices?.lang || row.slices?.language || row.slices?.region || "en";
@@ -664,8 +693,7 @@ const DEFAULT_LABELS = {
 const LBL = () => ({ ...(DEFAULT_LABELS[CASE.shape || "desk"] || DEFAULT_LABELS.desk), ...(CASE.labels || {}) });
 function applyLabels() {
   const L = LBL();
-  document.querySelectorAll(".nav")[1].querySelector(".eyebrow").textContent = L.section;
-  for (const k of ["evals", "gov", "audit", "agents", "data", "how", "faq"]) {
+  for (const k of ["evals", "gov", "audit", "agents", "data", "how"]) {
     const b = document.querySelector(`.nav [data-go="${k}"]`); if (!b) continue;
     const textNode = [...b.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim()); if (textNode) textNode.textContent = L[k];
     TITLES[k] = L[k];
@@ -716,13 +744,64 @@ function addTrail(it) {
 
 /* ---------- Navigation ---------- */
 
-let TITLES = { queue: "Queue", agents: "Rules and agents", home: "Today", new: "New", evals: "Evals", gov: "Governance", audit: "Audit log", data: "Data and tools", how: "How it works", faq: "FAQ" };
+let TITLES = { queue: "Queue", agents: "Rules and agents", home: "Overview", new: "New", evals: "Answer quality", obs: "Observability", gov: "Governance", audit: "Audit log", data: "Documents", models: "Models and cost", how: "How it works", faq: "FAQ" };
+// Live routing metrics over the development set, for the Overview KPIs and the Observability view.
+function obsMetrics() {
+  const rows = GOLDEN || []; let escTot = 0, escHit = 0, correct = 0, ans = 0, ansCited = 0, toPerson = 0, n = 0;
+  if (ROUTER) for (const r of rows) { const d = ROUTER.decide(r.text) || {}, exp = r.expected; n++; if (exp === "escalate") { escTot++; if (d.verdict === "escalate") escHit++; } if (d.verdict === exp) correct++; if (d.verdict === "answer") { ans++; if (d.source) ansCited++; } if (d.verdict === "human" || d.verdict === "escalate") toPerson++; }
+  return { recall: escTot ? escHit / escTot : null, routing: n ? correct / n : null, cited: ans ? ansCited / ans : null, toPerson: n ? toPerson / n : null, n };
+}
+const pctOf = (x) => (x == null ? "-" : Math.round(x * 100) + "%");
+function renderKpis() {
+  if (!$("#kpis")) return;
+  const m = obsMetrics(), mdl = model();
+  const costK = mdl ? fmtUsd(costOf(mdl, 800, 200) * 1000) : "-";
+  const lat = BUILD.engine === "rules" ? "<1 ms" : AI && AI.exact ? "measured" : "~ est";
+  const tiles = [["ok", pctOf(m.recall), "Escalations caught"], ["", costK, "Est cost / 1,000"], ["", lat, "Latency / call"], ["warn", pctOf(m.toPerson), "To a person"]];
+  $("#kpis").innerHTML = tiles.map(([k, n, l]) => `<div class="tile ${k}"><b>${esc(String(n))}</b><span>${esc(l)}</span></div>`).join("");
+}
+function renderObs() {
+  const el = $("#obsBody"); if (!el) return;
+  const m = obsMetrics(), mdl = model(), ob = CASE.observability || {};
+  const groups = [
+    ["Quality and safety", [["Escalations caught", pctOf(m.recall)], ["Answers with a citation", pctOf(m.cited)], ["Routed correctly", pctOf(m.routing)]]],
+    ["Cost and tokens", [["Est cost / 1,000", mdl ? fmtUsd(costOf(mdl, 800, 200) * 1000) : "-"], ["Model", mdl ? mdl.short : "-"], ["Per item (est)", mdl ? fmtUsd(costOf(mdl, 800, 200)) : "-"]]],
+    ["Speed and volume", [["Latency / call", BUILD.engine === "rules" ? "<1 ms" : "~ est"], ["Items in set", String(m.n || 0)]]],
+    ["Human workload", [["To a person", pctOf(m.toPerson)], ["Handled by AI", m.toPerson == null ? "-" : pctOf(1 - m.toPerson)]]],
+  ];
+  const sigNote = (g) => { const rows = (ob.signals || []).filter((s) => String(s.group || "").toLowerCase().startsWith(g.toLowerCase().split(" ")[0])); return rows.length ? `<p class="small muted" style="margin-top:8px">Alerts: ${rows.map((s) => `${esc(s.signal)} ${esc(s.alert || "")}`).join("; ")}</p>` : ""; };
+  el.innerHTML = `<div class="two">${groups.map(([g, rows]) => `<div class="card stack"><div class="eyebrow">${esc(g)}</div>${rows.map(([l, v]) => `<div class="row between"><span class="small muted">${esc(l)}</span><span class="small"><b>${esc(v)}</b></span></div>`).join("")}${sigNote(g)}</div>`).join("")}</div>`
+    + (ob.dashboard ? `<p class="small muted" style="margin-top:12px"><b>Dashboard:</b> ${esc(ob.dashboard)}</p>` : "")
+    + (ob.telemetry ? `<p class="small muted"><b>Production telemetry:</b> ${esc(ob.telemetry)}</p>` : "")
+    + `<p class="small muted" style="margin-top:8px">Live numbers are from this prototype's routing on the development set; cost and latency are estimates until measured against a run. Production emits these as telemetry.</p>`;
+}
+const pickModel = (name) => (CASE.models || []).find((m) => m.model === name);
+const modelOpts = (sel) => (CASE.models || []).map((m) => `<option value="${esc(m.model)}"${m.model === sel ? " selected" : ""}>${esc(m.model)}${m.runnable ? "" : " (est)"}</option>`).join("");
+function updateModelCost() {
+  const picks = [...document.querySelectorAll("[data-jobpick]")].map((s) => s.value);
+  const def = ((CASE.pricing || {}).default || {}).model;
+  const list = picks.length ? picks : def ? [def] : [];
+  const costs = list.map((n) => { const m = pickModel(n); return m ? (800 * Number(m.in) + 200 * Number(m.out)) / 1e6 : 0; });
+  const avg = costs.length ? costs.reduce((a, b) => a + b, 0) / costs.length : 0;
+  const el = $("#modelCost"); if (el) el.innerHTML = `Blended estimate: <b>${fmtUsd(avg * 1000)}</b> per 1,000 questions, across the models chosen above.`;
+}
+function renderModels() {
+  const el = $("#modelsBody"); if (!el) return;
+  const models = CASE.models || [], pr = CASE.pricing || {}, tok = CASE.tokenStrategy || [];
+  const menu = models.length ? `<div class="card"><div class="eyebrow">Model menu</div><p class="small muted" style="margin-top:4px">List prices per 1M tokens (assumed), confirm at the vendor. Claude models run in this prototype; pick any below to compare.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Provider</th><th>Model</th><th>In $/1M</th><th>Out $/1M</th><th>Latency</th><th>Best for</th></tr></thead><tbody>${models.map((m) => `<tr><td>${esc(m.provider)}</td><td>${esc(m.model)}${m.runnable ? ` <span class="small muted">· runs here</span>` : ""}</td><td>$${esc(String(m.in))}</td><td>$${esc(String(m.out))}</td><td>${esc(m.latency)}</td><td>${esc(m.bestFor)}</td></tr>`).join("")}</tbody></table></div></div>` : `<div class="card"><p class="muted">The model menu fills when the case is built at gate A.</p></div>`;
+  const selStyle = `style="min-width:160px"`;
+  const dflt = pr.default ? `<div class="card"><div class="eyebrow">Recommendation (customizable)</div><div class="row between" style="margin-top:8px"><span class="small"><b>Multi-purpose default</b></span>${models.length ? `<select ${selStyle} onchange="updateModelCost()">${modelOpts(pr.default.model)}</select>` : `<span class="small">${esc(pr.default.model)}</span>`}</div><p class="small muted" style="margin-top:4px">${esc(pr.default.why)}</p>${pr.runCost ? `<p class="small muted">Run cost: ${esc(pr.runCost.perItem)} per item, about ${esc(pr.runCost.monthly)} a month (${esc(pr.runCost.basis)}).</p>` : ""}</div>` : "";
+  const per = (pr.perUseCase || []).length ? `<div class="card"><div class="eyebrow">Which model for which job (change any)</div><div class="tbl" style="margin-top:8px"><table><thead><tr><th>Job</th><th>Model</th><th>Why</th></tr></thead><tbody>${pr.perUseCase.map((r, i) => `<tr><td>${esc(r.job)}</td><td>${models.length ? `<select data-jobpick="${i}" ${selStyle} onchange="updateModelCost()">${modelOpts(r.model)}</select>` : esc(r.model)}</td><td>${esc(r.why)}</td></tr>`).join("")}</tbody></table></div><p class="small" id="modelCost" style="margin-top:10px"></p></div>` : "";
+  const token = tok.length ? `<div class="card"><div class="eyebrow">Token strategy</div><div class="tbl" style="margin-top:8px"><table><thead><tr><th>Tactic</th><th>Where it applies</th><th>Effect</th></tr></thead><tbody>${tok.map((r) => `<tr><td>${esc(r.tactic)}</td><td>${esc(r.where)}</td><td>${esc(r.effect)}</td></tr>`).join("")}</tbody></table></div></div>` : "";
+  el.innerHTML = `<div class="stack">${menu}${dflt}${per}${token}</div>`;
+  updateModelCost();
+}
 function go(view, key) {
   document.querySelectorAll(".page").forEach((p) => (p.hidden = true));
   document.querySelectorAll(".nav button").forEach((b) => b.removeAttribute("aria-current"));
   if (view === "item") { $("#p-item").hidden = false; openItem(key); document.querySelector('[data-go="home"]').setAttribute("aria-current", "page"); }
   else { $("#p-" + view).hidden = false; document.querySelector(`.nav [data-go="${view}"]`)?.setAttribute("aria-current", "page"); $("#pageTitle").textContent = TITLES[view] || ""; $("#pageCtx").textContent = view === "home" ? `${CASE.client || ""} · ${new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}` : ""; }
-  if (view === "home") { renderHome(); renderOvernight(); renderReadiness(); renderAway(); renderClocks(); } if (view === "queue") renderQueue(); if (view === "audit") renderLog(); if (view === "gov") renderGov(); if (view === "agents") renderAgents();
+  if (view === "home") { renderKpis(); renderHome(); renderOvernight(); renderReadiness(); renderAway(); renderClocks(); } if (view === "queue") renderQueue(); if (view === "audit") renderLog(); if (view === "gov") renderGov(); if (view === "agents") renderAgents(); if (view === "obs") renderObs(); if (view === "models") renderModels();
   scrollTo(0, 0);
 }
 function logAction(it, action, extra = {}) {
@@ -1026,6 +1105,39 @@ wireDrop($("#caseDrop"), $("#caseFile"), (fs) => loadCases(fs[0])); wireDrop($("
 /* ---------- Data and tools: the client's systems, recommended at gate L; connections are simulated ---------- */
 const CATS = [["channel", "Where work arrives", "The channels that feed the queue."], ["knowledge", "Knowledge", "Approved content the product may cite."], ["record", "Systems of record", "Where the outcome is filed or read from."], ["testing", "Test and labelling data", "What the release gates are measured on."], ["collab", "People and alerts", "Where hand-offs and escalations reach a person."]];
 const LOGO_COLORS = ["#32854c", "#4a6fa5", "#c97d1a", "#9c4a6b", "#2b7a78", "#6b5ca5", "#28323f"];
+const BASE_TOOLS = [
+  { name: "Document store", category: "content", note: "policies, articles, filings" },
+  { name: "Identity provider", category: "access", note: "who may see what" },
+  { name: "Data warehouse", category: "records", note: "structured records" },
+  { name: "Ticketing", category: "workflow", note: "hand-offs and cases" },
+  { name: "Email and messaging", category: "channel", note: "inbound requests" },
+  { name: "Observability and logs", category: "ops", note: "traces, metrics, alerts" },
+];
+const INDUSTRY_TOOLS = [
+  [/asset|fund|invest|wealth|portfolio|bank|financ|capital|securit/, [{ name: "Portfolio system", category: "records", note: "positions and holdings" }, { name: "Market data feed", category: "content", note: "prices and reference data" }, { name: "Compliance archive", category: "ops", note: "retained communications" }]],
+  [/insur|claim|underwrit|policy|annuit/, [{ name: "Claims system", category: "records", note: "claim records" }, { name: "Policy admin", category: "records", note: "policies and endorsements" }, { name: "Fraud screening", category: "ops", note: "risk flags" }]],
+  [/health|clinic|patient|care|medic|hospital|pharma/, [{ name: "EHR", category: "records", note: "patient records" }, { name: "Scheduling", category: "workflow", note: "appointments" }, { name: "Lab and imaging", category: "content", note: "results and reports" }]],
+  [/retail|commerce|shop|store|merchant|grocer/, [{ name: "Order system", category: "records", note: "orders and returns" }, { name: "Product catalog", category: "content", note: "items and details" }, { name: "Loyalty and CRM", category: "records", note: "customer profiles" }]],
+  [/utility|energy|power|water|grid|telecom|telco|broadband|carrier/, [{ name: "Billing system", category: "records", note: "accounts and usage" }, { name: "Asset and network", category: "records", note: "meters and lines" }, { name: "Outage feed", category: "content", note: "incidents and status" }]],
+];
+function suggestedTools() {
+  const ind = String(CASE.industry || "").toLowerCase();
+  const extra = (INDUSTRY_TOOLS.find(([re]) => re.test(ind)) || [, []])[1];
+  const have = new Set((CASE.connectors || []).map((c) => String(c.name).toLowerCase()));
+  return [...extra, ...BASE_TOOLS].filter((t) => !have.has(t.name.toLowerCase()));
+}
+function renderToolCatalog() {
+  const el = $("#toolCatalog"); if (!el) return;
+  const tools = suggestedTools();
+  if (!tools.length) { el.innerHTML = ""; return; }
+  const ind = CASE.industry ? String(CASE.industry).replace(/_/g, " ") : "your industry";
+  el.innerHTML = `<div class="card"><div class="eyebrow">Tools you could connect</div><p class="small muted" style="margin-top:4px">Suggested for ${esc(ind)}. Connecting is simulated on synthetic data; nothing leaves this page.</p><div class="conn-grid" style="margin-top:10px">${tools.slice(0, 8).map((t) => `<div class="card stack" style="gap:8px"><div><b class="small">${esc(t.name)}</b><br><span class="small muted">${esc(t.note)}</span></div><button class="btn ghost sm" onclick="addTool('${esc(t.name)}','${esc(t.category)}')">Connect</button></div>`).join("")}</div></div>`;
+}
+function addTool(name, category) {
+  (CASE.connectors = CASE.connectors || []).push({ name, category, vendor: "vendor to confirm", provides: "selected by you", access: "read", pii: "unknown", owner: "to assign", status: "connected" });
+  if (typeof LOG !== "undefined") { LOG.unshift({ at: new Date().toISOString(), item: name, verdict: "", action: "Connected (simulated)", by: (CASE.persona || {}).name || "Reviewer", edited: false, ai: "none" }); const cl = $("#cntLog"); if (cl) cl.textContent = LOG.length; }
+  renderConnectors(); renderToolCatalog(); toast(`${name} connected with synthetic data`);
+}
 function renderConnectors() {
   const list = CASE.connectors || [];
   $("#connIntro").textContent = list.length ? `The systems this product reads from and hands off to at ${CASE.client || "the client"}, recommended in the working session. Connections here are simulated on synthetic data; nothing leaves this page.` : "Systems are recommended at gate L of the working session. Until then, bring your own files below.";
@@ -1036,6 +1148,7 @@ function renderConnectors() {
     const items = list.filter((c) => c.category === cat); if (!items.length) return "";
     return `<div class="catgroup"><h3>${esc(title)}</h3><p>${esc(sub)}</p><div class="conn-grid">${items.map(connCard).join("")}</div></div>`;
   }).join("");
+  renderToolCatalog();
 }
 function connCard(c) {
   const i = (CASE.connectors || []).indexOf(c), on = c.status === "connected";
