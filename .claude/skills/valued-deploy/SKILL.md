@@ -33,6 +33,14 @@ description: VALUED gate D. Plan the launch and the life after it, recommend pil
    online eval drift by group, adoption, **edit rate on approved drafts** (catches approval fatigue),
    escalation recall in production, cost per resolved task. Add the loop: production misses become new
    labels (back to L), and a scale, fix or retire review cadence.
+   - **Observability (an output, PRD section 18).** Write `observability` to `d.json`: a `signals` set
+     spanning the four groups, `quality and safety` (escalation recall, citation or groundedness rate,
+     routing accuracy, human-override rate, drift by group), `cost and tokens` (tokens and cost per
+     resolved item, cost by model, spend against budget), `speed and volume` (latency per call, throughput,
+     backlog), and `human workload` (share routed to a person, review time, edits before send); each
+     `{ signal, group, source, alert }` naming where it is emitted and its alert threshold. Add `dashboard`
+     (one line: the live dashboard the prototype shows) and `telemetry` (one line: what production emits,
+     traces and tooling). Mark any threshold not set by the client (assumed).
 3. **Pilot and stop-rule recommendations** in the standard format:
    - Pilot scope: one team, one site, one channel; each with its trade-off (speed of learning, coverage
      of the riskiest group, blast radius). Our preference: the smallest scope that still covers the
@@ -56,4 +64,4 @@ description: VALUED gate D. Plan the launch and the life after it, recommend pil
 
 ## Output: `out/gates/d.json`
 
-Keys (render and `conductor.js check` read them; keep strings to one line): `deploy` (`{ step, proves, exit, signs }`), `drive` (`{ metric, why, alert }`), `pilot` and `stop` (recommendations; preferred = cards R2-5 and R2-6), `plan` (`{ week, work }`, up to 6 rows), `timeline` (one line), `signoffs` (`{ name, role, signs }`, name "to confirm"), `killSwitchOwner`; plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.
+Keys (render and `conductor.js check` read them; keep strings to one line): `deploy` (`{ step, proves, exit, signs }`), `drive` (`{ metric, why, alert }`), `pilot` and `stop` (recommendations; preferred = cards R2-5 and R2-6), `plan` (`{ week, work }`, up to 6 rows), `timeline` (one line), `signoffs` (`{ name, role, signs }`, name "to confirm"), `killSwitchOwner`, `observability` (`{ signals: [{ signal, group, source, alert }] across quality and safety, cost and tokens, speed and volume, and human workload; dashboard; telemetry }`, for PRD section 18); plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.

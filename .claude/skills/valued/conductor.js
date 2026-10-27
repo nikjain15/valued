@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // VALUED conductor. Plain Node, no dependencies. Every gate writes JSON under out/gates/; this script
 // renders everything that is mechanical: the gate files, state.md, the PRD, case.json, the brief,
-// the run report. The model writes judgement (drafts, options, reasons, the summary, section 17).
+// the run report. The model writes judgement (drafts, options, reasons, the summary, section 19).
 //
 //   node conductor.js clock <phase> start|end [note]   append to out/run-clock.jsonl
 //   node conductor.js clock status                     elapsed per phase against the budget
@@ -43,8 +43,114 @@ const CUTS = {
   "2": ["fewer candidates: 8 instead of 12", "two wave options instead of three", "shorter reasons"],
   "4": ["golden set 30 dev rows, no extras (holdout stays 20)", "6 sources instead of 8", "shorter prose"],
   "5": ["one round of harder rows skipped", "drive table 5 rows", "shorter prose"],
-  "6": ["FAQ 7 pairs", "section 17 with 5 tasks", "shorter prose"],
+  "6": ["FAQ 7 pairs", "section 19 with 5 tasks", "shorter prose"],
 };
+
+// ---------- model menu (shared by the PRD pricing section and the prototype) ----------
+// Reference list prices per 1M tokens, every figure (assumed): list prices move, confirm at the vendor.
+// Claude leads because the build runs on Claude; the rest let the client compare across providers.
+const MODEL_MENU = [
+  { provider: "Anthropic", model: "Claude Haiku 5.5", id: "claude-haiku-5-5", in: 0.10, out: 0.50, latency: "fastest", bestFor: "high-volume guards, routing, simple extraction", runnable: true },
+  { provider: "Anthropic", model: "Claude Sonnet 5.5", id: "claude-sonnet-5-5", in: 2, out: 10, latency: "balanced", bestFor: "the default: grounded drafting and most answers", runnable: true },
+  { provider: "Anthropic", model: "Claude Opus 5.5", id: "claude-opus-5-5", in: 4, out: 20, latency: "slower", bestFor: "the hardest, highest-stakes reasoning", runnable: true },
+  { provider: "Anthropic", model: "Claude Fable 5.1", id: "claude-fable-5-1", in: 0.05, out: 0.25, latency: "fastest", bestFor: "lightweight multi-purpose, cost-sensitive volume", runnable: true },
+  { provider: "OpenAI", model: "GPT flagship", id: "", in: 2.5, out: 10, latency: "balanced", bestFor: "general reasoning, broad tooling", runnable: false },
+  { provider: "OpenAI", model: "GPT mini", id: "", in: 0.15, out: 0.60, latency: "fast", bestFor: "cheap general tasks", runnable: false },
+  { provider: "Google", model: "Gemini Pro", id: "", in: 1.25, out: 5, latency: "balanced", bestFor: "long context, multimodal", runnable: false },
+  { provider: "Google", model: "Gemini Flash", id: "", in: 0.075, out: 0.30, latency: "fastest", bestFor: "cheap high-volume, long context", runnable: false },
+  { provider: "Meta", model: "Llama (open weights)", id: "", in: 0.20, out: 0.20, latency: "varies by host", bestFor: "self-host, data stays in the tenant", runnable: false },
+  { provider: "Mistral", model: "Mistral Large", id: "", in: 2, out: 6, latency: "balanced", bestFor: "EU hosting, open options", runnable: false },
+];
+// Sanctioned AI-vendor names: a real-name check (standard 8) ignores these inside the model menu,
+// so the cross-provider table can name real providers without failing the run.
+const MODEL_VENDORS = /\b(Anthropic|OpenAI|Google|Microsoft|Amazon|Meta|Mistral|Cohere|xAI|DeepSeek|Alibaba|Nvidia|AWS|Azure)\b/g;
+
+// ---------- architecture flow diagram (inline SVG, rendered by marked in the PRD) ----------
+const escX = (s) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+function wrap2(s, max) {
+  s = String(s || "");
+  if (s.length <= max) return [s];
+  const words = s.split(" "); let a = "", b = "";
+  for (const w of words) { if (!a || (a + " " + w).trim().length <= max) a = (a + " " + w).trim(); else b = (b + " " + w).trim(); }
+  return b ? [a, b] : [a];
+}
+// Which model a named assistant runs, from gate A pricing.perUseCase (best-effort name match).
+function agentModel(a, name) {
+  const rows = A(a.pricing && a.pricing.perUseCase);
+  const n = String(name).toLowerCase(), toks = n.split(/\s+/).filter((w) => w.length > 3);
+  const hit = rows.find((r) => { const j = String(r.job).toLowerCase(); return j === n || j.includes(n) || n.includes(j) || toks.some((t) => j.includes(t)); });
+  return hit ? hit.model : "";
+}
+// A short latency for a step, from gate A sourcing; "(assumed)" when the gate did not supply one.
+function latShort(a, name) {
+  const rows = A(a.sourcing), n = String(name).toLowerCase(), toks = n.split(/\s+/).filter((w) => w.length > 3);
+  const hit = rows.find((r) => { const comp = String(r.component).toLowerCase(); return comp.includes(n) || toks.some((t) => comp.includes(t)); });
+  const parse = (s) => { s = String(s || ""); const m = s.match(/under\s*([\d.]+)\s*(ms|s|sec|min|m)\b/i); if (m) return "<" + m[1] + (/^mi?n?$/i.test(m[2]) ? "m" : /ms/i.test(m[2]) ? "ms" : "s"); if (/negligible|instant|fast/i.test(s)) return "fast"; return ""; };
+  return (hit && parse(hit.latency)) || "(assumed)";
+}
+// Swimlane architecture flow: External systems / Rules / AI model / Person / Data lanes. Boxes placed by
+// kind, the model and a latency shown on each step, embeddings and reranker as their own steps, stores as
+// cylinders, external systems linked in. Rendered at full size inside a scrollable wrapper so text stays legible.
+function archSvg(a, c) {
+  const noun = cap(A(a.itemNoun)[0] || "request");
+  const lane = { in: 0, rules: 0, model: 1, human: 2 };
+  const types = A(a.pricing && a.pricing.modelTypes).filter((m) => m.usedHere !== false && /embed|rerank|vision|multimodal/i.test(m.type));
+  const st = [{ t: `${noun} in`, k: "in", m: "", lat: "" }];
+  const hasRet = A(a.agents).some((ag) => /retriev|search|index/i.test(ag.name));
+  let added = false;
+  for (const ag of A(a.agents)) {
+    const isRet = /retriev|search|index/i.test(ag.name);
+    if (!added && types.length && (isRet || (!hasRet && ag.kind === "model"))) {
+      for (const t of types) { const emb = /embed/i.test(t.type), rr = /rerank/i.test(t.type), nm = emb ? "Embeddings" : rr ? "Reranker" : "Vision"; st.push({ t: nm, k: "rules", m: emb ? "embedding model" : rr ? "reranker" : "vision model", lat: latShort(a, nm) }); }
+      added = true;
+    }
+    st.push({ t: ag.name, k: ag.kind === "model" ? "model" : "rules", m: ag.kind === "model" ? agentModel(a, ag.name) : "", lat: latShort(a, ag.name) });
+  }
+  st.push({ t: "Person decides", k: "human", m: "", lat: "" });
+  const retCol = Math.max(1, st.findIndex((s) => /retriev|search|index/i.test(s.t)));
+  const stores = [{ t: "Document index", col: retCol }, { t: "Audit log", col: st.length - 1 }];
+  if (stores[0].col === stores[1].col) stores[0].col = Math.max(1, stores[1].col - 1);
+  const ext = A(c && c.connectors).slice(0, 4).map((cn) => {
+    const cat = String(cn.category || cn.name || "").toLowerCase();
+    let target = retCol;
+    if (/entitle|access|identity|auth/.test(cat)) { const i = st.findIndex((s) => /entitle|access/i.test(s.t)); if (i > 0) target = i; }
+    return { nm: cn.name || cn.vendor || "System", vend: (!cn.vendor || /to confirm/i.test(cn.vendor)) ? "(assumed)" : cn.vendor, target };
+  });
+  const LANES = [["Rules", "#E1F5EE", "#0F6E56"], ["AI model", "#EEEDFE", "#534AB7"], ["Person", "#FAEEDA", "#854F0B"], ["Data", "#F1EFE8", "#444441"]];
+  const STROKE = { in: "#B4B2A9", rules: "#5DCAA5", model: "#AFA9EC", human: "#EF9F27" };
+  const TXT = { in: "#444441", rules: "#0F6E56", model: "#534AB7", human: "#854F0B" };
+  const X0 = 86, COLW = 140, BW = 124, BH = 58, LANEH = 84, TOP = 8, EXTH = ext.length ? 74 : 0;
+  const laneY = (l) => TOP + EXTH + l * LANEH + (LANEH - 10) / 2;
+  const W = X0 + st.length * COLW + 12, H = TOP + EXTH + 4 * LANEH + 6;
+  const cx = (i) => X0 + i * COLW, cyOf = (s) => laneY(lane[s.k]);
+  let el = "";
+  if (EXTH) { el += `<rect x="4" y="${TOP}" width="${W - 8}" height="${EXTH - 8}" rx="8" fill="#EAF3DE"/><text x="12" y="${TOP + 18}" font-size="13" fill="#3B6D11">External systems</text>`; }
+  LANES.forEach((L, l) => { const y = TOP + EXTH + l * LANEH; el += `<rect x="4" y="${y}" width="${W - 8}" height="${LANEH - 10}" rx="8" fill="${L[1]}"/><text x="12" y="${y + 19}" font-size="13" fill="${L[2]}">${L[0]}</text>`; });
+  for (let i = 0; i < st.length - 1; i++) { const xA = cx(i) + BW, yA = cyOf(st[i]), xB = cx(i + 1), yB = cyOf(st[i + 1]), mx = (xA + xB) / 2; el += `<path d="M ${xA} ${yA} H ${mx} V ${yB} H ${xB}" fill="none" stroke="#888780" stroke-width="1.5"/><path d="M ${xB} ${yB} l -8 -5 l 0 10 z" fill="#888780"/>`; }
+  const eBW = ext.length ? Math.min(BW, Math.floor((W - 24) / ext.length) - 10) : BW, eGap = ext.length ? (W - 16 - ext.length * eBW) / (ext.length + 1) : 0;
+  ext.forEach((e, j) => { const x = 8 + eGap + j * (eBW + eGap), ey = TOP + 24, cxm = x + eBW / 2, tx = cx(e.target) + BW / 2, ty = cyOf(st[e.target]) - BH / 2; el += `<rect x="${x}" y="${ey}" width="${eBW}" height="38" rx="8" fill="#ffffff" stroke="#97C459"/><text x="${cxm}" y="${ey + 17}" font-size="12" text-anchor="middle" fill="#3B6D11">${escX(wrap2(e.nm, Math.floor(eBW / 7))[0])}</text><text x="${cxm}" y="${ey + 31}" font-size="9" text-anchor="middle" fill="#888780">${escX(e.vend)}</text><path d="M ${cxm} ${ey + 38} L ${tx} ${ty}" stroke="#97C459" stroke-dasharray="3 3" fill="none"/>`; });
+  const dy = laneY(3);
+  for (const store of stores) { const x = cx(store.col), w = BW, y = dy - 22, cxm = x + w / 2; el += `<path d="M ${x} ${y + 7} V ${y + 37}" stroke="#B4B2A9" fill="none"/><path d="M ${x + w} ${y + 7} V ${y + 37}" stroke="#B4B2A9" fill="none"/><ellipse cx="${cxm}" cy="${y + 37}" rx="${w / 2}" ry="7" fill="#F8F7F2" stroke="#B4B2A9"/><rect x="${x}" y="${y + 7}" width="${w}" height="30" fill="#F8F7F2" stroke="none"/><ellipse cx="${cxm}" cy="${y + 7}" rx="${w / 2}" ry="7" fill="#F8F7F2" stroke="#B4B2A9"/><text x="${cxm}" y="${y + 27}" font-size="11" text-anchor="middle" fill="#444441">${escX(store.t)}</text><path d="M ${cxm} ${cyOf(st[store.col]) + BH / 2} V ${y}" stroke="#B4B2A9" stroke-dasharray="3 3" fill="none"/>`; }
+  st.forEach((s, i) => {
+    const x = cx(i), cym = cyOf(s), y = cym - BH / 2, cxm = x + BW / 2, nm = wrap2(s.t, 16);
+    el += `<rect x="${x}" y="${y}" width="${BW}" height="${BH}" rx="9" fill="#ffffff" stroke="${STROKE[s.k]}" stroke-width="1.5"/>`;
+    const name1 = `<text x="${cxm}" y="__Y__" font-size="13" text-anchor="middle" fill="${TXT[s.k]}">${escX(nm[0])}</text>`;
+    const lat = s.lat ? `<text x="${cxm}" y="__Y__" font-size="10" text-anchor="middle" fill="#888780">${escX(s.lat)}</text>` : "";
+    if (s.m) el += name1.replace("__Y__", cym - 11) + `<text x="${cxm}" y="${cym + 5}" font-size="10" text-anchor="middle" fill="#888780">${escX(s.m)}</text>` + lat.replace("__Y__", cym + 19);
+    else if (s.lat) { if (nm.length === 1) el += name1.replace("__Y__", cym - 4) + lat.replace("__Y__", cym + 13); else el += name1.replace("__Y__", cym - 12) + `<text x="${cxm}" y="${cym + 2}" font-size="13" text-anchor="middle" fill="${TXT[s.k]}">${escX(nm[1])}</text>` + lat.replace("__Y__", cym + 17); }
+    else if (nm.length === 1) el += name1.replace("__Y__", cym + 5);
+    else el += name1.replace("__Y__", cym - 3) + `<text x="${cxm}" y="${cym + 14}" font-size="13" text-anchor="middle" fill="${TXT[s.k]}">${escX(nm[1])}</text>`;
+  });
+  return `<div style="overflow-x:auto;margin:4px 0"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Architecture flow across External systems, Rules, AI model, Person and Data lanes"><title>Architecture flow</title>${el}</svg></div>`;
+}
+function whyArch(a) {
+  const built = A(a.sourcing).filter((x) => /build/i.test(x.choice)).map((x) => String(x.component).toLowerCase()).slice(0, 3).join(", ");
+  const modelChoice = (A(a.sourcing).find((x) => /model/i.test(x.component)) || {}).choice || "partnered";
+  return ["**Why we recommend this architecture**", "",
+    `- Deterministic where it must be: the guards, retrieval, citation check and routing are fixed rules, so escalation and the cited-source promise cannot drift. ${clean(a.engineWhy)}`,
+    `- Agentic where it helps: the model takes only the one job a rule cannot do well, drafting from passages it was handed. ${clean(a.shapeWhy)}`,
+    `- Build where the moat is, partner where it is a commodity: ${built || "the index, citation and guards"} are built in-house; the answer model is ${modelChoice}, because a frontier model is a commodity.`].join("\n");
+}
 
 const G = (k) => json(path.join(GATES, `${k}.json`), null);
 const gates = () => ({ v: G("v"), a: G("a"), l: G("l"), u: G("u"), e: G("e"), d: G("d"), b: G("b") });
@@ -168,7 +274,7 @@ function accentFor(industry, client) {
   return { hue, brand: H(45, 36), hover: H(45, 30), soft: H(43, 85), tint: H(45, 94), strong: H(55, 27) };
 }
 function renderCase(g, ev) {
-  const v = g.v || {}, a = g.a || {}, l = g.l || {}, u = g.u || {}, b = g.b || {};
+  const v = g.v || {}, a = g.a || {}, l = g.l || {}, u = g.u || {}, b = g.b || {}, d = g.d || {};
   const prev = json(path.join(PROTO, "case.json"), {});
   const golden = json(path.join(PROTO, "golden.json"), []);
   const cs = cards();
@@ -184,6 +290,8 @@ function renderCase(g, ev) {
     decisions: cs.filter((x) => x.decision).map((x) => ({ gate: x.gate, decision: x.decision, by: x.by || x.role, effect: x.effect || `Sets gate ${x.gate}: ${String(x.question || "").replace(/\?$/, "").toLowerCase()}`, ...(x.revised ? { revised: true, was: x.was } : {}) })),
     governance: Object.entries(g).filter(([, x]) => x).flatMap(([k, x]) => A(x.governance).map((r) => ({ gate: k.toUpperCase(), question: r.question, answer: r.answer, status: r.status, owner: /^answered/i.test(r.status || "") ? "" : r.owner || "" }))),
     faq: b.faq || prev.faq, version: b.version || prev.version || "proto-0.1",
+    models: MODEL_MENU, pricing: a.pricing || prev.pricing, businessCase: b.businessCase || prev.businessCase,
+    observability: d.observability || prev.observability, tokenStrategy: a.tokenStrategy || prev.tokenStrategy,
   };
   for (const k of Object.keys(c)) if (c[k] === undefined) delete c[k];
   writeJson(path.join(PROTO, "case.json"), c);
@@ -210,7 +318,7 @@ function renderPrd(g, ev, c) {
   s[3] = v ? [table(["User", "Job to be done", "Pain today", "What changes"], A(v.users).map((r) => [r.user, r.job, r.pain, r.changes])), "", table(["ID", "As a", "I want to", "So that"], A(v.stories).map((r, i) => [`US-${String(i + 1).padStart(2, "0")}`, r.as, r.want, r.soThat])), "", `**Journey, future state:** ${clean(v.journey)}`].join("\n") : P("V");
   s[4] = v ? ["**Goals**", ...A(v.goals).map((x, i) => `- G-${String(i + 1).padStart(2, "0")} ${clean(x)}`), "", "**Non-goals (this release)**", ...A(v.nonGoals).map((x) => `- ${clean(x)}`), "", table(["ID", "Metric", "Baseline", "Target", "Guardrail"], A(v.metrics).map((r, i) => [`M-${String(i + 1).padStart(2, "0")}`, r.metric, r.baseline, r.target, r.guardrail]))].join("\n") : P("V");
   s[5] = a ? table(["Candidate", "Lowest rung that works", "Decision", "Why"], A(a.scores).map((x) => [`${x.id} ${x.name || ""}`, x.rung, x.wave === 1 ? "**First wave**" : x.notGenAI ? "Not GenAI" : x.wave === 2 ? "Second wave" : "Later", x.notGenAI ? `${x.reason}; instead: ${x.instead || "rules"}` : x.reason])) : P("A");
-  s[6] = a ? [`**Engine (gate A, client decision):** ${({ rules: "Rules only", "rules+model": "Rules decide, model drafts", "model-first": "Model proposes, rules guard" })[a.engine] || a.engine}, because ${clean(a.engineWhy)}.`, "", table(["Component", "Rung", "Build, buy or partner", "Why", "What would change our mind"], A(a.sourcing).map((x) => [x.component, x.rung, x.choice, x.why, x.changeMind])), "", "```", clean(a.flow) || `${A(a.itemNoun)[0] || "request"} -> safety guard -> ${A(a.agents).filter((x) => !/guard/i.test(x.name)).map((x) => x.name.toLowerCase()).join(" -> ")} -> person decides -> audit log`, "```", "", "**Assistants (agentic design)**", "", table(["Assistant", "Rules or AI", "Job", "Never", "Measured by"], A(a.agents).map((x) => [x.name, x.kind === "model" ? "AI" : "Rules", x.job, A(x.never).join("; "), x.gate])), "", "**Sweeps (proactive work)**", "", table(["Sweep", "Rules or AI", "Schedule", "What it checks", "Decision it hands to a person"], A(a.sweeps).map((x) => [x.agent, x.kind === "model" ? "AI" : "Rules", x.schedule, x.checks, x.decision])), "", "**Alternatives considered**", "", table(["Alternative", "Why not now", "When we would revisit"], A(a.alternatives).map((x) => [x.alternative, x.whyNot, x.revisit])), "", `**Latency budget:** ${clean(a.latency)}. **Unit of cost:** cost per resolved task, ${clean(a.cost)}${/\(assumed\)/i.test(a.cost || "") ? "" : " (assumed)"}.`].join("\n") : P("A");
+  s[6] = a ? [`**Engine (gate A, client decision):** ${({ rules: "Rules only", "rules+model": "Rules decide, model drafts", "model-first": "Model proposes, rules guard" })[a.engine] || a.engine}, because ${clean(a.engineWhy)}.`, "", table(["Component", "Rung", "Build, buy or partner", "Why", "What would change our mind"], A(a.sourcing).map((x) => [x.component, x.rung, x.choice, x.why, x.changeMind])), "", "**Architecture flow**", "", archSvg(a, c), "", whyArch(a), "", "**Assistants (agentic design)**", "", table(["Assistant", "Rules or AI", "Job", "Never", "Measured by"], A(a.agents).map((x) => [x.name, x.kind === "model" ? "AI" : "Rules", x.job, A(x.never).join("; "), x.gate])), "", "**Sweeps (proactive work)**", "", table(["Sweep", "Rules or AI", "Schedule", "What it checks", "Decision it hands to a person"], A(a.sweeps).map((x) => [x.agent, x.kind === "model" ? "AI" : "Rules", x.schedule, x.checks, x.decision])), "", "**Alternatives considered**", "", table(["Alternative", "Why not now", "When we would revisit"], A(a.alternatives).map((x) => [x.alternative, x.whyNot, x.revisit])), "", `**Latency budget:** ${clean(a.latency)}. **Unit of cost:** cost per resolved task, ${clean(a.cost)}${/\(assumed\)/i.test(a.cost || "") ? "" : " (assumed)"}.`].join("\n") : P("A");
   s[7] = b ? table(["ID", "Requirement", "Story", "Priority", "Acceptance criteria"], A(b.requirements).map((r, i) => [`FR-${String(i + 1).padStart(2, "0")}`, r.requirement, storyId(r.story), r.priority, r.acceptance])) : P("B");
   const contract = { desk: "input = the request + one cited source; output = 2 to 4 sentences from that source only, or `NO_ANSWER`.", chat: "input = the question + one cited source; output = 2 to 4 sentences from that source only, or `NO_ANSWER`; sensitive topics never reach the model.", review: "input = the document + the type's field list; output = each field's value with the exact evidence span, empty when absent; a value without evidence is dropped.", rank: "input = the record's facts + the rule that fired; output = a two-sentence talking point using only those facts." };
   s[8] = u && l ? [`**Verdicts:** \`answer\` (${clean(l.verdicts?.answer?.desc)}), \`human\` (${clean(l.verdicts?.human?.desc)}), \`escalate\` (${clean(l.verdicts?.escalate?.desc)}).`, "", "**Decision order:** escalation triggers first, in every language served; then source match; otherwise a person.", "", table(["Escalation trigger", "Example phrasing", "Goes to", "Response time"], A(u.triggers).map((t) => [t.trigger, `"${t.example}"`, t.goesTo, t.responseTime])), "", "**Never list**", ...A(u.neverList).map((x) => `- ${clean(x)}`), "", `**Model contract (${a?.shape || "desk"}):** ${contract[a?.shape] || contract.desk} In every shape, a refusal or error falls back to a person, never to a guess. Model: claude-sonnet-5-5 by default (Haiku for cost, Opus for the hardest rows), low effort, server-side fallback on.`].join("\n") : P("U");
@@ -218,13 +326,34 @@ function renderPrd(g, ev, c) {
   s[10] = l ? [table(["Data", "Owner", "Purpose", "Personal data", "Minimisation", "Retention"], A(l.dataPrivacy).map((r) => [r.data, r.owner, r.purpose, r.personal, r.minimisation, r.retention])), "", "**Systems to connect**", "", table(["System", "Category", "Provides", "Access", "Personal data", "Owner", "Pilot status"], A(c.connectors).map((x) => [`${x.name} (${x.vendor || "vendor to confirm"})`, x.category, x.provides, x.access, x.pii, x.owner, x.status])), "", `**Golden set:** ${ev.goldenN} dev rows plus ${ev.holdoutN} sealed holdout rows; groups: ${A(l.groups).map((x) => `${x.key} (${A(x.values).join(", ")})`).join("; ")}. Labelled ${clean(l.labelling?.preferred || A(l.labelling?.options)[0]?.label)}. Synthetic until ${clean((cs.find((x) => /connect/i.test(x.question)) || {}).decision || "the client provides data")}.`].join("\n") : P("L");
   const names = { "Escalation recall": "Riskiest miss", "Escalation precision": "False alarms", "Answers without source": "Approved knowledge only", "Routing accuracy": "Right outcome", "Recall gap": "Equal across groups", "Fairness": "No group below the bar", "Never-list answers": "Forbidden topics", "Verdicts outside allowed": "Only allowed outcomes" };
   s[11] = e ? [table(["Gate", "Metric", "Bar", "Why this bar", "Latest dev", "Holdout"], Object.entries(ev.devGates).map(([k, r]) => [Object.entries(names).find(([n]) => k.toLowerCase().startsWith(n.toLowerCase().slice(0, 12)))?.[1] || k, k, r.bar, (A(e.gateTable).find((x) => k.toLowerCase().includes(String(x.metric || x.gate).toLowerCase().slice(0, 10))) || {}).why || "", r.value, (ev.holdGates[k] || {}).value || ""])), "", `**Release status:** ${ev.devPass && ev.holdPass ? "Passes all gates on dev and holdout" : `Blocked on ${Object.entries(ev.devGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k).concat(Object.entries(ev.holdGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k + " (holdout)")).join(", ") || "a missing eval"}`}${ev.independent ? "" : `; holdout not independent (${ev.prov.recorded ? `${ev.prov.shared.join(", ")} wrote both the holdout rows and the router` : "no record of who wrote which"})`}${ev.seen ? `; ${ev.seen}` : e.repaired ? "; holdout seen once before a family-level repair" : ""}. **LLM judge policy:** ${clean(e.judgePolicy) || "none in the pilot; a judge may score draft quality only after it is validated against labels; escalation never uses one"}.`, "", "**Reproduce:** `node out/proto/eval.js` (dev) and `node out/proto/eval.js holdout.json` (sealed)."].join("\n") : P("E");
-  s[12] = b ? table(["ID", "Requirement", "Target"], A(b.nfrs).map((r, i) => [`NFR-${String(i + 1).padStart(2, "0")}`, r.requirement, r.target])) : P("B");
-  s[13] = d ? [table(["Step", "Proves", "Exit criterion", "Signs"], A(d.deploy).map((r) => [r.step, r.proves, r.exit, r.signs])), "", table(["Drive metric", "Why", "Alert threshold"], A(d.drive).map((r) => [r.metric, r.why, r.alert])), "", `**Stop rule (client decision):** ${clean((cs.find((x) => /stop/i.test(x.question)) || {}).decision || d.stop?.preferred)}. **Kill switch:** per behaviour, owned by ${clean(d.killSwitchOwner || "the product owner")}.`, "", "**Plan**", "", table(["Week", "Work"], A(d.plan).map((r) => [r.week, r.work]))].join("\n") : P("D");
-  s[14] = d ? [table(["Approver", "Role", "Signs off on"], A(d.signoffs).map((r) => [r.name || "to confirm", r.role, r.signs])), "", table(["Gate", "Question", "Answer", "Status", "Closes it"], [...A(c.governance).filter((r) => !/^answered/i.test(r.status)), ...A(c.governance).filter((r) => /^answered/i.test(r.status))].map((r) => [r.gate, r.question, r.answer, r.status, r.owner]))].join("\n") : P("D");
-  s[15] = b ? table(["ID", "Risk", "Likelihood", "Impact", "Mitigation"], A(b.risks).map((r, i) => [`R-${String(i + 1).padStart(2, "0")}`, r.risk, r.likelihood, r.impact, r.mitigation])) : P("B");
-  s[16] = b ? [table(["Dependency", "Owner", "Needed for", "Status"], A(b.dependencies).map((r) => [r.dependency, r.owner, r.neededFor, r.status])), "", table(["ID", "Question or assumption", "Owner", "Needed by"], A(b.openQuestions).map((r, i) => [`Q-${String(i + 1).padStart(2, "0")}`, r.question, r.owner, r.neededBy]))].join("\n") : P("B");
-  s[17] = b ? [clean(b.section17Intro) || "This section is written for a coding agent (Claude Code or similar). Hand it this file and the `out/proto/` folder; it should be able to take the prototype to a pilot-ready service task by task, with the evals deciding when each task is done.", "", "**Starting point:** a working prototype in `out/proto/` (router, eval runner, product shell, audit log) that passes or is blocked by its own gates.", "", "**Target layout**", "", "```", "<repo>/", "  src/router        decision order: guard, route, hand off", `  src/${a?.shape === "review" ? "extraction" : a?.shape === "rank" ? "ranking" : "drafting"}      model contract and template fallback`, "  src/api           decide, eval, log endpoints", "  web/              the product shell (Today, Queue, item, oversight pages)", "  eval/             golden.json, holdout.json (sealed), gates.json, run", "  docs/prd.md       this file", "```", "", "**Kickoff prompt**", "", "```", `Read docs/prd.md fully before writing code. You are building ${v?.useCase || "the first wave"} for ${v?.client || "the client"}.`, "Rules: never edit eval/golden.json to make a gate pass; never open eval/holdout.json;", "escalation is checked before anything else; never produce an answer without a cited source;", "no secrets in code; synthetic data only. Work task by task from section 17. After each task,", "run the eval and show its output. Stop and ask me when a requirement is ambiguous.", "Start with T-01.", "```", "", table(["ID", "Task", "Implements", "Done when"], A(b.tasks).map((r, i) => [`T-${String(i + 1).padStart(2, "0")}`, r.task, r.implements, r.doneWhen])), "", "**Guardrails for the coding agent**", "- The gates in `eval/gates.json` are the definition of done. A red gate blocks the task.", "- Fix the general pattern behind a miss, never the exact sentence; the holdout tests the kind.", "- Every new behaviour gets golden rows first, labelled before the code exists.", `- Ask before adding a dependency, a data source, or any action the never list touches.${A(b.guardrails).length ? "\n" + A(b.guardrails).map((x) => `- ${clean(x)}`).join("\n") : ""}`].join("\n") : P("B");
-  const titles = { 1: "Summary", 2: "Problem and value", 3: "Users and jobs", 4: "Goals, non-goals and success metrics", 5: "Scope: first wave, and what is not GenAI", 6: "Solution overview", 7: "Functional requirements", 8: "AI behaviour specification", 9: "Human in the loop", 10: "Data, labels and privacy", 11: "Evaluation and release gates", 12: "Non-functional requirements", 13: "Rollout and drive", 14: "Governance and sign-offs", 15: "Risks and mitigations", 16: "Dependencies, open questions and assumptions", 17: "Build it with AI" };
+  s[12] = (() => {
+    const menu = table(["Provider", "Model", "In $/1M", "Out $/1M", "Latency", "Best for"], MODEL_MENU.map((m) => [m.provider, m.model + (m.runnable ? " (runs in the prototype)" : ""), `$${m.in}`, `$${m.out}`, m.latency, m.bestFor]));
+    const pr = a?.pricing, bc = b?.businessCase;
+    const dflt = pr?.default ? `**Multi-purpose default:** ${clean(pr.default.model)}, because ${clean(pr.default.why)}.` : "";
+    const perUse = pr && A(pr.perUseCase).length ? ["**Which model for which job**", "", table(["Job", "Recommended model", "Why"], A(pr.perUseCase).map((r) => [r.job, r.model, r.why]))].join("\n") : "";
+    const runCost = pr?.runCost ? `**Run cost:** ${clean(pr.runCost.perItem)} per resolved ${A(a?.itemNoun)[0] || "item"}, about ${clean(pr.runCost.monthly)} a month at pilot volume (${clean(pr.runCost.basis)}).` : "";
+    const roi = bc ? ["**Business case (ROI)**", "", table(["Line", "Amount"], [["Value recovered per year", bc.valuePerYear], ["One-time build", bc.buildCost], ["Run cost per year", bc.runCostPerYear], ["Payback", bc.paybackMonths]]), clean(bc.note || "")].filter(Boolean).join("\n") : "";
+    const commercial = bc?.commercialModel ? ["**How it could be priced to the business**", "", rec(bc.commercialModel, "Pricing model")].join("\n") : "";
+    const tierRule = pr?.tierRule ? `**Tier rule:** ${clean(pr.tierRule)}` : "";
+    const types = pr && A(pr.modelTypes).length ? ["**Model types in this use case (not just chat LLMs)**", "", table(["Model type", "Used here", "Model or service", "Why"], A(pr.modelTypes).map((r) => [r.type, r.usedHere === false ? "No" : "Yes", r.model || "", r.why]))].join("\n") : "";
+    const pipe = pr && A(pr.pipeline).length ? ["**Routing pipeline (a cheap model decides, a strong model does the hard part)**", "", "```", A(pr.pipeline).map((x, i) => `${i + 1}. ${clean(x.step)} -> ${clean(x.model || x.modelType)}${x.does ? `: ${clean(x.does)}` : ""}`).join("\n"), "```"].join("\n") : "";
+    return ["**Model menu (the client chooses; prices are list prices, (assumed), confirm at the vendor)**", "", menu, "", dflt, perUse, "", tierRule, "", types, "", pipe, "", runCost, "", roi, "", commercial, (pr || bc) ? "" : P("A")].filter((x) => x !== "").join("\n");
+  })();
+  s[13] = b ? table(["ID", "Requirement", "Target"], A(b.nfrs).map((r, i) => [`NFR-${String(i + 1).padStart(2, "0")}`, r.requirement, r.target])) : P("B");
+  s[14] = d ? [table(["Step", "Proves", "Exit criterion", "Signs"], A(d.deploy).map((r) => [r.step, r.proves, r.exit, r.signs])), "", table(["Drive metric", "Why", "Alert threshold"], A(d.drive).map((r) => [r.metric, r.why, r.alert])), "", `**Stop rule (client decision):** ${clean((cs.find((x) => /stop/i.test(x.question)) || {}).decision || d.stop?.preferred)}. **Kill switch:** per behaviour, owned by ${clean(d.killSwitchOwner || "the product owner")}.`, "", "**Plan**", "", table(["Week", "Work"], A(d.plan).map((r) => [r.week, r.work]))].join("\n") : P("D");
+  s[15] = d ? [table(["Approver", "Role", "Signs off on"], A(d.signoffs).map((r) => [r.name || "to confirm", r.role, r.signs])), "", table(["Gate", "Question", "Answer", "Status", "Closes it"], [...A(c.governance).filter((r) => !/^answered/i.test(r.status)), ...A(c.governance).filter((r) => /^answered/i.test(r.status))].map((r) => [r.gate, r.question, r.answer, r.status, r.owner]))].join("\n") : P("D");
+  s[16] = b ? table(["ID", "Risk", "Likelihood", "Impact", "Mitigation"], A(b.risks).map((r, i) => [`R-${String(i + 1).padStart(2, "0")}`, r.risk, r.likelihood, r.impact, r.mitigation])) : P("B");
+  s[17] = b ? [table(["Dependency", "Owner", "Needed for", "Status"], A(b.dependencies).map((r) => [r.dependency, r.owner, r.neededFor, r.status])), "", table(["ID", "Question or assumption", "Owner", "Needed by"], A(b.openQuestions).map((r, i) => [`Q-${String(i + 1).padStart(2, "0")}`, r.question, r.owner, r.neededBy]))].join("\n") : P("B");
+  s[18] = (A(d && d.observability && d.observability.signals).length || A(a && a.tokenStrategy).length) ? (() => {
+    const ob = d && d.observability;
+    const obTbl = ob && A(ob.signals).length ? ["**Observability (what we watch once the agents are live)**", "", table(["Signal", "Group", "Source", "Alert threshold"], A(ob.signals).map((r) => [r.signal, r.group, r.source, r.alert]))].join("\n") : "";
+    const dash = ob && ob.dashboard ? `**Dashboard:** ${clean(ob.dashboard)}` : "";
+    const tele = ob && ob.telemetry ? `**Production telemetry:** ${clean(ob.telemetry)}` : "";
+    const tok = A(a && a.tokenStrategy).length ? ["**Token strategy (tuned per use case)**", "", table(["Tactic", "Where it applies", "Effect"], A(a.tokenStrategy).map((r) => [r.tactic, r.where, r.effect]))].join("\n") : "";
+    return [obTbl, "", dash, tele, "", tok].filter((x) => x !== "").join("\n");
+  })() : P("D");
+  s[19] = b ? [clean(b.section17Intro) || "This section is written for a coding agent (Claude Code or similar). Hand it this file and the `out/proto/` folder; it should be able to take the prototype to a pilot-ready service task by task, with the evals deciding when each task is done.", "", "**Starting point:** a working prototype in `out/proto/` (router, eval runner, product shell, audit log) that passes or is blocked by its own gates.", "", "**Target layout**", "", "```", "<repo>/", "  src/router        decision order: guard, route, hand off", `  src/${a?.shape === "review" ? "extraction" : a?.shape === "rank" ? "ranking" : "drafting"}      model contract and template fallback`, "  src/api           decide, eval, log endpoints", "  web/              the product shell (Today, Queue, item, oversight pages)", "  eval/             golden.json, holdout.json (sealed), gates.json, run", "  docs/prd.md       this file", "```", "", "**Kickoff prompt**", "", "```", `Read docs/prd.md fully before writing code. You are building ${v?.useCase || "the first wave"} for ${v?.client || "the client"}.`, "Rules: never edit eval/golden.json to make a gate pass; never open eval/holdout.json;", "escalation is checked before anything else; never produce an answer without a cited source;", "no secrets in code; synthetic data only. Work task by task from section 19. After each task,", "run the eval and show its output. Stop and ask me when a requirement is ambiguous.", "Start with T-01.", "```", "", "_(Section numbers: the build plan is section 19; model choice and pricing is section 12; observability and tokens is section 18.)_", "", table(["ID", "Task", "Implements", "Done when"], A(b.tasks).map((r, i) => [`T-${String(i + 1).padStart(2, "0")}`, r.task, r.implements, r.doneWhen])), "", "**Guardrails for the coding agent**", "- The gates in `eval/gates.json` are the definition of done. A red gate blocks the task.", "- Fix the general pattern behind a miss, never the exact sentence; the holdout tests the kind.", "- Every new behaviour gets golden rows first, labelled before the code exists.", `- Ask before adding a dependency, a data source, or any action the never list touches.${A(b.guardrails).length ? "\n" + A(b.guardrails).map((x) => `- ${clean(x)}`).join("\n") : ""}`].join("\n") : P("B");
+  const titles = { 1: "Summary", 2: "Problem and value", 3: "Users and jobs", 4: "Goals, non-goals and success metrics", 5: "Scope: first wave, and what is not GenAI", 6: "Solution overview", 7: "Functional requirements", 8: "AI behaviour specification", 9: "Human in the loop", 10: "Data, labels and privacy", 11: "Evaluation and release gates", 12: "Model choice, pricing and business case", 13: "Non-functional requirements", 14: "Rollout and drive", 15: "Governance and sign-offs", 16: "Risks and mitigations", 17: "Dependencies, open questions and assumptions", 18: "Observability and token strategy", 19: "Build it with AI" };
   const prev = read(path.join(OUT, "prd.md"));
   const history = (prev.match(/## Appendix: document history[\s\S]*$/) || [""])[0].trim();
   const version = (prev.match(/\*\*Version:\*\* ([^·]+)·/) || [, b ? "0.1, draft for client review " : "0.1, live draft "])[1].trim().replace(/live draft/, b ? "draft for client review" : "live draft");
@@ -262,7 +391,7 @@ function check(g, ev, c, quiet) {
   must(g.d, ["deploy", "drive", "pilot", "stop", "plan", "signoffs", "governance", "sayIt"], "D");
   must(g.b, ["summary", "recommendation", "decisionAsked", "requirements", "nfrs", "risks", "dependencies", "openQuestions", "tasks", "faq", "sweepFindings", "agentSentence"], "B");
   if (g.a) { need(A(g.a.agents).length >= 3 && A(g.a.agents).length <= 6, 2, "3 to 6 assistants"); need(A(g.a.agents)[0]?.kind === "rules" && /guard|safety/i.test(A(g.a.agents)[0]?.name || ""), 2, "first assistant must be a fixed-rules safety guard"); need(A(g.a.sweeps).length >= 1 && A(g.a.sweeps).length <= 3, 2, "1 to 3 sweeps"); need(["desk", "review", "rank", "chat"].includes(g.a.shape), 3, "shape"); if (g.a.shape === "rank") need(A(g.a.dismissReasons).length >= 4, 3, "rank needs 4 dismissReasons"); need(A(g.a.scores).some((s) => s.notGenAI), 2, "at least one candidate marked not GenAI"); }
-  if (g.b) { need(A(g.b.faq).length >= 7 && A(g.b.faq).length <= 8 && A(g.b.faq).every((f) => f.q && f.a && f.from), 4, "7 to 8 FAQ pairs each with q, a, from"); need(A(g.b.sweepFindings).every((f) => A(f).length >= 2 && A(f).every((x) => x.title && x.why && x.cite)), 2, "2 to 3 findings per sweep, each with title, why, cite"); need(A(g.b.requirements).length >= 6 && A(g.b.requirements).every((r) => /Given[^]*\bwhen\b[^]*\bthen\b/i.test(r.acceptance || "")), 5, "6+ requirements, every acceptance written Given ..., when ..., then ..."); need(A(g.b.tasks).length >= 5, 5, "section 17 needs 5+ tasks"); }
+  if (g.b) { need(A(g.b.faq).length >= 7 && A(g.b.faq).length <= 8 && A(g.b.faq).every((f) => f.q && f.a && f.from), 4, "7 to 8 FAQ pairs each with q, a, from"); need(A(g.b.sweepFindings).every((f) => A(f).length >= 2 && A(f).every((x) => x.title && x.why && x.cite)), 2, "2 to 3 findings per sweep, each with title, why, cite"); need(A(g.b.requirements).length >= 6 && A(g.b.requirements).every((r) => /Given[^]*\bwhen\b[^]*\bthen\b/i.test(r.acceptance || "")), 5, "6+ requirements, every acceptance written Given ..., when ..., then ..."); need(A(g.b.tasks).length >= 5, 5, "section 19 needs 5+ tasks"); }
   if (c) { need(A(c.connectors).length >= 6, 3, "6+ systems"); need(A(c.connectors).every((x) => !x.vendor || /assumed|e\.g\./i.test(x.vendor)), 3, "vendors only as e.g. ... (assumed)"); need(A(c.governance).length >= 12, 4, "12+ governance rows"); need(A(c.governance).filter((x) => !/^answered/i.test(x.status)).every((x) => x.owner), 4, "every open governance row has an owner"); need(A(c.neverList).length >= 3, 3, "never list 3+ lines"); need(["escalate", "human", "answer"].every((k) => Number((c.clocks || {})[k]?.hours) > 0), 3, "clocks need { hours, label } for escalate, human and answer"); need(A(c.samples).length === 6, 3, "6 samples"); }
   need(ev.goldenN >= 30 && ev.holdoutN >= 20, 6, `golden ${ev.goldenN} (30+) and holdout ${ev.holdoutN} (20+) rows`);
   need(json(path.join(PROTO, "holdout.json"), []).filter((r) => r.expected === "escalate").length >= 10, 6, "holdout needs 10+ escalation rows");
@@ -281,7 +410,7 @@ function check(g, ev, c, quiet) {
   const cs = cards(); need(cs.length >= 11 && cs.length <= 16, 1, `${cs.length} cards (11 to 16)`); need(cs.every((x) => x.role && x.question && x.format && A(x.options).length >= 2 && A(x.options).every((o) => o.label && o.tradeoff)), 1, "every card: role, question, format, 2+ options with trade-offs"); need(!cs.some((x) => /^COO$/i.test(x.role)) || /COO/i.test(caseLine()), 1, "card roles must be this case's sponsor and owner roles, not COO");
   const scanDirs = [OUT]; const files = []; const walk = (d) => { for (const f of fs.readdirSync(d)) { const p = path.join(d, f); if (fs.statSync(p).isDirectory()) { if (!/hosted/.test(f)) walk(p); } else if (/\.(md|json|js|html)$/.test(f) && !/ff\.css|app\.html|prd-viewer|server\.js|audit\.jsonl/.test(f)) files.push(p); } }; if (fs.existsSync(OUT)) walk(OUT);
   const realCo = /\b(Acme|Contoso|Globex|Initech|Example Corp|Anthem|Aetna|UnitedHealth|Cigna|Humana|JPMorgan|Wells Fargo|Bank of America|Citibank|Capital One|Delta Air|United Airlines|American Airlines|Walmart|Amazon|Geico|Allstate|State Farm|Kaiser|CVS|Walgreens|Salesforce|Google|Microsoft|Workday|Oracle|SAP|Epic Systems|Cerner|Fidelity|CredR|EdCast|Coursewave|Enelek)\b/;
-  for (const p of files) { const t = read(p); if (t.includes("—")) need(false, 8, `em-dash in ${path.relative(ROOT, p)}`); const m = t.replace(/e\.g\.[^)\n"]*\(assumed\)/g, "").match(realCo); if (m) need(false, 8, `real or employer name "${m[0]}" in ${path.relative(ROOT, p)}: use a synthetic name, or "e.g. ... (assumed)" for a vendor`); }
+  for (const p of files) { const t = read(p); if (t.includes("—")) need(false, 8, `em-dash in ${path.relative(ROOT, p)}`); const m = t.replace(/e\.g\.[^)\n"]*\(assumed\)/g, "").replace(MODEL_VENDORS, "").match(realCo); if (m) need(false, 8, `real or employer name "${m[0]}" in ${path.relative(ROOT, p)}: use a synthetic name, or "e.g. ... (assumed)" for a vendor`); }
   const pend = (read(path.join(OUT, "prd.md")).match(/Pending:/g) || []).length; need(pend === 0, 5, `${pend} Pending lines in the PRD`);
   if (!quiet) { console.log(miss.length ? miss.map(([s, m]) => `- [${s}] ${m}`).join("\n") : "All checks pass."); }
   return miss;

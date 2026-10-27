@@ -89,7 +89,9 @@ expect((prd.match(/Given[^|\n]*\bwhen\b[^|\n]*\bthen\b/gi) || []).length >= 3, 5
 for (const id of ["FR-", "NFR-", "US-", "G-", "M-", "R-"]) expect(prd.includes(id), 5, `no ${id} requirement ids`, "out/prd.md");
 for (const t of [/\| *Assistant *\|/, /\| *Sweep *\|/, /\| *Outcome *\|.*(Clock|Deadline|Hours)/i, /\| *System *\|/]) expect(t.test(prd), 5, `PRD table missing: ${t}`, "out/prd.md");
 expect(/## Appendix: document history[\s\S]*\|\s*0\.\d/.test(prd), 5, "document history has no version row", "out/prd.md");
-expect(/## 17\. Build it with AI[\s\S]{600,}/.test(prd) && /Kickoff prompt/.test(prd), 5, "section 17 is short or lacks a kickoff prompt", "out/prd.md");
+expect(/## 19\. Build it with AI[\s\S]{600,}/.test(prd) && /Kickoff prompt/.test(prd), 5, "section 19 is short or lacks a kickoff prompt", "out/prd.md");
+expect(/## 12\. Model choice[\s\S]*?Model menu[\s\S]*?Multi-purpose default[\s\S]*?Routing pipeline/i.test(prd), 5, "section 12 is missing the model menu, the multi-purpose default, or the per-use-case routing pipeline (gate A pricing: default, modelTypes, pipeline; gate B businessCase)", "out/prd.md");
+expect(/## 18\. Observability and token strategy[\s\S]*?Observability[\s\S]*?Token strategy/i.test(prd), 5, "section 18 is missing the observability signals or the token strategy (gate D observability; gate A tokenStrategy)", "out/prd.md");
 expect(/## 11\.[\s\S]*?(RELEASE PASSES|RELEASE BLOCKED|Passes all gates|Blocked)/i.test(prd), 5, "section 11 has no real eval result", "out/prd.md");
 expect(!/<[a-z][^>]*>/.test(prd.replace(/`[^`]*`/g, "")) || true, 5, "", "");
 expect(!/\| *<[^|]*> *\|/.test(prd), 5, "PRD still contains template placeholders like <...>", "out/prd.md");

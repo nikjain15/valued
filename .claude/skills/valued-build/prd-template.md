@@ -171,7 +171,31 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 
 **Reproduce:** `node out/proto/eval.js` (dev) and `node out/proto/eval.js holdout.json` (sealed).
 
-## 12. Non-functional requirements
+## 12. Model choice, pricing and business case
+
+**Model menu (the client chooses; list prices, assumed, confirm at the vendor)**
+
+| Provider | Model | In $/1M | Out $/1M | Latency | Best for |
+|---|---|---|---|---|---|
+| <provider> | <model> | <price> | <price> | <class> | <use> |
+
+**Multi-purpose default:** <model, why>. **Which model for which job:** <per-assistant mapping>.
+
+**Tier rule:** <start mid, small for simple high-volume steps, large or reasoning only where quality matters>.
+
+**Model types in this use case (not just chat LLMs)**
+
+| Model type | Used here | Model or service | Why |
+|---|---|---|---|
+| Embeddings / rerankers / multimodal / speech | <yes/no> | <model> | <why> |
+
+**Routing pipeline:** <embedding indexes the docs, a small model routes, a reranker picks passages, the mid model drafts, the large model only for the hardest rows>.
+
+**Run cost:** <per resolved item, per month at pilot volume>.
+
+**Business case (ROI):** <value recovered a year vs build and run cost, payback (assumed)>. **Commercial model:** <per-seat / per-resolved-item / flat, our pick>.
+
+## 13. Non-functional requirements
 
 | ID | Requirement | Target |
 |---|---|---|
@@ -182,7 +206,7 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 | NFR-05 | Audit log retention | <period, from gate U> |
 | NFR-06 | Accessibility of the reviewer UI | WCAG 2.2 AA |
 
-## 13. Rollout and drive
+## 14. Rollout and drive
 
 | Step | Proves | Exit criterion | Signs |
 |---|---|---|---|
@@ -197,7 +221,7 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 
 **Plan:** <week-by-week table for the client's timeline>
 
-## 14. Governance and sign-offs
+## 15. Governance and sign-offs
 
 | Approver | Role | Signs off on |
 |---|---|---|
@@ -207,13 +231,13 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 |---|---|---|---|---|
 | <gate> | <question> | <answer> | <answered / assumed / client to confirm> | <role> |
 
-## 15. Risks and mitigations
+## 16. Risks and mitigations
 
 | ID | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|---|
 | R-01 | <risk> | <L/M/H> | <L/M/H> | <mitigation, tied to a gate> |
 
-## 16. Dependencies, open questions and assumptions
+## 17. Dependencies, open questions and assumptions
 
 | Dependency | Owner | Needed for | Status |
 |---|---|---|---|
@@ -223,7 +247,23 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 |---|---|---|---|
 | Q-01 | <question> | <role> | <milestone> |
 
-## 17. Build it with AI
+## 18. Observability and token strategy
+
+**Observability (what we watch once the agents are live)**
+
+| Signal | Group | Source | Alert threshold |
+|---|---|---|---|
+| <signal> | Quality and safety / Cost and tokens / Speed and volume / Human workload | <where emitted> | <threshold (assumed)> |
+
+**Dashboard:** <the live dashboard the prototype shows>. **Production telemetry:** <what production emits, traces and tooling>.
+
+**Token strategy (tuned per use case)**
+
+| Tactic | Where it applies | Effect |
+|---|---|---|
+| <prompt caching / retrieval trim / model cascade / max-output caps / structured outputs> | <assistant or step> | <expected saving (assumed)> |
+
+## 19. Build it with AI
 
 This section is written for a coding agent (Claude Code or similar). Hand it this file and the `out/proto/` folder; it should be able to take the prototype to a pilot-ready service task by task, with the evals deciding when each task is done.
 
@@ -247,7 +287,7 @@ This section is written for a coding agent (Claude Code or similar). Hand it thi
 Read docs/prd.md fully before writing code. You are building <use case> for <client>.
 Rules: never edit eval/golden.json to make a gate pass; never open eval/holdout.json;
 escalation is checked before anything else; never produce an answer without a cited source;
-no secrets in code; synthetic data only. Work task by task from section 17. After each task,
+no secrets in code; synthetic data only. Work task by task from section 19. After each task,
 run the eval and show its output. Stop and ask me when a requirement is ambiguous.
 Start with T-01.
 ```

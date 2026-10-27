@@ -49,6 +49,29 @@ client to accept or overrule.
    - Latency budget per surface, and the unit of cost (per resolved task, not per token).
    - End the table with one line, `Numbers to quote:` latency budget per surface and cost per resolved
      task (assumed where assumed). Gate E's "Say it while it builds" reads from this line.
+   - **Model choice and pricing (an output, PRD section 12).** Write `pricing` to `a.json`: a `default`
+     multi-purpose model good across the use cases (recommend a Claude model, with why), a `perUseCase`
+     row per first-wave assistant naming the model you route it to and why (cheap models like Haiku or
+     Fable for guards, routing and simple extraction; Sonnet as the balanced default for drafting; Opus
+     only for the hardest, highest-stakes reasoning), and `runCost` (cost per resolved item, cost a month
+     at pilot volume, and the basis). The cross-provider price menu is fixed in `conductor.js` so the
+     numbers stay consistent run to run; you choose only which model goes where, and mark every figure
+     (assumed) until the client confirms volumes.
+   - **Layered model strategy (customized per use case).** In the same `pricing` object, write `tierRule`
+     (one line: start mid, drop to a small or fast model for simple high-volume steps, reach for a large
+     or reasoning model only where quality genuinely matters), `modelTypes` (one row per type: embeddings,
+     rerankers, multimodal or vision, and speech; set `usedHere` true only where this use case needs it, a
+     document Q&A case uses embeddings and a reranker, adds vision when documents are scans or images, and
+     speech only when there is audio), and `pipeline` (the concrete routing order for this case, e.g.
+     embedding indexes the docs, a small model routes, a reranker picks passages, the mid model drafts the
+     grounded answer, the large model only for the hardest rows). Keep each to one line, every figure
+     (assumed).
+   - **Token strategy (an output, PRD section 18).** Write `tokenStrategy`: 3 to 6 tactics tuned to this
+     use case, each `{ tactic, where, effect }`. Draw from prompt caching of the static system and policy
+     text, trimming retrieval to the top cited passages, a model cascade (cheap model decides, escalate to
+     a stronger one on low confidence), max-output caps, structured outputs over free prose, and batching
+     the sweeps. `where` names the assistant or step; `effect` is the expected cost or latency saving,
+     marked (assumed) until measured.
 5. **Ask the client (2 cards):**
    - **"<sponsor role>": "Which ideas go first?"** The wave options from step 3, our preference first
      "(Recommended)", each with its trade-off.
@@ -115,4 +138,4 @@ client to accept or overrule.
 
 ## Output: `out/gates/a.json`
 
-Keys (render and `conductor.js check` read them; keep strings to one line): `scores` (rows `{ id, name, rung, value, feasibility, risk, reuse, overall, reason, wave: 1|2|null, notGenAI: true|false, instead }`; at least one `notGenAI`), `waves` (a recommendation), `sourcing` (`{ component, rung, choice, why, changeMind, routing, latency }`), `numbersToQuote`, `engine` (`rules` | `rules+model` | `model-first`, from card R1-3), `engineBy`, `engineWhy`, `shape` (`desk` | `review` | `rank` | `chat`), `shapeWhy`, `agents` (3 to 6 `{ name, kind, job, may, never, gate }`, the first a `rules` "Safety guard"), `triggerFamilies` (4 to 8 short keys for the kinds of escalation the guard catches, e.g. `fraud`, `complaint`, `distress`, `legal_threat`; gates L and U both use exactly these keys), `sweeps` (1 to 3 `{ agent, kind, schedule, checks, decision }`, start from `sweep-templates.json`), `itemNoun` (`["claim", "claims"]`), `promise`, `recordSuffix` and `dismissReasons` (4) for `rank`, `alternatives` (`{ alternative, whyNot, revisit }`), `latency`, `cost`, `flow` (optional one-line pipeline); plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.
+Keys (render and `conductor.js check` read them; keep strings to one line): `scores` (rows `{ id, name, rung, value, feasibility, risk, reuse, overall, reason, wave: 1|2|null, notGenAI: true|false, instead }`; at least one `notGenAI`), `waves` (a recommendation), `sourcing` (`{ component, rung, choice, why, changeMind, routing, latency }`), `numbersToQuote`, `engine` (`rules` | `rules+model` | `model-first`, from card R1-3), `engineBy`, `engineWhy`, `shape` (`desk` | `review` | `rank` | `chat`), `shapeWhy`, `agents` (3 to 6 `{ name, kind, job, may, never, gate }`, the first a `rules` "Safety guard"), `triggerFamilies` (4 to 8 short keys for the kinds of escalation the guard catches, e.g. `fraud`, `complaint`, `distress`, `legal_threat`; gates L and U both use exactly these keys), `sweeps` (1 to 3 `{ agent, kind, schedule, checks, decision }`, start from `sweep-templates.json`), `itemNoun` (`["claim", "claims"]`), `promise`, `recordSuffix` and `dismissReasons` (4) for `rank`, `alternatives` (`{ alternative, whyNot, revisit }`), `latency`, `cost`, `flow` (optional one-line pipeline), `pricing` (`{ default: { model, why }, perUseCase: [{ job, model, why }] one row per first-wave assistant, runCost: { perItem, monthly, basis }, tierRule (one line on the small/mid/large routing rule for this case), modelTypes: [{ type, usedHere: true|false, model, why }] covering embeddings, rerankers, multimodal/vision and speech, marking which this use case actually needs, pipeline: [{ step, model, does }] the concrete routing order (a cheap model decides, a strong model does the hard part) }`; recommend a Claude model as the multi-purpose `default`, route the cheap models to guards and routing and the strongest only to the hardest job, and mark every figure (assumed); the cross-provider price menu is fixed in `conductor.js`, you only choose which model goes where), `tokenStrategy` (3 to 6 `{ tactic, where, effect }` tuned to this use case, for PRD section 18: prompt caching of the static system and policy text, trimming retrieval to the top cited passages, a model cascade (cheap model first, escalate on low confidence), max-output caps, structured outputs over prose, batching the sweeps; `where` names the assistant or step it applies to, `effect` the expected cost or latency saving, every figure (assumed)); plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.
