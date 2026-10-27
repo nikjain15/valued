@@ -59,6 +59,10 @@
   .assumed { background: var(--amber-bg); color: var(--amber-strong); border: 1px solid #f1dfc2; padding: 0 6px; border-radius: 6px; font-size: .85em; white-space: nowrap; }
   .copy { position: absolute; top: 10px; right: 10px; height: 28px; padding: 0 12px; border-radius: var(--r-pill); border: 0; background: var(--brand); color: var(--white); font: 500 12px var(--font-sans); cursor: pointer; }
   .live { display: none; } .live.on { display: inline-flex; }
+  .prd-status { display: none; }
+  .prd-status.on { display: flex; align-items: center; gap: 10px; max-width: var(--wrap, 1100px); margin: 14px auto 0; padding: 10px 16px; border-radius: var(--r-pill); background: var(--brand-weak, #eef3ee); color: var(--ink-2, #333); font: 500 13px var(--font-sans); }
+  .spin { width: 13px; height: 13px; border-radius: 50%; border: 2px solid rgba(0,0,0,.12); border-top-color: var(--brand); display: inline-block; flex: none; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
   .toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); background: var(--dark); color: var(--white); padding: 10px 18px; border-radius: var(--r-pill); font-size: var(--fs-label); opacity: 0; transition: opacity var(--dur-base); z-index: 60; pointer-events: none; }
   .toast.show { opacity: 1; }
   @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } .toc { display: none; } }
@@ -75,6 +79,7 @@
     <a class="btn solid sm" id="protoLink" href="http://localhost:4317">Open prototype</a>
   </div>
 </nav>
+<div class="prd-status" id="prdStatus"></div>
 <div class="wrap layout">
   <aside class="toc" aria-label="Contents"><div class="eyebrow">Contents</div><ol id="toc"></ol></aside>
   <article class="sheet">
@@ -164,7 +169,19 @@ function spy() {
 }
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2600); }
 
+async function updateStatus() {
+  const el = $("#prdStatus"); if (!el) return;
+  try {
+    const s = await fetch("/status.json", { cache: "no-store" }).then((r) => r.json());
+    if (s && s.running && s.label) {
+      el.className = "prd-status on";
+      el.innerHTML = `<span class="spin" aria-hidden="true"></span><span><strong>Building now:</strong> ${esc(s.label)}${s.phase ? " (phase " + esc(String(s.phase)) + ")" : ""}. This document fills in as each step lands.</span>`;
+    } else { el.className = "prd-status"; el.innerHTML = ""; }
+  } catch { el.className = "prd-status"; el.innerHTML = ""; }
+}
+
 async function poll() {
+  updateStatus();
   try {
     const text = await fetch("/prd.md", { cache: "no-store" }).then((r) => r.text());
     if (text === lastText) return;
