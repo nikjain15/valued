@@ -65,6 +65,91 @@ const MODEL_MENU = [
 // so the cross-provider table can name real providers without failing the run.
 const MODEL_VENDORS = /\b(Anthropic|OpenAI|Google|Microsoft|Amazon|Meta|Mistral|Cohere|xAI|DeepSeek|Alibaba|Nvidia|AWS|Azure)\b/g;
 
+// ---------- architecture flow diagram (inline SVG, rendered by marked in the PRD) ----------
+const escX = (s) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+function wrap2(s, max) {
+  s = String(s || "");
+  if (s.length <= max) return [s];
+  const words = s.split(" "); let a = "", b = "";
+  for (const w of words) { if (!a || (a + " " + w).trim().length <= max) a = (a + " " + w).trim(); else b = (b + " " + w).trim(); }
+  return b ? [a, b] : [a];
+}
+// Which model a named assistant runs, from gate A pricing.perUseCase (best-effort name match).
+function agentModel(a, name) {
+  const rows = A(a.pricing && a.pricing.perUseCase);
+  const n = String(name).toLowerCase(), toks = n.split(/\s+/).filter((w) => w.length > 3);
+  const hit = rows.find((r) => { const j = String(r.job).toLowerCase(); return j === n || j.includes(n) || n.includes(j) || toks.some((t) => j.includes(t)); });
+  return hit ? hit.model : "";
+}
+// A short latency for a step, from gate A sourcing; "(assumed)" when the gate did not supply one.
+function latShort(a, name) {
+  const rows = A(a.sourcing), n = String(name).toLowerCase(), toks = n.split(/\s+/).filter((w) => w.length > 3);
+  const hit = rows.find((r) => { const comp = String(r.component).toLowerCase(); return comp.includes(n) || toks.some((t) => comp.includes(t)); });
+  const parse = (s) => { s = String(s || ""); const m = s.match(/under\s*([\d.]+)\s*(ms|s|sec|min|m)\b/i); if (m) return "<" + m[1] + (/^mi?n?$/i.test(m[2]) ? "m" : /ms/i.test(m[2]) ? "ms" : "s"); if (/negligible|instant|fast/i.test(s)) return "fast"; return ""; };
+  return (hit && parse(hit.latency)) || "(assumed)";
+}
+// Swimlane architecture flow: External systems / Rules / AI model / Person / Data lanes. Boxes placed by
+// kind, the model and a latency shown on each step, embeddings and reranker as their own steps, stores as
+// cylinders, external systems linked in. Rendered at full size inside a scrollable wrapper so text stays legible.
+function archSvg(a, c) {
+  const noun = cap(A(a.itemNoun)[0] || "request");
+  const lane = { in: 0, rules: 0, model: 1, human: 2 };
+  const types = A(a.pricing && a.pricing.modelTypes).filter((m) => m.usedHere !== false && /embed|rerank|vision|multimodal/i.test(m.type));
+  const st = [{ t: `${noun} in`, k: "in", m: "", lat: "" }];
+  const hasRet = A(a.agents).some((ag) => /retriev|search|index/i.test(ag.name));
+  let added = false;
+  for (const ag of A(a.agents)) {
+    const isRet = /retriev|search|index/i.test(ag.name);
+    if (!added && types.length && (isRet || (!hasRet && ag.kind === "model"))) {
+      for (const t of types) { const emb = /embed/i.test(t.type), rr = /rerank/i.test(t.type), nm = emb ? "Embeddings" : rr ? "Reranker" : "Vision"; st.push({ t: nm, k: "rules", m: emb ? "embedding model" : rr ? "reranker" : "vision model", lat: latShort(a, nm) }); }
+      added = true;
+    }
+    st.push({ t: ag.name, k: ag.kind === "model" ? "model" : "rules", m: ag.kind === "model" ? agentModel(a, ag.name) : "", lat: latShort(a, ag.name) });
+  }
+  st.push({ t: "Person decides", k: "human", m: "", lat: "" });
+  const retCol = Math.max(1, st.findIndex((s) => /retriev|search|index/i.test(s.t)));
+  const stores = [{ t: "Document index", col: retCol }, { t: "Audit log", col: st.length - 1 }];
+  const ext = A(c && c.connectors).slice(0, 4).map((cn) => {
+    const cat = String(cn.category || cn.name || "").toLowerCase();
+    let target = retCol;
+    if (/entitle|access|identity|auth/.test(cat)) { const i = st.findIndex((s) => /entitle|access/i.test(s.t)); if (i > 0) target = i; }
+    return { nm: cn.name || cn.vendor || "System", vend: (!cn.vendor || /to confirm/i.test(cn.vendor)) ? "(assumed)" : cn.vendor, target };
+  });
+  const LANES = [["Rules", "#E1F5EE", "#0F6E56"], ["AI model", "#EEEDFE", "#534AB7"], ["Person", "#FAEEDA", "#854F0B"], ["Data", "#F1EFE8", "#444441"]];
+  const STROKE = { in: "#B4B2A9", rules: "#5DCAA5", model: "#AFA9EC", human: "#EF9F27" };
+  const TXT = { in: "#444441", rules: "#0F6E56", model: "#534AB7", human: "#854F0B" };
+  const X0 = 86, COLW = 140, BW = 124, BH = 58, LANEH = 84, TOP = 8, EXTH = ext.length ? 74 : 0;
+  const laneY = (l) => TOP + EXTH + l * LANEH + (LANEH - 10) / 2;
+  const W = X0 + st.length * COLW + 12, H = TOP + EXTH + 4 * LANEH + 6;
+  const cx = (i) => X0 + i * COLW, cyOf = (s) => laneY(lane[s.k]);
+  let el = "";
+  if (EXTH) { el += `<rect x="4" y="${TOP}" width="${W - 8}" height="${EXTH - 8}" rx="8" fill="#EAF3DE"/><text x="12" y="${TOP + 18}" font-size="13" fill="#3B6D11">External systems</text>`; }
+  LANES.forEach((L, l) => { const y = TOP + EXTH + l * LANEH; el += `<rect x="4" y="${y}" width="${W - 8}" height="${LANEH - 10}" rx="8" fill="${L[1]}"/><text x="12" y="${y + 19}" font-size="13" fill="${L[2]}">${L[0]}</text>`; });
+  for (let i = 0; i < st.length - 1; i++) { const xA = cx(i) + BW, yA = cyOf(st[i]), xB = cx(i + 1), yB = cyOf(st[i + 1]), mx = (xA + xB) / 2; el += `<path d="M ${xA} ${yA} H ${mx} V ${yB} H ${xB}" fill="none" stroke="#888780" stroke-width="1.5"/><path d="M ${xB} ${yB} l -8 -5 l 0 10 z" fill="#888780"/>`; }
+  ext.forEach((e, j) => { const x = cx(e.target) + (j % 2 ? 16 : -16), ey = TOP + 24, cxm = x + BW / 2, ty = cyOf(st[e.target]) - BH / 2; el += `<rect x="${x}" y="${ey}" width="${BW}" height="38" rx="8" fill="#ffffff" stroke="#97C459"/><text x="${cxm}" y="${ey + 17}" font-size="12" text-anchor="middle" fill="#3B6D11">${escX(wrap2(e.nm, 16)[0])}</text><text x="${cxm}" y="${ey + 31}" font-size="9" text-anchor="middle" fill="#888780">${escX(e.vend)}</text><path d="M ${cxm} ${ey + 38} V ${ty}" stroke="#97C459" stroke-dasharray="3 3" fill="none"/>`; });
+  const dy = laneY(3);
+  for (const store of stores) { const x = cx(store.col), w = BW, y = dy - 22, cxm = x + w / 2; el += `<path d="M ${x} ${y + 7} V ${y + 37}" stroke="#B4B2A9" fill="none"/><path d="M ${x + w} ${y + 7} V ${y + 37}" stroke="#B4B2A9" fill="none"/><ellipse cx="${cxm}" cy="${y + 37}" rx="${w / 2}" ry="7" fill="#F8F7F2" stroke="#B4B2A9"/><rect x="${x}" y="${y + 7}" width="${w}" height="30" fill="#F8F7F2" stroke="none"/><ellipse cx="${cxm}" cy="${y + 7}" rx="${w / 2}" ry="7" fill="#F8F7F2" stroke="#B4B2A9"/><text x="${cxm}" y="${y + 27}" font-size="11" text-anchor="middle" fill="#444441">${escX(store.t)}</text><path d="M ${cxm} ${cyOf(st[store.col]) + BH / 2} V ${y}" stroke="#B4B2A9" stroke-dasharray="3 3" fill="none"/>`; }
+  st.forEach((s, i) => {
+    const x = cx(i), cym = cyOf(s), y = cym - BH / 2, cxm = x + BW / 2, nm = wrap2(s.t, 16);
+    el += `<rect x="${x}" y="${y}" width="${BW}" height="${BH}" rx="9" fill="#ffffff" stroke="${STROKE[s.k]}" stroke-width="1.5"/>`;
+    const name1 = `<text x="${cxm}" y="__Y__" font-size="13" text-anchor="middle" fill="${TXT[s.k]}">${escX(nm[0])}</text>`;
+    const lat = s.lat ? `<text x="${cxm}" y="__Y__" font-size="10" text-anchor="middle" fill="#888780">${escX(s.lat)}</text>` : "";
+    if (s.m) el += name1.replace("__Y__", cym - 11) + `<text x="${cxm}" y="${cym + 5}" font-size="10" text-anchor="middle" fill="#888780">${escX(s.m)}</text>` + lat.replace("__Y__", cym + 19);
+    else if (s.lat) { if (nm.length === 1) el += name1.replace("__Y__", cym - 4) + lat.replace("__Y__", cym + 13); else el += name1.replace("__Y__", cym - 12) + `<text x="${cxm}" y="${cym + 2}" font-size="13" text-anchor="middle" fill="${TXT[s.k]}">${escX(nm[1])}</text>` + lat.replace("__Y__", cym + 17); }
+    else if (nm.length === 1) el += name1.replace("__Y__", cym + 5);
+    else el += name1.replace("__Y__", cym - 3) + `<text x="${cxm}" y="${cym + 14}" font-size="13" text-anchor="middle" fill="${TXT[s.k]}">${escX(nm[1])}</text>`;
+  });
+  return `<div style="overflow-x:auto;margin:4px 0"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Architecture flow across External systems, Rules, AI model, Person and Data lanes"><title>Architecture flow</title>${el}</svg></div>`;
+}
+function whyArch(a) {
+  const built = A(a.sourcing).filter((x) => /build/i.test(x.choice)).map((x) => String(x.component).toLowerCase()).slice(0, 3).join(", ");
+  const modelChoice = (A(a.sourcing).find((x) => /model/i.test(x.component)) || {}).choice || "partnered";
+  return ["**Why we recommend this architecture**", "",
+    `- Deterministic where it must be: the guards, retrieval, citation check and routing are fixed rules, so escalation and the cited-source promise cannot drift. ${clean(a.engineWhy)}`,
+    `- Agentic where it helps: the model takes only the one job a rule cannot do well, drafting from passages it was handed. ${clean(a.shapeWhy)}`,
+    `- Build where the moat is, partner where it is a commodity: ${built || "the index, citation and guards"} are built in-house; the answer model is ${modelChoice}, because a frontier model is a commodity.`].join("\n");
+}
+
 const G = (k) => json(path.join(GATES, `${k}.json`), null);
 const gates = () => ({ v: G("v"), a: G("a"), l: G("l"), u: G("u"), e: G("e"), d: G("d"), b: G("b") });
 const cards = () => json(path.join(OUT, "cards.json"), []);
@@ -230,7 +315,7 @@ function renderPrd(g, ev, c) {
   s[3] = v ? [table(["User", "Job to be done", "Pain today", "What changes"], A(v.users).map((r) => [r.user, r.job, r.pain, r.changes])), "", table(["ID", "As a", "I want to", "So that"], A(v.stories).map((r, i) => [`US-${String(i + 1).padStart(2, "0")}`, r.as, r.want, r.soThat])), "", `**Journey, future state:** ${clean(v.journey)}`].join("\n") : P("V");
   s[4] = v ? ["**Goals**", ...A(v.goals).map((x, i) => `- G-${String(i + 1).padStart(2, "0")} ${clean(x)}`), "", "**Non-goals (this release)**", ...A(v.nonGoals).map((x) => `- ${clean(x)}`), "", table(["ID", "Metric", "Baseline", "Target", "Guardrail"], A(v.metrics).map((r, i) => [`M-${String(i + 1).padStart(2, "0")}`, r.metric, r.baseline, r.target, r.guardrail]))].join("\n") : P("V");
   s[5] = a ? table(["Candidate", "Lowest rung that works", "Decision", "Why"], A(a.scores).map((x) => [`${x.id} ${x.name || ""}`, x.rung, x.wave === 1 ? "**First wave**" : x.notGenAI ? "Not GenAI" : x.wave === 2 ? "Second wave" : "Later", x.notGenAI ? `${x.reason}; instead: ${x.instead || "rules"}` : x.reason])) : P("A");
-  s[6] = a ? [`**Engine (gate A, client decision):** ${({ rules: "Rules only", "rules+model": "Rules decide, model drafts", "model-first": "Model proposes, rules guard" })[a.engine] || a.engine}, because ${clean(a.engineWhy)}.`, "", table(["Component", "Rung", "Build, buy or partner", "Why", "What would change our mind"], A(a.sourcing).map((x) => [x.component, x.rung, x.choice, x.why, x.changeMind])), "", "```", clean(a.flow) || `${A(a.itemNoun)[0] || "request"} -> safety guard -> ${A(a.agents).filter((x) => !/guard/i.test(x.name)).map((x) => x.name.toLowerCase()).join(" -> ")} -> person decides -> audit log`, "```", "", "**Assistants (agentic design)**", "", table(["Assistant", "Rules or AI", "Job", "Never", "Measured by"], A(a.agents).map((x) => [x.name, x.kind === "model" ? "AI" : "Rules", x.job, A(x.never).join("; "), x.gate])), "", "**Sweeps (proactive work)**", "", table(["Sweep", "Rules or AI", "Schedule", "What it checks", "Decision it hands to a person"], A(a.sweeps).map((x) => [x.agent, x.kind === "model" ? "AI" : "Rules", x.schedule, x.checks, x.decision])), "", "**Alternatives considered**", "", table(["Alternative", "Why not now", "When we would revisit"], A(a.alternatives).map((x) => [x.alternative, x.whyNot, x.revisit])), "", `**Latency budget:** ${clean(a.latency)}. **Unit of cost:** cost per resolved task, ${clean(a.cost)}${/\(assumed\)/i.test(a.cost || "") ? "" : " (assumed)"}.`].join("\n") : P("A");
+  s[6] = a ? [`**Engine (gate A, client decision):** ${({ rules: "Rules only", "rules+model": "Rules decide, model drafts", "model-first": "Model proposes, rules guard" })[a.engine] || a.engine}, because ${clean(a.engineWhy)}.`, "", table(["Component", "Rung", "Build, buy or partner", "Why", "What would change our mind"], A(a.sourcing).map((x) => [x.component, x.rung, x.choice, x.why, x.changeMind])), "", "**Architecture flow**", "", archSvg(a, c), "", whyArch(a), "", "**Assistants (agentic design)**", "", table(["Assistant", "Rules or AI", "Job", "Never", "Measured by"], A(a.agents).map((x) => [x.name, x.kind === "model" ? "AI" : "Rules", x.job, A(x.never).join("; "), x.gate])), "", "**Sweeps (proactive work)**", "", table(["Sweep", "Rules or AI", "Schedule", "What it checks", "Decision it hands to a person"], A(a.sweeps).map((x) => [x.agent, x.kind === "model" ? "AI" : "Rules", x.schedule, x.checks, x.decision])), "", "**Alternatives considered**", "", table(["Alternative", "Why not now", "When we would revisit"], A(a.alternatives).map((x) => [x.alternative, x.whyNot, x.revisit])), "", `**Latency budget:** ${clean(a.latency)}. **Unit of cost:** cost per resolved task, ${clean(a.cost)}${/\(assumed\)/i.test(a.cost || "") ? "" : " (assumed)"}.`].join("\n") : P("A");
   s[7] = b ? table(["ID", "Requirement", "Story", "Priority", "Acceptance criteria"], A(b.requirements).map((r, i) => [`FR-${String(i + 1).padStart(2, "0")}`, r.requirement, storyId(r.story), r.priority, r.acceptance])) : P("B");
   const contract = { desk: "input = the request + one cited source; output = 2 to 4 sentences from that source only, or `NO_ANSWER`.", chat: "input = the question + one cited source; output = 2 to 4 sentences from that source only, or `NO_ANSWER`; sensitive topics never reach the model.", review: "input = the document + the type's field list; output = each field's value with the exact evidence span, empty when absent; a value without evidence is dropped.", rank: "input = the record's facts + the rule that fired; output = a two-sentence talking point using only those facts." };
   s[8] = u && l ? [`**Verdicts:** \`answer\` (${clean(l.verdicts?.answer?.desc)}), \`human\` (${clean(l.verdicts?.human?.desc)}), \`escalate\` (${clean(l.verdicts?.escalate?.desc)}).`, "", "**Decision order:** escalation triggers first, in every language served; then source match; otherwise a person.", "", table(["Escalation trigger", "Example phrasing", "Goes to", "Response time"], A(u.triggers).map((t) => [t.trigger, `"${t.example}"`, t.goesTo, t.responseTime])), "", "**Never list**", ...A(u.neverList).map((x) => `- ${clean(x)}`), "", `**Model contract (${a?.shape || "desk"}):** ${contract[a?.shape] || contract.desk} In every shape, a refusal or error falls back to a person, never to a guess. Model: claude-sonnet-5-5 by default (Haiku for cost, Opus for the hardest rows), low effort, server-side fallback on.`].join("\n") : P("U");
