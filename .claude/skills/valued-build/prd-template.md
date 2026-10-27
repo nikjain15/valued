@@ -5,7 +5,7 @@
 > **Recommendation.** <One sentence: what we build first, for whom, and the outcome it moves.>
 > **Decision asked of the client.** <The one sign-off this document needs, and from which role.>
 
-## 1. Summary
+## 1. Executive summary
 
 | | |
 |---|---|
@@ -16,7 +16,7 @@
 | How we know it works | <the riskiest-miss gate and its bar> |
 | First milestone | <shadow or pilot, and when> |
 
-## 2. Problem and value
+## 2. Problem statement and opportunity
 
 <Two to four lines on where the cost or pain actually sits. Mark every assumed number (assumed).>
 
@@ -24,7 +24,7 @@
 |---|---|---|---|
 | <north-star metric> | <x (assumed)> | <y> | <source system, cadence> |
 
-## 3. Users and jobs
+## 3. Target users and personas
 
 | User | Job to be done | Pain today | What changes |
 |---|---|---|---|
@@ -52,7 +52,7 @@
 | M-02 | Edit rate on approved drafts | n/a | <band> | approval without reading |
 | M-03 | Escalation recall in production | n/a | <client's bar> | never below the bar for any group |
 
-## 5. Scope: first wave, and what is not GenAI
+## 5. Scope and phasing
 
 | Candidate | Lowest rung that works | Decision | Why |
 |---|---|---|---|
@@ -109,7 +109,7 @@ request ─▶ escalation guard ─▶ router (one source?) ─▶ draft (cited 
 | FR-05 | Log input, source, output, approver, time, version for every action | US-02 | Must | Every action in the workbench creates one audit row |
 | FR-06 | <case-specific requirement> | <US id> | <Must/Should> | <testable criterion> |
 
-## 8. AI behaviour specification
+## 8. AI behavior specification
 
 **Verdicts:** `answer` (<what it requires>), `human` (<when>), `escalate` (<when>).
 
@@ -128,7 +128,7 @@ request ─▶ escalation guard ─▶ router (one source?) ─▶ draft (cited 
 - rank: input = the record's facts + the rule that fired; output = a two-sentence talking point using only those facts.
 In every shape, a refusal or error falls back to a person, never to a guess. Model: <id>, low effort, server-side fallback on.
 
-## 9. Human in the loop
+## 9. Human-in-the-loop design
 
 | Action | Autonomy (first 90 days) | Approver | AI shows | On failure |
 |---|---|---|---|---|
@@ -146,7 +146,7 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 
 **Disclosure (compliance to confirm):** "<drafted line>".
 
-## 10. Data, labels and privacy
+## 10. Data, privacy and labeling
 
 | Data | Owner | Purpose | Personal data | Minimisation | Retention |
 |---|---|---|---|---|---|
@@ -160,7 +160,7 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 
 **Golden set:** <n> dev rows plus <n> sealed holdout rows; groups: <list with counts>. Labelled <approach>. Synthetic until <client decision>.
 
-## 11. Evaluation and release gates
+## 11. Evaluation and acceptance criteria
 
 | Gate | Metric | Bar | Why this bar | Latest dev | Holdout |
 |---|---|---|---|---|---|
@@ -171,7 +171,7 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 
 **Reproduce:** `node out/proto/eval.js` (dev) and `node out/proto/eval.js holdout.json` (sealed).
 
-## 12. Model choice, pricing and business case
+## 12. Model selection, cost and business case
 
 **Model menu (the client chooses; list prices, assumed, confirm at the vendor)**
 
@@ -206,7 +206,7 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 | NFR-05 | Audit log retention | <period, from gate U> |
 | NFR-06 | Accessibility of the reviewer UI | WCAG 2.2 AA |
 
-## 14. Rollout and drive
+## 14. Rollout and operations
 
 | Step | Proves | Exit criterion | Signs |
 |---|---|---|---|
@@ -221,7 +221,7 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 
 **Plan:** <week-by-week table for the client's timeline>
 
-## 15. Governance and sign-offs
+## 15. Governance and approvals
 
 | Approver | Role | Signs off on |
 |---|---|---|
@@ -237,7 +237,7 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 |---|---|---|---|---|
 | R-01 | <risk> | <L/M/H> | <L/M/H> | <mitigation, tied to a gate> |
 
-## 17. Dependencies, open questions and assumptions
+## 17. Dependencies, assumptions and open questions
 
 | Dependency | Owner | Needed for | Status |
 |---|---|---|---|
@@ -247,7 +247,7 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 |---|---|---|---|
 | Q-01 | <question> | <role> | <milestone> |
 
-## 18. Observability and token strategy
+## 18. Monitoring, observability and cost
 
 **Observability (what we watch once the agents are live)**
 
@@ -263,7 +263,7 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 |---|---|---|
 | <prompt caching / retrieval trim / model cascade / max-output caps / structured outputs> | <assistant or step> | <expected saving (assumed)> |
 
-## 19. Build it with AI
+## 19. Implementation plan
 
 This section is written for a coding agent (Claude Code or similar). Hand it this file and the `out/proto/` folder; it should be able to take the prototype to a pilot-ready service task by task, with the evals deciding when each task is done.
 
