@@ -247,7 +247,23 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 |---|---|---|---|
 | Q-01 | <question> | <role> | <milestone> |
 
-## 18. Build it with AI
+## 18. Observability and token strategy
+
+**Observability (what we watch once the agents are live)**
+
+| Signal | Group | Source | Alert threshold |
+|---|---|---|---|
+| <signal> | Quality and safety / Cost and tokens / Speed and volume / Human workload | <where emitted> | <threshold (assumed)> |
+
+**Dashboard:** <the live dashboard the prototype shows>. **Production telemetry:** <what production emits, traces and tooling>.
+
+**Token strategy (tuned per use case)**
+
+| Tactic | Where it applies | Effect |
+|---|---|---|
+| <prompt caching / retrieval trim / model cascade / max-output caps / structured outputs> | <assistant or step> | <expected saving (assumed)> |
+
+## 19. Build it with AI
 
 This section is written for a coding agent (Claude Code or similar). Hand it this file and the `out/proto/` folder; it should be able to take the prototype to a pilot-ready service task by task, with the evals deciding when each task is done.
 
@@ -271,7 +287,7 @@ This section is written for a coding agent (Claude Code or similar). Hand it thi
 Read docs/prd.md fully before writing code. You are building <use case> for <client>.
 Rules: never edit eval/golden.json to make a gate pass; never open eval/holdout.json;
 escalation is checked before anything else; never produce an answer without a cited source;
-no secrets in code; synthetic data only. Work task by task from section 18. After each task,
+no secrets in code; synthetic data only. Work task by task from section 19. After each task,
 run the eval and show its output. Stop and ask me when a requirement is ambiguous.
 Start with T-01.
 ```
