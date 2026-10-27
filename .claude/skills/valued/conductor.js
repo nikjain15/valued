@@ -49,6 +49,8 @@ const CUTS = {
 const G = (k) => json(path.join(GATES, `${k}.json`), null);
 const gates = () => ({ v: G("v"), a: G("a"), l: G("l"), u: G("u"), e: G("e"), d: G("d"), b: G("b") });
 const cards = () => json(path.join(OUT, "cards.json"), []);
+// The client's chosen product name (framing card) is the title shown everywhere, over the generic use-case label.
+const productName = () => { const c = cards().find((x) => /product name|what would you like to call|call (this|it)/i.test(x.question || "") && x.decision); return c ? String(c.decision).trim() : null; };
 const caseLine = () => (read(path.join(OUT, "case-line.txt")).trim() || (read(path.join(OUT, "prd.md")).match(/<!-- Case: (.*) -->/) || [, ""])[1]);
 
 // ---------- recommendation block ----------
@@ -160,7 +162,7 @@ function renderCase(g, ev) {
   const cs = cards();
   const c = {
     ...prev,
-    title: v.title, client: v.client, useCase: v.useCase, headline: v.headline, scenario: v.scenario, user: v.user, inputLabel: v.inputLabel, persona: v.persona, industry: v.industry, labels: v.labels,
+    title: productName() || v.title, client: v.client, useCase: productName() || v.useCase, headline: v.headline, scenario: v.scenario, user: v.user, inputLabel: v.inputLabel, persona: v.persona, industry: v.industry, labels: v.labels,
     promise: a.promise, shape: a.shape, agents: a.agents, itemNoun: a.itemNoun, recordSuffix: a.recordSuffix, dismissReasons: a.dismissReasons,
     sweeps: A(a.sweeps).map((s, i) => ({ agent: s.agent, kind: s.kind, schedule: s.schedule, checks: s.checks, findings: A((b.sweepFindings || [])[i] || s.findings) })),
     verdicts: l.verdicts, samples: A(l.samples).length === 6 ? l.samples.map((x) => ({ text: x.text, expect: x.expect || x.expected })) : samplesFrom(golden), connectors: fillConnectors(l.connectors, v.industry),
@@ -182,7 +184,11 @@ function renderPrd(g, ev, c) {
   const storyIds = Object.fromEntries(A(g.v?.stories).map((x, i) => [String(x.id || ""), `US-${String(i + 1).padStart(2, "0")}`]));
   const storyId = (x) => String(x || "").split(/[,;\s]+/).filter(Boolean).map((t) => storyIds[t] || t).join(", ");
   const v = g.v, a = g.a, l = g.l, u = g.u, e = g.e, d = g.d, b = g.b;
-  const P = (gate) => `> Pending: fills at gate ${gate}.`;
+  const P = (gate) => {
+    const answered = cards().filter((x) => x.gate === gate && x.decision);
+    const head = answered.length ? ["**What you have decided so far:**", ...answered.map((x) => `- ${clean(x.question)} ${"→"} **${clean(x.decision)}**${x.skipped ? " _(we took the recommended default)_" : ""}`), ""].join("\n") + "\n" : "";
+    return `${head}> Pending: fills at gate ${gate}.`;
+  };
   const cs = cards();
   const s = {};
   s[1] = b ? table(["", ""], [["Problem", b.summary?.problem], ["Who it serves", b.summary?.who], ["What we build", b.summary?.build], ["What it never does", b.summary?.never || A(u?.neverList)[0]], ["How we know it works", b.summary?.works], ["First milestone", b.summary?.milestone]]) : P("B");
@@ -208,10 +214,10 @@ function renderPrd(g, ev, c) {
   const prev = read(path.join(OUT, "prd.md"));
   const history = (prev.match(/## Appendix: document history[\s\S]*$/) || [""])[0].trim();
   const version = (prev.match(/\*\*Version:\*\* ([^·]+)·/) || [, b ? "0.1, draft for client review " : "0.1, live draft "])[1].trim().replace(/live draft/, b ? "draft for client review" : "live draft");
-  const md = [`# ${v?.useCase || "(use case, from gate V)"}: product requirements`, "", `<!-- Case: ${clean(caseLine())} -->`, "", `**Client:** ${v?.client || "(from gate V)"} · **Version:** ${version} · **Owner:** product lead · **Date:** ${today()} · **Source:** VALUED run, every decision traceable to a gate file in \`out/\``, "",
+  const md = [`# ${productName() || v?.useCase || "(use case, from gate V)"}: product requirements`, "", `<!-- Case: ${clean(caseLine())} -->`, "", `**Client:** ${v?.client || "(from gate V)"} · **Version:** ${version} · **Owner:** product lead · **Date:** ${today()} · **Source:** VALUED run, every decision traceable to a gate file in \`out/\``, "",
     ...(b ? [`> **Recommendation.** ${clean(b.recommendation)}`, `> **Decision asked of the client.** ${clean(b.decisionAsked)}`, ""] : []),
     ...Object.entries(titles).flatMap(([n, t]) => [`## ${n}. ${t}`, "", s[n], ""]),
-    "## Appendix: client decisions", "", b ? table(["Gate", "Decision", "Chosen by", "Our recommendation"], cs.filter((x) => x.decision).map((x) => [x.gate, x.decision, x.by || x.role, A(x.options)[0]?.label])) : P("B"), "",
+    "## Appendix: client decisions", "", cs.some((x) => x.decision) ? table(["Gate", "Decision", "Chosen by", "Our recommendation"], cs.filter((x) => x.decision).map((x) => [x.gate, x.decision, x.by || x.role, A(x.options)[0]?.label])) : P("B"), "",
     history || ["## Appendix: document history", "", "| Version | Date | Change | Requested by | Sections |", "|---|---|---|---|---|", `| 0.1 | ${today()} | First draft, built gate by gate in the working session | Product lead | All |`].join("\n"), ""].join("\n");
   write(path.join(OUT, "prd.md"), md);
 }
@@ -307,14 +313,16 @@ const [cmd, ...rest] = process.argv.slice(2);
 if (cmd && !(cmd === "clock" && rest[0] === "status")) trace({ kind: "cmd", cmd, args: rest });
 if (cmd === "clock") {
   if (rest[0] === "status") clockStatus();
-  else { fs.mkdirSync(OUT, { recursive: true }); fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: rest[1], t: Date.now(), note: rest.slice(2).join(" ") }) + "\n"); if (rest[1] === "start") { const p = PHASES.find((x) => x[0] === rest[0]); if (p) console.log(`[${p[0]}] ${p[1]} · budget ${p[2]} min`); } }
+  else { fs.mkdirSync(OUT, { recursive: true }); fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: rest[1], t: Date.now(), note: rest.slice(2).join(" ") }) + "\n"); const p = PHASES.find((x) => x[0] === rest[0]); if (rest[1] === "start" && p) console.log(`[${p[0]}] ${p[1]} · budget ${p[2]} min`);
+    // Live status so the prototype and PRD can show what is being built right now, even during a long gate.
+    try { fs.mkdirSync(PROTO, { recursive: true }); const done = rest[1] === "end" && rest[0] === "6"; writeJson(path.join(PROTO, "status.json"), { phase: rest[0], label: p ? p[1] : "", running: rest[1] === "start", done, t: Date.now() }); } catch {} }
 } else if (cmd === "cut") {
   fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: "cut", t: Date.now(), note: rest.slice(1).join(" ") }) + "\n");
   console.log(`Over budget in phase ${rest[0]}: cutting ${rest.slice(1).join(" ")}. Governance, evals, the holdout and the never list stay.`);
 } else if (cmd === "cards") {
   const cs = cards(); const round = Number(rest[1]);
   const mine = cs.filter((c) => Number(c.round) === round);
-  if (rest[0] === "auto") { for (const c of mine) { c.decision = A(c.options)[0]?.label; c.auto = true; c.by = c.role; trace({ kind: "decision", id: c.id, gate: c.gate, role: c.role, question: c.question, decision: c.decision, auto: true }); } writeJson(path.join(OUT, "cards.json"), cs); console.log(`Round ${round}: ${mine.length} cards answered with the recommended option (auto).`); }
+  if (rest[0] === "auto" || rest[0] === "skip") { const skip = rest[0] === "skip"; for (const c of mine) { c.decision = A(c.options)[0]?.label; c.auto = true; if (skip) c.skipped = true; c.by = skip ? "client (skipped, recommended taken)" : c.role; trace({ kind: "decision", id: c.id, gate: c.gate, role: c.role, question: c.question, decision: c.decision, auto: true, skipped: skip }); } writeJson(path.join(OUT, "cards.json"), cs); console.log(skip ? `Round ${round} skipped: ${mine.length} cards took the recommended option so we can move on; the PRD records them as client defaults.` : `Round ${round}: ${mine.length} cards answered with the recommended option (auto).`); }
   else for (const c of mine) { console.log(`\n**"${c.role}": "${c.question}"** If none fits, answer with: ${c.format}`); A(c.options).forEach((o, i) => console.log(`${i + 1}. ${o.label}${i === 0 ? " (Recommended)" : ""}: ${clean(o.tradeoff)}`)); }
 } else if (cmd === "seed") seed(rest[0]);
 else if (cmd === "seal") seal(rest[0], rest[1]);

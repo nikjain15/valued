@@ -141,11 +141,14 @@ function render(text, flashIds = []) {
   const rec = d.quote.find((q) => /Recommendation/.test(q)), ask = d.quote.find((q) => /Decision asked/.test(q));
   $("#exec").innerHTML = rec
     ? `<div class="eyebrow">Executive summary</div><div class="rec">${mdInline(rec.replace(/\*\*Recommendation\.\*\*\s*/, ""))}</div>${ask ? `<div class="ask">${mdInline(ask)}</div>` : ""}`
-    : `<div class="eyebrow">Executive summary</div><div class="rec" style="color:var(--ink-3)">The recommendation is written once every gate has been decided.</div>`;
+    : `<div class="eyebrow">Executive summary</div><div class="rec" style="color:var(--ink-3)">Your recommendation lands here as the gates fill in. The document is already building from what you decide.</div>`;
   $("#toc").innerHTML = d.sections.map((s) => `<li><a href="#${s.id}" class="${s.gate ? "pending" : ""}"><span class="n">${s.num === "A" ? "" : s.num + "."}</span><span>${esc(s.name)}</span></a></li>`).join("");
-  $("#doc").innerHTML = d.sections.map((s) => `<section id="${s.id}"><h2>${s.num === "A" ? "" : `<span class="n">${s.num}.</span>`}<span>${esc(s.name)}</span></h2>${s.gate
-    ? `<div class="pending"><span class="pill plain">Gate ${esc(s.gate)}</span>To be completed when gate ${esc(s.gate)}, ${esc(GATE_NAME[s.gate] || "")}, is decided.</div>`
-    : `<div class="body">${mdToHtml(s.body)}</div>`}</section>`).join("");
+  $("#doc").innerHTML = d.sections.map((s) => {
+    if (!s.gate) return `<section id="${s.id}"><h2>${s.num === "A" ? "" : `<span class="n">${s.num}.</span>`}<span>${esc(s.name)}</span></h2><div class="body">${mdToHtml(s.body)}</div></section>`;
+    const decided = s.body.replace(/^>\s*Pending: fills at gate \w+\.?\s*$/im, "").trim();
+    const box = `<div class="pending"><span class="pill plain">Gate ${esc(s.gate)}</span>We build this out at the ${esc(GATE_NAME[s.gate] || "next")} gate${decided ? ", from what you have decided above" : ""}.</div>`;
+    return `<section id="${s.id}"><h2>${s.num === "A" ? "" : `<span class="n">${s.num}.</span>`}<span>${esc(s.name)}</span></h2>${decided ? `<div class="body">${mdToHtml(decided)}</div>` : ""}${box}</section>`;
+  }).join("");
   decorate($("#doc")); decorate($("#exec")); decorate($("#control"));
   flashIds.forEach((id) => document.getElementById(id)?.classList.add("flash"));
   spy();

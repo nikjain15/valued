@@ -38,6 +38,8 @@ const data = {
   "holdout.json": json("holdout.json", []),
   "router.js": read("router.js", ""),
   "model-cache.json": json("model-cache.json", {}),
+  "cards.json": json(path.join("..", "cards.json"), []),
+  "status.json": json("status.json", {}),
   prdUrl,
 };
 const dataTag = `<script>window.__VALUED__ = ${JSON.stringify(data).replace(/<\/(script)/gi, "<\\/$1")};</script>`;

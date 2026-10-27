@@ -33,6 +33,16 @@ section 17. `out/tools/c check` lists what is still missing, by standard; a run 
 client owns, every recommendation shows its trade-offs, mark every assumed fact (assumed), synthetic data
 only, no em-dashes, tables of at most 12 rows.
 
+**Talk to the client, not about them.** The client is watching the shared screen, so everything printed
+addresses them as "you" and the team as "we". Never narrate "let me ask the client", "the client decides"
+or "asked North-star": say "a couple of quick ones for you", "your call", "let's capture this". Round
+headers are warm and short ("A few quick steers from you", "Now let's shape the first step"), never
+"Round 1, five cards". Present each round's cards with the AskUserQuestion tool (that is the card view the
+client sees); set `multiSelect: true` on any card where several options can hold together (constraints to
+design around, systems to connect, groups to watch), single-select where the answer is one choice
+(autonomy level, release bar, first wave). Record a multi-select answer as the chosen labels joined with
+", " in `decision`.
+
 - **Invent every name.** A placeholder is not synthetic: never write Acme, Contoso, Globex, Initech or
   Example Corp, and never a real company, insurer, bank, airline, retailer, hospital or platform. Build
   names from the case's own words (for example "Northbank Card Services", "Harborline Utilities"). The
@@ -42,7 +52,9 @@ only, no em-dashes, tables of at most 12 rows.
 **Card schema** (`out/cards.json`, an array; append, never rewrite answered cards):
 `{ "id": "R1-1", "round": 0|1|2|3, "gate": "Frame|V|A|L|U|E|D", "role": "<this case's sponsor or owner role>",
 "question": "...", "format": "<own-words answer shape, with an example>", "options": [{ "label", "tradeoff" }],
-"decision": null, "by": null, "effect": "<what the answer changes, a few words>" }`. The first option is our
+"multi": false, "decision": null, "by": null, "effect": "<what the answer changes, a few words>" }`. Set
+`"multi": true` for a card whose options can hold together (constraints, systems to connect, groups to
+watch); ask it with `multiSelect: true` and store the chosen labels joined with ", ". The first option is our
 recommendation. Roles are this case's people (head of card operations, chief nursing officer, controller),
 never a generic "COO" unless the case says COO. 2 to 4 options per card.
 
@@ -81,16 +93,28 @@ honest record of what the number is worth, not a thing to work around.
 ## Phase 0: Frame (3 min)
 
 1. Write the wrapper first (step 2's first two lines), then `out/tools/c clock 0 start`. If the argument is empty or lacks the client, the business problem, or the success
-   measure and deadline, ask only the missing framing cards (round 0), each 3 to 4 typical options:
-   **"Client context"** (industry, size, the unit that owns the problem; format "industry, size, and the unit
-   that owns it (e.g. 'P&C insurer, 40k claims a month, claims operations')"), **"Business problem"** (format
-   "the process, how it shows up, and a rough number (e.g. 'FNOL setup, 20 fields re-keyed, 18 minutes a
-   claim')"), **"Success and timeline"** (format "a metric, a target and a date (e.g. 'setup under 10
-   minutes, pilot in 8 weeks')"). Whenever `inputs/` is empty, also ask **"Material": "What real material
-   can we work from?"** ("Synthetic only for now" recommended when nothing is ready; "Documents in inputs/";
-   "Sample requests or transcripts, de-identified"; "Both"; format "the material, its rough size and who
-   owns it (e.g. '300 policy PDFs, owned by HR operations')"). If files are in `inputs/`, list them in one
-   table instead and print `Grounded in: <n> client files`. Under `--auto` take the first option of each.
+   measure and deadline, ask only the missing framing cards (round 0), each 3 to 4 typical options.
+   Phrase every card the way a consultant opens the conversation on a shared screen: a warm, low-stakes
+   question the client can answer by pointing at an option, never a form field. Keep the format hint so a
+   client who prefers their own words still has the shape.
+   **"Client context": "Just so I'm picturing it right, tell me a bit about your world and which team lives
+   closest to this."** (format "industry, size, and the unit that owns it (e.g. 'P&C insurer, 40k claims a
+   month, claims operations')"), **"Business problem": "Help me understand where things get clunky today.
+   No need to be precise, roughly what happens and how often?"** (format "the process, how it shows up, and
+   a rough number (e.g. 'FNOL setup, 20 fields re-keyed, 18 minutes a claim')"), **"Success and timeline":
+   "If we are celebrating in a few months, what would have changed for you? A ballpark is great."** (format
+   "a metric, a target and a date (e.g. 'setup under 10 minutes, pilot in 8 weeks')"). Whenever `inputs/`
+   is empty, also ask **"Material": "Totally fine either way, do you have examples we could look at, or
+   should we start with stand-ins and bring yours in later?"** ("Synthetic only for now" recommended when
+   nothing is ready; "Documents in inputs/"; "Sample requests or transcripts, de-identified"; "Both";
+   format "the material, its rough size and who owns it (e.g. '300 policy PDFs, owned by HR operations')"). If files are in `inputs/`, list them in one
+   table instead and print `Grounded in: <n> client files`.
+   **Always ask one more framing card, even when the case line is complete: "Product name": "What would you
+   like to call this, so your team recognizes it on screen?"** (3 to 4 short, human product names built from
+   the case in the client's own words, e.g. "MemberReply", "Harbor Claims Copilot", plus "Other"; format "a
+   short product name (e.g. 'MemberReply')"). This name is the title of the prototype and the PRD, so it is
+   shown everywhere instead of the generic use-case label. Append it to `out/cards.json` with `"round": 0`
+   and `"gate": "Frame"`; render reads it as the title. Under `--auto` take the first option of each.
    Print `Engagement: <case line>` when you built it from answers.
 2. Set up:
    ```bash
@@ -103,7 +127,7 @@ honest record of what the number is worth, not a thing to work around.
    P=${PORT:-4317}; lsof -ti :$P | xargs kill 2>/dev/null; PORT=$P node out/proto/server.js   # in the background
    ```
    `open http://localhost:4317/prd` (skip under `--no-open`). Print:
-   `VALUED · 6 gates · governed at every gate · the system drafts, the client decides · live PRD: localhost:4317/prd`.
+   `VALUED · 6 gates · governed at every gate · we draft, you decide · live PRD, filling as we go: localhost:4317/prd`.
 3. Pick the industry key now: `out/tools/c seed <industry>` (a key of `.claude/skills/valued-labels/connectors-library.json`,
    or the closest) prints the systems, golden-set seeds and sweep templates every later gate starts from.
    `out/tools/c clock 0 end`.
@@ -112,19 +136,23 @@ honest record of what the number is worth, not a thing to work around.
 
 `out/tools/c clock 1 start` before drafting anything. Draft five cards from the case line alone (no gate has run yet, so options come from
 the case, the industry and the seed library), append them to `out/cards.json` with `"round": 1`, then
-`out/tools/c cards print 1` (or `out/tools/c cards auto 1` under `--auto`) and record each answer as `decision` and `by`:
+`out/tools/c cards print 1` (or `out/tools/c cards auto 1` under `--auto`) and record each answer as `decision` and `by`.
+If the client would rather not answer a round, run `out/tools/c cards skip 1`: it takes the recommended option on
+every card of the round, logs each as skipped, and lets you move on at once. Say the one line it prints.
 
 | Card | Gate | Header role | Question | Options come from |
 |---|---|---|---|---|
-| R1-1 | V | sponsor | Which outcome must move first? | 2 to 3 north-star metrics with what each rewards and can hide |
-| R1-2 | V | sponsor | What is the hard constraint? | e.g. nothing customer-facing unreviewed, existing platform only, data stays in; each with what it rules out |
-| R1-3 | A | IT and risk | May the prototype call a hosted model? | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
-| R1-4 | U | risk owner | How much autonomy in the first 90 days? | suggest only, draft with approval, act on low-risk actions |
-| R1-5 | U | operations owner | Who owns an escalation? | the existing path, a specialist team, the risk desk |
+| R1-1 | V | sponsor | If we could move just one thing, what would you most want it to be? | 2 to 3 north-star metrics with what each rewards and can hide |
+| R1-2 | V | sponsor | Anything that is off the table for you, something we should design around from the start? | e.g. nothing customer-facing unreviewed, existing platform only, data stays in; each with what it rules out |
+| R1-3 | A | IT and risk | Where are you comfortable having this run, can we let it try a hosted model on synthetic data? | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
+| R1-4 | U | risk owner | How hands-on do you want to stay in the first 90 days? | suggest only, draft with approval, act on low-risk actions |
+| R1-5 | U | operations owner | When it is a tougher call, who should it loop in? | the existing path, a specialist team, the risk desk |
 
 Recommend: the outcome tied to the sponsor's stated goal; the constraint that de-risks a first wave; a hosted
 model on synthetic data whenever a free-text job exists (rules only when the case is mostly rules); draft with
-approval; the existing escalation path. `out/tools/c clock 1 end`.
+approval; the existing escalation path. Then `out/tools/c render` so the PRD and the prototype fill in the round-1
+answers at once, before any gate has run: the client sees the outcome, the constraint and the autonomy choice
+land in the document the moment they decide them. `out/tools/c clock 1 end`.
 
 ## Phase 2: V then A (7 min)
 
@@ -139,15 +167,17 @@ assistants, the seed groups), append with `"round": 2`, print or auto, record an
 
 | Card | Gate | Header role | Question |
 |---|---|---|---|
-| R2-1 | A | sponsor | Which ideas go first? (A's wave options) |
-| R2-2 | L | operations owner | Which group worries you most? |
-| R2-3 | L | data owner | What can the pilot connect to? |
-| R2-4 | E | risk owner | Bar for the riskiest miss? (0.99 / 0.97 / 0.95) |
-| R2-5 | D | sponsor | What is the pilot scope? |
-| R2-6 | D | sponsor | What would make you stop? |
+| R2-1 | A | sponsor | Of these, which feels like the natural place to start? (A's wave options) |
+| R2-2 | L | operations owner | Is there a type of case you would want us to be extra careful with? |
+| R2-3 | L | data owner | For a first run, what is worth plugging in, and what can stay manual? |
+| R2-4 | E | risk owner | How confident would you need to feel before you are comfortable going live? (0.99 / 0.97 / 0.95) |
+| R2-5 | D | sponsor | Who would be a good small group to try this with first? |
+| R2-6 | D | sponsor | If it is not landing, what would be your sign to pause? |
 
-If the client picks a different first wave than A recommended, update `a.json` (`waves.preferred`, the
-`wave` field on scores) and render before phase 4. `out/tools/c clock 3 end`.
+`out/tools/c cards skip 2` takes the recommended option on every round-2 card and logs it as skipped if the
+client would rather move on. If the client picks a different first wave than A recommended, update `a.json`
+(`waves.preferred`, the `wave` field on scores). Always `out/tools/c render` before phase 4, so the PRD and the
+prototype reflect round 2 at once. `out/tools/c clock 3 end`.
 
 ## Phase 4: L and U in parallel (5 min)
 

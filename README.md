@@ -75,6 +75,22 @@ The gates came out of how these two products were built. Each gate points at som
 One-page briefs in the workflow's own format: [`examples/curecue-brief.html`](examples/curecue-brief.html),
 [`examples/relay-brief.html`](examples/relay-brief.html). They use the design tokens of Relay.
 
+## Repository layout
+
+| Path | What it holds |
+|---|---|
+| `.claude/skills/valued*` | The method itself: the conductor and the seven gate skills (V, A, L, U, E, D, Build) plus audit, revise and learn |
+| `.claude/agents` | The sub-agents a gate launches (use-case scorers, prototype builder, guard model) |
+| `index.html` | The public landing page (what you see on the hosted site) |
+| `examples/` | Finished sample runs, to show the output without running one live |
+| `assets/` | Images and static files for the landing page |
+| `learning/` | The learning log: signals from real use that feed `/valued-learn` |
+| `inputs/` | Where a client drops real material to ground a run (git-ignored, never committed) |
+| `out/` | The current run's output: gate files, PRD, prototype (git-ignored, regenerated each run) |
+
+Only the first six are committed. `inputs/`, `out/` and any `out-*/` are working folders, ignored by git,
+so the repository itself stays clean for review.
+
 ## Use it
 
 Runs in Claude Code: the skills and agents load from `.claude/`.

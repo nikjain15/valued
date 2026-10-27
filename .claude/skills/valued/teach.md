@@ -9,14 +9,15 @@ run without asking: take the recommended option at every card and log it as "(au
 **No case given, or only a rough one.** In a live session the client describes the case out loud and the
 product lead may type nothing, or a few words. If the argument is empty or missing the client, the
 business problem, or the success measure and deadline, open with one short framing message ("Before we
-start, three questions to frame the engagement") and up to three cards, each with 3 to 4 typical options
-and room for the client's own words:
-- **"Client context": "Which organization and business area are we working with?"** (industry, size,
-  the unit that owns the problem)
-- **"Business problem": "Which process or decision is underperforming today, and how does it show up?"**
-  (cost, cycle time, error rate, risk or customer impact)
-- **"Success and timeline": "What outcome would the sponsor call success, and by when?"** (the metric
-  that must move, the deadline, the decision this work feeds)
+start, let me get oriented with a couple of things") and up to three cards, each with 3 to 4 typical
+options the client can point at and room for their own words. Keep the tone warm and low-stakes, a partner
+thinking alongside them, never a form:
+- **"Client context": "Just so I'm picturing it right, tell me a bit about your world and which team
+  lives closest to this."** (industry, size, the unit that owns the problem)
+- **"Business problem": "Help me understand where things get clunky today. No need to be precise, roughly
+  what happens and how often?"** (cost, cycle time, error rate, risk or customer impact)
+- **"Success and timeline": "If we are celebrating in a few months, what would have changed for you? A
+  ballpark is great."** (the metric that must move, the deadline, the decision this work feeds)
 Each ends with its own-words format: client context "industry, size, and the unit that owns it
 (e.g. 'P&C insurer, 40k claims a month, claims operations')"; business problem "the process, how it
 shows up, and a rough number (e.g. 'FNOL setup, 20 fields re-keyed, 18 minutes a claim')"; success and
