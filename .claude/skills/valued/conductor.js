@@ -155,6 +155,18 @@ function fillConnectors(list, industry) {
   const add = A(lib[key]).map((c) => ({ ...c, vendor: vend(c.vendor) })).filter((c) => !have.some((h) => h.name === c.name)).map((c) => ({ ...c, status: ["channel", "knowledge", "testing"].includes(c.category) ? "connected" : "planned", writeBack: false }));
   return have.concat(add).slice(0, Math.max(6, have.length + add.length));
 }
+// A per-case accent, derived (never asked): one hue picked from the industry, else hashed to a curated set.
+// The whole founderfirst.one brand ramp is regenerated from that one hue, so the roles and relationships are
+// unchanged (theming within the system, not a restyle). The client overrules it with a /valued-revise.
+const ACCENT_HUE_SET = [210, 165, 141, 262, 22, 340, 190, 288];
+const ACCENT_INDUSTRY = [[/credit|bank|fintech|union|lend|loan/, 210], [/insur|claims|underwrit|annuit/, 262], [/health|hospital|nurs|pharma|clinic|care|medic|patient/, 165], [/utility|energy|power|water|grid|electric/, 22], [/retail|commerce|shop|store|merchant|grocer/, 340], [/telco|telecom|media|mobile|broadband|carrier/, 288], [/logistic|airline|travel|freight|ship|fleet|transit/, 190]];
+function accentFor(industry, client) {
+  const s = String(industry || "").toLowerCase();
+  let hue = (ACCENT_INDUSTRY.find(([re]) => re.test(s)) || [])[1];
+  if (hue === undefined) { const str = String(industry || client || "valued"); let h = 0; for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0; hue = ACCENT_HUE_SET[h % ACCENT_HUE_SET.length]; }
+  const H = (sat, light) => `hsl(${hue} ${sat}% ${light}%)`;
+  return { hue, brand: H(45, 36), hover: H(45, 30), soft: H(43, 85), tint: H(45, 94), strong: H(55, 27) };
+}
 function renderCase(g, ev) {
   const v = g.v || {}, a = g.a || {}, l = g.l || {}, u = g.u || {}, b = g.b || {};
   const prev = json(path.join(PROTO, "case.json"), {});
@@ -163,6 +175,8 @@ function renderCase(g, ev) {
   const c = {
     ...prev,
     title: productName() || v.title, client: v.client, useCase: productName() || v.useCase, headline: v.headline, scenario: v.scenario, user: v.user, inputLabel: v.inputLabel, persona: v.persona, industry: v.industry, labels: v.labels,
+    accent: accentFor(v.industry, v.client),
+    heroStat: A(v.metrics)[0] ? { metric: A(v.metrics)[0].metric, from: A(v.metrics)[0].baseline, to: A(v.metrics)[0].target } : (v.northStar?.preferred ? { metric: v.northStar.preferred, from: "", to: "" } : null),
     promise: a.promise, shape: a.shape, agents: a.agents, itemNoun: a.itemNoun, recordSuffix: a.recordSuffix, dismissReasons: a.dismissReasons,
     sweeps: A(a.sweeps).map((s, i) => ({ agent: s.agent, kind: s.kind, schedule: s.schedule, checks: s.checks, findings: A((b.sweepFindings || [])[i] || s.findings) })),
     verdicts: l.verdicts, samples: A(l.samples).length === 6 ? l.samples.map((x) => ({ text: x.text, expect: x.expect || x.expected })) : samplesFrom(golden), connectors: fillConnectors(l.connectors, v.industry),
@@ -313,9 +327,20 @@ const [cmd, ...rest] = process.argv.slice(2);
 if (cmd && !(cmd === "clock" && rest[0] === "status")) trace({ kind: "cmd", cmd, args: rest });
 if (cmd === "clock") {
   if (rest[0] === "status") clockStatus();
-  else { fs.mkdirSync(OUT, { recursive: true }); fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: rest[1], t: Date.now(), note: rest.slice(2).join(" ") }) + "\n"); const p = PHASES.find((x) => x[0] === rest[0]); if (rest[1] === "start" && p) console.log(`[${p[0]}] ${p[1]} · budget ${p[2]} min`);
+  else { fs.mkdirSync(OUT, { recursive: true }); const now = Date.now(); fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: rest[1], t: now, note: rest.slice(2).join(" ") }) + "\n"); const p = PHASES.find((x) => x[0] === rest[0]); if (rest[1] === "start" && p) console.log(`[${p[0]}] ${p[1]} · budget ${p[2]} min`);
+    // On end, print the real time this phase took, so the run shows how long each gate's output took to produce.
+    if (rest[1] === "end" && p) { const st = [...clockEntries()].reverse().find((e) => e.phase === rest[0] && e.event === "start"); if (st) { const s = Math.max(0, Math.round((now - st.t) / 1000)); console.log(`[${p[0]}] ${p[1]} · done in ${s >= 60 ? `${Math.floor(s / 60)}m ${s % 60}s` : `${s}s`}`); } }
     // Live status so the prototype and PRD can show what is being built right now, even during a long gate.
     try { fs.mkdirSync(PROTO, { recursive: true }); const done = rest[1] === "end" && rest[0] === "6"; writeJson(path.join(PROTO, "status.json"), { phase: rest[0], label: p ? p[1] : "", running: rest[1] === "start", done, t: Date.now() }); } catch {} }
+} else if (cmd === "step") {
+  // Fine-grained sub-step of the running phase, for the long opaque gates (E above all): updates the live
+  // "Building now:" line on the PRD and prototype, and prints one line in the run so you see what it is doing.
+  const label = rest.join(" ").trim();
+  const started = [...clockEntries()].reverse().find((e) => e.event === "start");
+  const sec = started ? Math.max(0, Math.round((Date.now() - started.t) / 1000)) : 0;
+  const p = started && PHASES.find((x) => x[0] === started.phase);
+  try { fs.mkdirSync(PROTO, { recursive: true }); writeJson(path.join(PROTO, "status.json"), { phase: started ? started.phase : "", label: p ? `${p[0]}: ${label}` : label, step: label, running: true, done: false, t: Date.now() }); } catch {}
+  console.log(`  ${"·"} ${label}${sec >= 20 ? ` (${sec >= 60 ? `${Math.floor(sec / 60)}m ${sec % 60}s` : `${sec}s`} into this phase)` : ""}`);
 } else if (cmd === "cut") {
   fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: "cut", t: Date.now(), note: rest.slice(1).join(" ") }) + "\n");
   console.log(`Over budget in phase ${rest[0]}: cutting ${rest.slice(1).join(" ")}. Governance, evals, the holdout and the never list stay.`);
