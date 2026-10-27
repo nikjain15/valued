@@ -27,7 +27,7 @@ skill lists under "Output". Cards live in one file, `out/cards.json`. `out/tools
 files `out/1-value.md` to `out/6-deploy.md`, `out/state.md`, `out/prd.md` (every section), `out/proto/case.json`,
 `out/prd.html` and `out/brief.html`. **Never hand-edit those rendered files**: change the JSON and render again.
 The model writes judgement only: drafts, options and trade-offs, reasons, the summary, the recommendation and
-section 17. `out/tools/c check` lists what is still missing, by standard; a run is done when it prints `All checks pass.`
+section 18. `out/tools/c check` lists what is still missing, by standard; a run is done when it prints `All checks pass.`
 
 **The client decides; the system drafts.** The rules in `CLAUDE.md` hold in every phase: ask only what the
 client owns, every recommendation shows its trade-offs, mark every assumed fact (assumed), synthetic data
@@ -219,7 +219,7 @@ sub-steps on top because it alone runs long enough to look stuck.
 ## Phase 6: B (3 min)
 
 `out/tools/c clock 6 start`. Run `valued-build`: it writes `b.json` (summary, recommendation, requirements, FAQ, sweep
-findings, section 17), runs `out/tools/c render`, `out/tools/c check` until it prints `All checks pass.` (fix the JSON, never
+findings, section 18), runs `out/tools/c render`, `out/tools/c check` until it prints `All checks pass.` (fix the JSON, never
 the rendered files), builds the hosted page, and publishes (or, if publishing is unavailable or not allowed,
 says so in one line and keeps localhost). Then `out/tools/c clock 6 end`, `out/tools/c report` (writes
 `out/run-report.json`: time per phase, questions, revisions, flags, eval blocks and fixes, cuts), and the

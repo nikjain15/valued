@@ -408,6 +408,7 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const VSTYLE = { answer: "ok", human: "warn", escalate: "bad" };
 const MODELS = [
+  { id: "claude-fable-5-1", short: "Fable 5.1", tier: "quick", pin: 0.05, pout: 0.25, note: "lightweight multi-purpose" },
   { id: "claude-haiku-5-5", short: "Haiku 5.5", tier: "quick", pin: 0.10, pout: 0.50, note: "fastest, lowest cost" },
   { id: "claude-sonnet-5-5", short: "Sonnet 5.5", tier: "default", pin: 2, pout: 10, note: "balanced" },
   { id: "claude-opus-5-5", short: "Opus 5.5", tier: "complex", pin: 4, pout: 20, note: "most capable" },
@@ -427,7 +428,7 @@ const NAMES = {
 let CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules" }, ROUTER = null, AI = null, GOLDEN = [], HOLDOUT = [], CUSTOM = [], CARDS = [], STATUS = {};
 let SHAPE = SHAPES.desk, ITEMS = [], OPEN = null, LOG = [], stats = { approved: 0, edited: 0 };
 let evalSet = "golden", engine = "rules", RUNS = [], selRun = null, ctl = null;
-const model = () => MODELS.find((m) => m.id === $("#model").value) || MODELS[1];
+const model = () => MODELS.find((m) => m.id === $("#model").value) || MODELS.find((m) => m.tier === "default") || MODELS[0];
 const rowsFor = (s) => (s === "golden" ? GOLDEN : s === "holdout" ? HOLDOUT : CUSTOM);
 const clean = (t) => String(t || "").replace(/^\[[A-Z]{2,3}\]\s*/, "");
 const initials = (n) => n.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
