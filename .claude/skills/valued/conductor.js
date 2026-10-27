@@ -109,6 +109,7 @@ function archSvg(a, c) {
   st.push({ t: "Person decides", k: "human", m: "", lat: "" });
   const retCol = Math.max(1, st.findIndex((s) => /retriev|search|index/i.test(s.t)));
   const stores = [{ t: "Document index", col: retCol }, { t: "Audit log", col: st.length - 1 }];
+  if (stores[0].col === stores[1].col) stores[0].col = Math.max(1, stores[1].col - 1);
   const ext = A(c && c.connectors).slice(0, 4).map((cn) => {
     const cat = String(cn.category || cn.name || "").toLowerCase();
     let target = retCol;
@@ -126,7 +127,8 @@ function archSvg(a, c) {
   if (EXTH) { el += `<rect x="4" y="${TOP}" width="${W - 8}" height="${EXTH - 8}" rx="8" fill="#EAF3DE"/><text x="12" y="${TOP + 18}" font-size="13" fill="#3B6D11">External systems</text>`; }
   LANES.forEach((L, l) => { const y = TOP + EXTH + l * LANEH; el += `<rect x="4" y="${y}" width="${W - 8}" height="${LANEH - 10}" rx="8" fill="${L[1]}"/><text x="12" y="${y + 19}" font-size="13" fill="${L[2]}">${L[0]}</text>`; });
   for (let i = 0; i < st.length - 1; i++) { const xA = cx(i) + BW, yA = cyOf(st[i]), xB = cx(i + 1), yB = cyOf(st[i + 1]), mx = (xA + xB) / 2; el += `<path d="M ${xA} ${yA} H ${mx} V ${yB} H ${xB}" fill="none" stroke="#888780" stroke-width="1.5"/><path d="M ${xB} ${yB} l -8 -5 l 0 10 z" fill="#888780"/>`; }
-  ext.forEach((e, j) => { const x = cx(e.target) + (j % 2 ? 16 : -16), ey = TOP + 24, cxm = x + BW / 2, ty = cyOf(st[e.target]) - BH / 2; el += `<rect x="${x}" y="${ey}" width="${BW}" height="38" rx="8" fill="#ffffff" stroke="#97C459"/><text x="${cxm}" y="${ey + 17}" font-size="12" text-anchor="middle" fill="#3B6D11">${escX(wrap2(e.nm, 16)[0])}</text><text x="${cxm}" y="${ey + 31}" font-size="9" text-anchor="middle" fill="#888780">${escX(e.vend)}</text><path d="M ${cxm} ${ey + 38} V ${ty}" stroke="#97C459" stroke-dasharray="3 3" fill="none"/>`; });
+  const eBW = ext.length ? Math.min(BW, Math.floor((W - 24) / ext.length) - 10) : BW, eGap = ext.length ? (W - 16 - ext.length * eBW) / (ext.length + 1) : 0;
+  ext.forEach((e, j) => { const x = 8 + eGap + j * (eBW + eGap), ey = TOP + 24, cxm = x + eBW / 2, tx = cx(e.target) + BW / 2, ty = cyOf(st[e.target]) - BH / 2; el += `<rect x="${x}" y="${ey}" width="${eBW}" height="38" rx="8" fill="#ffffff" stroke="#97C459"/><text x="${cxm}" y="${ey + 17}" font-size="12" text-anchor="middle" fill="#3B6D11">${escX(wrap2(e.nm, Math.floor(eBW / 7))[0])}</text><text x="${cxm}" y="${ey + 31}" font-size="9" text-anchor="middle" fill="#888780">${escX(e.vend)}</text><path d="M ${cxm} ${ey + 38} L ${tx} ${ty}" stroke="#97C459" stroke-dasharray="3 3" fill="none"/>`; });
   const dy = laneY(3);
   for (const store of stores) { const x = cx(store.col), w = BW, y = dy - 22, cxm = x + w / 2; el += `<path d="M ${x} ${y + 7} V ${y + 37}" stroke="#B4B2A9" fill="none"/><path d="M ${x + w} ${y + 7} V ${y + 37}" stroke="#B4B2A9" fill="none"/><ellipse cx="${cxm}" cy="${y + 37}" rx="${w / 2}" ry="7" fill="#F8F7F2" stroke="#B4B2A9"/><rect x="${x}" y="${y + 7}" width="${w}" height="30" fill="#F8F7F2" stroke="none"/><ellipse cx="${cxm}" cy="${y + 7}" rx="${w / 2}" ry="7" fill="#F8F7F2" stroke="#B4B2A9"/><text x="${cxm}" y="${y + 27}" font-size="11" text-anchor="middle" fill="#444441">${escX(store.t)}</text><path d="M ${cxm} ${cyOf(st[store.col]) + BH / 2} V ${y}" stroke="#B4B2A9" stroke-dasharray="3 3" fill="none"/>`; }
   st.forEach((s, i) => {
