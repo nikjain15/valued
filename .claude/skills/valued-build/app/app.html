@@ -178,6 +178,11 @@
   .statb { background: var(--paper); border-radius: var(--r-card); padding: 8px 12px; min-width: 92px; } .statb b { display: block; font-family: var(--font-display); font-size: 20px; } .statb span { font-size: var(--fs-micro); color: var(--ink-3); }
   .ready-banner { margin-top: 18px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
   .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--ink-3); display: inline-block; flex: none; animation: spin 0.8s linear infinite; }
+  .hero-band { margin-top: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 16px 20px; border-radius: var(--r-card); background: var(--brand-tint); border: 1px solid var(--brand-soft); }
+  .hero-eyebrow { font: 600 11px var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--brand-strong); }
+  .hero-metric { font: 600 clamp(18px, 2.4vw, 24px) var(--font-serif, var(--font-sans)); color: var(--ink); margin-top: 2px; }
+  .hero-move { display: inline-flex; align-items: center; gap: 10px; font: 600 clamp(16px, 2vw, 22px) var(--font-sans); color: var(--brand-strong); white-space: nowrap; }
+  .hero-arr { color: var(--brand); }
   @keyframes spin { to { transform: rotate(360deg); } }
   .clock { font-size: 11.5px; font-weight: 600; padding: 2px 9px; border-radius: var(--r-pill); background: var(--paper); border: 1px solid var(--line-2); color: var(--ink-3); white-space: nowrap; }
   .clock.soon { background: var(--amber-bg); border-color: #f1dfc2; color: var(--amber-strong); }
@@ -271,6 +276,7 @@
       <section class="page" id="p-home">
         <div class="hello"><span class="spark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></span>
           <div><h2 id="greet">Good morning.</h2><p id="greetSub"></p></div></div>
+        <div id="hero"></div>
         <div id="decided"></div>
         <div class="tiles" id="tiles"></div>
         <div id="readyBanner"></div>
@@ -509,6 +515,7 @@ async function boot() {
   $("#newTitle").textContent = `New ${SHAPE.noun[0]}`; $("#newHelp").textContent = SHAPE.newHelp; $("#newText").placeholder = (CASE.samples || [])[0]?.text || "";
   $("#foot").textContent = `${CASE.title || "Prototype"} · ${CASE.client || ""} · version ${CASE.version || "proto-0.1"} · synthetic data, not for production use.`;
   if (HOSTED) { const prd = window.__VALUED__.prdUrl; $("#prdLink").hidden = !prd; if (prd) $("#prdLink").href = prd; }
+  applyAccent();
   applyLabels();
   buildQueue(persona);
   renderHome(persona); renderHow(); renderFaq(); renderGov(); renderEvalControls(); renderBoard(); renderSources(); renderConnectors();
@@ -546,6 +553,23 @@ function renderClocks() {
 // While the product is being built, the home reflects the decisions as product configuration, not as a
 // Q&A list: each answer becomes a setting of the thing being built. Once the router exists, the real
 // product (queue, evals) takes over and this panel disappears.
+// Theme the founderfirst.one brand ramp from the case's derived accent (same tokens, different hue).
+function applyAccent() {
+  const a = CASE.accent; if (!a) return;
+  const r = document.documentElement.style;
+  if (a.brand) r.setProperty("--brand", a.brand);
+  if (a.hover) r.setProperty("--brand-hover", a.hover);
+  if (a.soft) r.setProperty("--brand-soft", a.soft);
+  if (a.tint) r.setProperty("--brand-tint", a.tint);
+  if (a.strong) r.setProperty("--brand-strong", a.strong);
+}
+function renderHero() {
+  const el = $("#hero"); if (!el) return;
+  const h = CASE.heroStat;
+  if (!h || !h.metric) { el.innerHTML = ""; return; }
+  const arrow = (h.from && h.to) ? `<span class="hero-move"><b>${esc(String(h.from))}</b><span class="hero-arr">→</span><b>${esc(String(h.to))}</b></span>` : "";
+  el.innerHTML = `<div class="hero-band"><div><span class="hero-eyebrow">The number we move</span><div class="hero-metric">${esc(h.metric)}</div></div>${arrow}</div>`;
+}
 function renderBuilding() {
   const el = $("#decided"); if (!el) return;
   const ans = (CARDS || []).filter((c) => c.decision);
@@ -570,6 +594,7 @@ function renderBuilding() {
   </div>`;
 }
 function renderHome(persona = CASE.persona || { name: "there" }) {
+  renderHero();
   renderBuilding();
   const c = counts(), total = ITEMS.length, V = CASE.verdicts || {};
   const hour = new Date().getHours(), part = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
