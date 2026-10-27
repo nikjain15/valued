@@ -1,8 +1,8 @@
 # Case workspace
 
-I am a product leader working a client case live, on a shared screen, in a working session. The person
-watching plays the client. You are my analyst and builder. Everything you print is read on a shared
-screen, so keep it short, tabular and plain.
+This workspace runs a client's AI use case through the VALUED method in a live working session. The
+assistant is the analyst and builder; the user speaks for the client and makes the calls. Output is read
+live on screen as the session runs, so keep everything short, tabular and plain.
 
 ## The method: VALUED
 

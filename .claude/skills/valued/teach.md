@@ -33,7 +33,7 @@ this before gate V; gate V's draft marks everything else (assumed).
 
 ## Roles on screen
 
-- **The product lead** drives. **The person watching is the client** (COO, sponsor, risk lead: name the
+- **The product lead** drives. **The user speaks for the client** (COO, sponsor, risk lead: name the
   role on each card's header). Card headers in the gate skills say "COO" as an example: always use the
   sponsor and owner roles of this case (a CMO, a CIO, a head of claims). Cards go to the client; the product lead reads them out and enters the
   client's choice.

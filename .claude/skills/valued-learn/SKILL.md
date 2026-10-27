@@ -14,6 +14,10 @@ Works in the framework repo (`~/dev/valued`), never in a case workspace. Nik app
 - After every run: read `out/run-report.json`; one signal per item flagged "This is wrong" (source "flag"),
   per eval block (source "eval block", with the fix), per conductor cut (source "overrun"), and per
   `checks` entry still open (source "check").
+- After every run's review (`out/review.md`): one signal per reviewer finding (source "review"), gate = the
+  gate the reviewer named, evidence = the claim and what the evidence actually said. Log it even when the
+  fix step already closed it: learning removes the pattern that produced the misrepresentation, not the one
+  instance, so a recurring overstatement or unmarked assumption becomes a change to the skill that caused it.
 - Interviewer pushback or Nik's notes: source "pushback" or "note", in his words.
 
 Append to `learning/signals.md` under `## Signals`, before the "Status updates" heading, with the next
