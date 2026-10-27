@@ -200,10 +200,28 @@ the rendered files), builds the hosted page, and publishes (or, if publishing is
 says so in one line and keeps localhost). Then `out/tools/c clock 6 end`, `out/tools/c report` (writes
 `out/run-report.json`: time per phase, questions, revisions, flags, eval blocks and fixes, cuts), and the
 audit: `node .claude/skills/valued-audit/audit.js --port 4317` (the `valued-audit` skill: the eight standards,
-every issue with its owner and fix, `out/observe.html`). Print `out/tools/c clock status`, the audit's standards row
-and open issues, and the closing line, nothing else:
+every issue with its owner and fix, `out/observe.html`).
 
-`Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Run: out/observe.html · Audit: /valued-audit · Feedback: /valued-revise <what to change>`
+**Review, fix and learn (the self-improving loop).** The audit checks the run is structurally complete; the
+reviewer checks it does not misrepresent what was built.
+1. **Review.** Launch the `valued-reviewer` subagent (independent context, reports only). It reads the PRD,
+   the gate files, the prototype and the **fresh** eval output, and writes `out/review.md`: every claim the
+   evidence does not support, every overstatement, every unmarked assumption, every number that does not
+   match the gate data, each with a severity (blocker, should-fix, note), where it is, and the fix.
+2. **Fix.** For each blocker and should-fix, change the **owning gate JSON** (never the rendered PRD,
+   `case.json` or prototype files) and `out/tools/c render` so the PRD and the prototype update together;
+   a number is fixed at its source, never by hand-editing `prd.md`. Then launch the reviewer once more to
+   confirm. A finding that still stands is reported in one line, never hidden or edited away in the
+   rendered file.
+3. **Learn.** Append each confirmed finding to `learning/signals.md` (source "review", the gate it named,
+   the evidence), so `/valued-learn` can turn a repeated misrepresentation into a change to the skill that
+   caused it, and the next run does not make it. A finding the reviewer raised and the fix closed is still
+   logged: the pattern, not the one instance, is what learning removes.
+
+Print `out/tools/c clock status`, the audit's standards row and open issues, the reviewer's verdict line, and
+the closing line, nothing else:
+
+`Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Run: out/observe.html · Review: out/review.md · Audit: /valued-audit · Feedback: /valued-revise <what to change>`
 
 Under `--no-open` skip every `open`; otherwise `open out/brief.html`.
 

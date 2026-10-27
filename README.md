@@ -43,8 +43,8 @@ Production misses become new labels, so D loops back to L.
   and vendor fact only the client knows). The answer sets how it thinks: rules only, rules decide and a
   model drafts from the cited source, or a model proposes and rules guard escalation.
 - **Option cards, recommendation first.** Every gate shows a concrete draft before it asks anything, and
-  asks at most two questions, each with the product lead's recommendation first. The person in the room
-  plays the client and chooses.
+  asks at most two questions, each with the product lead's recommendation first. The client makes the
+  call; the system drafts and records who decided.
 
 ## Principles
 
