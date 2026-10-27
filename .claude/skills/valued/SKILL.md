@@ -90,6 +90,21 @@ fixes the router grades its own author. If subagents are genuinely unavailable, 
 `holdout single-context` and let the audit fail the run as not independent; that failure is the
 honest record of what the number is worth, not a thing to work around.
 
+**Thin context, and always say what is running (the default).** The quality lives in the gate JSON files on
+disk, not in this conversation: `render` rebuilds the PRD and prototype from `out/gates/*.json`, so trimming
+what the conductor holds never costs quality. So **run every gate as a sub-agent**, not with the `Skill` tool
+in the conductor's own context: for each of V, A, L, U, E, D and B launch a `claude` sub-agent (parallel
+phases launch their two together) told to "read `.claude/skills/valued-<gate>/SKILL.md` and follow it, read
+the answered cards and the gate files it names, write only `out/gates/<k>.json` and its own `out/proto/*`
+files, do not run `render`, and reply in one line." The gate skill's full text then stays in the sub-agent's
+context, never the conductor's; the conductor renders once when the gate(s) return. Use the `Skill` tool in
+the conductor's own context only under `--teach` or `--lean`.
+**Say what each agent is doing, with its real time.** On launching each gate or sub-agent, print one short
+line naming its job ("Writing the answer key and sealing the holdout", "Scoring 12 use cases on 3 lenses").
+The harness shows each sub-agent's `· took Xs` when it returns, and `out/tools/c clock <phase> end` now prints
+the phase's real elapsed ("[4] L and U · done in 4m 10s"); for E, also emit the `step` sub-updates above. So
+the run always shows what is happening and how long it took, in one line each, without filling the context.
+
 ## Phase 0: Frame (3 min)
 
 1. Write the wrapper first (step 2's first two lines), then `out/tools/c clock 0 start`. If the argument is empty or lacks the client, the business problem, or the success
@@ -191,6 +206,15 @@ prototype reflect round 2 at once. `out/tools/c clock 3 end`.
 `valued-deploy` together. If the dev eval is blocked, E asks the one extra card **"Ship anyway, or fix
 first?"** (round 3; "Fix first" recommended), fixes the router, never the labels, and runs the holdout. When
 both are back, `out/tools/c render`. `out/tools/c clock 5 end`.
+
+**E is the longest and most opaque gate, so narrate its sub-steps.** Before each sub-step of E, run
+`out/tools/c step "<what it is doing>"`: it updates the live "Building now:" line on the PRD and prototype
+and prints one line in the run. Emit, in order: `step "building the router"`, `step "scoring the guard model
+over <n> texts"`, `step "running the dev eval"` (then print the eval's gate lines), `step "running the sealed
+holdout"` (then its lines), and, only on a block, `step "repairing the router, round 1"` then
+`step "re-running dev, then the sealed holdout"`. Each `step` is one line, so the run stays lean while you
+always know where E is. The other gates get their sub-agent `· took Xs` from the harness; E gets these
+sub-steps on top because it alone runs long enough to look stuck.
 
 ## Phase 6: B (3 min)
 

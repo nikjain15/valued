@@ -327,9 +327,20 @@ const [cmd, ...rest] = process.argv.slice(2);
 if (cmd && !(cmd === "clock" && rest[0] === "status")) trace({ kind: "cmd", cmd, args: rest });
 if (cmd === "clock") {
   if (rest[0] === "status") clockStatus();
-  else { fs.mkdirSync(OUT, { recursive: true }); fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: rest[1], t: Date.now(), note: rest.slice(2).join(" ") }) + "\n"); const p = PHASES.find((x) => x[0] === rest[0]); if (rest[1] === "start" && p) console.log(`[${p[0]}] ${p[1]} · budget ${p[2]} min`);
+  else { fs.mkdirSync(OUT, { recursive: true }); const now = Date.now(); fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: rest[1], t: now, note: rest.slice(2).join(" ") }) + "\n"); const p = PHASES.find((x) => x[0] === rest[0]); if (rest[1] === "start" && p) console.log(`[${p[0]}] ${p[1]} · budget ${p[2]} min`);
+    // On end, print the real time this phase took, so the run shows how long each gate's output took to produce.
+    if (rest[1] === "end" && p) { const st = [...clockEntries()].reverse().find((e) => e.phase === rest[0] && e.event === "start"); if (st) { const s = Math.max(0, Math.round((now - st.t) / 1000)); console.log(`[${p[0]}] ${p[1]} · done in ${s >= 60 ? `${Math.floor(s / 60)}m ${s % 60}s` : `${s}s`}`); } }
     // Live status so the prototype and PRD can show what is being built right now, even during a long gate.
     try { fs.mkdirSync(PROTO, { recursive: true }); const done = rest[1] === "end" && rest[0] === "6"; writeJson(path.join(PROTO, "status.json"), { phase: rest[0], label: p ? p[1] : "", running: rest[1] === "start", done, t: Date.now() }); } catch {} }
+} else if (cmd === "step") {
+  // Fine-grained sub-step of the running phase, for the long opaque gates (E above all): updates the live
+  // "Building now:" line on the PRD and prototype, and prints one line in the run so you see what it is doing.
+  const label = rest.join(" ").trim();
+  const started = [...clockEntries()].reverse().find((e) => e.event === "start");
+  const sec = started ? Math.max(0, Math.round((Date.now() - started.t) / 1000)) : 0;
+  const p = started && PHASES.find((x) => x[0] === started.phase);
+  try { fs.mkdirSync(PROTO, { recursive: true }); writeJson(path.join(PROTO, "status.json"), { phase: started ? started.phase : "", label: p ? `${p[0]}: ${label}` : label, step: label, running: true, done: false, t: Date.now() }); } catch {}
+  console.log(`  ${"·"} ${label}${sec >= 20 ? ` (${sec >= 60 ? `${Math.floor(sec / 60)}m ${sec % 60}s` : `${sec}s`} into this phase)` : ""}`);
 } else if (cmd === "cut") {
   fs.appendFileSync(CLOCK, JSON.stringify({ phase: rest[0], event: "cut", t: Date.now(), note: rest.slice(1).join(" ") }) + "\n");
   console.log(`Over budget in phase ${rest[0]}: cutting ${rest.slice(1).join(" ")}. Governance, evals, the holdout and the never list stay.`);
