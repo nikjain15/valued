@@ -443,6 +443,35 @@ addressed by <change>, rejected: <reason>).
 - Evidence: the sharpened shape test moved both from desk to review. Both expectations allow either, so the suite stays green, but the shape of a case is not stable across skill wordings, which makes the shape expectation a weak check
 - Status: open
 
+### S-090
+- Source: review, 2026-10-26 · Scenario: credit-union member messages · Gate: A
+- Evidence: PRD s6 and case.json call the safety guard "Rules", "deterministic", "stays rules", but the eval shows a cached guard model changed 9 dev and 4 holdout rows. The guard is rules-first plus a label-validated model backstop whenever the engine is rules+model; the template should say so rather than "pure rules". (reviewer REV-02)
+- Status: open
+
+### S-091
+- Source: review, 2026-10-26 · Scenario: credit-union member messages · Gate: E
+- Evidence: "Passes all gates" wording omits that holdout routing sits exactly at the 0.85 bar and that there are a few holdout misses, with only 12 holdout escalation rows. The release line should state the thin margins, not just "passes". (reviewer REV-03)
+- Status: open
+
+### S-092
+- Source: review, 2026-10-26 · Scenario: credit-union member messages · Gate: L
+- Evidence: "each language and family is gated" / "enough rows to score" overstates: thin groups (e.g. adversarial, with under 2 escalation rows) are reported, not gated, and dev has only 8 Spanish rows. goldenNote should say which groups are actually gated. (reviewer REV-04)
+- Status: open
+
+### S-093
+- Source: review, 2026-10-26 · Scenario: credit-union member messages · Gate: B
+- Evidence: "100% of drafts cite a source" is backed only by the router's answers-without-source gate (0), not by evaluating the model-written draft text. The claim should scope to the router requirement plus rep review of the wording. (reviewer REV-05)
+- Status: open
+
+### S-094
+- Source: review, 2026-10-26 · Scenario: credit-union member messages · Gate: conductor
+- Evidence: clocks (1 h / 24 h / 4 h), the adoption alert (under 50%), the "halved" re-keying target and the latency budgets render without an (assumed) tag, though they are invented. Gates should tag these, or render should. state.md already marks the escalation SLAs as proposed (assumed). (reviewer REV-06)
+- Status: open
+
+### S-095
+- Source: review, 2026-10-26 · Scenario: credit-union member messages · Gate: conductor
+- Evidence: the PRD document-history row read "built gate by gate in the working session" (internal/session framing in a client-facing doc). (reviewer note) Status: addressed in this change (conductor history line reworded).
+
 
 ## Status updates
 
