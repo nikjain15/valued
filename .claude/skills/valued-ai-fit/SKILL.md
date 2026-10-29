@@ -28,6 +28,7 @@ client to accept or overrule.
 
 ## Steps
 
+0. **Seed from a selection, when one exists.** If `out/select/select.json` is present (written by `/valued-select`), take its ranked options, lever units, chain strengths and citation keys as the starting candidates and reuse its sources; do not re-score what it verified. Print `Seeded from out/select/select.json (N options)`.
 1. **Score in parallel.** Launch three `use-case-scorer` subagents **in a single message**, each given
    the candidates and value frame from `out/1-value.md`, the client decisions in `out/state.md`, and one
    lens: `value-reuse`, `feasibility-data`, or `risk`. Print: `Scoring 12 use cases on 3 lenses in
