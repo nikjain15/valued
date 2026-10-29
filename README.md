@@ -35,10 +35,10 @@ Production misses become new labels, so D loops back to L.
    └─ brief                 one page, out/brief.html
 ```
 
-- **Eight skills** (`.claude/skills/`): the orchestrator, one per gate, and the build step after D.
-- **Two agents** (`.claude/agents/`): `use-case-scorer`, run three at once on different lenses so no
-  single lens dominates; `prototype-builder`, which writes the router and an eval runner without
-  seeing the answer key.
+- **Nine skills** (`.claude/skills/`): the orchestrator, one per gate, the build step after D, and `valued-select`, which picks one use case from several on verified facts before a run starts.
+- **Three agents** (`.claude/agents/`): `use-case-scorer`, run three at once on different lenses so no
+  single lens dominates; `fact-checker`, run several at once to verify a selection's facts against primary
+  sources; `prototype-builder`, which writes the router and an eval runner without seeing the answer key.
 - **The engine is the client's call.** Gate A asks whether the prototype may call a hosted model (a data
   and vendor fact only the client knows). The answer sets how it thinks: rules only, rules decide and a
   model drafts from the cited source, or a model proposes and rules guard escalation.
@@ -79,7 +79,7 @@ One-page briefs in the workflow's own format: [`examples/curecue-brief.html`](ex
 
 | Path | What it holds |
 |---|---|
-| `.claude/skills/valued*` | The method itself: the conductor and the seven gate skills (V, A, L, U, E, D, Build) plus audit, revise and learn |
+| `.claude/skills/valued*` | The method itself: the conductor and the seven gate skills (V, A, L, U, E, D, Build) plus select, audit, revise and learn |
 | `.claude/agents` | The sub-agents a gate launches (use-case scorers, prototype builder, guard model) |
 | `index.html` | The public landing page (what you see on the hosted site) |
 | `examples/` | Finished sample runs, to show the output without running one live |

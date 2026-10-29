@@ -26,6 +26,7 @@ The suite passes when every row is all pass and every run is within 28 minutes. 
 | Eval rules, router, guard model | Re-run gate E only in an existing workspace (builder and guard model), then audit. |
 | The A gate's shape table | `node learning/regression/shape-eval.js brief`, one Haiku agent, then `shape-eval.js score <answers>.json`. One agent, no runs. |
 | A gate skill or the conductor | `--smoke` set (6 runs) with `--lean` briefs, Sonnet run agents, at most 3 at once. |
+| `valued-select` or `fact-checker` | `/valued-select --quick --auto --out out/select-dryrun <options file>` (no web; about 10 minutes): `select.json` and `cards.json` must validate, the closing line must print, and the pick must match the deep run's. Then one `fact-checker` batch with a planted wrong claim and a planted relabel (provider cost as plan cost); both must be caught. Gate A's seed step is a no-op without `out/select/select.json`, so the 18 scenarios need no re-run. |
 | Before a push | All 18, `--lean`. |
 
 Run agents on Sonnet; scorers and the guard model on Haiku; the builder on Sonnet. Reports stay under 10 lines; details go to `out/run-notes.md`.

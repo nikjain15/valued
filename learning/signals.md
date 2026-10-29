@@ -473,6 +473,11 @@ addressed by <change>, rejected: <reason>).
 - Evidence: the PRD document-history row read "built gate by gate in the working session" (internal/session framing in a client-facing doc). (reviewer note) Status: addressed in this change (conductor history line reworded).
 
 
+### S-096
+- Source: note, 2026-10-28 · Scenario: Humana take-home, six use cases to choose from (real public company, research allowed) · Gate: A
+- Evidence: gate A scores candidates on the facts it is handed; a separate deep audit (out/humana-usecase-audit.md) found 3 of 20 supplied figures wrong or unsourced and 8 mislabelled (a 240 bps move attributed to one of three stated causes; provider-side CAQH costs quoted as plan-side; an analyst note presented as current; a $500 to 700M figure with no source). The pick flipped once gross dollars were replaced by attributable dollars and the audience's rubric was read as evidence.
+- Status: addressed by `valued-select` (new skill: parallel fact-checkers against primary sources, chain stress tests, sourced sizing with unit economics, five fixed lenses under client-set weights, audience-fit lens, decision log and citations register); gate A seeds from `out/select/select.json` when present.
+
 ## Status updates
 
 ### S-079

@@ -11,6 +11,7 @@ by one agent (a skill).
 
 | Gate | The agent's job | Prevents |
 |---|---|---|
+| **S** Select (before V, when several options compete) | Verify every supplied fact against primary sources, stress-test each option's chain from product to dollar, run five fixed lenses under client-set weights, and pick one with trade-offs, a decision log and a citations register. Run with `/valued-select <options>` | The biggest headline number with the weakest chain; a weighting quietly picking the winner; an unverified figure reaching a decision-maker |
 | **V** Value | Price the problem before anyone talks about AI | AI nobody can prove paid back |
 | **A** AI-fit | Design the agents: which jobs AI does, which stay on rules; recommend build, buy or partner | A model where a rule would do, or a rule where an agent would serve better |
 | **L** Labels | Write the answer key, split by group, with a sealed holdout | The system grading itself |

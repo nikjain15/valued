@@ -1,0 +1,41 @@
+{
+  "weightings": {
+    "direct": { "financial": 30, "member": 25, "feasibility": 30, "strategic": 15, "audience": 0 },
+    "platform": { "financial": 20, "member": 15, "feasibility": 25, "strategic": 40, "audience": 0 },
+    "purePlatform": { "financial": 10, "member": 10, "feasibility": 20, "strategic": 60, "audience": 0 },
+    "clientCardMap": {
+      "dollars at stake": { "financial": 40, "member": 20, "feasibility": 20, "strategic": 10, "audience": 10 },
+      "speed and feasibility": { "financial": 20, "member": 15, "feasibility": 45, "strategic": 10, "audience": 10 },
+      "strategic leverage": { "financial": 15, "member": 15, "feasibility": 20, "strategic": 40, "audience": 10 },
+      "audience fit": { "financial": 20, "member": 15, "feasibility": 25, "strategic": 10, "audience": 30 }
+    }
+  },
+  "lenses": [
+    { "id": "A", "name": "2x2", "axes": ["attractiveness", "feasibility"] },
+    { "id": "B", "name": "weighted scorecard", "weightings": ["client", "direct", "platform", "purePlatform"] },
+    { "id": "C", "name": "expected value", "formula": "attributable$ x P(success) / effort", "alsoOn": "gross$" },
+    { "id": "D", "name": "platform leverage", "questions": ["enables others?", "captures value itself?", "dependency or sibling?"] },
+    { "id": "E", "name": "audience fit", "signals": ["rubric rows", "supplied test case", "named hierarchy", "panel composition", "chooser strengths"] }
+  ],
+  "stressTests": [
+    "Is this the biggest lever, or the biggest quoted number?",
+    "Did the thing that broke match the thing this product fixes?",
+    "Does the premise survive the data trend (is the lever growing or shrinking)?",
+    "Who already does this inside the organisation (incumbent)?",
+    "Is the why-now dated and sourced?"
+  ],
+  "verificationFailures": [
+    "a total attributed to one cause when the source names several",
+    "a provider-side or industry-wide figure quoted as the organisation's",
+    "a stale year presented as current",
+    "an analyst estimate presented as the company's own",
+    "an inferred date or figure presented as sourced",
+    "the wrong base (total line used where a sub-line applies)"
+  ],
+  "primarySourcesByIndustry": {
+    "health insurance": ["SEC filings and 8-K exhibits", "company press releases and call transcripts", "CMS newsroom, fact sheets, HPMS memos, eCFR", "KFF", "MedPAC", "GAO", "HHS OIG", "NCQA", "BLS", "CAQH Index"],
+    "banking": ["SEC filings", "FDIC and OCC", "CFPB", "FINRA rulebook", "Federal Reserve", "BLS"],
+    "default": ["the organisation's own filings and releases", "the sector regulator", "national statistics office", "standards bodies", "peer-reviewed journals"]
+  },
+  "memoSections": ["0 The answer", "1 Verification", "2 Stress tests", "3 Sourced sizing", "4 Lenses", "5 Q&A exposure", "6 Recommendation", "7 Governance check", "Sources"]
+}
