@@ -835,6 +835,7 @@
           <h2>The method, packaged as an agent workflow.</h2>
           <p class="lede">Describe a case in one line. The workflow runs the six gates in order, then a build step that turns your decisions into a PRD and a working prototype. At each one it drafts a table, then asks you at most two questions, and only ones you own: priorities, risk appetite, facts only you know. A whole run is up to 15 option cards. Everything else comes back as a recommendation: the options, their trade-offs, our preference and why. You make the call; it records it and moves on. A full run is 28 minutes by default, and the workflow holds itself to that clock.</p>
           <ol>
+            <li><div><b>Pick the case first, when there are several</b><p><span class="mono">/valued-select</span> checks every figure you were given against a primary source, stress-tests each option's chain from product to dollar, runs five lenses under your weights, and recommends one with trade-offs, a decision log and a citations register.</p></div></li>
             <li><div><b>Describe the case</b><p>Who, what problem, what constraint. Anything it assumes is marked as assumed.</p></div></li>
             <li><div><b>Review each gate's draft</b><p>At AI-fit, three scorers rate value, feasibility and risk in parallel.</p></div></li>
             <li><div><b>Decide on each card</b><p>Recommendation first, every option with its trade-off. If none fits, each card says how to answer in your own words.</p></div></li>
@@ -844,7 +845,9 @@
           </ol>
         </div>
         <div>
-          <div class="term"><pre><span class="d">&gt;</span> /valued regional bank, contact centre under cost pressure, 30 AI ideas, plan in 6 weeks
+          <div class="term"><pre><span class="d">&gt;</span> /valued-select inputs/six-options.pdf --audience "investment committee"
+<span class="d">Verified 18 of 20 claims · wrong 2 · relabel 6 · Pick: option 2, chain 4/5</span>
+<span class="d">&gt;</span> /valued regional bank, contact centre under cost pressure, 30 AI ideas, plan in 6 weeks
 <span class="d">[V] Value · done   [A] AI-fit · scoring 12 use cases on 3 lenses</span>
 <span class="d">&gt;</span> /valued-revise COO wants the pilot on two teams, not one</pre></div>
           <div class="card">

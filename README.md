@@ -2,11 +2,13 @@
 
 **An AI product lifecycle, run as an agent workflow. The system drafts; the client decides.**
 
-Most AI work starts at the model. VALUED starts before AI is chosen and ends after launch. Every use
-case clears six gates, in order:
+Most AI work starts at the model. VALUED starts before AI is chosen and ends after launch. When several
+use cases compete, a selection step picks one on verified facts first. Then every use case clears six
+gates, in order:
 
 | Gate | The question it answers |
 |---|---|
+| **S** Select (before the gates, when there are several options) | Which option, once every supplied figure is checked against a primary source, each option's chain from product to dollar is stress-tested, and five lenses run under the client's weights? Leaves a decision log and a citations register. `/valued-select <options>` |
 | **V** Value | Whose decision or work changes, how often, what it costs today, how big the prize is |
 | **A** AI-fit | Which jobs do agents take, and which stay on fixed rules? The ladder (rules, classic ML, retrieval plus a model, an agent) for each job; rank on value, feasibility, risk and reuse; a build, buy or partner recommendation; the cost, latency and quality trade |
 | **L** Labels | Ground truth before the model: a golden set, the slices that matter, a sealed holdout |
@@ -19,6 +21,11 @@ Production misses become new labels, so D loops back to L.
 ## How it runs
 
 ```
+/valued-select <options file or list>          (optional, when several use cases compete)
+   ├─ fact-checker × N in parallel: every supplied figure against a primary source
+   ├─ stress tests, sourced sizing, five lenses under the client's weights
+   └─ out/select/: select.md, citations.md, decision-log.md, select.json  → gate A seeds from it
+
 /valued <one-line case>
    │
    ├─ V  valued-value       draft the value frame, 12 candidate use cases      → card to the client

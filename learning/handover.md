@@ -8,6 +8,7 @@ Repo `~/dev/valued`, branch `reaudit-28min` (local commits only, nothing pushed)
 - Part 2 fixes (all committed): shared `eval.js`, trigger lexicon (families, cues, definitions), cached guard model (`.claude/agents/guard-model.md`) that escalates what rules miss and checks or supplies the one source, 50-row golden set with a 20-row holdout, holdout runs logged with a router fingerprint, vendor and ID normalisation, real-name checks.
 - Part 4: `learning/signals.md`, `/valued-learn`, `learning/regression/{scenarios.json,run.js,README.md,briefs/v2/}`.
 - New: `/valued-audit` (`.claude/skills/valued-audit/`: check.js, audit.js with issue IDs and fixes, observe.js writes `out/observe.html`, ledger `learning/runs.jsonl`).
+- New (2026-10-28): `/valued-select` (`.claude/skills/valued-select/`, agent `fact-checker`): picks one use case from several on verified facts; gate A seeds from `out/select/select.json`. Signal S-096. Site and README updated the same day.
 
 ## Orchestrated runs (workspaces `~/dev/valued-audit-<slug>`, ports 4401 to 4418)
 - All eight standards pass on the latest skills: underwriting, utility, airline, contracts, recruiting, maintenance, ap, surveillance. Wall time 10 to 16 min each.

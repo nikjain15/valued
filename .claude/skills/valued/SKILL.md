@@ -107,7 +107,7 @@ the run always shows what is happening and how long it took, in one line each, w
 
 ## Phase 0: Frame (3 min)
 
-1. Write the wrapper first (step 2's first two lines), then `out/tools/c clock 0 start`. If the argument is empty or lacks the client, the business problem, or the success
+1. Write the wrapper first (step 2's first two lines), then `out/tools/c clock 0 start`. If `out/select/select.json` exists (a `/valued-select` run), take the preferred option as the use case, its audience and assumptions as framing, and print `Case from out/select/select.json: <option>`; ask no framing card that file already answers. Otherwise, if the argument is empty or lacks the client, the business problem, or the success
    measure and deadline, ask only the missing framing cards (round 0), each 3 to 4 typical options.
    Phrase every card the way a consultant opens the conversation on a shared screen: a warm, low-stakes
    question the client can answer by pointing at an option, never a form field. Keep the format hint so a
