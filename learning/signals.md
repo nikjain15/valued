@@ -478,6 +478,13 @@ addressed by <change>, rejected: <reason>).
 - Evidence: gate A scores candidates on the facts it is handed; a separate deep audit (out/humana-usecase-audit.md) found 3 of 20 supplied figures wrong or unsourced and 8 mislabelled (a 240 bps move attributed to one of three stated causes; provider-side CAQH costs quoted as plan-side; an analyst note presented as current; a $500 to 700M figure with no source). The pick flipped once gross dollars were replaced by attributable dollars and the audience's rubric was read as evidence.
 - Status: addressed by `valued-select` (new skill: parallel fact-checkers against primary sources, chain stress tests, sourced sizing with unit economics, five fixed lenses under client-set weights, audience-fit lens, decision log and citations register); gate A seeds from `out/select/select.json` when present.
 
+### S-090
+- Source: note, 2026-10-30 · Scenario: a regulated-insurer knowledge-and-search case prepared for a technical panel · Gate: E, conductor
+- Evidence: the 28-minute run could not carry what the case needed: a 700-row citations register with P/S/A/J tags, a 26-row decision log, eval bars that a panel would call unrealistic until each was defended against published AI-product, research and analogue anchors (155 rows with a kind column), two independent eval reviews plus an opus verification pass that found self-grading, wrong denominators and rates on thin groups, and a consolidated strategy with stable IDs for repeated revalidation. The work was done by hand in one long session and nearly lost at context compaction.
+- Addressed by: `/valued-deep` (`.claude/skills/valued-deep/`) with agents `gate-defender`, `eval-reviewer`, `strategy-writer`, `strategy-reviewer` and `check.js`; the standing "no build until go build" rule is the default.
+- Tested 30 Oct 2026: check.js on a defect fixture (all three defects caught); each agent on the real case files (eval-reviewer 7 blocks, strategy-reviewer 4 blocks, strategy-writer 658 rows and 18 contradictions, gate-defender honest tags on a 20-minute budget); a full `start` run on a fresh synthetic credit-union case by an agent holding only SKILL.md (64 register rows, 34 P, nothing built, check clean). Its test report produced 10 wording fixes and 8 gaps, all applied.
+- Status: addressed by valued-deep
+
 ## Status updates
 
 ### S-079

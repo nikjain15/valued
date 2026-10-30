@@ -15,6 +15,7 @@ gates, in order:
 | **U** User-in-the-loop | Per action: suggest, draft, act with approval, or act. What the AI never does. Escalation wins every race |
 | **E** Evals | Release thresholds set first, metrics by slice, a missed gate blocks the release |
 | **D** Deploy and drive | Shadow mode, pilot, sign-off, rollback; drift, adoption, edit rate; scale, fix or retire |
+| **Deep** (instead of the 28-minute run, when one case must survive a technical panel or an investment committee) | The same questions over days: parallel research against primary sources, a decision log, a citations register where every number carries a key, evals as rule gates plus model metrics per group, every bar defended against what the industry publishes, two independent eval reviews on a second model, one strategy document with stable row IDs, and revalidation passes until it is solid. Nothing is built until `go build`. `/valued-deep <case>` |
 
 Production misses become new labels, so D loops back to L.
 
@@ -25,6 +26,14 @@ Production misses become new labels, so D loops back to L.
    ├─ fact-checker × N in parallel: every supplied figure against a primary source
    ├─ stress tests, sourced sizing, five lenses under the client's weights
    └─ out/select/: select.md, citations.md, decision-log.md, select.json  → gate A seeds from it
+
+/valued-deep <case or brief>                    (optional, the slow path for one case)
+   ├─ start: research strands in parallel → out/deep/plan.md, decision-log.md, citations.md
+   ├─ review: golden set + sealed holdout, rule gates vs model metrics, eval-reviewer × 2 (one on opus)
+   ├─ defend: gate-defender × N: every eval bar against published AI-product, research and analogue anchors
+   ├─ consolidate: strategy-writer → out/deep/strategy.md with stable IDs; check.js
+   ├─ revalidate: strategy-reviewer, one pass per prompt, findings by ID, until clean
+   └─ go build: the only step that writes code; hands out/deep/handoff.json to /valued from gate L
 
 /valued <one-line case>
    │
@@ -42,10 +51,14 @@ Production misses become new labels, so D loops back to L.
    └─ brief                 one page, out/brief.html
 ```
 
-- **Nine skills** (`.claude/skills/`): the orchestrator, one per gate, the build step after D, and `valued-select`, which picks one use case from several on verified facts before a run starts.
-- **Three agents** (`.claude/agents/`): `use-case-scorer`, run three at once on different lenses so no
+- **Ten skills** (`.claude/skills/`): the orchestrator, one per gate, the build step after D, `valued-select`, which picks one use case from several on verified facts before a run starts, and `valued-deep`, the slow path that takes one case to a defended, revalidated strategy before anything is built.
+- **Seven agents** (`.claude/agents/`): `use-case-scorer`, run three at once on different lenses so no
   single lens dominates; `fact-checker`, run several at once to verify a selection's facts against primary
-  sources; `prototype-builder`, which writes the router and an eval runner without seeing the answer key.
+  sources; `prototype-builder`, which writes the router and an eval runner without seeing the answer key;
+  `gate-defender`, run several at once to find what the industry publishes for each eval bar;
+  `eval-reviewer`, run twice on different models before an eval design is frozen; `strategy-writer`, which
+  consolidates a deep run into one document with stable IDs; `strategy-reviewer`, one independent pass per
+  revalidation prompt.
 - **The engine is the client's call.** Gate A asks whether the prototype may call a hosted model (a data
   and vendor fact only the client knows). The answer sets how it thinks: rules only, rules decide and a
   model drafts from the cited source, or a model proposes and rules guard escalation.
