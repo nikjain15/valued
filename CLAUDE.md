@@ -19,6 +19,7 @@ by one agent (a skill).
 | **E** Evals | Let a number decide the release, group by group | An average hiding the group that breaks |
 | **D** Deploy and drive | Plan the launch and the life after it | Quiet decay after launch |
 | **B** Build (after D) | Turn the decisions into a PRD a coding agent can build from, and a working prototype app | A strategy that stops at slides |
+| **Deep** (the slow path for one case, instead of the clocked run) | Research in parallel strands against primary sources, keep a decision log and a citations register, design evals as rule gates plus per-group model metrics, defend every bar against published anchors, review the evals twice on a second model, consolidate into one strategy with stable row IDs and revalidate it until clean. Build only on `go build`. Run with `/valued-deep <case>` | A bar nobody can defend; a number nobody can trace; code before the thinking is done |
 
 **Governed at every gate.** Each gate answers three governance questions in its output (regulatory
 exposure, data rights, human accountability, signable evidence, sign-off and audit trail). Governance is
