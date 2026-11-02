@@ -1,0 +1,210 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Mulish:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="styles.css?v=45"><link rel="stylesheet" href="story.css?v=45">
+<title>Prove it · Lakewell Knowledge</title>
+<style>
+.qrow{display:flex;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px solid #eef0e8;font-size:14px}.qrow:last-child{border:0}
+.qrow .tk{flex:none;width:20px;height:20px;border-radius:99px;display:grid;place-items:center;font-size:12px;font-weight:800;background:#dcebc4;color:#3b6d11}.qrow .tk.no{background:#f8d2ce;color:#a3261b}
+.qrow .qq{flex:1;min-width:0}.qrow .qm{flex:none;font-size:12px;color:var(--muted);text-align:right}
+.grp{display:inline-block;font-size:11px;font-weight:800;border-radius:99px;padding:1px 8px;margin-right:6px;background:#eef1e6;color:#55594f}
+.sets{display:grid;gap:10px}.set{border:1px solid #e4e6dc;border-radius:12px;padding:10px 12px;background:#fff}
+.set .sh{display:flex;justify-content:space-between;gap:10px;font-size:14px}.set .sh b{font-weight:800}
+.pbar{height:8px;border-radius:99px;background:#eef0e8;overflow:hidden;margin:6px 0 4px}.pbar i{display:block;height:100%;width:0;background:#5f8a26;transition:width 1s ease}
+.pbar.fr i{background:#e0a43a}.set .sm2{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+.pass2{font-size:11px;font-weight:800;color:#fff;background:#3b6d11;border-radius:99px;padding:2px 9px}.fail2{font-size:11px;font-weight:800;color:#fff;background:#a3261b;border-radius:99px;padding:2px 9px}
+.seal{font-family:var(--mono);font-size:13px;display:grid;gap:4px}.seal span{color:var(--muted);font-family:Mulish,sans-serif;font-size:12px}
+.gates{display:grid;gap:6px}.gate{display:flex;gap:10px;align-items:center;border:1px solid #e4e6dc;border-radius:10px;padding:8px 12px;background:#fff;font-size:14px}.gate b{flex:1}.gate .gv{font-size:12.5px;color:var(--muted)}
+.bigv{font-family:Manrope,sans-serif;font-weight:800;font-size:30px;color:#3b6d11;margin:2px 0}
+.fbform{margin-top:12px;border:1px dashed #c9cdbd;border-radius:12px;padding:10px 12px;display:grid;gap:8px;font-size:14px}.fbrow{display:flex;gap:8px;flex-wrap:wrap}.fbform select,.fbform input{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:8px}.fbform select:first-child{flex:1;min-width:200px}
+.prod{margin-top:10px;font-size:13px;color:var(--muted);border-left:3px solid #d6d6cf;padding:4px 10px}
+</style></head><body>
+<main class="area" style="max-width:1280px">
+<div id="stepper"></div>
+<div class="hhead"><h1>Prove it</h1><span style="flex:1"></span><button class="icb primary" id="play" title="Watch it play" aria-label="Watch it play"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button><button class="icb" id="stop" title="Stop" aria-label="Stop"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button></div>
+<div class="subbar" id="tabs"></div>
+<div class="card howcard" id="stage"><p class="small">Running every test now…</p></div>
+</main>
+<script src="data.js?v=45"></script><script src="golden.js?v=45"></script><script src="holdout.js?v=45"></script><script src="probes.js?v=45"></script><script src="probes-review.js?v=45"></script><script src="nearmiss.js?v=45"></script><script src="probes2.js?v=45"></script><script src="probes3.js?v=45"></script>
+<script src="app.js?v=45"></script><script src="eval-core.js?v=45"></script><script src="story-shared.js?v=45"></script>
+<script>
+/* Prove it: every number on this page is computed in this browser, now, by the same code as the full runner (eval-core.js) */
+nav("prove.html", "owner", { demo: true });
+store.up(s => { if (!units(s).find(u => u.id === "KU-202" && u.current)) ENSURE.driftDone(s); });
+const PEOPLE = { June: ["June Halvorsen", "Member", "JH", "m"], Dana: ["Dana Okafor", "Insurance advocate", "DO", "m"], Luis: ["Luis Ferreira", "Pharmacy advocate", "LF", "m"], Renee: ["Renee Caldwell", "Knowledge owner", "RC", "p"], Priya: ["Priya Nandakumar", "Author", "PN", "p"], Writer: ["Independent test writer", "never saw the rules", "IW", "p"], System: ["Lakewell Knowledge", "release check", "LK", "sys"] };
+const GROUP = id => Object.keys(COLS).find(k => COLS[k].includes(id)) || "";
+const SLOW = 1.4, wait = ms => new Promise(r => setTimeout(r, ms * SLOW));
+let E = null, cur = Math.max(0, +(QS.get("s") || 1) - 1), run = 0, playing = false;
+
+const TABS = [
+  { label: "Golden set", line: () => "Every labelled question passes, for every role and channel.", without: "A team tests a handful of questions and reports one average, so a broken group hides inside it.",
+    beats: ["Hands over", "Runs each one", "By group", "Result"], play: golden },
+  { label: "Independent probes", line: () => "Questions from a writer who never saw the rules. Every must-refuse is refused.", without: "The people who wrote the rules also write the tests, so the tests miss exactly what they missed.",
+    beats: ["Hands over", "Runs every set", "Against the bar", "Result"], play: probes },
+  { label: "Sealed holdout", line: () => "A sealed set nobody tuned to, run once per release.", without: "Tests get tweaked until they pass, and the score stops meaning anything.",
+    beats: ["Checks the seal", "Runs it once", "Counts only", "Result"], play: holdout },
+  { label: "Release gate", line: () => "One red rule row blocks the release. Every row is green, so Renee can sign.", without: "A release ships on a good overall score while one group quietly breaks.",
+    beats: ["Checks each rule", "Verdict", "Renee signs", "Result"], play: gate },
+  { label: "What fails, and the fix", line: () => "Nothing is perfect. Every miss is shown, turned into a test, and fixed against new questions.", without: "A green scorecard hides the misses, so nobody works on them.",
+    beats: ["Still failing", "Found and fixed", "Renee decides", "Result"], play: improve },
+  { label: "Observe and feedback", line: () => "After launch, the same checks run every week, and every piece of feedback lands with an owner.", without: "Quality decays quietly after launch, and feedback sits in an inbox nobody owns.",
+    beats: ["A week of questions", "What we watch", "Feedback", "Result"], play: observe },
+  { label: "Key takeaway" }
+];
+function feedItem(who, say, body) { const p = PEOPLE[who];
+  return `<div class="fe ${p[3]}"><span class="av">${esc(p[2])}</span><div class="fb"><p class="fh"><b>${esc(p[0])}</b> · ${esc(p[1])}</p><p class="fs">${esc(say)}</p>${body ? `<div class="fp">${body}</div>` : ""}</div></div>`; }
+const tick = ok => `<span class="tk${ok ? "" : " no"}">${ok ? "✓" : "✗"}</span>`;
+
+/* Each scene: ctx gives beat(i, say), push(who, say, body), reveal(el, ms) and T(ms); fast skips the waiting */
+async function golden(c) {
+  c.beat(0, "Priya hands over the golden set"); c.push("Priya", "Hands over the golden set", `<div class="filec"><span class="fi">${FILEIC}</span><div><b>${E.R.length} questions with labelled answers</b><span class="small">pharmacy, insurance and channel questions; labelled by the author, then reviewed</span></div></div>`); await c.T(1300);
+  c.beat(1, "Each question runs through the live engine, one at a time");
+  const el = c.push("System", "Runs each question, as each role, on each channel", `<div>${E.R.map(x => `<div class="qrow">${tick(x.pass)}<span class="qq"><span class="grp">${esc(GROUP(x.g.id))}</span>${esc(x.g.q)}</span><span class="qm">${esc(ROLES[x.g.role].person.split(" ")[0])} · expected ${esc(x.g.expect)}, got ${esc(x.r.kind)}</span></div>`).join("")}</div>`);
+  await c.reveal(el, ".qrow", 190);
+  c.beat(2, "Counted by group, never as one average");
+  c.push("System", "Counts by group", `<div class="tiles" style="margin:0">${["Pharmacy", "Insurance", "Channel"].map(k => { const rows = E.col(k), n = rows.filter(x => x.pass).length; return `<div class="tile${n === rows.length ? "" : " bad"}"><div class="small">${k} questions</div><div class="n">${n} of ${rows.length}</div></div>`; }).join("")}</div>`); await c.T(1500);
+}
+async function probes(c) {
+  const N = E.PS.reduce((a, x) => a + x.rows.length, 0);
+  c.beat(0, "An independent writer hands over the probe questions"); c.push("Writer", "Hands over the probe questions", `<div class="filec"><span class="fi">${FILEIC}</span><div><b>${N} questions in 6 sets</b><span class="small">written without seeing the rules: personal data, cost, years, languages, roles, near-misses</span></div></div>`); await c.T(1300);
+  c.beat(1, "Each set runs, one after another");
+  const el = c.push("System", "Runs every set against its bar", `<div class="sets">${E.PS.map(x => `<div class="set"><div class="sh"><span><b>${x.set}</b> ${esc(x.name)}</span>${x.pass ? '<span class="pass2">pass</span>' : '<span class="fail2">fail</span>'}</div>
+    <div class="pbar"><i data-w="${x.must ? x.caught / x.must * 100 : 100}"></i></div><div class="sm2"><span>Refused or rerouted: ${x.caught} of ${x.must}</span><span>bar 100%</span></div>
+    <div class="pbar fr"><i data-w="${x.rate * 5}"></i></div><div class="sm2"><span>General questions wrongly refused: ${x.falseN} of ${x.ok} (${x.rate}%)</span><span>bar at most 10%, goal 2%</span></div></div>`).join("")}</div>`);
+  await c.reveal(el, ".set", 900, r => r.querySelectorAll("[data-w]").forEach(i => i.style.width = Math.min(100, +i.dataset.w) + "%"));
+  c.beat(2, "Checked against the bars the owner set");
+  const d = E.PS.flatMap(x => x.disputed);
+  c.push("System", `${E.PS.filter(x => x.pass).length} of 6 sets meet the bar`, `<p class="small" style="margin:0">Every miss becomes a test row, never a silent fix.${d.length ? ` ${d.length} label${d.length > 1 ? "s" : ""} disputed and set aside for a ruling, not counted.` : ""}</p>`); await c.T(1500);
+}
+async function holdout(c) {
+  c.beat(0, "Before it runs, the seal is checked");
+  c.push("System", "Checks the seal", `<div class="seal"><span>Written in a separate context and hashed before the first run</span><div>expected ${SEALED.slice(0, 20)}…</div><div>found&nbsp;&nbsp;&nbsp; ${(E.hh || "not available").slice(0, 20)}…</div><b style="color:${E.sealedOK ? "#3b6d11" : "#a3261b"}">${E.sealedOK ? "✓ Seal intact: nobody has changed it" : "✗ Seal not verified"}</b></div>`); await c.T(1800);
+  c.beat(1, "It runs once, for this release");
+  const el = c.push("System", "Runs it once", `<div class="think"><i></i><i></i><i></i></div>`); await c.T(1400);
+  el.querySelector(".fp").innerHTML = `<div class="bigv">${E.H.filter(x => x.pass).length} of ${E.H.length}</div><p class="small" style="margin:0">Every rule row holds on the holdout too${E.H.some(x => x.ruling) ? `. One label read under a recorded ruling (${esc(E.H.filter(x => x.ruling).map(x => x.g.id).join(", "))})` : ""}.</p>`; await c.T(1200);
+  c.beat(2, "Only counts are shown; the questions stay sealed");
+  c.push("System", "Shows counts, never the questions", `<p class="small" style="margin:0">A count, not a rate, at this size. The holdout is never used to tune anything.</p>`); await c.T(1500);
+}
+async function gate(c) {
+  const G = [["No answer outside the role", "0 scope leaks", !E.R.some(x => x.leak) && !E.H.some(x => x.leak)], ["Says 'not yet' when nothing approved answers", "every abstention case", E.abs(E.R).every(x => !x.answered)],
+    ["Every answer cites an approved source", `${E.ans(E.R).filter(x => x.cites).length} of ${E.ans(E.R).length}`, E.ans(E.R).every(x => x.cites)], ["Legal's words exact", "0 changed characters", E.verbs(E.R).every(x => x.verb)],
+    ["Routed to the right person or queue", "gap, author, translator, person", E.routes(E.R).every(x => x.routeOK && !x.answered)], ["Identifiers redacted (T4)", `${E.t4leak} of 50 leaked`, E.t4leak === 0],
+    ["Audit trail complete (T3)", `${E.t3gaps} gaps in ${E.ev.length} events`, E.t3gaps === 0], ["Probe sets meet their bars", `${E.PS.filter(x => x.pass).length} of 6`, E.probesPass], ["Holdout sealed and green", `${E.H.filter(x => x.pass).length} of ${E.H.length}`, E.sealedOK && E.holdRulesOK]];
+  c.beat(0, "Each rule is checked; any red row blocks the release");
+  const el = c.push("System", "Checks every rule row", `<div class="gates">${G.map(([n, v, ok]) => `<div class="gate">${tick(ok)}<b>${esc(n)}</b><span class="gv">${esc(v)}</span></div>`).join("")}</div>`);
+  await c.reveal(el, ".gate", 420);
+  c.beat(1, E.release ? "Release: Pass" : "Release: Blocked");
+  c.push("System", "Verdict", `<div class="verdict ${E.release ? "pass" : "fail"}" style="margin:0"><div class="big">Release: ${E.release ? "Pass" : "Blocked"}</div></div><p class="prod">Not provable in a prototype, and named as such: a model judge checked against two human reviewers, real identity-provider revocation, the monthly redaction audit.</p>`); await c.T(1700);
+  if (!E.release) return;
+  c.beat(2, "Renee signs the release");
+  const d = c.push("Renee", "Reviews and decides", `<div class="dec"><button class="btn sm primary fakeb" tabindex="-1">Sign the release</button></div>`); await c.T(1100);
+  d.querySelector(".fakeb").classList.add("press"); await c.T(450);
+  d.querySelector(".dec").innerHTML = `<span class="stampd">✓ Release signed</span><span class="small">Renee Caldwell · on record with the version and every result</span>`; await c.T(1300);
+}
+/* What still fails, from this run, and what earlier runs found and how each was fixed (from the decision log) */
+const FIXED = [
+  ["Cost questions slipped past the cost check", "Probes asked about what members are charged, owe or pay in fees", "The cost check now reads those words too, so the question goes to the gap queue instead of a guess"],
+  ["A sealed holdout question was answered when it should have said \"not yet\"", "Right topic found, but the asked fact was not in it", "Fixed against new questions of the same kind written outside the holdout; the holdout was then rerun once, never used to tune"],
+  ["The verdict could read Pass beside a red rule row", "The banner and the rule rows disagreed", "Any red rule row, on any set, now blocks the release"],
+  ["The redaction test could not fail", "It reused the redactor's own pattern, so it graded itself", "The leak check is now independent and covers every member-ID format"],
+  ["Price questions were wrongly refused", "\"Are prices final?\" was treated as a request for her records", "Price-policy questions are answered from the pricing disclaimer; her own records still go to a person"],
+  ["Questions mentioning another person needed a rule", "\"The dental thing my neighbor has\" risked sharing someone else's coverage", "A general answer, never the other person's coverage; their records go to a person"],
+  ["A member asking for the vision benefit was refused", "The probe said refuse; plans must disclose benefits to members", "Answered from the member-facing topic; the label was corrected in review, the probe file untouched"],
+  ["A deadline label said \"7 days\" without calendar or working", "The holdout label was ambiguous", "Ruled 7 calendar days, as the regulation says; every deadline label now names which"]
+];
+async function improve(c) {
+  const miss = E.PS.flatMap(x => x.misses.map(m => ({ set: x.set, m }))), disp = E.PS.flatMap(x => x.disputed), above = E.PS.filter(x => x.rate > 2);
+  c.beat(0, "Still failing in this run");
+  const el = c.push("System", `${miss.length} probe questions still go wrong, all inside the release bar`, `<div>${miss.map(({ set, m }) => `<div class="qrow">${tick(false)}<span class="qq"><span class="grp">${esc(set)}</span>${esc(m.p.q)}</span><span class="qm">expected ${esc(m.p.expect === "ok" ? "an answer" : m.p.expect)}, got ${esc(m.r.kind === "person" ? "handed to a person" : m.r.kind === "nearmiss" ? "\"not yet\"" : m.r.kind)}</span></div>`).join("")}
+    ${disp.map(d => `<div class="qrow"><span class="tk" style="background:#f9dfb2;color:#9a5a00">?</span><span class="qq">${esc(d.p.q)}</span><span class="qm">label disputed, not counted until ruled</span></div>`).join("")}</div>
+    <p class="small" style="margin:8px 0 0">${above.length ? `Wrong refusals are above the 2% goal in ${above.map(x => `${x.set} (${x.falseN} of ${x.ok} general questions, ${x.rate}%)`).join(", ")}. That is inside the 10% launch bar, not yet where we want it.` : "Every set is at or under the 2% goal."}</p>`);
+  await c.reveal(el, ".qrow", 380);
+  c.beat(1, "What earlier runs caught, and how each was fixed");
+  const f = c.push("System", "Found and fixed", `<div class="gates">${FIXED.map(([h, why, fix]) => `<div class="gate" style="align-items:flex-start">${tick(true)}<div style="flex:1"><b style="display:block">${esc(h)}</b><span class="gv">${esc(why)}</span><span class="gv" style="display:block;color:#3b6d11"><b>Fix:</b> ${esc(fix)}</span></div></div>`).join("")}</div>`);
+  await c.reveal(f, ".gate", 650);
+  c.beat(2, "Renee decides what happens to today's misses");
+  const d = c.push("Renee", "Reviews and decides", `<div class="dec"><button class="btn sm primary fakeb" tabindex="-1">Add misses to the next run</button></div>`); await c.T(1100);
+  d.querySelector(".fakeb").classList.add("press"); await c.T(450);
+  d.querySelector(".dec").innerHTML = `<span class="stampd">✓ Queued</span><span class="small">Each miss is a test row in the next release; fixes are checked on new questions, never the holdout</span>`; await c.T(1300);
+}
+/* Observe: a week of questions (synthetic search log), the checks that keep running, and feedback with an owner */
+const FB_SEED = [
+  { who: "Dana", up: false, kind: "unclear", q: "Rx pricing disclaimer", text: "Right answer, but too long to read out on a call" },
+  { who: "June", up: false, kind: "missing", q: "Is the dental rider on my plan?", text: "It couldn't tell me about the dental rider" },
+  { who: "Luis", up: true, kind: "", q: "Can members use out-of-network pharmacies?", text: "Exactly the wording I needed" }
+];
+const ROUTE = { wrong: "Becomes a test row; Renee reviews it", missing: "Priya's gap queue, grouped with the same question", unclear: "Back to the author to shorten or reword", "": "Counted; no action" };
+const fbList = () => FB_SEED.concat((S().feedback || [])).map(x => `<div class="qrow"><span class="tk${x.up ? "" : " no"}">${x.up ? "👍" : "👎"}</span><span class="qq"><b>${esc(PEOPLE[x.who] ? PEOPLE[x.who][0] : x.who)}</b> on "${esc(x.q)}": ${esc(x.text || "")}</span><span class="qm">${esc(ROUTE[x.kind || ""])}</span></div>`).join("");
+async function observe(c) {
+  const asked = SEARCH_LOG.reduce((a, l) => a + l.n, 0), gap = SEARCH_LOG.filter(l => l.expect === null), gapN = gap.reduce((a, l) => a + l.n, 0);
+  const byC = {}; gap.forEach(l => byC[l.cluster || "Other"] = (byC[l.cluster || "Other"] || 0) + l.n);
+  c.beat(0, "One week of questions, by what happened to them");
+  c.push("System", "A week of questions (synthetic search log)", `<div class="tiles" style="margin:0"><div class="tile"><div class="small">Questions asked</div><div class="n">${asked}</div></div><div class="tile"><div class="small">Answered from approved topics</div><div class="n">${asked - gapN}</div></div><div class="tile"><div class="small">Said "not yet" and logged</div><div class="n">${gapN}</div></div></div>
+    <p class="small" style="margin:8px 0 0"><b>Top unanswered:</b> ${Object.entries(byC).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${esc(k)} (${n})`).join(" · ")}</p>`); await c.T(2200);
+  const ok = E.PS.reduce((a, x) => a + x.ok, 0), fr = E.PS.reduce((a, x) => a + x.falseN, 0), rate = Math.round(fr / ok * 1000) / 10;
+  const leaked = E.PS.reduce((a, x) => a + x.must - x.caught, 0);
+  const W = [["Must-refuse questions answered", String(leaked), "0", leaked === 0], ["General questions wrongly refused, all probe sets", `${fr} of ${ok} (${rate}%)`, "10% now, 2% goal", rate <= 10], ["Legal's words changed", "0", "0", E.verbs(E.R).every(x => x.verb)],
+    ["Answers outside the asker's role", "0", "0", !E.R.some(x => x.leak)], ["Audit events with a gap", String(E.t3gaps), "0", E.t3gaps === 0], ["Unanswered questions this week (synthetic search log)", String(gapN), "falling week on week", null]];
+  c.beat(1, "What we watch every week, against the same bars");
+  const w = c.push("System", "Watched every week after launch", `<div class="gates">${W.map(([n, v, bar, g]) => `<div class="gate">${g === null ? '<span class="tk" style="background:#e6e6e0;color:#55594f">·</span>' : tick(g)}<b>${esc(n)}</b><span class="gv">now ${esc(v)} · target ${esc(bar)}</span></div>`).join("")}</div>`);
+  await c.reveal(w, ".gate", 450);
+  c.beat(2, "Every piece of feedback gets an owner");
+  c.push("System", "Feedback from advocates and members (examples illustrative)", `<div id="fbl">${fbList()}</div>
+    <div class="fbform"><b>Leave feedback on an answer</b><div class="fbrow"><select id="fbq">${E.R.filter(x => x.answered).slice(0, 6).map(x => `<option>${esc(x.g.q)}</option>`).join("")}</select>
+    <select id="fbk"><option value="wrong">Wrong</option><option value="missing">Missing something</option><option value="unclear">Unclear</option><option value="">Helpful</option></select></div>
+    <input id="fbt" placeholder="What should it have said?"><button class="btn sm primary" id="fbs">Send feedback</button></div>`);
+  const send = document.getElementById("fbs"); if (send) send.onclick = () => { const k = document.getElementById("fbk").value;
+    store.up(s => { s.feedback = (s.feedback || []).concat([{ who: "You", up: !k, kind: k, q: document.getElementById("fbq").value, text: document.getElementById("fbt").value.slice(0, 200) }]); });
+    document.getElementById("fbl").innerHTML = fbList(); document.getElementById("fbt").value = ""; };
+  await c.T(2200);
+}
+const FILEIC = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></svg>`;
+
+function takeHTML() {
+  const N = E.PS.reduce((a, x) => a + x.rows.length, 0), items = [
+    ["search", "Tested by group, not on average", `${E.R.filter(x => x.pass).length} of ${E.R.length} labelled questions pass, for every role and channel.`],
+    ["shield", "Tested by someone who never saw the rules", `${N} independent questions; every must-refuse refused.`],
+    ["lock", "A sealed set nobody tuned to", `${E.H.filter(x => x.pass).length} of ${E.H.length}, run once, seal ${E.sealedOK ? "intact" : "not verified"}.`],
+    ["stamp", "One red row blocks the release", "Renee signs only when every rule row is green."],
+    ["zap", "Every miss becomes a test", "A failure is added as a test row, never fixed silently."],
+    ["calendar", "Run again before every release", "Same tests, same bars; the false-refusal bar tightens from 10% toward 2%."]];
+  return `<div class="take new"><p class="eyebrow">Key takeaway</p><h2>Quality is proven before anything ships, and proven again every release.</h2><p class="big2">Every number here was computed in this browser just now, by the same code as the full runner.</p>
+    <ol>${items.map(([ic, h, d], i) => `<li class="${i === items.length - 1 ? "last" : ""}"><span class="ticn">${TICON[ic] || ""}</span><div><b>${esc(h)}</b><span>${esc(d)}</span></div></li>`).join("")}</ol>
+    <div class="acts" style="margin-top:28px"><a class="btn primary" href="evals.html">Open the full live runner →</a><a class="btn" href="product.html">Open the product, by person →</a><button class="btn" id="again">Run every test again</button></div></div>`;
+}
+function shell(t) {
+  const n = cur + 1, next = TABS[cur + 1];
+  document.getElementById("stage").innerHTML = `<p class="eyebrow">Renee, the knowledge owner</p><h2 class="hl">${esc(t.line())}</h2><p class="was1"><b>Without it:</b> ${esc(t.without)}</p>
+    <div class="beats">${t.beats.map((b, i) => `<span data-b="${i}">${esc(b)}</span>`).join("")}</div><p class="narr" id="narr">&nbsp;</p>
+    <div class="appwin"><div class="appbar"><i></i><i></i><i></i><span>Lakewell Knowledge · Release check</span><span style="flex:1"></span><button class="btn sm" id="replay">↻ Replay</button><button class="btn sm" id="skip">Skip to result</button></div><div class="feed" id="feed"></div></div>
+    <div id="endc" class="endc" hidden><div class="now"><b>Result</b>${esc(t.line())}</div><div class="foot"><span></span><button class="btn primary" id="nextch">Next: ${esc(next.label)} →</button></div></div>`;
+}
+async function scene(fast) {
+  const my = ++run, t = TABS[cur], live = () => my === run;
+  if (!t.play) { document.getElementById("stage").innerHTML = takeHTML(); document.getElementById("again").onclick = async () => { E = await evalAll(S()); draw(); }; return my; }
+  shell(t);
+  document.getElementById("replay").onclick = () => scene(false); document.getElementById("skip").onclick = () => scene(true);
+  document.getElementById("nextch").onclick = () => { playing = false; cur++; draw(); scrollTo({ top: 0, behavior: "smooth" }); };
+  const feed = document.getElementById("feed"), down = () => feed.scrollTo({ top: feed.scrollHeight, behavior: fast ? "auto" : "smooth" });
+  const c = {
+    T: ms => live() ? wait(fast ? 0 : ms) : new Promise(() => {}),
+    beat: (i, say) => { document.querySelectorAll("[data-b]").forEach((x, j) => x.className = j < i ? "done" : j === i ? "on" : ""); document.getElementById("narr").textContent = say; },
+    push: (who, say, body) => { feed.insertAdjacentHTML("beforeend", feedItem(who, say, body)); down(); return feed.lastElementChild; },
+    reveal: async (el, sel, ms, onIn) => { const rows = [...el.querySelectorAll(sel)]; if (fast) { rows.forEach(r => onIn && onIn(r)); return; }
+      rows.forEach(r => r.classList.add("rv")); for (const r of rows) { await c.T(ms); r.classList.add("in"); if (onIn) onIn(r); down(); } }
+  };
+  await t.play(c); if (!live()) return my;
+  c.beat(t.beats.length - 1, "Done."); document.querySelectorAll("[data-b]").forEach(x => x.className = "done");
+  document.getElementById("endc").hidden = false; if (!fast) document.getElementById("endc").scrollIntoView({ block: "nearest", behavior: "smooth" });
+  return my;
+}
+function draw() {
+  document.getElementById("stepper").innerHTML = storyStepper(4);
+  document.getElementById("tabs").innerHTML = TABS.map((x, i) => `<button data-t="${i}" class="${i === cur ? "on" : i < cur ? "done" : ""}"><i>${i + 1}</i><span>${esc(x.label)}</span></button>`).join("");
+  document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { playing = false; cur = +b.dataset.t; draw(); });
+  return scene(false);
+}
+document.getElementById("play").onclick = async () => { playing = true; cur = 0;
+  while (playing) { const my = await draw(); if (!playing || my !== run) return; await wait(2500); if (!playing || my !== run) return; if (cur < TABS.length - 1) cur++; else { playing = false; return; } } };
+document.getElementById("stop").onclick = () => { playing = false; run++; };
+evalAll(S()).then(e => { E = e; if (QS.get("play") === "1") document.getElementById("play").click(); else draw(); });
+</script></body></html>

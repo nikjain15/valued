@@ -77,3 +77,51 @@ Fields: **Signals** · **Gate** · **Problem** · **Options** · **Preference** 
 - Preference: A. A cap of two keeps the score tight while covering the common two-policy answer.
 - What would change our mind: golden-set evidence that three or more sources are common in one shape.
 - Status: accepted by Nik, 2026-10-26 (option A)
+
+### P-006: a five-step demo standard for the deep path, with a reference kit
+- Signals: S-097, S-098, S-099, S-102, S-103 · Gate: B, app
+- Problem: `/valued-deep go build` says how to hand off to a build but nothing about the demo, so UC2's demo was restructured many times (acts, channels, crowded pages, a Control panel unlike today's view, ad hoc colours, an old home on the public link) before it reached a level Nik would show.
+
+| Option | Trade-off | |
+|---|---|---|
+| A: `demo-standard.md` plus `demo-kit/` (the UC2 scene player, story bar, current and future state page, Prove it page and styles) | the next case starts from working code at this level; the kit carries UC2 content each case must replace | **Preferred** |
+| B: the standard only | nothing case-specific in the repo; the next build rebuilds the scene player and Prove it from scratch | |
+
+- Preference: A. The scenes and Prove it took the most rework, and copying working code is faster than following a description.
+- What would change our mind: a second case where the kit's structure does not fit, which would argue for a generic template instead.
+- Status: accepted by Nik, 2026-11-01 (option A)
+
+### P-007: one eval scorer for the runner and the demo, and a Prove it page that shows misses
+- Signals: S-100, S-101 · Gate: E
+- Problem: a demo eval page with its own copy of the scoring can drift from the runner, and a page that shows only passes is not believed; UC2's first version did both.
+
+| Option | Trade-off | |
+|---|---|---|
+| A: require a shared `eval-core.js` (output checked identical when extracted or changed) and a Prove it page with what fails and the fix, observe and feedback, and denominators on every rate | the demo can never disagree with the runner, and the panel sees the improvement loop; one more required page | **Preferred** |
+| B: require the shared scorer only | smaller; a later demo may again show only passes | |
+
+- Preference: A. The missing-failures gap was the panel question Nik expected first.
+- What would change our mind: a case with no release gate to show.
+- Status: accepted by Nik, 2026-11-01 (option A)
+
+### P-008: public and private split with a publish script
+- Signals: S-104 · Gate: B
+- Problem: the demo repo was public with pages naming the real client and employers; the split was done by hand, and the first script deleted the public repo's .git.
+
+| Option | Trade-off | |
+|---|---|---|
+| A: a generic publish script (two-stage copy, real-name gate, never touching the public .git) and a go build step that uses it | no real name or private page reaches a public link; the case lists its private files and names | **Preferred** |
+| B: the rule only | each case writes its own script | |
+
+- Status: deferred, 2026-11-01 (Nik gave no preference on the card)
+
+### P-009: end go build audit-ready, and keep the strategy as the state of record
+- Signals: S-105, S-106 · Gate: conductor
+- Problem: the stress-audit prompt and the practice of one session owning the decision log and strategy were both done by hand on UC2.
+
+| Option | Trade-off | |
+|---|---|---|
+| A: write the audit prompt from a template at the end of go build, and add a standing rule that one session owns the log and the strategy while builders relay each decision with the user's words | every deep build ends audit-ready and the strategy never drifts; a template to keep current | **Preferred** |
+| B: the audit template only | the strategy can drift during the next long build | |
+
+- Status: deferred, 2026-11-01 (Nik gave no preference on the card)

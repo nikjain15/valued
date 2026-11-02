@@ -485,6 +485,56 @@ addressed by <change>, rejected: <reason>).
 - Tested 30 Oct 2026: check.js on a defect fixture (all three defects caught); each agent on the real case files (eval-reviewer 7 blocks, strategy-reviewer 4 blocks, strategy-writer 658 rows and 18 contradictions, gate-defender honest tags on a 20-minute budget); a full `start` run on a fresh synthetic credit-union case by an agent holding only SKILL.md (64 register rows, 34 P, nothing built, check clean). Its test report produced 10 wording fixes and 8 gaps, all applied.
 - Status: addressed by valued-deep
 
+### S-097
+- Source: note, 2026-11-01 · Scenario: UC2 Knowledge and Search (deep path, demo build) · Gate: B
+- Evidence: The demo had no fixed story order: acts, channels and pages mixed, and Nik could not follow it. Nik: "basically act is 'how it will work' and under that each steps"; "how it works should be before Future State". Settled on five steps: Current state, Solution architecture, How it works, Future state, Prove it (D114 to D116). Nothing in valued-deep go build or valued-build defines a demo story.
+- Status: open
+
+### S-098
+- Source: note, 2026-11-01 · Scenario: UC2 Knowledge and Search (deep path, demo build) · Gate: B
+- Evidence: How it works pages showed every artefact at once and were "super crowded". Nik: "make it more like how it will work in real life - like we are actually uploading or reading documents ... one thing should come one after other". Fixed by scenes: a person acts, the AI reads and proposes with results one at a time, a person decides, then the result (out/uc2-proto/how-engine.js, how-scenes.js).
+- Status: open
+
+### S-099
+- Source: note, 2026-11-01 · Scenario: UC2 Knowledge and Search (deep path, demo build) · Gate: B
+- Evidence: Future state used a different panel (Control) from Current state, so the before and after could not be compared. Nik: "shouldn't we show like how we showed in current state - more like that visual but from graphrag perspective"; then "why do we need green ... we can follow same color/ design system like how we had for current state". Fixed: the same step flow, same colours, the fixing step marked "fixed here".
+- Status: open
+
+### S-100
+- Source: note, 2026-11-01 · Scenario: UC2 Knowledge and Search (deep path, demo build) · Gate: E
+- Evidence: The demo's eval page showed only passes. Nik: "there is nothing that's getting failed/ how thats possible and we need to show how are we improving / working on it and we need observability page over here ... and add some feedback". Fixed with a Prove it page: live misses, found-and-fixed items from the decision log, weekly checks, and feedback routed to owners (prove.html). The strategy session also caught a rate shown without its denominator (D126).
+- Status: open
+
+### S-101
+- Source: note, 2026-11-01 · Scenario: UC2 Knowledge and Search (deep path, demo build) · Gate: E
+- Evidence: The evals runner and the demo's Prove it page would have scored the same sets with two copies of the code, so their numbers could drift apart. Fixed by extracting eval-core.js, shared by both, and checking the runner's output byte-for-byte before and after.
+- Status: open
+
+### S-102
+- Source: note, 2026-11-01 · Scenario: UC2 Knowledge and Search (deep path, demo build) · Gate: app
+- Evidence: Visual rules were set ad hoc and then corrected: green used for navigation and progress; numbers removed then restored; a crowded top bar on demo pages; text buttons for play and stop. Nik: "lets make sure we use green appropriately"; "we should add numbers in sub-tabs ... as its hard to read"; "why we need anything else - lets remove that"; "instead of stop - lets have icon"; "can that move slightly slower".
+- Status: open
+
+### S-103
+- Source: note, 2026-11-01 · Scenario: UC2 Knowledge and Search (deep path, demo build) · Gate: B
+- Evidence: The public site opened on the old home and the old 13-step story. Nik: "but this knowledge has old demo/ prototype"; "it should start with this page directly". Fixed: index.html redirects to step 1, the old home became product.html, old pages retired (D129, D130).
+- Status: open
+
+### S-104
+- Source: note, 2026-11-01 · Scenario: UC2 Knowledge and Search (deep path, demo build) · Gate: B
+- Evidence: The demo repo was public with a brief and thinking pages that name the real client and employers. Split into a private repo with full history and a public repo with fresh history, built by out/uc2-publish.sh with a real-name gate (D128). The first version of the script used rsync --delete-excluded and deleted the public repo's .git; fixed with a two-stage copy.
+- Status: open
+
+### S-105
+- Source: note, 2026-11-01 · Scenario: UC2 Knowledge and Search (deep path, demo build) · Gate: conductor
+- Evidence: Nik asked for a stress-test audit before the interview: "main job is to make sure it stress test it across so many different dimensions that we cant think" and "what can we add here to make my interview amazing". Written by hand as out/uc2-demo-audit-prompt.md (26 dimensions, including interview readiness). The framework has no such template for the deep path.
+- Status: open
+
+### S-106
+- Source: note, 2026-11-01 · Scenario: UC2 Knowledge and Search (deep path, demo build) · Gate: conductor
+- Evidence: Nik: "we need to make sure our strategy doc is our state of record, so update if we have done changes". Worked by a peer session that owns the decision log and the strategy, while the build session relays each decision with Nik's words quoted (D114 to D130). valued-deep says to log decisions the same day but has no rule for keeping the strategy current during a long build.
+- Status: open
+
 ## Status updates
 
 ### S-079
@@ -523,3 +573,7 @@ addressed by <change>, rejected: <reason>).
 - Gate: conductor. Extends S-075. None of `holdout-sealer`, `prototype-builder` or `guard-model` resolves as a registered agent type in this harness, so the verification run launched each as a general-purpose agent told to follow its definition file and to seal under that name.
 - Evidence: independence still held in substance, because each ran in its own context, and `provenance.json` recorded two distinct writers. But the name in `provenance.json` is self-reported by the orchestrator, so the check proves that two names were declared, not that two contexts existed. The check is worth having and is not proof against a careless or dishonest orchestrator.
 - Status: open
+- S-097, S-098, S-099, S-102, S-103: addressed by P-006
+- S-100, S-101: addressed by P-007
+- S-104: P-008 deferred (no preference given)
+- S-105, S-106: P-009 deferred (no preference given)

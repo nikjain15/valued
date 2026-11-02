@@ -15,7 +15,7 @@ grades itself; a strategy that lives in a chat and gets lost; code written befor
 |---|---|
 | **Asks the user** | Priorities, risk appetite, scope calls, and facts only they hold. Every eval bar, architecture choice and vendor call is a recommendation with trade-offs, never a question. |
 | **Uses** | Parallel research strands; the `fact-checker` agent for supplied figures; the `gate-defender` agent for eval bars; the `eval-reviewer` agent twice, once on a second model; the `holdout-sealer` agent for the sealed set; the `strategy-writer` agent for consolidation; the `strategy-reviewer` agent for each revalidation pass. |
-| **Gives** | Under `out/deep/` (or exactly the `--out <dir>` given, with nothing appended): `plan.md`, `decision-log.md`, `citations.md`, `strategy.md`, `run-notes.md`, `strands/<PREFIX>.md`, `reviews/`, `revalidation/pass-N.md`, `handoff.json`. Markdown and JSON only until `go build`. |
+| **Gives** | Under `out/deep/` (or exactly the `--out <dir>` given, with nothing appended): `plan.md`, `decision-log.md`, `citations.md`, `strategy.md`, `run-notes.md`, `strands/<PREFIX>.md`, `reviews/`, `revalidation/pass-N.md`, `handoff.json`. Markdown and JSON only until `go build`; after it, a demo built to `demo-standard.md` when one is to be shown. |
 | **Governance asks** | Which wrong output reaches a customer or a regulator? Which facts are assumed and who must confirm them? Who signs the release, and is every bar a rule a person can audit or a rate a person must read? |
 
 Pace: days. Each command below is one sitting of 30 to 120 minutes. The user runs them in any order after
@@ -192,6 +192,11 @@ the build path: write `out/deep/handoff.json` (case, audience, personas, unit mo
 metrics, golden and holdout file names and hashes, never list, decisions) and run `/valued` from gate L
 onwards with that file as its seed, or follow section 12 of the strategy when the user wants the prototype
 built directly. Log `D<n>: build approved, decided by <name>, <date>`.
+
+When the build includes a demo to show (a panel, a client, an interview), build it to `demo-standard.md`,
+starting from the reference implementation in `demo-kit/`: five steps (Current state, Solution
+architecture, How it works as scenes, Future state, Prove it), one eval scorer shared by the runner and
+Prove it, and the visual rules. Run its "Before showing it" list before the first showing.
 
 ## Output: `out/deep/handoff.json`
 
