@@ -15,7 +15,7 @@ grades itself; a strategy that lives in a chat and gets lost; code written befor
 |---|---|
 | **Asks the user** | Priorities, risk appetite, scope calls, and facts only they hold. Every eval bar, architecture choice and vendor call is a recommendation with trade-offs, never a question. |
 | **Uses** | Parallel research strands; the `fact-checker` agent for supplied figures; the `gate-defender` agent for eval bars; the `eval-reviewer` agent twice, once on a second model; the `holdout-sealer` agent for the sealed set; the `strategy-writer` agent for consolidation; the `strategy-reviewer` agent for each revalidation pass. |
-| **Gives** | Under `out/deep/` (or exactly the `--out <dir>` given, with nothing appended): `plan.md`, `decision-log.md`, `citations.md`, `strategy.md`, `run-notes.md`, `strands/<PREFIX>.md`, `reviews/`, `revalidation/pass-N.md`, `handoff.json`. Markdown and JSON only until `go build`; after it, a demo built to `demo-standard.md` when one is to be shown. |
+| **Gives** | Under `out/deep/` (or exactly the `--out <dir>` given, with nothing appended): `plan.md`, `decision-log.md`, `citations.md`, `strategy.md`, `run-notes.md`, `strands/<PREFIX>.md`, `reviews/`, `revalidation/pass-N.md`, `handoff.json`. Markdown and JSON only until `go build`; after it, a demo built to `demo-standard.md` when one is to be shown, its public copy from `demo-kit/publish.sh`, and `out/<case>-audit-prompt.md`. |
 | **Governance asks** | Which wrong output reaches a customer or a regulator? Which facts are assumed and who must confirm them? Who signs the release, and is every bar a rule a person can audit or a rate a person must read? |
 
 Pace: days. Each command below is one sitting of 30 to 120 minutes. The user runs them in any order after
@@ -61,6 +61,11 @@ Pace: days. Each command below is one sitting of 30 to 120 minutes. The user run
    writes the same line under `## Printed lines` in `run-notes.md`.
 8. **Audience in every table.** The named audience (a panel, a sponsor, a regulator) decides the "one line for
    the room" column and the Q&A exposure list; write for the hardest reader in it.
+9. **One writer for the state of record.** From `go build` on, one session owns `decision-log.md` and
+   `strategy.md`; every other session (builder, auditor) relays each decision to it with the user's words
+   quoted and never writes D-rows or strategy edits itself. The owner logs the row and updates the strategy
+   the same day, so the strategy always describes what is built. Name the owner in `run-notes.md`
+   (`State of record owner: <session>`); with a single session, that session is the owner.
 
 ## Commands
 
@@ -197,6 +202,17 @@ When the build includes a demo to show (a panel, a client, an interview), build 
 starting from the reference implementation in `demo-kit/`: five steps (Current state, Solution
 architecture, How it works as scenes, Future state, Prove it), one eval scorer shared by the runner and
 Prove it, and the visual rules. Run its "Before showing it" list before the first showing.
+
+When the demo will be shared by a public link while the brief, thinking pages or real names stay private,
+keep two repos: the private prototype with full history, and a public copy with fresh history. Build the
+public copy only with `demo-kit/publish.sh`, filled in for the case (private files, real names, public URL):
+it copies in two stages, fails on any real name, private link or tagged audio, and never touches the public
+repo's `.git`. Never edit the public folder by hand. Log the split as a D-row.
+
+Finish `go build` audit-ready: fill `audit-prompt-template.md` from the strategy, the decision log, the
+eval baseline and the repos' git state, save it as `out/<case>-audit-prompt.md` with absolute paths, and
+print `Audit prompt: out/<case>-audit-prompt.md. Paste it into a fresh session.` Refresh it after every
+round of fixes so its baseline numbers and commit IDs stay current.
 
 ## Output: `out/deep/handoff.json`
 

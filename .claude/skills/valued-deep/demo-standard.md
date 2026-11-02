@@ -60,3 +60,5 @@ Prove it, never from the story bar.
 - The live (hosted) copy opens on step 1 and matches the local one.
 - Every decision taken during the build is in the decision log, and the strategy describes the demo as
   built.
+- A public copy, if any, was built by `demo-kit/publish.sh` and its gate printed `Clean`.
+- `out/<case>-audit-prompt.md` exists, filled from `audit-prompt-template.md`, with the current baseline.

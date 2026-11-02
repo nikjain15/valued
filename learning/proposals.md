@@ -113,7 +113,7 @@ Fields: **Signals** · **Gate** · **Problem** · **Options** · **Preference** 
 | A: a generic publish script (two-stage copy, real-name gate, never touching the public .git) and a go build step that uses it | no real name or private page reaches a public link; the case lists its private files and names | **Preferred** |
 | B: the rule only | each case writes its own script | |
 
-- Status: deferred, 2026-11-01 (Nik gave no preference on the card)
+- Status: accepted by Nik, 2026-11-02 (option A; deferred on 2026-11-01, then "Yes, apply both")
 
 ### P-009: end go build audit-ready, and keep the strategy as the state of record
 - Signals: S-105, S-106 · Gate: conductor
@@ -124,4 +124,4 @@ Fields: **Signals** · **Gate** · **Problem** · **Options** · **Preference** 
 | A: write the audit prompt from a template at the end of go build, and add a standing rule that one session owns the log and the strategy while builders relay each decision with the user's words | every deep build ends audit-ready and the strategy never drifts; a template to keep current | **Preferred** |
 | B: the audit template only | the strategy can drift during the next long build | |
 
-- Status: deferred, 2026-11-01 (Nik gave no preference on the card)
+- Status: accepted by Nik, 2026-11-02 (option A; deferred on 2026-11-01, then "Yes, apply both")

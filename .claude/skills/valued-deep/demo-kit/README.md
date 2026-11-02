@@ -15,6 +15,7 @@ prototype folder and replace the case content; keep the structure. The rules the
 | `how1.html` | One How it works page: its `ACT` config (lead, sub-steps, the artefact each sub-step produces) | One page per architecture step |
 | `eval-core.js` | `evalAll(state)`: the single scorer shared by the evals runner and Prove it (golden, sealed holdout counts, rule tests, probe sets) | The tests, groups and bars, from the strategy's eval section |
 | `prove.html` | Prove it: golden set, independent probes, sealed holdout, release gate, what fails and the fix, observe and feedback, key takeaway, all computed live by `evalAll` | `FIXED` (from your decision log), feedback examples, the weekly checks |
+| `publish.sh` | The public copy: two-stage copy without private files; real-name, private-link and audio-tag gate; cache stamp; never touches the public `.git` (P-008) | The case block at the top: folders, private files, real names, public URL; an optional case edits file |
 
 The kit depends on the prototype's engine and data (`answer()`, `DOCS`, `ROLES`, `store`, `S()`, `nav()`,
 `esc()`, `QS`), which every case builds for itself. Read `prove.html` and `how-engine.js` first: they show

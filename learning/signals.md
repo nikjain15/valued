@@ -577,3 +577,5 @@ addressed by <change>, rejected: <reason>).
 - S-100, S-101: addressed by P-007
 - S-104: P-008 deferred (no preference given)
 - S-105, S-106: P-009 deferred (no preference given)
+- S-104: addressed by P-008 (applied 2026-11-02)
+- S-105, S-106: addressed by P-009 (applied 2026-11-02)
