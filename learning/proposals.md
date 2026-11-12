@@ -146,7 +146,7 @@ Fields: **Signals** · **Gate** · **Problem** · **Options** · **Preference** 
 - Change: `talk-track-template.md`; `demo-kit/talktrack.py` (markdown to PDF); `demo-check.js --talk` fails when a story step or Prove it tab is not mentioned or the tab count is wrong.
 - Status: accepted by Nik, 2026-11-12 (Apply)
 
-| P-010 | 2026-11-12 | six-step story, click to advance, Prove it dashboard | S-107 to S-111, S-116 | approved | pending |
-| P-011 | 2026-11-12 | Roadmap, Trade-offs, one build list | S-112 | approved | pending |
-| P-012 | 2026-11-12 | demo-auditor agent and demo-check.js | S-113, S-115 | approved | pending |
-| P-013 | 2026-11-12 | talk track template, PDF script and check | S-114 | approved | pending |
+| P-010 | 2026-11-12 | six-step story, click to advance, Prove it dashboard | S-107 to S-111, S-116 | approved | 922243d |
+| P-011 | 2026-11-12 | Roadmap, Trade-offs, one build list | S-112 | approved | 922243d |
+| P-012 | 2026-11-12 | demo-auditor agent and demo-check.js | S-113, S-115 | approved | 922243d |
+| P-013 | 2026-11-12 | talk track template, PDF script and check | S-114 | approved | 922243d |
