@@ -1,0 +1,174 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="fonts/fonts.css?v=45">
+<link rel="stylesheet" href="styles.css?v=45"><link rel="stylesheet" href="story.css?v=47">
+<title>Roadmap · Lakewell Knowledge</title>
+<style>
+.rule3{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 18px}.rule3 span{font-family:Manrope,sans-serif;font-weight:800;font-size:14px;padding:7px 12px;border-radius:99px;background:#f1f1ec;color:#2b2f27;border:1px solid #e2e3db}.rule3 i{font-style:normal;color:var(--muted)}
+.path{list-style:none;margin:0;padding:0;display:grid;gap:10px;position:relative}
+.path:before{content:"";position:absolute;left:19px;top:20px;bottom:20px;width:2px;background:#e2e3db}
+.rp{position:relative;display:grid;grid-template-columns:42px 1fr;gap:14px;align-items:start;opacity:0;transform:translateY(8px);animation:stin .5s ease forwards}
+.rp .dot{position:relative;z-index:1;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-family:Manrope,sans-serif;font-weight:800;font-size:15px;background:#fff;border:2px solid #cfd1c7;color:#2b2f27}
+.rp.first .dot{background:#2b2f27;border-color:#2b2f27;color:#fff}
+.rp .box{border:1px solid #e4e6dc;border-radius:14px;background:#fff;padding:12px 14px;display:grid;grid-template-columns:1.1fr 1.4fr 1fr 1.4fr;gap:10px 18px;align-items:start}
+.rp.first .box{border-color:#2b2f27}
+.rp h3{margin:0;font-family:Manrope,sans-serif;font-weight:800;font-size:16px}.rp h3 small{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:2px}
+.rp dl{margin:0}.rp dt{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}.rp dd{margin:0;font-size:13.5px;line-height:1.45}
+@keyframes stin{to{opacity:1;transform:none}}
+.side2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.side2 div{border-radius:12px;padding:10px 14px;font-size:14px;line-height:1.5}.side2 .pilot{background:#f6f6f2;border:1px solid #e2e3db}.side2 .stop{background:#fdf4ec;border:1px solid #f0c9a8}.side2 b{display:block;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+@media (max-width:900px){.rp .box{grid-template-columns:1fr 1fr}.side2{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.rp{animation:none;opacity:1;transform:none}}
+.box2{border:1px solid #e4e6dc;border-radius:14px;background:#fff;padding:14px 16px;display:grid;grid-template-columns:1fr 1.3fr 1.2fr;gap:12px 22px;align-items:start}
+.ph-h small{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:800}.ph-h h3{margin:2px 0 4px;font-family:Manrope,sans-serif;font-weight:800;font-size:17px}.ph-h p{margin:0;font-size:14px;color:#2b2f27}
+.ph-do{margin:0;padding-left:18px;font-size:13.5px;line-height:1.55}.ph-ok{background:#f6f6f2;border-radius:10px;padding:8px 12px;display:grid;gap:3px;font-size:13.5px}.ph-ok b{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.ph-ok span{color:#2b4a12}
+@media (max-width:900px){.box2{grid-template-columns:1fr}}
+.rp{opacity:1;transform:none;animation:none;transition:opacity .45s ease,transform .45s ease}.rp.later{display:none}
+.rp:not(.later){animation:stin .5s ease}
+.ph-x{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1.5fr;gap:8px 22px;border-top:1px dashed #e2e3db;padding-top:8px;font-size:13px;color:#3b3f36}.ph-x b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+@media (max-width:900px){.ph-x{grid-template-columns:1fr}}
+.ph-jobs{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}.ph-jobs span{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid #cfd1c7;color:#2b2f27;background:#fff}.ph-jobs .pre{color:var(--muted)}
+.tl{position:relative;display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:18px 0 16px}
+.tl-line{position:absolute;left:8.3%;right:8.3%;top:19px;height:3px;background:#e2e3db;border-radius:3px}.tl-line i{display:block;height:100%;width:0;background:#2b2f27;border-radius:3px;transition:width .5s ease}
+.tl-n{position:relative;z-index:1;font:inherit;background:none;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0}
+.tl-d{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-family:Manrope,sans-serif;font-weight:800;background:#fff;border:2px solid #cfd1c7;color:#6b6f66;transition:all .3s}
+.tl-t{font-size:12.5px;font-weight:700;color:#6b6f66;text-align:center;line-height:1.3}
+.tl-n.done .tl-d{background:#2b2f27;border-color:#2b2f27;color:#fff}.tl-n.on .tl-d{background:#fff;border-color:#2b2f27;color:#2b2f27;box-shadow:0 0 0 4px #e9e9e2}.tl-n.on .tl-t,.tl-n.done .tl-t{color:#2b2f27}
+.phcard{border:1px solid #e4e6dc;border-radius:16px;background:#fff;padding:18px 20px}.phcard.in{animation:stin .45s ease}
+.pc-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border-bottom:1px solid #eef0e8;padding-bottom:12px;margin-bottom:14px}.pc-top small{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:800}.pc-top h3{margin:2px 0 4px;font-family:Manrope,sans-serif;font-weight:800;font-size:22px}.pc-top p{margin:0;font-size:15px}
+.pc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pc-b{border-radius:12px;background:#f8f8f5;padding:12px 14px;font-size:14px;line-height:1.5}.pc-b b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}.pc-b ul{margin:0;padding-left:18px}.pc-b p{margin:0}
+.pc-b.ok ul.tk{list-style:none;padding:0}.pc-b.ok li:before{content:"✓ ";font-weight:800;color:#2b4a12}.pc-b.risk{background:#fdf6ee}
+@media (max-width:900px){.pc-grid{grid-template-columns:1fr}.tl-t{font-size:10.5px}.pc-top{flex-direction:column}}
+.pc-fr{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid #eef0e8;font-size:13px}.pc-fr b{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:4px}.pc-fr a{padding:3px 9px;border-radius:99px;border:1px solid #cfd1c7;color:#2b2f27;text-decoration:none;font-weight:700;font-size:12px}.pc-fr a:hover{border-color:#2b2f27}.pc-fr span{color:var(--muted);font-size:12px}
+.pc-b ul.tt{list-style:none;padding-left:0}.pc-b ul.tt li{margin:0 0 5px}.pc-b ul.tt em{font-style:normal;font-size:11px;font-weight:800;border-radius:99px;padding:1px 8px;margin-left:4px;background:#eef0e8;color:#55594f;white-space:nowrap}.pc-b ul.tt em.bd{background:#2b4a12;color:#fff}.pc-b ul.tt li.isb{border-left:4px solid #5f8a26;background:#eef5e3;border-radius:8px;padding:7px 10px;margin:6px 0}.pc-b ul.tt li.isb small{display:block;margin-top:3px;font-size:12px;line-height:1.4;color:#2b4a12}
+.jy-open{margin:10px 0 0;font:inherit;font-size:13.5px;font-weight:800;color:#2b4a12;background:#f4f9ec;border:1px solid #9cc27a;border-radius:99px;padding:7px 14px;cursor:pointer}.jy-open:hover{background:#eaf3dc}.jy{border:1px solid #e4e6dc;border-radius:14px;padding:16px;background:#fbfcf8;margin:12px 0 6px}.jy-h{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px}.jy-h h3{margin:2px 0 4px;font-family:Manrope,sans-serif;font-size:18px}.jy-h p.small{margin:0;max-width:560px}.jy-lg{display:flex;gap:6px;flex-wrap:wrap}
+.jy-track{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:8px 0 12px}.jy-ln{display:block;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.jy-dots{display:flex;justify-content:space-between;position:relative}.jy-dots::before{content:"";position:absolute;left:14px;right:14px;top:14px;height:2px;background:#e2e3db}
+.jy-d{position:relative;z-index:1;background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;width:calc(100% / 7);font:inherit}
+.jy-d i{font-style:normal;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:#fff;border:2px solid #cfd1c7;color:#55594f;transition:all .2s}
+.jy-d.build i{border-color:#5f8a26;color:#2b4a12}.jy-d span{font-size:11px;line-height:1.25;text-align:center;color:var(--muted)}
+.jy-d.past i{background:#eef0e8}.jy-d.build.past i{background:#e7f1da}.jy-d.on i{background:#2b2f27;border-color:#2b2f27;color:#fff;transform:scale(1.12)}.jy-d.build.on i{background:#2b4a12;border-color:#2b4a12}.jy-d.on span{color:#2b2f27;font-weight:800}
+.jy-card{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;border:1px solid #e4e6dc;border-radius:14px;background:#fff;padding:16px}.jy-card.in{animation:jyin .35s ease}@keyframes jyin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.jy-cl{display:flex;gap:14px;align-items:flex-start}.jy-big{flex:none;width:44px;height:44px;border-radius:50%;background:#2b2f27;color:#fff;font-family:Manrope,sans-serif;font-weight:800;font-size:18px;display:grid;place-items:center}.jy-cl small{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}.jy-cl h4{margin:2px 0 4px;font-family:Manrope,sans-serif;font-size:19px}.jy-cl p{margin:0;font-size:14px;color:#3d4236}
+.jy-cr{display:grid;gap:10px;border-left:1px dashed #e2e3db;padding-left:16px}.jy-cr>div{display:grid;grid-template-columns:96px 1fr;gap:4px 8px;align-items:center;font-size:13.5px}.jy-cr b{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}.jy-cr>div>div{grid-column:2}
+.jy-cr .bt{justify-self:start;width:max-content}.jy-cr>div>span.bt+span.bt{grid-column:2}.jy-cr .jy-what{display:block}.jy-what ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}.jy-what li{font-size:13.5px;line-height:1.4}.jy-what .bt{margin-right:6px}.jy-nav{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+@media (max-width:900px){.jy-track{grid-template-columns:1fr}.jy-card{grid-template-columns:1fr}.jy-cr{border-left:0;padding-left:0}.jy-d span{display:none}}
+.wh,.bt{display:inline-block;font-size:10.5px;font-weight:800;border-radius:99px;padding:2px 8px;white-space:nowrap}.wh.ai{background:#ebe8f8;color:#3c3489}.wh.person{background:#fbe8dc;color:#8a4b12}.wh.rule{background:#eef0e8;color:#55594f}
+.bt.build{background:#2b4a12;color:#fff}.bt.buy{background:#e6ebf2;color:#2c4766}.bt.today{background:#fff;color:#55594f;border:1px solid #cfd1c7}.jy-s .bt{align-self:flex-start}
+@media (max-width:1100px){.jy-row{grid-template-columns:repeat(4,minmax(0,1fr))}.jy-s::after{display:none}}@media (max-width:640px){.jy-row{grid-template-columns:1fr 1fr}}
+</style></head><body>
+<main class="area" style="max-width:1280px">
+<div id="stepper"></div>
+<div class="hhead"><h1>Roadmap</h1></div>
+<div class="card howcard" id="stage"></div>
+</main>
+<script src="data.js?v=45"></script><script src="app.js?v=45"></script><script src="story-shared.js?v=47"></script>
+<script>
+/* How we build it, in order (PRD section 14, strategy S10, D78, D180). Plain words; no durations on screen (they are placeholders). */
+nav("plan.html", "", { demo: true });
+document.getElementById("stepper").innerHTML = storyStepper(4);
+const STEPS_R = [
+  ["Discovery", "Know where we start", ["List every pharmacy document and its owner", "Measure today's wrong answers and handle time", "Agree approvers with Legal; finish security and vendor review"], ["Baseline numbers agreed", "Every document has an owner", "Build, buy or partner decided"]],
+  ["Foundation", "Build the safe base that every later phase reuses, before any real content goes in", ["One store for approved answers, with versions and dates: so there is one copy, not three", "An approval step where nobody approves their own work: so nothing is served unchecked", "Roles taken from the company's sign-in system: so Dana and Luis see only their own content", "An audit trail of who changed what, and when: so Compliance can check any answer", "The test runner from Prove it: so every release is tested the same way"], ["Every safety rule passes the tests", "Every action lands in the audit trail", "Nobody sees content outside their role"]],
+  ["Pilot knowledge base", "Get one knowledge base right", ["Move the Pharmacy content in", "Legal clears the duplicate wordings", "Turn on drift alerts", "Train authors and approvers"], ["One approved wording per clause", "No wrong merges", "Drift alerts are accurate", "Monitoring plan signed"]],
+  ["Advocate search", "Advocates trust one answer", ["Run beside today's tools first (shadow)", "Compare its answers with today's", "Go live for one team"], ["No content outside a role for four weeks", "Repeat calls at or below baseline", "Handle time at or below baseline"]],
+  ["Agent Assist", "AI helps on live calls", ["Agent Assist reads approved answers only", "Test against today on a share of calls", "Review a sample every week"], ["Claims backed by their source", "Legal's words never changed", "Advocates override it less over time"]],
+  ["Members and every channel", "Members get the same answer", ["Member chat to a small group first", "Disclose AI use; stricter member rules", "Then texts, website, more knowledge bases"], ["Same answer on every channel", "Member complaints about wrong answers fall", "Weekly checks stay green"]]
+];
+/* Which product jobs (Solution architecture and How it works) each phase builds */
+const JOBS_P = [[], ["Job 2 Govern", "Job 4 Test"], ["Job 1 Ingest", "Job 2 Govern"], ["Job 3 Serve: advocate search"], ["Job 3 Serve: Agent Assist"], ["Job 3 Serve: member chat, texts, website"]];
+/* Which PRD functional requirements each phase delivers (PRD section 6) */
+const FR_P = [[], [["FR-1", "Governance store"], ["FR-2", "Approval"], ["FR-3", "Eval runner"]], [["FR-4", "Ingestion"], ["FR-5", "Extraction"], ["FR-6", "Dedup"], ["FR-7", "Drift detection"]], [["FR-8", "Retrieval and answer"], ["FR-9", "Read contract"], ["FR-10", "Gap log"]], [["FR-9", "Read contract for Agent Assist"]], [["FR-11", "Member-channel rules"], ["FR-12", "Outbound and consent"]]];
+const EXTRA = [
+  ["Content inventory, baseline report, signed approver list", "No reliable baseline for wrong answers: measure it on a sample of recorded calls"],
+  ["The platform running in a test environment", "Identity and roles integration slips: start it during discovery"],
+  ["The Pharmacy knowledge base, approved end to end", "Legal's review backlog: the AI shows word-by-word differences so each ruling is quick, and late reviews escalate"],
+  ["Search live for one advocate team", "Advocates keep their old habits: shadow comparison first, training, and old tools kept until trust is earned"],
+  ["Agent Assist answering from approved content", "Confident wrong answers: only cited answers and Legal's exact words, with a weekly human review"],
+  ["Member chat and every channel on one source", "Regulatory exposure: AI use disclosed, stricter rules, a small rollout first, and the stop rule"]
+];
+/* Techniques and tools per phase; tools named by kind, not vendor (D233), with build or buy (strategy S11) */
+const TT = [
+  [["Content inventory and owner mapping", "Call sampling to set the error baseline", "Risk and privacy review"], [["Spreadsheet or catalog tool", "use today's"], ["Call recording and QA tool", "use today's"]]],
+  [["Versioned store with effective dates (temporal versioning)", "Role-based access on every read", "Write-once audit log", "Hash check on Legal's exact words", "Golden set and sealed held-out test"], [["Cloud database and object store", "buy, from the cloud in use"], ["Version, date and hash rules on that database", "build", "Each answer carries its version, start and end date, and a hash of Legal's words, so an old or edited answer is never served"], ["Company sign-in (identity provider)", "use today's"], ["Approval workflow, audit log, eval runner", "build", "Knowledge tools approve whole articles, not each answer, and do not lock Legal's exact sentences. We need a second person to approve every answer, Legal's words locked, and a test that blocks a bad release. No product sells these together, so we build them"]]],
+  [["Split documents into topics (structure-aware chunking)", "Semantic deduplication", "Drift detection on source changes", "Hidden-instruction scan"], [["Document parser and OCR service", "buy"], ["Large language model for drafting topics", "buy, via the cloud in use"], ["Embedding model for finding copies", "buy"], ["Drift check: compares a changed document with the topics built from it", "build", "No product does this comparison, so we build the check on top of a bought language model"]]],
+  [["Hybrid search: keywords plus meaning", "Re-ranking inside approved topics", "Cited answers only; 'not yet' below the bar", "Shadow mode against today's tools"], [["Managed search service with vector index", "buy"], ["Re-ranking model", "buy"], ["Read contract and gap log", "build", "Every channel (search, Agent Assist, chat, text, website) asks one service for the answer. It checks who is asking, that the answer is approved and in date, then shows the source or says 'not yet'. Build it once and every channel gives the same answer"]]],
+  [["Real-time suggestion from the live call", "Template insertion for Legal's words", "Weekly human review sample"], [["Agent Assist in the contact-centre platform", "buy, from today's platform"], ["Speech-to-text", "buy"], ["Connector to the read contract", "build", "Agent Assist normally reads its own copy of the documents, which is how old wording creeps back. A small connector makes it ask the same service as every other channel instead"]]],
+  [["Stricter member rules: exact wording, single facts", "AI-use disclosure", "Staged rollout with a stop rule", "Consent check before any text"], [["Member chat and website widget", "use today's"], ["Texting platform with consent records", "use today's"], ["Monitoring dashboard and alerts", "buy, from the cloud in use"]]]
+];
+/* One answer, end to end: who does each step and whether we build it (the single build list, D240) */
+const JOURNEY = [
+  ["A document becomes an approved answer", [
+    ["Upload and scan", "New copay guide; hidden instructions checked", ["ai", "rule"], "Document parser", "buy"],
+    ["Split into topics", "Legal's sentences marked", ["ai"], "Language model", "buy"],
+    ["Find copies", "The two other versions found", ["ai"], "Embedding model", "buy"],
+    ["Flag what changed", "New copay against the old topics", ["ai", "rule"], "Drift check, on a bought model", "mix"],
+    ["Edit and approve", "Priya edits; a second person approves", ["person", "rule"], "Knowledge tool, our approval workflow", "mix"],
+    ["Store once", "Version, dates; Legal's words hashed", ["rule"], "Bought database, our rules", "mix"],
+    ["Test and sign", "One red row blocks; Renee signs", ["rule", "person"], "Eval runner, audit log", "build"]]],
+  ["June asks a question", [
+    ["June asks", "Crisis and personal-data rules first", ["rule"], "Member chat, our rules", "mix"],
+    ["Check who asks", "What this person may see", ["rule"], "Company sign-in", "today"],
+    ["Find the topic", "Best approved match", ["ai"], "Managed search, re-ranker", "buy"],
+    ["Answer or 'not yet'", "Source cited; Legal's exact words", ["rule"], "Read service", "build"],
+    ["Same answer for Dana", "Agent Assist on her call", ["ai", "person"], "Agent Assist, our connector", "mix"],
+    ["Close the gap", "'Not yet' goes to Priya's list", ["rule", "person"], "Gap log", "build"],
+    ["Watch weekly", "Same tests; 30 answers per role checked", ["rule", "person"], "Monitoring dashboard", "buy"]]]
+];
+const WHO = { ai: "AI", person: "Person", rule: "System" }, TAG = { build: "We build", buy: "We buy", today: "Use today's" };
+/* What exactly we build or buy at each step */
+const WHAT = { 1: [["buy", "A document parser and OCR service that reads PDFs and scans"]], 2: [["buy", "A large language model that drafts the topics"]], 3: [["buy", "An embedding model that spots copies with different wording"]],
+  4: [["buy", "The language model that reads both versions"], ["build", "The check that compares the new document with the topics already approved"]], 5: [["today", "Priya writes in today's knowledge tool (we partner for the authoring screens)"], ["build", "The approval workflow: a second person must approve, never the author"]],
+  6: [["buy", "A cloud database"], ["build", "The rules on top: versions, start and end dates, and the hash on Legal's words"]], 7: [["build", "The test runner and the write-once audit log"]],
+  8: [["today", "Today's member chat"], ["build", "The crisis and personal-data rules, which run inside our read service"]], 9: [["today", "The company's existing sign-in system"]], 10: [["buy", "A managed search service and a re-ranking model"]],
+  11: [["build", "The read service every channel asks: checks role and dates, cites the source or says 'not yet'"]], 12: [["buy", "Agent Assist in today's contact-centre platform, with its speech-to-text"], ["build", "A small connector so it asks our read service"]],
+  13: [["build", "The gap log that turns each 'not yet' into Priya's to-do list"]], 14: [["buy", "A monitoring dashboard with alerts"]] };
+/* How each step is built, in one technical line (PRD section 15, "How we build it, technically") */
+const HOW = { 1: "An upload fires an event; the parser returns structured text; lines that give the AI orders are held back",
+  2: "The model proposes topics; code checks Legal's sentences are exact copies of the source", 3: "Embeddings compare every topic; matches come with a word-by-word diff, never an automatic merge",
+  4: "Each tracked passage is compared with the new version; one alert names every affected answer and channel", 5: "A state machine in code: proposed, in review, approved, retired; the author's sign-in cannot approve",
+  6: "One record per answer: ID, version, dates, knowledge bases, source; Legal's words hashed; every change in an append-only log", 7: "The eval runner runs in CI on every change; one red rule row blocks the deploy",
+  8: "Crisis and personal-data rules run before any search", 9: "Role read from the company sign-in on every question, never cached",
+  10: "Hybrid search (keywords plus meaning) over approved answers only, then re-ranked", 11: "answer(question, role, channel, date): below the bar it says 'not yet'; the template inserts Legal's words and the citation",
+  12: "The connector calls the same answer() API, so Agent Assist never reads its own copy", 13: "Every 'not yet' is logged with the redacted question, clustered by topic, most-asked first",
+  14: "The same runner on a schedule, plus a sample of 30 answers per role labelled by a person" };
+const JS = JOURNEY.flatMap(([lane, st], L) => st.map(x => ({ lane, L, x })));
+const ACT = { 1: "Pharmacy team", 2: "AI", 3: "AI", 4: "AI", 5: "Priya, then an approver", 6: "Lakewell Knowledge", 7: "Renee", 8: "June", 9: "Lakewell Knowledge", 10: "AI", 11: "Lakewell Knowledge", 12: "Dana", 13: "Priya", 14: "A reviewer" };
+const journeyHTML = () => `<div class="jy"><div class="jy-h"><div><p class="eyebrow">Before the phases: who does what</p><h3>One answer, end to end</h3><p class="small">Follow one copay change from a new document to June's answer.</p></div>
+  <div class="jy-lg">${Object.entries(TAG).map(([k, v]) => `<span class="bt ${k}">${v}</span>`).join("")}</div></div>
+  <div class="jy-track">${JOURNEY.map(([lane, st], L) => `<div class="jy-seg"><span class="jy-ln">${esc(lane)}</span><div class="jy-dots">${st.map((x, i) => { const n = L * 7 + i; return `<button class="jy-d ${x[4] === "mix" ? "build" : x[4]}" data-j="${n}" title="${esc(x[0])}"><i>${n + 1}</i><span>${esc(x[0])}</span></button>`; }).join("")}</div></div>`).join("")}</div>
+  <div class="jy-card" id="jyc"></div>
+  <div class="jy-nav"><button class="btn sm" id="jyp">← Back</button><span class="small" id="jyk"></span><button class="btn sm primary" id="jyn">Next step →</button></div></div>`;
+let jc = 0;
+function jyGo(n) { jc = Math.max(0, Math.min(JS.length - 1, n)); const { lane, x } = JS[jc], [t, d, who, tool, tag] = x;
+  document.querySelectorAll(".jy-d").forEach((b, k) => { b.classList.toggle("on", k === jc); b.classList.toggle("past", k < jc); });
+  const c = document.getElementById("jyc"); c.classList.remove("in"); void c.offsetWidth; c.classList.add("in");
+  c.innerHTML = `<div class="jy-cl"><span class="jy-big">${jc + 1}</span><div><small>${esc(lane)}</small><h4>${esc(t)}</h4><p>${esc(d)}</p></div></div>
+    <div class="jy-cr"><div><b>Who</b><span>${esc(ACT[jc + 1])}</span><div>${who.map(w => `<span class="wh ${w}">${WHO[w]}</span>`).join(" ")}</div></div>
+    <div><b>Tool</b><span>${esc(tool)}</span></div><div><b>How it is built</b><span>${esc(HOW[jc + 1])}</span></div>
+    <div class="jy-what"><b>What we build or buy</b><ul>${WHAT[jc + 1].map(([k, t]) => `<li><span class="bt ${k}">${TAG[k]}</span> ${esc(t)}</li>`).join("")}</ul></div></div>`;
+  document.getElementById("jyk").textContent = `Step ${jc + 1} of ${JS.length}`;
+  document.getElementById("jyp").disabled = jc === 0; document.getElementById("jyn").textContent = jc === JS.length - 1 ? "Start again ↺" : "Next step →"; }
+let shown = 1;
+document.getElementById("stage").innerHTML = `<p class="eyebrow">Plan to build the future state</p>
+  <h2 class="hl">From prototype to production: six phases, each with a gate it must pass.</h2>
+  <button class="jy-open" id="jyo" aria-expanded="false">Follow one answer through the system: who does each step, and what we build or buy ▾</button><div id="jyb" hidden>${journeyHTML()}</div><p class="eyebrow" style="margin-top:18px">The six phases</p><div class="tl"><div class="tl-line"><i id="tlfill"></i></div>${STEPS_R.map((r, i) => `<button class="tl-n" data-n="${i}"><span class="tl-d">${i + 1}</span><span class="tl-t">${esc(r[0])}</span></button>`).join("")}</div>
+  <div id="phcard" class="phcard"></div>
+  <div class="foot" style="margin-top:16px"><button class="btn" id="php">← Previous</button><span class="small" id="phc"></span><button class="btn primary" id="phn">Next phase →</button></div>`;
+let cur = 0;
+document.querySelectorAll(".jy-d").forEach(b => b.onclick = () => jyGo(+b.dataset.j)); document.getElementById("jyp").onclick = () => jyGo(jc - 1); document.getElementById("jyn").onclick = () => jyGo(jc === JS.length - 1 ? 0 : jc + 1); jyGo(0);
+document.getElementById("jyo").onclick = e => { const b = document.getElementById("jyb"), o = b.hidden; b.hidden = !o; e.currentTarget.setAttribute("aria-expanded", o); e.currentTarget.textContent = o ? "Hide ▴" : "Follow one answer through the system: who does each step, and what we build or buy ▾"; };
+if (location.hash === "#journey") document.getElementById("jyo").click();
+function card(i) { const r = STEPS_R[i], x = EXTRA[i], j = JOBS_P[i];
+  return `<div class="pc-top"><div><small>Phase ${i + 1} of ${STEPS_R.length}</small><h3>${esc(r[0])}</h3><p>${esc(r[1])}</p></div><div class="ph-jobs">${j.length ? j.map(t => `<span>Builds ${esc(t)}</span>`).join("") : `<span class="pre">Before any build</span>`}</div></div>
+  <div class="pc-grid"><div class="pc-b"><b>What we do</b><ul>${r[2].map(t => `<li>${esc(t)}</li>`).join("")}</ul></div><div class="pc-b ok"><b>Success looks like</b><ul class="tk">${r[3].map(t => `<li>${esc(t)}</li>`).join("")}</ul></div><div class="pc-b"><b>Delivers</b><p>${esc(x[0])}</p></div><div class="pc-b risk"><b>Biggest risk, and how we handle it</b><p>${esc(x[1])}</p></div><div class="pc-b"><b>Techniques we use</b><ul>${TT[i][0].map(t => `<li>${esc(t)}</li>`).join("")}</ul></div><div class="pc-b"><b>Tools, and build or buy</b><ul class="tt">${TT[i][1].map(([t, b, why]) => `<li class="${b === "build" ? "isb" : ""}">${esc(t)} <em class="${b === "build" ? "bd" : "by"}">${esc(b)}</em>${why ? `<small>${esc(why)}</small>` : ""}</li>`).join("")}</ul></div></div>${FR_P[i].length ? `<div class="pc-fr"><b>Requirements it delivers</b>${FR_P[i].map(([id, n]) => `<a href="prd.html#fr">${esc(id)} ${esc(n)}</a>`).join("")}<span>See how each is built and accepted in the PRD →</span></div>` : `<div class="pc-fr"><b>Requirements it delivers</b><span>None yet: discovery confirms them before any build</span></div>`}`; }
+function go(i) { cur = Math.max(0, Math.min(STEPS_R.length - 1, i)); const c = document.getElementById("phcard"); c.classList.remove("in"); void c.offsetWidth; c.innerHTML = card(cur); c.classList.add("in");
+  document.querySelectorAll(".tl-n").forEach((b, k) => { b.classList.toggle("on", k === cur); b.classList.toggle("done", k < cur); });
+  document.getElementById("tlfill").style.width = (cur / (STEPS_R.length - 1) * 100) + "%";
+  document.getElementById("phc").textContent = `Phase ${cur + 1} of ${STEPS_R.length} · use ← →`;
+  document.getElementById("php").style.visibility = cur ? "visible" : "hidden";
+  const n = document.getElementById("phn"); n.textContent = cur < STEPS_R.length - 1 ? "Next phase →" : "Next: Trade-offs →"; n.onclick = () => cur < STEPS_R.length - 1 ? go(cur + 1) : (location.href = "choices.html"); }
+document.querySelectorAll(".tl-n").forEach(b => b.onclick = () => go(+b.dataset.n));
+document.getElementById("php").onclick = () => go(cur - 1);
+go(0);
+document.addEventListener("keydown", e => { if (e.key === "ArrowRight") { go(cur + 1); e.preventDefault(); } if (e.key === "ArrowLeft") { go(cur - 1); e.preventDefault(); } });
+document.querySelector("main").insertAdjacentHTML("beforeend", `<p class="small" style="margin-top:14px">Phase gates and order from the PRD, section 14. Discovery, shadow mode and change management are our recommended delivery practice. Timings are left out until discovery sizes them.</p>`);
+</script></body></html>

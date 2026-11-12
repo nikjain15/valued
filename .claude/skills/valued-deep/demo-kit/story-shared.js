@@ -1,3 +1,5 @@
+/* Audit A-028: counts are read from the arrays, never typed */
+const PROBE_N = typeof PROBES !== "undefined" && typeof NEARMISS !== "undefined" ? PROBES.length + PROBES2.length + PROBES3.length + NEARMISS.length : "the";
 /* Shared by the story acts: icons, the source-versus-delivered comparison, the coloured flows, the solution architecture and the control panel. */
 /* Icons for the channels and the talk-through boxes */
 const ICON = {bot: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 8V4M9 13h.01M15 13h.01M9 16h6"/></svg>`,chat: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>`,person: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a7 7 0 0 1 14 0v3"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M19 19c0 1.5-2 2-4 2"/></svg>`,sms: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg>`,web: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>`,warn: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/></svg>`,hurt: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 16c1-1.5 2.5-2 4-2s3 .5 4 2M9 10h.01M15 10h.01"/></svg>`,fix: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>`,win: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6 4 4 6-7"/><path d="M14 8h6v6"/></svg>`};
@@ -23,33 +25,33 @@ function todaySVG(c) {
 
 /* ---------- The four steps of the solution architecture (strategy S7, S3.3 to S3.8, section 8) ---------- */
 const STEPS4 = [
-  { n: "Ingest and structure", take: "Messy documents become short, tagged topics, with Legal's words locked, and nothing is searchable until a person approves.", takeB: ["What it does: reads every document, splits it into topics, locks legal lines, sorts junk and finds copies", "Why it matters: every channel starts from clean, structured knowledge instead of raw files", "How we know: locked words match the source exactly; planted instructions never get through"], line: "AI reads the documents; a person approves", icon: "folder", cls: "s1",
+  { n: "Ingest and structure", take: "Messy documents become short, tagged topics, with Legal's exact wording marked, and nothing is searchable until a person approves.", takeB: ["What it does: reads every document, splits it into topics, marks Legal's exact wording, sorts junk and finds copies", "Why it matters: every channel starts from clean, structured knowledge instead of raw files", "How we know: exact wording matches the source, character for character; planted instructions never get through"], line: "AI reads the documents; a person approves", icon: "folder", cls: "s1",
     tags: ["LLM-based extraction", "Semantic deduplication", "Prompt-injection filtering", "PII redaction"],
     parts: [["Ingestion", "Pulls each source document; records its version, owner and hash", "Rule", "No one: automatic"],
       ["Extraction", "Splits it into short topics; marks the legal words to lock; proposes tags and the approver", "Model proposes", "Priya accepts or edits"],
       ["Dedup", "Finds the same wording in other documents and shows the difference; never merges on its own", "Model scores, rule guards", "Priya proposes; the approver confirms"]],
-    proof: "Locked words match the source exactly (G1, G3); a not-duplicate pair is never merged (T1); planted instruction ignored (G13); identifiers redacted (T4)" },
-  { n: "Govern", take: "One approved version of every answer, with an owner, dates and who may read it, and one alert when anything changes.", takeB: ["What it does: holds each topic with its approver, version, start and end dates and access", "Why it matters: there is always exactly one official answer, and it changes everywhere at once", "How we know: drafts and expired wording are never served; a typo fix raises no alert"], line: "One approved version, with dates, locked legal words and access", icon: "lock", cls: "s2",
+    proof: "Exact wording matches the source, character for character (exact-wording check); a not-duplicate pair is never merged (no-merge check); planted instruction ignored (planted-instruction check); identifiers redacted (redaction check)" },
+  { n: "Govern and approve", take: "One approved version of every answer, with an owner, dates and who may read it, and one alert when anything changes.", takeB: ["What it does: holds each topic with its approver, version, start and end dates and access", "Why it matters: there is always exactly one official answer, and it changes everywhere at once", "How we know: drafts and expired wording are never served; a typo fix raises no alert"], line: "One approved version, with dates, Legal's exact wording and access", icon: "lock", cls: "s2",
     tags: ["Knowledge graph", "Temporal versioning", "Drift detection"],
-    parts: [["Governance store", "Each topic as a node linked to its source, locked words, version, start and end dates, approver and channels", "Rule", "Tom, Grace or Renee; never the author"],
+    parts: [["Governance store", "Each topic as a node linked to its source, exact wording, version, start and end dates, approver and channels", "Rule", "Tom, Grace or Renee; never the author"],
       ["Drift detection", "When a source changes, one alert lists every topic and channel it touches, with the proposed edit", "Rule diffs, model proposes", "The approver for that content"]],
-    contract: ["Approved topics only", "In force on the date asked", "Only what the asker's role may read", "Locked words exactly as written", "Always cite the topic and version"],
-    proof: "Only approved, in-date content is served (G4, G10, G11, G20); a formatting-only edit raises no alert (T2)" },
-  { n: "Retrieve and serve", take: "Every channel gets the same approved answer, scoped to the asker, with Legal's words exact, or says \"not yet\" and logs the gap.", takeB: ["What it does: finds the approved topic for the question, checks the role and date, and inserts locked words exactly", "Why it matters: June hears one answer whether she calls, chats, texts or reads the website", "How we know: no answer outside the role; no guesses; the legal words never change"], line: "Every channel reads it, or says it doesn't know", icon: "bubble", cls: "s3",
-    tags: ["GraphRAG", "Hybrid retrieval", "Role-based pre-filter", "Grounded generation with abstention", "Constrained rendering", "Gap clustering", "Synthetic voice"],
-    parts: [["Retrieval", "Walks the knowledge graph from the question to the approved topic; scopes to the role before ranking; inserts locked words by template; says 'not yet' when nothing approved answers", "Rules filter, model ranks", "No one: automatic"],
+    contract: ["Approved topics only", "In force on the date asked", "Only what the asker's role may read", "Exact wording, exactly as written", "Always cite the topic and version"],
+    proof: "Only approved, in-date content is served (in-date check); a formatting-only edit raises no alert (formatting-edit check)" },
+  { n: "Serve every channel", take: "Every channel gets the same approved answer, scoped to the asker, with Legal's words exact, or says \"not yet\" and logs the gap.", takeB: ["What it does: finds the approved topic for the question, checks the role and date, and inserts exact wording exactly", "Why it matters: June hears one answer whether she calls, chats, texts or reads the website", "How we know: no answer outside the role; no guesses; the legal words never change"], line: "Every channel reads it, or says it doesn't know", icon: "bubble", cls: "s3",
+    tags: ["Knowledge graph retrieval", "Hybrid retrieval", "Role-based pre-filter", "Grounded generation with abstention", "Constrained rendering", "Gap clustering", "Synthetic voice"],
+    parts: [["Retrieval", "Walks the knowledge graph from the question to the approved topic; scopes to the role before ranking; inserts exact wording by template; says 'not yet' when nothing approved answers", "Rules filter, model ranks", "No one: automatic"],
       ["Consumers", "Phone bot, member chat, Agent Assist and search, texts and website all read the same topics through the read contract", "Rule per channel", "No one: automatic"],
-      ["Gap log", "Every unanswered question is recorded and grouped into a backlog for the author", "Rule logs, model groups", "Priya writes; Renee decides write-it or fix-the-process"]],
+      ["List of answers to write", "Every unanswered question is recorded and grouped into a queue for the author", "Rule logs, model groups", "Priya writes; Renee decides write-it or fix-the-process"]],
     hitl: [["AI decides, inside rules", "Extract, propose duplicates, flag drift and expiry, rank, scope to the role, decline when nothing approved answers, group unanswered questions"],
       ["AI recommends, a person confirms", "Wording updates after drift, tags, merge or split, new topics from gaps, learned synonyms, a pinned answer"],
       ["Only a person", "Approve legal or clinical content, retire a source, decide which wording holds, grant access, approve a gap answer"]],
-    proof: "Never answers outside the role (G9, G19); says 'not yet' instead of guessing (G6, G14); legal words verbatim in every channel (G16, G21)" },
-  { n: "Evaluate and release", take: "Independent tests on every role and channel decide each release, and one red row blocks it.", takeB: ["What it does: runs the golden set, 621 independent probe questions and a sealed holdout before every release", "Why it matters: quality is proven group by group, not assumed from an average", "How we know: release is blocked by any red rule row; the holdout is never used for tuning"], line: "Independent tests decide every release", icon: "check", cls: "s4",
-    tags: ["Golden set", "Adversarial probe suites", "Sealed holdout", "Per-group release gates", "LLM-as-judge", "Recorded model runs"],
-    parts: [["Golden set", "21 questions with labelled answers, per role and channel", "Rule checks, human labels", "Labelled by the author, reviewed"],
-      ["Adversarial probes", "621 questions from a writer who never saw the rules: personal data, cost, years, languages, roles, near-misses", "Rule", "Bars set by the owner"],
-      ["Sealed holdout", "Written separately, hash-verified, never used for tuning", "Rule", "No one may open it"],
-      ["Release gate", "Any red rule row, on any group, blocks release; a model judge is validated against two human reviewers", "Rule + validated judge", "Renee signs the release"]],
+    proof: "Never answers outside the role (role check); says 'not yet' instead of guessing (no-guess check); legal words verbatim in every channel (exact-wording check)" },
+  { n: "Test every release", take: "Tests written before building decide each release, group by group, and one red row blocks it.", takeB: [`What it does: runs a fixed question set, ${PROBE_N} probe questions and a sealed holdout before every release`, "Why it matters: quality is proven group by group, not assumed from an average", "How we know: release is blocked by any red rule row; the holdout is never used for tuning"], line: "Tests written before building decide every release", icon: "check", cls: "s4",
+    tags: ["Fixed question set", "Adversarial probe suites", "Sealed holdout", "Per-group release gates", "LLM-as-judge", "Recorded model runs"],
+    parts: [["Fixed question set", "21 questions with labelled answers, per role and channel", "Rule checks, human labels", "Labelled by the author; a reviewer labels the answerable answers"],
+      ["Adversarial probes", `${PROBE_N} questions: personal data, cost, years, languages, roles, near-misses (the first set written by a writer who never saw the rules)`, "Rule", "Bars set by the owner"],
+      ["Sealed holdout", "Written separately; its hash was recorded before the first run and is checked every run; nobody tunes on it", "Rule", "The file is public; the screen shows counts only"],
+      ["Release gate", "Any red rule row, on any group, blocks release. In production a model judge is validated against two human reviewers; in this build humans label every answer", "Rule + judge (production)", "Renee signs for Knowledge Operations; Legal and Engineering co-sign the monitoring plan"]],
     proof: "100% of personal-data questions handed to a person; false refusals at most 10%, goal 2%; holdout run once per release" }
 ];
 let DETAIL = (() => { try { return localStorage.getItem("uc2detail") === "1"; } catch (e) { return false; } })();
@@ -66,40 +68,30 @@ function stepDetail(s, i) {
 /* Solution architecture: four steps on top; tap a step (or turn Detail on) to open its depth in place */
 let OPEN4 = new Set();
 function approachHTML(nextLabel) {
+  if (typeof flowHTML === "function") return flowHTML(nextLabel); /* the flow map (flowmap.js); the cards below remain for pages that do not load it */
   const open = OPEN4;
   return `<div class="appr2"><p class="eyebrow">Solution architecture</p>
-    <h2>A governed knowledge layer: one source of truth for every channel, human or AI.</h2>
-    <p class="big2">We fix the knowledge once, at the source, instead of fixing each channel.</p>
+    <h2>One approved answer, on every channel.</h2>
+    <p class="big2">Fix the knowledge once, at the source. Every channel, human or AI, reads the same answer.</p>
     <div class="steps4">${STEPS4.map((s, i) => `<button class="s4card ${s.cls}${open.has(i) ? " open" : ""}" data-s4="${i}"><span class="s4i">${SICON[s.icon] ? `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SICON[s.icon]}</svg>` : ""}</span><b>${i + 1}. ${esc(s.n)} ${open.has(i) ? "▴" : "▾"}</b><span class="s4l">${esc(s.line)}</span>${tagRow(s.tags.slice(0, 3))}</button>`).join('<span class="arr4">→</span>')}</div>
-    <div class="loops"><div class="loop"><b>Feedback loop · content gaps</b> Unanswered questions go back to the author as a writing backlog.</div><div class="loop"><b>Feedback loop · drift</b> When a source changes, one alert finds every copy and channel.</div></div>
+    <div class="loops"><div class="loop"><b>Feedback loop · content gaps</b> Unanswered questions go back to the author as Priya's list of answers to write.</div><div class="loop"><b>Feedback loop · drift</b> When a source changes, one alert finds every copy and channel.</div></div>
     ${[...open].sort().map(i => stepDetail(STEPS4[i], i)).join("")}
     ${open.size ? "" : `<p class="small" style="margin-top:10px">Tap a step for its key takeaway.</p>`}
+    <p class="small" style="margin-top:10px">Prototype: scripted AI steps; simple search stands in for the real one.</p>
     <div class="acts" style="margin-top:22px"><button class="btn primary" id="toNew">${esc(nextLabel)}</button></div></div>`;
 }
 function bindApproach(redraw) {
+  if (typeof flowMount === "function" && document.getElementById("fm")) { flowMount(); return; }
   document.querySelectorAll("[data-s4]").forEach(b => b.onclick = () => { const i = +b.dataset.s4; OPEN4.has(i) ? OPEN4.delete(i) : OPEN4.add(i); if (DETAIL) setDetail(false); redraw(); });
   bindDetail(redraw);
 }
-function detailSwitch() { return `<label class="dsw"><input type="checkbox" id="detailsw"${DETAIL ? " checked" : ""}> Detail</label>`; }
 function bindDetail(redraw) { const d = document.getElementById("detailsw"); if (d) d.onchange = e => { setDetail(e.target.checked); OPEN4 = new Set(); redraw(); }; }
-/* Control panel on each future-state tab: one line, the four steps with the working ones lit, then control, owner and evidence one tap away */
-function fixPanel4(c, f, mapHTML) {
-  const broke = c.path && c.path[2];
-  return `<div class="acts" style="justify-content:space-between"><h3 style="margin:0">Control</h3>${detailSwitch()}</div>
-    <p class="oneline">${esc(f.line)}</p>
-    <div class="mini4">${STEPS4.map((s, i) => `<span class="${f.steps.includes(i) ? "on" : ""}">${esc(s.n)}${f.steps.includes(i) ? " ★" : ""}</span>`).join("")}</div>
-    <div class="tags4 solid">${f.tech.map(x => `<span>${esc(x)}</span>`).join("")}</div>
-    <details class="why"${DETAIL ? " open" : ""}><summary>Control, owner and evidence</summary>
-      <div class="fx4"><div class="fx broke"><b>Root cause</b>${broke ? esc(broke[1]) + " (" + esc(broke[2]) + ")" : ""}</div>
-      <div class="fx ctl"><b>Control <em class="kind">${esc(f.kind)}</em></b>${esc(f.control)}</div>
-      <div class="fx"><b>Accountable owner</b>${esc(f.who)}</div><div class="fx"><b>Evidence</b>${esc(f.proof)}</div></div>
-      ${mapHTML || ""}</details>`;
-}
 
 /* ---------- The story stepper: the five parts of the demo, in order, on every page ---------- */
-const STORY5 = [["Current state", "day.html?mode=today"], ["Solution architecture", "day.html?mode=approach"], ["How it works", "how1.html"], ["Future state", "day.html?mode=new"], ["Prove it", "prove.html"]];
-function storyStepper(active) {
-  return `<nav class="story5">${STORY5.map(([n, h], i) => `<a href="${h}" class="${i === active ? "on" : i < active ? "done" : ""}">${esc(n)}</a>`).join('<span class="sep5">›</span>')}</nav>`;
+const STORY5 = [["Current state", "day.html?mode=today"], ["Solution architecture", "day.html?mode=approach"], ["How it works", "how1.html"], ["Future state", "day.html?mode=new"], ["Roadmap", "plan.html"], ["Trade-offs", "choices.html"]];
+function storyStepper(active, prove) {
+  const here = prove ? `<p class="here">Job 4 of 4 on the <a href="day.html?mode=approach">Solution architecture map</a>: <b>Test every release</b>. ${esc(HOW4[3][3])}</p>` : "";
+  return `<nav class="story5">${STORY5.map(([n, h], i) => `<a href="${h}" class="${i === active ? "on" : active < 6 && i < active ? "done" : ""}">${esc(n)}</a>`).join('<span class="sep5">›</span>')}<a href="prd.html" class="prd5${active === 6 ? " on" : ""}">PRD</a></nav>${here}`;
 }
 /* The four How it works steps, mirroring the architecture */
-const HOW4 = [["Ingest and structure", "how1.html", "Priya"], ["Govern and approve", "how2.html", "Tom, Grace, Dr. Calloway"], ["Close the gaps", "how3.html", "Priya, Renee"], ["Keep it current", "how4.html", "Tom"]];
+const HOW4 = [["Ingest and structure", "how1.html", "Priya", "Documents become proposed topics; Priya accepts them."], ["Govern and approve", "how2.html", "Tom, Grace, Dr. Ruth Calloway", "One approved version, dated and scoped; the drift loop lives here."], ["Serve every channel", "how3.html", "Priya, Renee", "The same answer in every channel, or none; the gap loop lives here."], ["Test every release", "prove.html", "Renee", "Tests written before building decide each release; one red row blocks it."]];

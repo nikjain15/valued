@@ -1,18 +1,18 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Mulish:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="styles.css?v=42"><link rel="stylesheet" href="story.css?v=42">
+<link rel="stylesheet" href="fonts/fonts.css?v=45">
+<link rel="stylesheet" href="styles.css?v=42"><link rel="stylesheet" href="story.css?v=47">
 <title>June's day · Lakewell Knowledge</title>
 <style>
 .dhead{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:6px 0 12px}
 .dhead h1{margin:0;font-size:24px;flex:1;min-width:240px}
 .mode{display:inline-flex;background:var(--panel-2);border-radius:999px;padding:3px}
 .mode button{font:inherit;font-weight:800;font-size:13px;border:0;background:transparent;border-radius:999px;padding:7px 14px;cursor:pointer;color:var(--muted)}
-.mode button[aria-pressed="true"].bad{background:#c27c0e;color:#fff}.mode button[aria-pressed="true"].good{background:var(--leaf);color:#fff}.mode button[aria-pressed="true"].appr{background:#2f3d2f;color:#fff}
+.mode button[aria-pressed="true"].bad{background:#9e6208;color:#fff}.mode button[aria-pressed="true"].good{background:var(--leaf);color:#fff}.mode button[aria-pressed="true"].appr{background:#2f3d2f;color:#fff}
 .tabs5{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:12px}
 .tabs5 button{font:inherit;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:8px 10px;cursor:pointer}
 .tabs5 button b{display:block;font-size:13.5px}.tabs5 button>span{display:block;font-size:12px;line-height:1.35;color:var(--muted);margin-top:3px;white-space:normal}
 .tabs5 button[aria-current="true"]{border-color:var(--leaf);box-shadow:0 0 0 2px var(--mint)}
-.tabs5 .st{float:right;font-weight:800}.ok2{color:#3b6d11}.bad2{color:#a8650a}
+.tabs5 .st{float:right;font-weight:800}.ok2{color:#3b6d11}.bad2{color:#8a5600}
 .day{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:14px;align-items:start}
 .when{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
 .line{display:flex;gap:10px;margin:6px 0}.line .who{width:46px;flex:none;font-size:11.5px;font-weight:800;color:var(--muted);padding-top:7px}
@@ -21,7 +21,7 @@
 .line.playing .say{outline:2px solid var(--brand)}
 .box{border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:12px;padding:10px 12px;background:var(--panel);margin:8px 0}
 .box.quiet{border-left-color:#c9c9c9;color:var(--muted)}.box.wrong{border-left-color:#c27c0e;background:#fdf8ef}
-.issue{display:inline-block;background:#c27c0e;color:#fff;font-size:11.5px;font-weight:800;border-radius:999px;padding:2px 9px;margin-bottom:6px}
+.issue{display:inline-block;background:#9e6208;color:#fff;font-size:11.5px;font-weight:800;border-radius:999px;padding:2px 9px;margin-bottom:6px}
 .box h4{margin:0 0 4px;font-size:13px}
 .graphcard h3{margin:0}.legend{display:flex;gap:12px;font-size:11.5px;color:var(--muted);margin:4px 0 8px}
 .legend i{display:inline-block;width:18px;height:4px;border-radius:2px;vertical-align:middle;margin-right:4px}
@@ -33,7 +33,7 @@
 .gn.off rect{fill:#f7f7f3;stroke:#e1e3da}.gn.off text{fill:#9aa093}.gn.no rect{fill:#fcebeb;stroke:#c0504d;stroke-width:2}
 .gt{font:800 13px Mulish,sans-serif;fill:#1b241b}.gs{font:600 11px Mulish,sans-serif;fill:#5b6660}.gk{font:800 10px Mulish,sans-serif;fill:#8a9182;letter-spacing:.06em}
 .phone{max-width:280px;border:8px solid #1b241b;border-radius:28px;padding:12px;background:#fff;margin:6px auto}
-.sms{background:#e9e9eb;color:#1b241b;border-radius:16px;padding:8px 12px;font-size:14px;margin:6px 0;max-width:88%}.sms.me{background:#1d8cf8;color:#fff;margin-left:auto}
+.sms{background:#e9e9eb;color:#1b241b;border-radius:16px;padding:8px 12px;font-size:14px;margin:6px 0;max-width:88%}.sms.me{background:#0b6fd6;color:#fff;margin-left:auto}
 .results div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:6px 0;font-size:13.5px}
 details.more2{margin-top:10px}details.more2 summary{cursor:pointer;font-weight:800;font-size:13.5px}
 .who2{margin:0 0 8px;font-size:14.5px;color:var(--fg);display:flex;gap:8px;align-items:center}
@@ -61,7 +61,7 @@ mark.miss{background:#cfe7ad;color:#1f4a06;font-weight:800;border-radius:3px;pad
 @media (max-width:900px){.loops,.two2{grid-template-columns:1fr}}
 .fixp .stg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.fixp .stg span{text-align:center;font-size:12px;font-weight:700;padding:7px 2px;border-radius:8px;background:#f1f1ec;color:var(--muted)}.fixp .stg span.on{background:#3b6d11;color:#fff}
 .fx4{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fx{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.45;background:var(--panel)}.fx b{display:block;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
-.fx.broke{background:#fdf3e2;border-color:#e9b55c}.fx.broke b{color:#9a5a00}.fx.ctl{background:#f1f7e8;border-color:#8fbd5a}.fx.ctl b{color:#3b6d11}
+.fx.broke{background:#fdf3e2;border-color:#e9b55c}.fx.broke b{color:#7d4a00}.fx.ctl{background:#f1f7e8;border-color:#8fbd5a}.fx.ctl b{color:#3b6d11}
 .kind{font-style:normal;background:#2f3d2f;color:#fff;border-radius:999px;padding:1px 7px;font-size:10px;margin-left:4px;text-transform:none;letter-spacing:0}
 .gn.hl rect{stroke:#2f4a1d;stroke-width:3.5;fill:#d4ebb5}
 .mrun{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}.reads span.sc{background:#f1f1ec;color:var(--muted)}
@@ -69,20 +69,20 @@ mark.miss{background:#cfe7ad;color:#1f4a06;font-weight:800;border-radius:3px;pad
 .take{padding:12px 8px 6px}.take h2{margin:4px 0 6px;font-size:26px}.take .big2{font-size:18px;font-weight:700;color:var(--muted);margin:0 0 6px}
 .take ol{list-style:none;padding:0;margin:26px 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
 .take ol li{display:flex;flex-direction:column;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 22px 24px;min-height:170px;box-shadow:0 1px 2px rgba(24,34,24,.04)}
-.ticn{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:#fdf1dd;color:#a8650a}.take.new .ticn{background:#e6f1d6;color:#3b6d11}
+.ticn{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:#fdf1dd;color:#8a5600}.take.new .ticn{background:#e6f1d6;color:#3b6d11}
 .take li b{display:block;font-size:18px;line-height:1.3;margin:0 0 6px}.take li span{display:block;font-size:15px;line-height:1.55;color:var(--muted)}
 .take li.last{grid-column:1/-1;flex-direction:row;align-items:center;gap:20px;min-height:0;padding:24px 26px;background:#fdf6e8;border-color:#efd8a8}.take.new li.last{background:#eef6e3;border-color:#c5dda5}.take li.last b{font-size:21px}
 @media (max-width:900px){.take ol{grid-template-columns:1fr}}
-.num{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#c27c0e;color:#fff;font-size:11px;font-weight:800;flex:none;margin:6px 6px 0 0}
+.num{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#9e6208;color:#fff;font-size:11px;font-weight:800;flex:none;margin:6px 6px 0 0}
 .sic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center}
 .vflow li.st-q{background:#eef4fc;border-color:#a9c6ea}.st-q .sic{background:#d8e7f8;color:#1f5a9e}.st-q .vk{color:#1f5a9e!important}
 .vflow li.st-look{background:#f4f4f1;border-color:#d6d6cf}.st-look .sic{background:#e6e6e0;color:#55594f}.st-look .vk{color:#55594f!important}
-.vflow li.st-break{background:#fdf3e2;border-color:#e9b55c}.st-break .sic{background:#f9dfb2;color:#9a5a00}.st-break .vk{color:#9a5a00!important}
+.vflow li.st-break{background:#fdf3e2;border-color:#e9b55c}.st-break .sic{background:#f9dfb2;color:#7d4a00}.st-break .vk{color:#7d4a00!important}
 .vflow li.st-bad{background:#fdeceb;border-color:#e59a93}.st-bad .sic{background:#f8d2ce;color:#a3261b}.st-bad .vk{color:#a3261b!important}
 .vflow li.st-ok{background:#f1f7e8;border-color:#b9d49a}.st-ok .sic{background:#dcebc4;color:#3b6d11}.st-ok .vk{color:#3b6d11!important}
 .vflow li.st-fix{border-width:2px;border-color:#72992e}.fixd{font-style:normal;background:#3b6d11;color:#fff;border-radius:999px;padding:1px 7px;font-size:10px;margin-left:4px}
 .match{margin:10px 0;border:1.5px solid #8fbd5a;background:#f1f7e8;border-radius:12px;padding:10px 12px;font-size:14px}.match b{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#3b6d11}
-.brk{font-style:normal;background:#9a5a00;color:#fff;border-radius:999px;padding:1px 7px;font-size:10px;margin-left:4px}
+.brk{font-style:normal;background:#7d4a00;color:#fff;border-radius:999px;padding:1px 7px;font-size:10px;margin-left:4px}
 .vflow{list-style:none;padding:0;margin:8px 0 0}.vflow li{display:flex;gap:12px;align-items:center;border:1.5px solid #e9c78f;background:#fdf8ef;border-radius:12px;padding:10px 12px;margin:0 0 10px;position:relative}
 .vflow li:not(:last-child)::after{content:"";position:absolute;left:29px;bottom:-9px;width:2px;height:10px;background:#c9c9c0}
 .vflow b{display:block;font-size:15px}.vflow .vk{display:block;font-size:11px;font-weight:800;letter-spacing:.06em;color:#8a5a00}
@@ -95,14 +95,15 @@ mark.miss{background:#cfe7ad;color:#1f4a06;font-weight:800;border-radius:3px;pad
 <main class="area" style="max-width:1280px">
 <div id="stepper"></div>
 <div class="dhead"><h1>June's day across five channels</h1>
-<div class="mode"><button id="mToday" class="bad">1 · Current state</button><button id="mAppr" class="appr">2 · Solution architecture</button><button id="mNew" class="good">3 · Future state</button></div>
+<div class="mode"><button id="mToday" class="bad">Current state</button><button id="mAppr" class="appr">Solution architecture</button><button id="mNew" class="good">Future state</button></div>
 <button class="icb primary" id="play" title="Watch it play" aria-label="Watch it play"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button><button class="icb" id="stop" title="Stop" aria-label="Stop"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button></div>
 <div class="tabs5" id="tabs"></div>
 <div class="day"><div class="card" id="stage"></div><div class="card graphcard" id="graphcard"></div></div>
 
-<p class="small" style="margin-top:8px">Synthetic voices · names invented, roles from the brief.</p>
+<p class="small" style="margin-top:8px">All fictional, synthetic voices. Runs in your browser; AI steps scripted, simple matching stands in for search.</p>
 </main>
-<script src="data.js?v=42"></script><script src="app.js?v=45"></script><script src="model-run.js?v=42"></script><script src="story-shared.js?v=42"></script>
+<script src="data.js?v=42"></script><script src="app.js?v=45"></script><script src="model-run.js?v=42"></script><script src="probes.js?v=45"></script><script src="probes-review.js?v=45"></script><script src="nearmiss.js?v=45"></script><script src="probes2.js?v=45"></script><script src="probes3.js?v=45"></script>
+<script src="story-shared.js?v=47"></script><script src="vendors.js?v=49"></script><script src="flowmap.js?v=5"></script>
 <script>
 nav("day.html", "insurance", { demo: true });
 store.up(s => { if (!(s.approved || {})["KU-204"]) ENSURE.gateDone(s); const v2 = (s.approved || {})["KU-207@v2"]; if (v2 && v2.on === PLAN.today) v2.on = "8 Oct 2026"; });
@@ -125,101 +126,110 @@ const BOT_WRONG = "Yes, you can use any pharmacy you like.";
 const OON_OK = "Pharmacies outside the Lakewell network are not required to serve plan members except in an emergency; costs may be higher.";
 const CHAT_WRONG = "The 2027 Tier 3 copay is $47 for a 30-day supply.";
 const CHAT_OK = "We don't have an approved 2027 Tier 3 copay to share yet. Let me connect you with someone.";
-const STAR_2026 = "Lakewell Advantage was rated 3.5 out of 5 stars by Medicare for the 2026 plan year.";
-const STAR_2027 = "Lakewell Advantage was rated 4 out of 5 stars by Medicare for the 2027 plan year.";
+/* Synthetic plan facts: the ratings and the 8 Oct and 29 Oct dates are invented (assumed) */
+const STAR_2026 = "Lakewell Advantage was rated 4 out of 5 stars by Medicare for the 2026 plan year.";
+const STAR_2027 = "Lakewell Advantage was rated 3.5 out of 5 stars by Medicare for the 2027 plan year.";
 const TEXT_OK = "Lakewell: your refill is due. Drug prices we share are estimates. Full wording: lakewell.example/k/ku-202 Reply STOP to opt out.";
 const DESK_2025 = "Prices quoted today are estimates based on your plan's 2025 formulary and may change if your pharmacy or drug tier changes.";
 const TEXT_WRONG = "Lakewell: your refill is due. Your price is $42. Questions? Call us.";
 const WEB_2025 = "Prices quoted today are estimates based on your plan's 2025 formulary and may change if your pharmacy or drug tier changes.";
 /* The five channels from the brief, each with today's failure and the new flow */
 const CH = [
-  { key: "Voice", icon: "bot", tag: "Automated phone line, no person", name: "Phone bot", when: "Sunday, 9:12 PM",
-    who: "June calls the plan's automated phone line at night. No person answers: a voice bot does.",
-    issue: ["The bot rewords the out-of-network rule in its own words and drops the conditions Legal requires", "June hears 'any pharmacy', goes to an out-of-network pharmacy, and is turned away, or pays far more than at a network pharmacy", "She complains, and the plan is answerable for what its bot told her. Lakewell's legal wording is meant to be read exactly as written"],
-    fix: ["The bot reads the approved out-of-network wording, exactly as written", "June learns the conditions before she goes to the pharmacy", "No surprise bill, and nothing the plan has to defend"],
-    path: [["QUESTION", "Any pharmacy?", "asked at 9 PM"], ["BOT'S OWN SCRIPT", "Its own summary", "not the approved words"], ["REWORDS", "Drops the conditions", "no check against Legal"], ["SAYS", "'Any pharmacy you like'", "wrong"]],
-    fixpath: [["QUESTION", "Any pharmacy?", "asked at 9 PM"], ["APPROVED SOURCE", "Out-of-network topic", "approved by Legal"], ["LOCKED WORDS", "Read exactly", "never reworded"], ["SAYS", "The approved conditions", "word for word"]],
-    today: () => `<div class="line june"><span class="num">1</span><span class="who">June</span><span class="say">Hi. Can I use any pharmacy, even one that isn't in your network?</span></div>
-      <div class="line bot"><span class="num">4</span><span class="who">Bot</span><span class="say">${esc(BOT_WRONG)}</span></div>
-      ${compare(OON_OK, BOT_WRONG, "What the bot said", "The bot's own paraphrase of the rule")}`,
+  { key: "Voice", icon: "bot", tag: "Automated phone line, no person", name: "Phone bot", when: "Tuesday, 7:10 AM",
+    who: "Before work, June calls the plan's automated phone line. No person answers: a voice bot does.",
+    issue: ["The bot's script was copied from one of three versions of the out-of-network rule, then reworded, and the conditions Legal requires fell out", "June hears 'any pharmacy', goes to an out-of-network pharmacy, and is turned away, or pays far more than at a network pharmacy", "She complains, and the plan is answerable for what its bot told her. Lakewell's legal wording is meant to be read exactly as written"],
+    fix: ["The bot reads the one approved out-of-network wording, exactly as written; the other two copies are retired", "June learns the conditions before she goes to the pharmacy", "No surprise bill, and nothing the plan has to defend"],
+    path: [["QUESTION", "Any pharmacy?", "asked at 7:10 AM"], ["COPIED SCRIPT", "1 of 3 versions", "nobody knows which Legal approved"], ["REWORDS", "Drops the conditions", "no check against Legal"], ["SAYS", "'Any pharmacy you like'", "wrong"]],
+    fixpath: [["QUESTION", "Any pharmacy?", "asked at 7:10 AM"], ["ONE SOURCE", "One approved topic", "other copies retired"], ["EXACT WORDING", "Read exactly", "never reworded"], ["SAYS", "The approved conditions", "word for word"]],
+    today: () => `<div class="line june"><span class="who">June</span><span class="say">Hi. Can I use any pharmacy, even one that isn't in your network?</span></div>
+      <div class="line bot"><span class="who">Bot</span><span class="say">${esc(BOT_WRONG)}</span></div>
+      ${compare(OON_OK, BOT_WRONG, "What the bot said", "Copied from one of three versions, then reworded")}`,
     lines: [["bot", "bot1", "Thanks for calling Lakewell Advantage. I'm an automated assistant, and I can answer general questions about your plan. How can I help?"],
             ["june", "june1", "Hi. Can I use any pharmacy, even one that isn't in your network?", { q: "Can I use any pharmacy, even one that isn't in your network?", role: "member", channel: "Voice", read: "june1" }],
             ["bot", "bot2", null, { fromAnswer: true }]] },
-  { key: "Member chat", icon: "chat", tag: "Website chat, an AI assistant", name: "Member chat", when: "Monday, 8:05 AM",
-    who: "Next morning June types into the chat on the member website.",
+  { key: "Member chat", icon: "chat", tag: "Member website chat, an AI assistant", name: "Member chat", when: "Tuesday, 8:05 AM",
+    who: "A little later June types into the member website chat.",
     issue: ["The chat quotes a 2027 copay from a planning file that nobody approved", "June plans her 2027 budget around $47, and maybe picks her plan on it", "When the real figure differs, she has been misled by the plan's own chat. Nobody records the question, so the gap never closes"],
     fix: ["The chat answers only from approved words; with no approved 2027 copay, it says so and offers a person", "June is never given a number nobody approved", "Her question goes to Priya's list, so the figure is written and approved once, for every member"],
     path: [["QUESTION", "Tier 3 copay 2027?", "typed in chat"], ["RAW FILES", "Includes a 2027 draft", "no approval status"], ["AI PICKS", "The draft's number", "nobody signed it"], ["SAYS", "'$47'", "unapproved"]],
     fixpath: [["QUESTION", "Tier 3 copay 2027?", "typed in chat"], ["APPROVED SOURCE", "No approved 2027 figure", "the draft is not searchable"], ["THE RULE", "No approved answer, no answer", "nothing guessed"], ["SAYS", "'Not confirmed yet'", "offers a person; gap logged"]],
-    today: () => `<div class="line june"><span class="num">1</span><span class="who">June</span><span class="say">What's the Tier 3 copay for 2027?</span></div>
-      <div class="line bot"><span class="num">4</span><span class="who">Chat</span><span class="say">${esc(CHAT_WRONG)}</span></div>
+    today: () => `<div class="line june"><span class="who">June</span><span class="say">What's the Tier 3 copay for 2027?</span></div>
+      <div class="line bot"><span class="who">Chat</span><span class="say">${esc(CHAT_WRONG)}</span></div>
       ${compare(CHAT_OK, CHAT_WRONG, "What the chat said", "Taken from an unapproved planning file (illustrative figure)", "What June should be told")}
-      <div class="box wrong"><span class="issue">And nobody hears about it</span><p style="margin:0">No one records that June's question had no approved answer, so no one ever writes the 2027 figure. The next member gets the same guess.</p></div>`,
+      <div class="box wrong"><span class="issue">And the gap stays hidden</span><p style="margin:0">There is no approved 2027 copay yet, but the chat guessed instead of saying so. Nothing flags the missing answer to the knowledge team, so nobody writes it, and the next member gets the same $47.</p></div>`,
     lines: [["june", null, "What is the Tier 3 copay for 2027?", { q: "What is the Tier 3 copay for 2027?", role: "member", channel: "Member chat", read: "chat1" }],
             ["bot", null, "Thanks for asking. I don't have a confirmed answer for that yet, and I'd rather not guess. I've shared your question with our team. Would you like to talk with someone now?"],
 ] },
-  { key: "Advocate desk", icon: "person", tag: "A real person, helped by Agent Assist", name: "Call with Dana", when: "Monday, 10:20 AM",
+  { key: "Advocate desk", icon: "person", tag: "A real person, helped by Agent Assist", name: "Call with Dana", when: "Tuesday, 10:20 AM",
     who: "June calls again and reaches Dana, a person at the desk. Agent Assist listens and puts answers in front of Dana.",
-    issue: ["Dana searches three tools and gets three wordings, with nothing saying which one Legal approved. Legal's 2026 update never reached the cheat sheet", "June has already asked the bot and the chat. Now she waits on hold while Dana reads three documents, and is then told last year's terms", "Her third contact in two days, and she still has a wrong answer"],
+    issue: ["Dana searches three tools and gets four wordings, one of them the copy on the website, with nothing saying which one Legal approved. Legal's 2026 update never reached the cheat sheet", "June has already asked the bot and the chat. Now she waits on hold while Dana reads three documents, and is then told last year's terms", "Her third contact this morning, and she still has a wrong answer"],
     fix: ["Agent Assist shows Dana the approved words and their source while June is still talking", "June gets the right answer straight away, with no hold", "One call instead of three, and Dana can trust what she reads"],
-    path: [["QUESTION", "Is my price final?", "on a live call"], ["THREE TOOLS", "Script library, shared drive, intranet", "searched one by one"], ["RESULT", "Three wordings", "no version, no owner"], ["DANA", "Picks one", "while June waits"]],
+    path: [["QUESTION", "Is my price final?", "on a live call"], ["THREE TOOLS", "Script library, shared drive, intranet", "searched one by one"], ["RESULT", "Four wordings", "one is the website's copy"], ["DANA", "Picks one", "while June waits"]],
     fixpath: [["QUESTION", "Is my price final?", "on a live call"], ["ONE SOURCE", "One approved pricing topic", "no second copy to find"], ["AGENT ASSIST", "Shows it while June talks", "with its source"], ["DANA READS", "The approved 2026 words", "in one call"]],
-    today: () => `<div class="line june"><span class="num">1</span><span class="who">June</span><span class="say">Is the price I was quoted for my medicine final?</span></div>
-      <div class="results"><div><b>Script library · Rx Education Script v2</b> <span class="small">the 2026 wording</span></div><div><b>Shared drive · Rx Education Script v3</b> <span class="small">a 2027 draft, not approved</span></div><div><b>Intranet · Member Benefits Quick Guide 2027</b> <span class="small">a wording Legal never approved</span></div><div><b>Intranet · Pharmacy Desk Cheat Sheet 2025</b> <span class="small">last year's, still searchable</span></div></div>
-      <p class="small" style="margin:4px 0 0"><span class="num">4</span>Four results, three wordings, and nothing says which one Legal approved. Dana picks the cheat sheet she always uses:</p>
-      ${compare(PD["PD-A"], DESK_2025, "What Dana read to June", "From the 2025 cheat sheet")}
+    today: () => `<div class="line june"><span class="who">June</span><span class="say">Is the price I was quoted for my medicine final?</span></div>
+      <div class="results"><div><b>Script library · Rx Education Script (v2)</b> <span class="small">the 2026 wording</span></div><div><b>Shared drive · Rx Education Script (v3)</b> <span class="small">a 2027 draft, not approved</span></div><div><b>Intranet · Pharmacy Desk Cheat Sheet 2025</b> <span class="small">last year's, still searchable</span></div><div><b>Intranet · Member Benefits Quick Guide 2027</b> <span class="small">the copy the website uses, never approved by Legal</span></div></div>
+      <p class="small" style="margin:4px 0 0">Four results, four wordings (one is the website's copy), and nothing says which one Legal approved. Dana picks the cheat sheet she always uses:</p>
+      ${compare(PD["PD-A"], DESK_2025, "What Dana read to June", "From the 2025 cheat sheet (last plan year)")}
       <div class="box wrong"><span class="issue">Why the 2025 copy was still there</span><p style="margin:0">Legal updated this wording for 2026, but nobody knew the desk cheat sheet held a copy, so it was never changed.</p></div>`,
     lines: [["dana", "dana1", "Thank you for calling Lakewell Advantage, this is Dana. May I have your full name, please?"], ["june", "june2", "June Halvorsen."],
             ["dana", "dana2", "Thank you, June. And your date of birth?"], ["june", "june3", "April second, nineteen fifty-four."],
             ["dana", "dana3", "Thanks, you're all verified. How can I help you today?"],
             ["june", "june4", "Well, the chat couldn't tell me. Is the price I was quoted for my medicine final?", { q: "Is the price I was quoted for my medicine final?", role: "insurance", channel: "Agent Assist", read: "june4", assist: true }],
             ["dana", "dana4", "Good question. I'm required to read you this exactly: " + PD["PD-A"]],
+            ["june", "june5", "Oh, and that dental thing my neighbour has, is that on my plan?", { q: "Oh, and that dental thing my neighbour has, is that on my plan?", role: "insurance", channel: "Agent Assist", read: "june5", assist: true }],
+            ["dana", "dana5", "Let me check that for you. I don't have an approved answer on the dental rider yet. I've flagged it for our team, and I can have someone call you back once it's confirmed.", { q: "dental rider", role: "insurance", channel: "Agent Assist", read: "dana5", assist: true }],
             ["june", "june6", "That would be lovely. Thank you, Dana."]] },
-  { key: "Outbound", icon: "sms", tag: "Reminder texts the plan sends", name: "Text", when: "Monday, 2:00 PM",
+  { key: "Outbound", icon: "sms", tag: "Reminder texts the plan sends", name: "Text", when: "Tuesday, 2:00 PM",
     who: "That afternoon the plan's reminder system texts June, as it does for every member with a refill due.",
-    issue: ["The reminder team writes and sends the text itself, with no sign-off: a price, none of the pricing words Lakewell requires, no way to stop texts", "June reads $42 as a promise", "The same unapproved text goes to thousands of members in one send, including people who never agreed to texts"],
+    issue: ["The reminder team copied the price from its own spreadsheet, not the approved answer, so the pricing words Lakewell requires were never in it. Sign-off is a 'looks fine' email, and there is no way to stop texts", "June reads $42 as a promise", "The same unapproved text goes to thousands of members in one send, including people who never agreed to texts"],
     fix: ["The reminder's line comes from the approved answer, links to the exact words, and goes only to members who agreed", "June knows it's an estimate and where to read the details; STOP works for her", "Nothing reaches members without approval, even at scale"],
-    path: [["TEAM", "Reminder team", "writes the message"], ["OWN COPY", "A shared-drive copay table", "not the approved source"], ["NO SIGN-OFF", "Straight to send", "no approval step"], ["SENT", "To 48,210 members", "illustrative"]],
+    path: [["TEAM", "Reminder team", "needs a price line"], ["OWN COPY", "Its own spreadsheet", "not the approved answer"], ["EMAIL SIGN-OFF", "'Looks fine'", "nothing checked or recorded"], ["SENT", "To 48,210 members", "illustrative"]],
     fixpath: [["TEAM", "Reminder team", "sets up the campaign"], ["APPROVED LINE", "Pulled from the approved answer", "with a link to the words"], ["CHECKS", "Approval and consent", "before anything is sent"], ["SENT", "Only to members who agreed", "STOP works per member"]],
     today: () => `<div class="phone"><p class="small" style="text-align:center;margin:0 0 4px">Refill reminder</p><div class="sms">${esc(TEXT_WRONG)}</div></div>
-      <p class="small" style="text-align:center;margin:4px 0 0">Written and sent by the reminder team with no sign-off, to every member with a refill due (illustrative)</p>
-      ${compare(TEXT_OK, TEXT_WRONG, "What the text said", "None of Lakewell's pricing words, no link, no opt-out")}` },
-  { key: "Website", icon: "web", tag: "The plan's public website", name: "Website", when: "Monday, 2:03 PM",
+      <p class="small" style="text-align:center;margin:4px 0 0">Copied from the reminder team's own spreadsheet and sent on a 'looks fine' email, to every member with a refill due (illustrative)</p>
+      ${compare(TEXT_OK, TEXT_WRONG, "What the text said", "From the team's own copy: none of Lakewell's pricing words, no link, no opt-out")}` },
+  { key: "Website", icon: "web", tag: "The plan's public website", name: "Website", when: "Tuesday, 2:03 PM",
     who: "June checks the plan's Star Rating on its website while comparing plans during Medicare enrollment.",
-    issue: ["The website still shows the 2026 Star Rating after the 21-day switch-over window closed on 29 Oct", "June compares plans using last year's rating, during the very weeks she has to choose", "Plans have 21 days after the new ratings come out to switch; Lakewell missed it, and nobody knew, because the page has no end date"],
+    issue: ["The website still shows last year's 4 stars; this year Medicare rated the plan 3.5, so the page promises more than the plan earned", "June picks the plan on a 4-star promise that is no longer true, during the very weeks she has to choose", "A plan must post the CMS Star Ratings document within 21 days of its Plan Finder release (8 Oct, assumed); CMS released the new rating, but nothing flagged that the page now showed the old one, so nobody knew"],
     fix: ["The 2027 rating replaces the 2026 one automatically on its date, everywhere at once", "June compares plans on the current rating", "The plan meets the replacement deadline without anyone remembering to"],
-    path: [["PAGE", "Star Rating page", "written for 2026"], ["NO EXPIRY", "No end date", "nobody owns it"], ["29 OCT", "Switch-over window closes", "page unchanged"], ["SHOWS", "2026 rating", "during enrollment"]],
-    fixpath: [["PAGE", "Star Rating page", "reads the approved unit"], ["DATES", "Each version has a start and end", "2026 ends 29 Oct"], ["ON 29 OCT", "Swaps by itself", "no one has to remember"], ["SHOWS", "2027 rating", "in force from 8 Oct"]],
-    today: () => `<div class="paper"><p class="small" style="margin:0 0 4px"><b>Lakewell Advantage · Our Star Rating</b></p><p style="margin:0 0 6px">${esc(STAR_2026)}</p><p class="small" style="margin:0">Viewed 2 Nov 2026, during Medicare enrollment</p></div>
-      ${compare(STAR_2027, STAR_2026, "What the website says", "The 2026 rating, still up after the switch-over window closed on 29 Oct")}` },
+    path: [["PAGE", "Star Rating page", "written for 2026"], ["SOURCE CHANGES", "CMS posts the 2027 rating", "nothing flags the page"], ["29 OCT", "Posting deadline passes (assumed)", "page unchanged"], ["SHOWS", "2026 rating", "during enrollment"]],
+    fixpath: [["PAGE", "Star Rating page", "reads the approved unit"], ["DATES", "Each version has a start and end", "2026 ends 29 Oct"], ["ON 29 OCT", "Swaps by itself", "no one has to remember"], ["SHOWS", "2027 rating", "released by CMS on 8 Oct (assumed)"]],
+    today: () => `<div class="paper"><p class="small" style="margin:0 0 4px"><b>Lakewell Advantage · Our Star Rating</b></p><p style="margin:0 0 6px">${esc(STAR_2026)}</p><p class="small" style="margin:0">Viewed today, 3 Nov 2026, during annual enrollment (15 Oct to 7 Dec) · rating synthetic · <a href="https://www.medicare.gov/plan-compare/" target="_blank" rel="noopener">See the CMS Star Ratings document</a></p></div>
+      ${compare(STAR_2027, STAR_2026, "What the website says", "The 2026 rating, still up after the 21-day posting deadline passed on 29 Oct (assumed)")}` },
   { key: "Takeaway", icon: "fix", tag: "What it all adds up to", name: "Key takeaway", when: "" }
 ];
 
 /* The sixth tab: the takeaway, as problems (Today) or as what changes (With Lakewell) */
 const TAKE = {
-  today: { title: "What went wrong today", lead: "One member, five channels, five ways the answer went wrong, and nobody could see it happening.", items: [
-    ["copies", "No single source of truth", "Every team writes its own answer."],
-    ["pencil", "Legal's words get reworded", "The bot dropped the out-of-network conditions."],
-    ["clock", "Drafts and expired content reach members", "A draft 2027 copay; last year's Star Rating."],
-    ["send", "Messages go out with no sign-off", "A price texted to thousands, no required words."],
-    ["search", "Nobody can find every copy", "Legal's 2026 update never reached Dana's cheat sheet."],
-    ["eyeoff", "Unanswered questions stay invisible", "Nobody recorded June's question, so the 2027 figure never gets written."],
-    ["zap", "AI won't fix this. It will copy it.", "Today a wrong answer reaches whoever finds that copy. Put AI on the same documents and it gives that answer to every member who asks, instantly and confidently, until someone notices. That's why the knowledge has to be fixed first."]] },
-  new: { title: "What changes with Lakewell Knowledge", lead: "The same five channels, and now one answer, the approved one, everywhere.", items: [
-    ["source", "One approved source", "Every channel, human or AI, reads the same answer."],
-    ["lock", "Legal's words, exactly", "Locked wording is read as written, never reworded."],
-    ["shield", "No answer without approval", "No approved answer? It says so and finds a person."],
-    ["stamp", "Nothing ships without sign-off", "Even a reminder text comes from an approved answer."],
-    ["calendar", "Expired content leaves by itself", "On its end date, from every channel at once."],
-    ["inbox", "Every gap becomes the next answer", "Unanswered questions go to the author's list."],
-    ["spark", "Safe to put AI in every channel", "AI can only say what Lakewell approved, so it adds speed, not risk."]] }
+  today: { title: "What went wrong today", lead: "Five things broke, one at each stage of an answer's life: how many copies exist, who approves it, how long it lasts, how it is said, and what happens when it is missing.", items: [
+    ["copies", "Too many copies", "Every team keeps its own: four wordings of one disclaimer, a price in a spreadsheet."],
+    ["stamp", "No approval gate", "Unapproved content reaches members: a draft $47 copay, a text sent unsigned."],
+    ["clock", "Nothing expires", "Old versions stay live: a 2025 cheat sheet, last year's 4-star rating."],
+    ["pencil", "Legal's words get changed", "A channel rewords what Legal approved: the bot dropped the conditions."],
+    ["eyeoff", "Gaps stay invisible", "No one logs unanswered questions, so the missing answer is never written."],
+    ["zap", "AI on these documents won't fix this. It will copy it.", "Retrieval over today's copies finds the wrong one, and an assistant repeats it to every member, instantly and confidently. Fix the knowledge first, and AI helps do that."]] },
+  new: { title: "What changes with Lakewell Knowledge", lead: "The same five stages, each fixed once, for every channel.", items: [
+    ["source", "One approved source", "Copies are found and retired; every channel reads the same answer."],
+    ["shield", "Approval before anything ships", "The right person signs; with no approved answer, it says 'not yet'."],
+    ["calendar", "Every version has dates", "The old one leaves and the new one arrives on its date, everywhere at once."],
+    ["lock", "Legal's words, exactly", "Inserted by template and hash-checked; never reworded."],
+    ["inbox", "Every gap becomes the next answer", "Unanswered questions go to Priya's list, most-asked first."],
+    ["spark", "Safe to put AI in every channel", "AI can only say what Lakewell approved, so it adds speed without adding a new source of wrong answers."]] }
 };
+/* Plain words for internal codes on screen */
+const WHO_SUBJ = { Voice: "the phone bot", "Member chat": "the member website chat", "Advocate desk": "Dana", Outbound: "the text", Website: "the website" };
+function fit(s, n) { s = String(s || ""); if (s.length <= n) return s; const c = s.slice(0, n - 1), k = c.lastIndexOf(" "); return (k > n / 2 ? c.slice(0, k) : c).replace(/[,;:.\s]+$/, "") + "…"; }
+function plainClause(c) { const k = (c && c.key) || ""; return { OON: "Out-of-network wording", PD: "Pricing disclaimer", STAR: "Star Rating statement", START: "Star Ratings disclaimer" }[k] || "Legal's wording"; }
+function plainSpan(s) { return String(s || "").replace(/\bS(\d+)/g, "section $1"); }
+function plainDoc(d) { if (!d) return ""; const s = String(d.short || "").replace(/\.docx$/i, ""); const m = s.match(/^Rx Script v(\d+)$/); return m ? "Rx Education Script (v" + m[1] + ")" : s; }
+function plainRead(m) { const p = String(m.personal_data || ""), why = p.replace(/^(yes|no):\s*/i, "").replace(/ question$/, ""), conf = String(m.confidence || "").split(":")[0];
+  return (/^no/i.test(p) ? "Not personal (" + (/^general/.test(why) ? "a " + why : why) + ")" : "Personal (" + why + ")") + ". Confidence " + conf + "."; }
 /* The knowledge map, left to right: question, topics considered, the one chosen, its legal words, version, source, channels. All from live data. */
 function graphSVG(r, stage, focus) {
   if (!r) return "";
   /* Each step appears in turn, so the map builds as the question is understood and the answer is found */
   const u = r.unit || (r.near ? unit(r.near) : null), v = r.version || (u && (u.current || u.latest)), W = 760, H = 330, qY = 140, parts = [];
-  const N = (x, y, k, t, s, c, w) => `<g class="gn ${c || ""}"><rect x="${x}" y="${y}" width="${w || 170}" height="52" rx="12"></rect><text x="${x + 12}" y="${y + 16}" class="gk">${esc(k)}</text><text x="${x + 12}" y="${y + 32}" class="gt">${esc(t).slice(0, 24)}</text>${s ? `<text x="${x + 12}" y="${y + 46}" class="gs">${esc(s).slice(0, 26)}</text>` : ""}</g>`;
+  const N = (x, y, k, t, s, c, w) => `<g class="gn ${c || ""}"><rect x="${x}" y="${y}" width="${w || 170}" height="52" rx="12"></rect><text x="${x + 12}" y="${y + 16}" class="gk">${esc(k)}</text><text x="${x + 12}" y="${y + 32}" class="gt">${esc(fit(t, (w || 170) > 175 ? 25 : 23))}</text>${s ? `<text x="${x + 12}" y="${y + 46}" class="gs">${esc(fit(s, (w || 170) > 175 ? 27 : 25))}</text>` : ""}</g>`;
   const E = (x1, y1, x2, y2, c) => `<path class="ge ${c || ""}" d="M${x1},${y1} C${(x1 + x2) / 2},${y1} ${(x1 + x2) / 2},${y2} ${x2},${y2}"></path>`;
   const add = svg => parts.push(svg);
   /* stage "find": stop once the topic is found (while June is still talking); stage "rest": the found part is already shown, animate the remainder */
@@ -230,65 +240,65 @@ function graphSVG(r, stage, focus) {
   const route = (k, t, s) => add(E(180, qY + 26, 420, qY + 26, "on") + N(420, qY, k, t, s, "on", 190));
   if (r.kind === "person") { add(E(180, qY + 26, 210, 60, "no") + N(210, 34, "PERSONAL RECORDS", "Never read here", "", "no")); route("ROUTED", "To a person", "after an identity check"); return out(); }
   if (r.kind === "scope") { add(E(180, qY + 26, 210, 60, "no") + N(210, 34, "OUTSIDE THIS ROLE", "Not searched", "nothing can leak", "no")); route("ROUTED", "Access refusal", "logged, not a gap"); return out(); }
-  if (!u) { add(E(180, qY + 26, 210, 60, "no") + N(210, 34, "NO TOPIC MATCHES", "Nothing approved", "", "no")); route("ROUTED", "Gap queue", "logged for Priya; no guess"); return out(); }
+  if (!u) { add(E(180, qY + 26, 210, 60, "no") + N(210, 34, "NO TOPIC MATCHES", "Nothing approved", "", "no")); route("ROUTED", "Answers to write", "on Priya's list; no guess"); return out(); }
   const ok = r.kind === "answer";
   (r.cands || []).filter(c => c.u.id !== u.id).slice(0, 2).forEach((c, i) => { const y = 232 + i * 60; add(E(180, qY + 26, 210, y + 26) + N(210, y, "CONSIDERED", c.u.title, "lower match", "off")); });
   add(E(180, qY + 26, 210, qY + 26, ok ? "on" : "no") + N(210, qY, ok ? "CHOSEN TOPIC" : "TOPIC FOUND", u.title, ok ? "approved, in force" : "but no approved answer", ok ? "on" : "no", 180));
-  if (!ok) { add(E(390, qY + 26, 420, qY + 26, "on") + N(420, qY, "ROUTED", "Gap queue", "logged for Priya; no guess", "on", 180)); return out(); }
+  if (!ok) { add(E(390, qY + 26, 420, qY + 26, "on") + N(420, qY, "ROUTED", "Answers to write", "on Priya's list; no guess", "on", 180)); return out(); }
   const d = doc(u.doc);
-  if (v.clause) add(E(390, qY + 26, 410, 66, "on") + N(410, 40, "LEGAL WORDS", v.clause.label + ", read exactly", "locked; fingerprint checked", "on", 180));
+  if (v.clause) add(E(390, qY + 26, 410, 66, "on") + N(410, 40, "LEGAL WORDS", plainClause(v.clause) + ", read exactly", "exact wording, checked", "on", 180));
   add(E(390, qY + 26, 410, qY + 26, "on") + N(410, qY, "VERSION " + v.v, "Approved by " + (v.approvedBy || "").split(",")[0].split(" ")[0], "in force to " + v.expiry, "on", 180));
-  add(E(390, qY + 26, 410, 246, "on") + N(410, 220, "SOURCE", d ? d.short : "", u.span, "on", 180));
+  add(E(390, qY + 26, 410, 246, "on") + N(410, 220, "SOURCE", plainDoc(d), plainSpan(u.span), "on", 180));
   [["Voice", "Phone bot"], ["Advocate desk", "Dana"], ["Member chat", "Chat"], ["Outbound", "Text"], ["Website", "Website"]].forEach(([k, l], i) => { const y = 12 + i * 62, live = u.channels.includes(k) || k === "Advocate desk";
     add(E(590, qY + 26, 620, y + 26, live ? "on" : "") + N(620, y, "CHANNEL", l, live ? "same words" : "not on this channel", live ? "on" : "off", 130)); });
   return out();
 }
 /* Control for each channel: the steps that do the work, the techniques, and control, owner and evidence (strategy S5, S3.6, S6.12, section 8) */
 const FIX4 = {
-  Voice: { steps: [1, 2], tech: ["Constrained rendering", "Knowledge graph"], kind: "Rule", line: "Legal's words are locked. The bot reads them, never rewords them.",
-    control: "Locked words are stored once in the governance store and inserted by template; the model never edits them, and a fingerprint check runs before anything is spoken.", who: "Tom (Legal) approves the wording once", proof: "Verbatim check, 0 changes allowed (G3, G16, G21); any failure blocks release.", focus: "LEGAL WORDS" },
+  Voice: { steps: [1, 2], tech: ["Constrained rendering", "Knowledge graph"], kind: "Rule", line: "Legal's words are marked as exact wording. The bot reads them, never rewords them.",
+    control: "Exact wording is stored once in the governance store and inserted by template; the model never edits them, and a hash check runs before anything is spoken.", who: "Tom Bexley, Legal and Compliance, approves the wording once", proof: "Exact-wording check, 0 changes allowed, on every channel; any failure blocks release.", focus: "LEGAL WORDS" },
   "Member chat": { steps: [2, 3], tech: ["Grounded generation with abstention", "Gap clustering"], kind: "Rule", line: "No approved answer, no answer. The chat says 'not yet', finds a person, and logs the gap.",
-    control: "Only approved content is searchable, so the draft is never seen. If no approved topic states the figure, the answer is 'not yet', never a guess, and the question lands in the author's queue. The model only ranks.", who: "Priya writes the missing answer; Renee decides it's worth writing", proof: "No-answer and exact-cost checks (G6, G14, T10, T14): 100% of must-refuse questions refused.", focus: "ROUTED" },
-  "Advocate desk": { steps: [0, 1, 2], tech: ["Semantic deduplication", "GraphRAG", "Drift detection"], kind: "AI proposes, a person decides", line: "One approved wording, found once. Every copy points to it, and Agent Assist shows it as June talks.",
-    control: "At ingest the AI finds the same disclaimer in three documents and proposes one; Legal picks the wording that stands; the other copies retire and point to it. Retrieval walks the graph to that one topic; when Legal changes it, one alert lists every place it lives.", who: "Tom decides which wording holds", proof: "Search returns one result, not three (G1, G2); a different wording is never merged (T1).", focus: "CHOSEN TOPIC" },
+    control: "Only approved content is searchable, so the draft is never seen. If no approved topic states the figure, the answer is 'not yet', never a guess, and the question lands on Priya's list of answers to write. The model only ranks.", who: "Priya writes the missing answer; Renee decides it's worth writing", proof: "No-answer and exact-cost checks: 100% of must-refuse questions refused.", focus: "ROUTED" },
+  "Advocate desk": { steps: [0, 1, 2], tech: ["Semantic deduplication", "Knowledge graph retrieval", "Drift detection"], kind: "AI proposes, a person decides", line: "One approved wording, found once. Every copy points to it, and Agent Assist shows it as June talks.",
+    control: "At ingest the AI finds the same disclaimer in every document and proposes one; Legal picks the wording that stands; the other copies retire and point to it. Retrieval walks the graph to that one topic; when Legal changes it, one alert lists every place it lives.", who: "Tom decides which wording holds", proof: "Search returns one result, not three; a different wording is never merged.", focus: "CHOSEN TOPIC" },
   Outbound: { steps: [1, 2], tech: ["Read contract", "Role-based pre-filter"], kind: "Rule", line: "Only approved lines reach a member, and only members who agreed to texts.",
-    control: "Every channel, reminders included, reads approved content only through the read contract. The text carries a summary and a link, and consent is checked for each member before sending.", who: "An approver signs the content before any campaign can use it", proof: "Approval gate, nothing unapproved served; every send logged with who and which version (T3).", focus: "CHANNEL" },
+    control: "Every channel, reminders included, reads approved content only through the read contract. The text carries a summary and a link, and consent is checked for each member before sending.", who: "An approver signs the content before any campaign can use it", proof: "Approval gate, nothing unapproved served; every send logged with who and which version.", focus: "CHANNEL" },
   Website: { steps: [1, 2], tech: ["Temporal versioning", "Knowledge graph"], kind: "Rule", line: "Every version carries its dates. The old rating leaves every channel on its date, by itself.",
-    control: "Every version carries a start and an end date, applied when the answer is read. On 29 Oct the 2026 rating stops and the 2027 one, approved in advance, takes over everywhere.", who: "Tom approves the 2027 statement ahead of time, with its start date", proof: "Effective-window check, 0 violations (G4, G20).", focus: "VERSION" }
+    control: "Every version carries a start and an end date, applied when the answer is read. On 29 Oct the 2026 rating stops and the 2027 one, approved in advance, takes over everywhere.", who: "Tom approves the 2027 statement ahead of time, with its start date", proof: "Start and end date check, 0 violations.", focus: "VERSION" }
 };
-/* The recorded model run beside the demo's script, so any difference is visible */
+/* The recorded model run beside the scripted answer, so any difference is visible */
 function modelHTML(key, rd) {
   const m = typeof MODEL_RUN !== "undefined" && MODEL_RUN.lines[key]; if (!m && !rd) return "";
-  return `<div class="mrun">${m ? `<p class="small" style="margin:0 0 4px"><b>Recorded model run, ${esc(MODEL_RUN.recordedOn)}</b>: what a real model understood, saved and replayed</p>
-    <div class="reads"><span>${esc(m.intent)}</span><span>Personal: ${esc(m.personal_data)}</span><span>Confidence: ${esc(m.confidence)}</span><span>Best topic: ${esc(m.best_unit === "none" ? "none approved" : (unit(m.best_unit) || {}).title || m.best_unit)}</span><span>Answerable: ${esc(m.answerable_from_unit)}</span></div>
+  return `<div class="mrun">${m ? `<p class="small" style="margin:0 0 4px"><b>Recorded model run, ${esc(MODEL_RUN.recordedOn)}</b>: what a real model understood (recorded, replayed)</p>
+    <div class="reads"><span>${esc(m.intent)}</span><span>${esc(plainRead(m))}</span><span>Best topic: ${esc(m.best_unit === "none" ? "none approved" : (unit(m.best_unit) || {}).title || m.best_unit)}</span><span>Answerable: ${esc(m.answerable_from_unit)}</span></div>
     <p class="small" style="margin:6px 0 0">${esc(m.rationale)}</p>` : ""}
-    ${rd ? `<details class="small" style="margin-top:6px"><summary>Compare with the demo's script</summary><div class="reads">${rd.map(x => `<span class="sc">${esc(x)}</span>`).join("")}</div></details>` : ""}</div>`;
+    ${rd ? `<details class="small" style="margin-top:6px"><summary>Scripted answer vs a recorded model run</summary><div class="reads">${rd.map(x => `<span class="sc">${esc(x)}</span>`).join("")}</div></details>` : ""}</div>`;
 }
 /* Future state: how the channel gets its answer now, step by step, as the graph is walked; the step that removes today's break is marked */
 function ragFlow(c, r, readKey) {
   if (!r) return "";
   const f = FIX4[c.key] || {}, m = typeof MODEL_RUN !== "undefined" && readKey && MODEL_RUN.lines[readKey], who = ROLES[r.role] || {};
   const u = r.unit || (r.near ? unit(r.near) : null), v = r.version || (u && (u.current || u.latest)), others = (r.cands || []).filter(x => !u || x.u.id !== u.id).length;
-  const st = [["Understands the question", "bubble", (r.redacted || r.q).replace(/^(oh, and |well, )/i, ""), m ? m.intent : "Intent and topic read by the model", ""]];
+  const st = [["Understands the question", "bubble", (r.redacted || r.q).replace(/^(oh, and |well, )/i, ""), m ? m.intent + " (recorded run, " + MODEL_RUN.recordedOn + ")" : "Intent and topic read by the model", ""]];
   if (c.key === "Outbound") st[0] = ["Reads the campaign's request", "bubble", "The pricing line for a refill reminder", "The reminder tool asks; it never writes its own", ""];
-  st.push(["Scopes before it searches", "lock", `Only what ${who.person ? who.label.split(",")[0].toLowerCase() + "s" : "this role"} may read`, `In force on ${r.asOf}; nothing else is searched`, ""]);
+  st.push(["Scopes before it searches", "lock", `Only what ${who.person ? who.label.split(",")[0].toLowerCase() + "s" : "this role"} may read`, `In force on ${r.asOf}; nothing else is searched. From here on: the rule engine, live`, ""]);
   if (r.kind === "person") { st.push(["Spots personal data", "warn", "Her own records are never read here", "No search runs on personal questions", "ROUTED"]); st.push(["Hands over to a person", "check", "A person checks her identity first", "Then answers from her records", ""]); }
   else if (r.kind === "scope") { st.push(["Stays inside the role", "lock", "Outside this role's knowledge", "Never searched, so nothing can leak", "ROUTED"]); }
   else if (r.kind !== "answer") {
     if (u) st.push(["Walks the knowledge graph", "folder", "Found: " + u.title, "But no approved answer states this", ""]);
-    st.push(["Says \"not yet\" instead of guessing", "check", "Offers a person; logs the question", "Lands in Priya's gap queue to be written", "ROUTED"]); }
+    st.push(["Says \"not yet\" instead of guessing", "check", "Offers a person; logs the question", "Goes on Priya's list of answers to write", "ROUTED"]); }
   else {
     st.push(["Walks the knowledge graph", "folder", "Found: " + u.title, others ? `${others} other topic${others > 1 ? "s" : ""} considered, lower match` : "One approved topic, no copies", "CHOSEN TOPIC"]);
-    st.push(["Checks the approved version", "stamp", `Version ${v.v}, approved by ${(v.approvedBy || "").split(",")[0]}`, `In force ${v.effective} to ${v.expiry}`, "VERSION"]);
-    if (v.clause || u.clause) st.push(["Inserts Legal's words exactly", "lock", "Word for word, never reworded", "Locked; fingerprint checked before it goes out", "LEGAL WORDS"]);
-    st.push(["Answers, and shows its source", "check", "Same words on every channel", "Source: " + ((doc(u.doc) || {}).short || ""), "CHANNEL"]); }
+    st.push(["Checks the approved version", "stamp", `Version ${v.v}, approved by ${(v.approvedBy || "").split(",")[0]}`, `In force ${v.shownFrom || v.effective} to ${v.expiry}`, "VERSION"]);
+    if (v.clause || u.clause) st.push(["Inserts Legal's words exactly", "lock", "Word for word, never reworded", "Exact wording, checked before it goes out", "LEGAL WORDS"]);
+    st.push(["Answers, and shows its source", "check", "Same words on every channel", "Source: " + plainDoc(doc(u.doc)), "CHANNEL"]); }
   const fixAt = Math.max(0, st.findIndex(x => x[4] === f.focus)), I = k => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SICON[k] || TICON[k] && TICON[k].replace(/^<svg[^>]*>|<\/svg>$/g, "") || SICON.check}</svg>`;
   const cls = i => i === 0 ? "st-q" : (i === fixAt && f.focus) || i === st.length - 1 ? "st-ok" + (i === fixAt && f.focus ? " st-fix" : "") : "st-look";
   return `<ol class="vflow">${st.map((x, i) => `<li class="gstep ${cls(i)}" style="animation-delay:${(i * 0.5).toFixed(2)}s"><span class="sic">${I(x[1])}</span><div><span class="vk">${i + 1} · ${esc(x[0])}${i === fixAt && f.focus ? ' <em class="fixd">fixed here</em>' : ""}</span><b>${esc(x[2])}</b><span class="small">${esc(x[3])}</span></div></li>`).join("")}</ol>`;
 }
 function sideHTML(r, readKey, stage) {
   const c = CH[cur];
-  return `<h3>How ${esc(c.name.toLowerCase())} gets its answer now</h3>${ragFlow(c, r, readKey)}
+  return `<h3>How ${esc(WHO_SUBJ[c.key] || c.name.toLowerCase())} gets its answer now</h3>${ragFlow(c, r, readKey)}
     <details class="more2 gmap"><summary>See the knowledge graph it walked</summary>${sideMap(r, readKey, stage, (FIX4[c.key] || {}).focus)}</details>`;
 }
 function sideMap(r, readKey, stage, focus) {
@@ -302,7 +312,7 @@ function stageNew(c) {
   (c.lines || []).forEach((l, i) => { const [who, , text, m = {}] = l; let r = null;
     if (m.q) { r = ASK(m.q, m.role, m.channel); last = r; read = m.read; asked.push({ r, read: m.read, label: m.search ? "Search: " + m.q : m.q }); } if (m.fromAnswer) r = last;
     html += `<div class="step" data-i="${i}"><div class="line ${who}"><span class="who">${{ bot: c.key === "Voice" ? "Bot" : "Chat", june: "June", dana: "Dana" }[who]}</span><span class="say">${esc(text || (r ? r.text : ""))}</span></div>`;
-    if (m.assist) html += r.kind === "answer" ? `<div class="box"><h4>Agent Assist <span class="small">popped up by itself · the client's tool, reading from Lakewell Knowledge; how it listens is assumed</span></h4><div class="locked">${esc(r.unit.clause ? r.unit.clause.text : r.unit.text)}</div><p class="small" style="margin:6px 0 0">${esc(r.unit.title)} · approved by ${esc((r.version.approvedBy || "").split(",")[0])} ${ruleTag(r.unit)}</p></div>`
+    if (m.assist) html += r.kind === "answer" ? `<div class="box"><h4>Agent Assist <span class="small">popped up by itself · the plan's existing Agent Assist (assumed), reading from Lakewell Knowledge</span></h4><div class="locked">${esc(r.unit.clause ? r.unit.clause.text : r.unit.text)}</div><p class="small" style="margin:6px 0 0">${esc(r.unit.title)} · approved by ${esc((r.version.approvedBy || "").split(",")[0])} ${ruleTag(r.unit)}</p></div>`
       : `<div class="box quiet"><h4>Agent Assist stays quiet</h4>Not sure what "the dental thing" means, so it shows nothing rather than guess.</div>`;
     if (m.search) html += `<div class="box"><h4>Dana searches "${esc(m.q)}"</h4>${r.kind === "answer" ? esc(r.unit.text) : "No approved answer today. Logged for Priya with how often it's asked."}</div>`;
     html += `</div>`; });
@@ -318,7 +328,7 @@ function stageNew(c) {
       <div class="acts" style="justify-content:center">${out ? `<button class="btn sm" id="restart">Start texts again</button>` : `<button class="btn sm" id="stopsms">June replies STOP</button>`}</div><p class="small" style="text-align:center">One-way on purpose: a short summary and a link, never the legal words.</p>`; }
   if (c.key === "Website") { const r = ASK("What is Lakewell's star rating?", "member", "Website"); last = r;
     asked.push({ r, read: "web1", label: "What is Lakewell's star rating?" });
-    html += `<div class="line june"><span class="who">June</span><span class="say">What is Lakewell's Star Rating?</span></div><div class="paper"><p class="small" style="margin:0 0 4px"><b>Lakewell Advantage · Our Star Rating</b></p><p class="vline">${esc(r.unit.clause ? r.unit.clause.text : r.unit.text)}</p><p class="small" style="margin:0">In force ${esc(r.version.effective)} to ${esc(r.version.expiry)} · approved ${esc(r.version.approvedOn)}</p></div><p class="small" style="margin-top:8px">The 2026 rating left every channel on 29 Oct by itself; the same 2027 statement is on the phone bot and at Dana's desk.</p>`; }
+    html += `<div class="line june"><span class="who">June</span><span class="say">What is Lakewell's Star Rating?</span></div><div class="paper"><p class="small" style="margin:0 0 4px"><b>Lakewell Advantage · Our Star Rating</b></p><p class="vline">${esc(r.unit.clause ? r.unit.clause.text : r.unit.text)}</p><p class="small" style="margin:0">In force ${esc(r.version.effective)} to ${esc(r.version.expiry)} · approved ${esc(r.version.approvedOn)} · rating synthetic, dates assumed</p></div><p class="small" style="margin-top:8px">The 2026 rating left every channel on 29 Oct by itself; the same 2027 statement is on the phone bot and at Dana's desk.</p>`; }
   const first = asked.find(a => a.r.kind === "answer") || asked[0];
   const MATCH = { Voice: [OON_OK, "The bot reads it exactly; checked against the approved wording every time."], "Member chat": [CHAT_OK, "The chat says so instead of guessing, offers a person, and logs the question."],
     "Advocate desk": [PD["PD-A"], "Agent Assist shows this one wording; the 2025 cheat sheet is retired and no longer searchable."], Outbound: [TEXT_OK, "Only this approved line goes out, only to members who agreed."], Website: [STAR_2027, "The 2026 rating left every channel on 29 Oct by itself."] }[c.key];
@@ -326,17 +336,18 @@ function stageNew(c) {
   return { html, last: first ? first.r : last, read: first ? first.read : read, asked };
 }
 function impactHTML(c, m) { const x = m === "today" ? c.issue : c.fix, t = m === "today";
-  const L = t ? ["The problem", "What it does to June", "What it leads to"] : ["What changes", "What it means for June", "What it means for the plan"];
+  const L = t ? ["The problem", "What it does to June", "What it means for the plan"] : ["What changes", "What it does for June", "What it means for the plan"];
   return `<div class="talk ${m}"><ul>${x.map((v, i) => `<li><b>${L[i]}:</b> ${esc(v)}</li>`).join("")}</ul></div>`; }
 function nextHTML() {
   return (cur < CH.length - 1 ? `<div class="acts" style="justify-content:flex-end;margin-top:10px"><button class="btn primary" id="nextch">Next: ${esc(CH[cur + 1].name)} →</button></div>` : `<div class="acts" style="justify-content:flex-end;margin-top:10px">${mode === "today" ? "" : ""}</div>`); }
-function bindNext() { const n = document.getElementById("nextch"); if (n) n.onclick = () => { stopAll(); cur++; draw(); scrollTo({ top: 0, behavior: "smooth" }); };
-  const f = document.getElementById("fixit2"); if (f) f.onclick = () => { mode = "approach"; draw(); scrollTo({ top: 0, behavior: "smooth" }); }; }
+function bindNext() { const n = document.getElementById("nextch"); if (n) n.onclick = () => { stopAll(); cur++; draw(); scrollTo({ top: 0, behavior: SMOOTH }); };
+  const f = document.getElementById("fixit2"); if (f) f.onclick = () => { mode = "approach"; draw(); scrollTo({ top: 0, behavior: SMOOTH }); }; }
 function draw() {
   document.getElementById("stepper").innerHTML = storyStepper({ today: 0, approach: 1, new: 3 }[mode]);
   document.querySelector(".dhead h1").textContent = mode === "approach" ? "Solution architecture" : mode === "today" ? "Current state · June's day across five channels" : "Future state · June's day across five channels";
   document.getElementById("mToday").setAttribute("aria-pressed", mode === "today"); document.getElementById("mNew").setAttribute("aria-pressed", mode === "new"); document.getElementById("mAppr").setAttribute("aria-pressed", mode === "approach");
   document.getElementById("tabs").style.display = mode === "approach" ? "none" : "";
+  ["play", "stop"].forEach(id => { document.getElementById(id).style.display = mode === "approach" ? "none" : ""; });
   if (mode === "approach") { document.querySelector(".day").classList.add("wide"); document.getElementById("stage").innerHTML = approachHTML("Next: How it works, step 1 →"); document.getElementById("graphcard").innerHTML = "";
     bindApproach(draw); const go = document.getElementById("toNew"); if (go) go.onclick = () => { location.href = "how1.html"; }; return; }
   document.getElementById("tabs").innerHTML = CH.map((c, i) => `<button data-t="${i}" aria-current="${i === cur}"><b style="display:flex;align-items:center;gap:6px"><span class="tic">${ICON[c.icon]}</span>${esc(c.name)}</b><span>${esc(c.tag)}</span></button>`).join("");
@@ -346,14 +357,14 @@ function draw() {
   if (c.key === "Takeaway") { const t = TAKE[mode];
     document.getElementById("stage").innerHTML = `<div class="take ${mode}"><p class="eyebrow">Key takeaway</p><h2>${esc(t.title)}</h2><p class="big2">${esc(t.lead)}</p>
       <ol>${t.items.map(([ic, h, d], i) => `<li class="${i === t.items.length - 1 ? "last" : ""}"><span class="ticn">${TICON[ic]}</span><div><b>${esc(h)}</b><span>${esc(d)}</span></div></li>`).join("")}</ol>
-      <div class="acts" style="margin-top:28px">${mode === "today" ? `<button class="btn primary" id="fixit2">Solution architecture →</button>` : `<a class="btn primary" href="prove.html">Next: Prove it →</a>`}</div></div>`;
+      <div class="acts" style="margin-top:28px">${mode === "today" ? `<button class="btn primary" id="fixit2">Solution architecture →</button>` : `<a class="btn primary" href="plan.html">Next: Roadmap →</a>`}</div></div>`;
     document.getElementById("graphcard").innerHTML = "";
-    const f = document.getElementById("fixit2"); if (f) f.onclick = () => { mode = "approach"; draw(); scrollTo({ top: 0, behavior: "smooth" }); };
-    const b = document.getElementById("back1"); if (b) b.onclick = () => { cur = 0; draw(); scrollTo({ top: 0, behavior: "smooth" }); };
+    const f = document.getElementById("fixit2"); if (f) f.onclick = () => { mode = "approach"; draw(); scrollTo({ top: 0, behavior: SMOOTH }); };
+    const b = document.getElementById("back1"); if (b) b.onclick = () => { cur = 0; draw(); scrollTo({ top: 0, behavior: SMOOTH }); };
     return; }
   if (mode === "today") {
-    document.getElementById("stage").innerHTML = `<p class="when">${esc(c.when)} · ${esc(c.name)} · today</p><p class="who2"><span class="tic">${ICON[c.icon]}</span>${esc(c.who)}</p>${c.today()}${impactHTML(c, "today")}${nextHTML()}`;
-    document.getElementById("graphcard").innerHTML = `<h3>How ${esc(c.name.toLowerCase())} gets its answer today <span class="pill bad" style="font-size:11px">our assumption</span></h3>${todaySVG(c)}`;
+    document.getElementById("stage").innerHTML = `<p class="when">${esc(c.when)} · ${esc(c.name)}</p><p class="who2"><span class="tic">${ICON[c.icon]}</span>${esc(c.who)}</p>${c.today()}${impactHTML(c, "today")}${nextHTML()}`;
+    document.getElementById("graphcard").innerHTML = `<h3>How ${esc(WHO_SUBJ[c.key] || c.name.toLowerCase())} gets its answer today (assumed)</h3>${todaySVG(c)}`;
     bindNext(); return;
   }
   const s = stageNew(c);
@@ -378,7 +389,7 @@ async function playChannel(i) {
   steps.forEach(x => x.classList.add("later")); after.forEach(x => x.classList.add("later"));
   let lastQ = null;
   for (let k = 0; k < c.lines.length && playing; k++) {
-    const st = steps[k]; if (st) { st.classList.remove("later"); st.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+    const st = steps[k]; if (st) { st.classList.remove("later"); st.scrollIntoView({ block: "nearest", behavior: SMOOTH }); }
     document.querySelectorAll(".line").forEach(x => x.classList.remove("playing")); if (st) st.querySelector(".line").classList.add("playing");
     const m = c.lines[k][3] || {};
     if (m.q) { lastQ = { r: ASK(m.q, m.role, m.channel), read: m.read }; card.innerHTML = sideHTML(lastQ.r, lastQ.read, "find"); }

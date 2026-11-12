@@ -125,3 +125,28 @@ Fields: **Signals** · **Gate** · **Problem** · **Options** · **Preference** 
 | B: the audit template only | the strategy can drift during the next long build | |
 
 - Status: accepted by Nik, 2026-11-02 (option A; deferred on 2026-11-01, then "Yes, apply both")
+
+### P-010: the six-step story, click to advance, and Prove it as an honest dashboard
+- Signals: S-107, S-108, S-109, S-110, S-111, S-116 · Gate: app, E
+- Change: demo-standard.md (six steps plus PRD, click to advance, the Release decision dashboard with meanings, Responsible AI, fairness, amber for inside-bar-above-goal and fixed-but-watched, what went wrong with owners, monitoring, what the demo cannot test yet; a "Questions we never tested" tab; one vocabulary; vendors by kind); demo-kit refreshed from UC2.
+- Status: accepted by Nik, 2026-11-12 (Apply)
+
+### P-011: Roadmap, Trade-offs and one build list
+- Signals: S-112 · Gate: D, B
+- Change: Roadmap phase cards with techniques and tools tagged build, buy or use today's; a who-does-what journey; Trade-offs rows; `out/<case>-build-list.json` proved identical in the Roadmap and PRD by `demo-check.js --build`; the PRD mirrors the pages. Kit gains plan.html, choices.html, flowmap.js, vendors.js.
+- Status: accepted by Nik, 2026-11-12 (Apply)
+
+### P-012: a repeatable final audit
+- Signals: S-113, S-115 · Gate: B, app
+- Change: new `demo-auditor` agent (scopes story, roadmap-prd, talk-hygiene, with the eight failure patterns found on UC2); the audit template's "final sweep before every showing"; `demo-check.js` fails on a rate paired with the wrong count, a shared script loaded with two `?v=` stamps, and em dashes.
+- Status: accepted by Nik, 2026-11-12 (Apply)
+
+### P-013: the talk track as a required, checked output
+- Signals: S-114 · Gate: B
+- Change: `talk-track-template.md`; `demo-kit/talktrack.py` (markdown to PDF); `demo-check.js --talk` fails when a story step or Prove it tab is not mentioned or the tab count is wrong.
+- Status: accepted by Nik, 2026-11-12 (Apply)
+
+| P-010 | 2026-11-12 | six-step story, click to advance, Prove it dashboard | S-107 to S-111, S-116 | approved | pending |
+| P-011 | 2026-11-12 | Roadmap, Trade-offs, one build list | S-112 | approved | pending |
+| P-012 | 2026-11-12 | demo-auditor agent and demo-check.js | S-113, S-115 | approved | pending |
+| P-013 | 2026-11-12 | talk track template, PDF script and check | S-114 | approved | pending |

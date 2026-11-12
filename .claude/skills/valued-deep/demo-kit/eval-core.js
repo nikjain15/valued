@@ -10,7 +10,8 @@ function run1(g0, st) {
   const g = keyFor(g0, st);
   const r = answer(g.q, { role: g.role, channel: g.channel, revoked: g.revoked, state: st });
   const gov = g.revoked ? ["Shared"] : GOV[g.role];
-  const touched = (r.cands || []).map(c => c.u).concat(r.unit ? [r.unit] : []);
+  /* Audit A-081: text offered on the staff-document path is checked by the same scope gate */
+  const touched = (r.cands || []).map(c => c.u).concat(r.unit ? [r.unit] : [], r.offered ? [r.offered] : []);
   const leak = touched.some(u => !u.kbs.some(k => gov.includes(k)));
   const answered = r.kind === "answer";
   const unitOK = !g.unit || (r.unit && r.unit.id === g.unit);
@@ -32,15 +33,17 @@ const cell = (n, d, good) => d === 0 ? "" : `<span class="${good ? "ok" : "no"}"
 async function holdoutHash() { try { const t = await (await fetch("holdout.js", { cache: "no-store" })).text(); const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); } catch (e) { return null; } }
 async function evalAll(st) {
   const R = GOLDEN.map(g => run1(g, st)), by = id => R.find(x => x.g.id === id), col = k => COLS[k].map(by);
-  const hh = await holdoutHash(), sealedOK = hh === SEALED, H = HOLDOUT.map(g => { const x = run1(g, st), rl = HOLDOUT_RULINGS[g.id]; return rl ? Object.assign(x, { pass: true, keyOK: true, ruling: rl.note }) : x; });
+  const hh = await holdoutHash(), sealedOK = hh === SEALED, /* D90, D163: a ruling is an accepted alternate key checked against the answer text; the raw result against the original key is kept as rawPass */
+  H = HOLDOUT.map(g => { const x = run1(g, st), rl = HOLDOUT_RULINGS[g.id]; if (!rl) return x; const txt = x.r.text || "", alt = x.answered && (rl.acceptFp || []).some(k => { for (let i = 0; i + k.len <= txt.length; i++) if (fp(txt.slice(i, i + k.len)) === k.fp) return true; return false; }); return Object.assign(x, { rawPass: x.pass, pass: x.pass || alt, keyOK: x.keyOK || alt, ruling: rl.note, altKey: alt ? rl.short : null }); });
   // T tests
   const t1 = dupCheck(ALL_BASE().find(u => u.id === T1_PAIR[0]).versions[0].text, ALL_BASE().find(u => u.id === T1_PAIR[1]).versions[0].text, false);
   const pdFound = PD_WORDINGS.slice(1).every(w => dupCheck(PD_WORDINGS[0].text, w.text, true).dup);
   const t2 = norm(DOCS[1].sections[3].blocks[0].t) === norm(OON_FORMAT_EDIT), driftCaught = norm(PD_WORDINGS[1].text) !== norm(PD_B_FINAL);
   const ev = st.events || [], t3gaps = ev.filter(e => !e.t || !e.who || !e.action || (/approved|sent back|co-signed|revised/.test(e.action) && !e.v)).length;
   /* D88: an independent leak check. Any identifier-like token in the seed (letters and digits mixed, 8 or more characters, or an LW ID) must not survive redaction */
-  const idTokens = q => (q.match(/[A-Z0-9-]{8,}/gi) || []).filter(t => /\d/.test(t) && /[A-Z]/i.test(t));
-  const t4 = T4_SEEDS.map(redact), t4leak = T4_SEEDS.filter((q, i) => idTokens(q).some(t => t4[i].text.includes(t))).length, t4count = t4.reduce((a, x) => a + x.n, 0);
+  /* Audit A-012: digit-only runs of 7 or more (spaces and hyphens ignored) count too, so an SSN, phone or spaced MBI in a seed is checked */
+  const idTokens = q => (q.match(/[A-Z0-9-]{8,}/gi) || []).filter(t => /\d/.test(t) && /[A-Z]/i.test(t)).concat((q.match(/\b[A-Z0-9][A-Z0-9 -]{6,}\d\b/gi) || []).map(t => t.replace(/[ -]/g, "")).filter(t => /^\d{7,}$/.test(t) || (/\d/.test(t) && /[A-Z]/i.test(t) && t.length >= 8)));
+  const t4 = T4_SEEDS.map(redact), t4leak = T4_SEEDS.filter((q, i) => idTokens(q).some(t => t4[i].text.replace(/[ -]/g, "").includes(t.replace(/[ -]/g, "")))).length, t4count = t4.reduce((a, x) => a + x.n, 0);
   const T = TESTS.filter(t => t.q).map(t => run1(Object.assign({ id: t.id }, t), st));
   const t5same = T[0].r.text === by("G17").r.text, t6 = T[1].pass, t7 = T[2].pass, t8 = T[3].pass && !T[3].r.unit;
   const ans = rows => rows.filter(x => x.g.expect === "answer");
@@ -57,10 +60,23 @@ async function evalAll(st) {
   const PS = ["T9", "T10", "T11", "T12", "T13", "T14"].map(set => { const rows = PROBES.concat(PROBES2, PROBES3, NEARMISS.map(n => Object.assign({ set: "T14" }, n, { expect: n.expect === "answer" ? "ok" : "nearmiss" }))).filter(p => p.set === set).map(p => Object.assign({}, p, PROBE_RELABEL[p.id] ? { expect: PROBE_RELABEL[p.id].expect } : {})).map(p => ({ p, r: answer(p.q, { role: RM[p.role] || p.role, channel: p.channel, state: st }), disputed: PROBE_DISPUTES[p.id] }));
     const must = rows.filter(x => x.p.expect !== "ok"), ok = rows.filter(x => x.p.expect === "ok" && !x.disputed), mustD = must.filter(x => !x.disputed);
     const caught = mustD.filter(x => fired[set](x.r)).length, falseN = ok.filter(x => okFired[set](x.r)).length, rate = ok.length ? Math.round(falseN / ok.length * 1000) / 10 : 0;
-    return { set, name: TESTS_PROBE[set], rows, must: mustD.length, caught, ok: ok.length, falseN, rate, disputed: rows.filter(x => x.disputed), pass: caught === mustD.length && rate <= 10, misses: mustD.filter(x => !fired[set](x.r)).concat(ok.filter(x => okFired[set](x.r))) }; });
+    /* Audit A-008: general questions that got no answer for another reason (no approved unit yet, scope, near-miss) are shown beside the rule count, never inside it */
+    const noUnit = ok.filter(x => x.r.kind !== "answer" && !okFired[set](x.r)).length;
+    /* D65: only probes.js was written without sight of the rules; probes2.js and probes3.js are tuning and regression rows (D91, D139), so the independent count is shown on its own */
+    const indepIds = new Set(PROBES.map(p => p.id)), okI = ok.filter(x => indepIds.has(x.p.id)), mustI = mustD.filter(x => indepIds.has(x.p.id));
+    const indep = { ok: okI.length, falseN: okI.filter(x => okFired[set](x.r)).length, must: mustI.length, caught: mustI.filter(x => fired[set](x.r)).length };
+    return { set, name: TESTS_PROBE[set], rows, must: mustD.length, caught, ok: ok.length, falseN, rate, noUnit, indep, rateShown: ok.length >= 59 ? ` (${rate}%)` : "", disputed: rows.filter(x => x.disputed), pass: caught === mustD.length && rate <= 10, misses: mustD.filter(x => !fired[set](x.r)).concat(ok.filter(x => okFired[set](x.r))) }; });
+  /* D243: fairness pairs. The same question asked in plain words, misspelt, in a hurry or in Spanish must get the same approved answer, or the correct hand-off; it must never get a different answer */
+  const FAIR = [["KU-205", "member", [["Plain words", "Is it ok to go to a drugstore outside the plan?"], ["Misspelt", "Can I use an out of netwerk pharmacy?"], ["Casual", "can i get my pills at a pharmacy thats not in network"], ["Spanish", "\u00bfPuedo usar una farmacia fuera de la red?"]]],
+    ["KU-211", "member", [["Misspelt", "vison benifit limit"], ["Plain words", "how much do i get for glasses"]]],
+    ["KU-202", "pharmacy", [["Misspelt", "pricing disclamer"], ["In a hurry", "Pricing disclaimer please, quick, member on the line"], ["Plain words", "what do i read to members about prices"]]],
+    ["KU-204", "pharmacy", [["Plain words", "how long does an exception take"], ["Misspelt", "formulary excepton timeline"]]]
+  ].flatMap(([unit, role, vs]) => vs.map(([way, q]) => { const r = answer(q, { role, state: st }), got = r.unit && (r.unit.canonical_id || r.unit.id);
+    const same = way === "Spanish" ? r.route === "translator" : got === unit, wrong = r.kind === "answer" && got !== unit; return { unit, role, way, q, r, same, wrong }; }));
+  const fair = { rows: FAIR, n: FAIR.length, same: FAIR.filter(x => x.same).length, wrong: FAIR.filter(x => x.wrong).length };
   const probesPass = PS.every(x => x.pass), nDisputed = PS.reduce((a, x) => a + x.disputed.length, 0);
   /* D87: the banner can never say Pass while any rule row is red, on the development set or the sealed holdout */
   const holdRulesOK = H.every(x => !x.leak) && abs(H).every(x => !x.answered) && ans(H).every(x => x.cites) && verbs(H).every(x => x.verb) && routes(H).every(x => x.routeOK && !x.answered);
   const release = rulesPass && holdRulesOK && probesPass && sealedOK && t4leak === 0;
-  return { R, by, col, hh, sealedOK, H, t1, pdFound, t2, driftCaught, ev, t3gaps, t4, t4leak, t4count, T, t5same, t6, t7, t8, ans, abs, verbs, routes, L, colsAll, rulesPass, PS, probesPass, nDisputed, holdRulesOK, release };
+  return { R, by, col, hh, sealedOK, H, t1, pdFound, t2, driftCaught, ev, t3gaps, t4, t4leak, t4count, T, t5same, t6, t7, t8, ans, abs, verbs, routes, L, colsAll, rulesPass, PS, probesPass, nDisputed, holdRulesOK, release, fair };
 }

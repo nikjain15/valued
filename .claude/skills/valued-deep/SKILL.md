@@ -199,9 +199,14 @@ onwards with that file as its seed, or follow section 12 of the strategy when th
 built directly. Log `D<n>: build approved, decided by <name>, <date>`.
 
 When the build includes a demo to show (a panel, a client, an interview), build it to `demo-standard.md`,
-starting from the reference implementation in `demo-kit/`: five steps (Current state, Solution
-architecture, How it works as scenes, Future state, Prove it), one eval scorer shared by the runner and
-Prove it, and the visual rules. Run its "Before showing it" list before the first showing.
+starting from the reference implementation in `demo-kit/`: the six-step story (Current state, Solution
+architecture, How it works with Prove it as its last job, Future state, Roadmap, Trade-offs, plus the PRD),
+click-to-advance scenes, one eval scorer shared by the runner and Prove it, the Release decision dashboard
+with Responsible AI, fairness and what went wrong, and one build list (`out/<case>-build-list.json`) used
+word for word by the Roadmap, the PRD and the strategy. Keep the talk track `out/<case>-final-story.md` from
+`talk-track-template.md` and rebuild its PDF with `demo-kit/talktrack.py` after every change. Run its
+"Before showing it" list before the first showing, including `demo-check.js` and the three-scope
+`demo-auditor` sweep (P-010 to P-013).
 
 When the demo will be shared by a public link while the brief, thinking pages or real names stay private,
 keep two repos: the private prototype with full history, and a public copy with fresh history. Build the

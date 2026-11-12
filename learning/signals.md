@@ -535,6 +535,56 @@ addressed by <change>, rejected: <reason>).
 - Evidence: Nik: "we need to make sure our strategy doc is our state of record, so update if we have done changes". Worked by a peer session that owns the decision log and the strategy, while the build session relays each decision with Nik's words quoted (D114 to D130). valued-deep says to log decisions the same day but has no rule for keeping the strategy current during a long build.
 - Status: open
 
+### S-107
+- Source: note, 2026-11-03 · Scenario: uc2-knowledge-search · Gate: app, B
+- Evidence: Story grew from five to six steps plus a PRD link: Current state, Solution architecture (builds one layer per arrow press), How it works (its step list mirrors the architecture's 'How it runs' list, with a record card and a real example on every step), Future state, Roadmap, Trade-offs. demo-standard.md still says five steps. Evidence: out/uc2-proto story-shared.js STORY5, plan.html, choices.html.
+- Status: open
+
+### S-108
+- Source: note, 2026-11-03 · Scenario: uc2-knowledge-search · Gate: app, E
+- Evidence: Nik asked for click-to-advance on How it works and every Prove it tab ('so that i control movement'); auto-play ran ahead of the talk. Evidence: how-engine.js clickToGo, prove.html beat() gate.
+- Status: open
+
+### S-109
+- Source: note, 2026-11-03 · Scenario: uc2-knowledge-search · Gate: E
+- Evidence: The Prove it release tab was rebuilt as a dashboard (Summary tiles with one-line meanings, Responsible AI at a glance, accuracy by group, red-team sets, fairness, gates, what went wrong with owners, monitoring after launch, what the demo cannot test yet). Nik: 'more like observability and eval performance'; 'it looks everything is good but realistic we know things go wrong'. Inside-bar-but-above-goal items must show amber, not green.
+- Status: open
+
+### S-110
+- Source: note, 2026-11-03 · Scenario: uc2-knowledge-search · Gate: E
+- Evidence: Nik asked how unknown scenarios are handled; a fifth Prove it tab now runs questions from no test set live through answer() and shows three layers (limit damage, find what we missed, close the loop). demo-standard has no such tab.
+- Status: open
+
+### S-111
+- Source: note, 2026-11-03 · Scenario: uc2-knowledge-search · Gate: E, L
+- Evidence: Bias mitigation had no eval. Added a fairness set: the same question asked in plain words, misspelt, in a hurry, casually or in Spanish must get the same approved unit or the right hand-off; a different answer fails. Result 8 of 11 same, 0 wrong. Evidence: eval-core.js FAIR, D243.
+- Status: open
+
+### S-112
+- Source: note, 2026-11-03 · Scenario: uc2-knowledge-search · Gate: D, B
+- Evidence: Roadmap page needed per-phase techniques and tools tagged build, buy or use today's, plus a 14-step 'who does what' journey (AI, person or system per step; what exactly we build or buy; how it is built). Green on a whole job overstated what we build. The single build list had to be identical in the page, PRD 14, PRD 15 and the strategy (D239 conflict, settled by D240).
+- Status: open
+
+### S-113
+- Source: review, 2026-11-03 · Scenario: uc2-knowledge-search · Gate: B
+- Evidence: Final three-reviewer audit found recurring misstatements: a count paired with another set's rate ('4 of 253 (3.3%)' where 3.3% is 4 of 121); two bars with different denominators merged; holdout described as 'run once' beside 'run every test again'; a cache claim contradicting the role-check decision; a red-team line naming test sets that do not exist; vendor-led Q&A. Evidence: audit reports A1 to A7, B1 to B15, C1 to C10, 3 Nov 2026.
+- Status: open
+
+### S-114
+- Source: note, 2026-11-03 · Scenario: uc2-knowledge-search · Gate: B
+- Evidence: The talk track (out/uc2-final-story.md and its PDF) drifted from the site after every page change (tab counts, numbers, click paths). It was kept by hand; nothing regenerates or checks it.
+- Status: open
+
+### S-115
+- Source: note, 2026-11-03 · Scenario: uc2-knowledge-search · Gate: app
+- Evidence: A changed eval-core.js was served stale because its ?v= stamp did not change, breaking the dashboard locally (TypeError on E.fair). Any shared script change needs a version bump on every page that loads it.
+- Status: open
+
+### S-116
+- Source: note, 2026-11-03 · Scenario: uc2-knowledge-search · Gate: app
+- Evidence: Labels drifted across pages ('Fixed rule' on Roadmap vs 'System' on How it works; 'False refusals' vs plain 'Wrongly refused'). Nik asked for one plain vocabulary everywhere, industry terms with a one-line meaning beside each.
+- Status: open
+
 ## Status updates
 
 ### S-079
@@ -579,3 +629,7 @@ addressed by <change>, rejected: <reason>).
 - S-105, S-106: P-009 deferred (no preference given)
 - S-104: addressed by P-008 (applied 2026-11-02)
 - S-105, S-106: addressed by P-009 (applied 2026-11-02)
+- S-107, S-108, S-109, S-110, S-111, S-116: addressed by P-010 (applied 2026-11-12)
+- S-112: addressed by P-011 (applied 2026-11-12)
+- S-113, S-115: addressed by P-012 (applied 2026-11-12)
+- S-114: addressed by P-013 (applied 2026-11-12)

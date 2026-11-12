@@ -69,6 +69,18 @@ You fix nothing without <presenter>'s answer on that specific item.
    tune nothing; misses become proposed probe rows.
 4. **Consolidate.** Deduplicate, stable IDs (`A-001`), severity, mapped to a strategy row.
 
+## The final sweep before every showing (P-012)
+
+Run `demo-check.js` first (rates beside counts, version stamps, build list, talk track coverage, em dashes);
+it must print `Clean`. Then launch three `demo-auditor` agents in parallel, read-only, one scope each, and
+apply every High and Med finding before the showing:
+
+| Scope | Files | Must check |
+|---|---|---|
+| `story` | Current state, Solution architecture, How it works, Prove it, Future state | Claims against strategy, log and PRD; numbers against a live `evalAll` run; tests named on screen exist; who decides what (approver by content type); holdout wording; overclaims |
+| `roadmap-prd` | Roadmap, Trade-offs, the whole PRD | Phases, success, risks and tools match the strategy rows; one build list everywhere; technical lines match the FRs; bars not merged across denominators; header version and D-range current |
+| `talk-hygiene` | Talk track and the public folder | Tab names, counts, click paths and rates match the site; vendor names only as market examples; no em dashes, real or placeholder names; no broken links; Nik's authorship only |
+
 ## Dimensions (add any others you find)
 
 | # | Dimension | Check |
@@ -84,7 +96,7 @@ You fix nothing without <presenter>'s answer on that specific item.
 
 | # | Dimension | Check |
 |---|---|---|
-| 9 | UX and visual | Hierarchy at 1280, 1440 and 375 px; green only for approved, passed or fixed; WCAG AA; pacing, Replay, Skip, play and stop; numbering |
+| 9 | UX and visual | Hierarchy at 1280, 1440 and 375 px; green only at target, amber for inside the bar but above goal and for fixed-but-watched; WCAG AA; pacing, Replay, Skip, play and stop; numbering |
 | 10 | Accessibility | Keyboard and focus, labels on icon buttons, reduced motion, colour-only signals, captions |
 | 11 | Functional QA | Every control on every page; Watch it play end to end; console clean; cache versions; local and live; Safari and Chrome; reset; feedback form |
 | 12 | Writing | Plain language, no em dashes, consistent terms, the agreed page names and per-channel labels |

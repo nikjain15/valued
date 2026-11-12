@@ -1,0 +1,65 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="fonts/fonts.css?v=45">
+<link rel="stylesheet" href="styles.css?v=45"><link rel="stylesheet" href="story.css?v=47">
+<title>Trade-offs · Lakewell Knowledge</title>
+<style>
+.tos{display:grid;gap:10px;margin-top:8px}
+.to{border:1px solid #e4e6dc;border-radius:14px;background:#fff;padding:14px 16px;display:grid;grid-template-columns:32px 1.3fr 1fr 1.2fr 1.2fr;gap:8px 18px;align-items:start;opacity:0;transform:translateY(8px);animation:toin .5s ease forwards}
+.to .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:Manrope,sans-serif;font-weight:800;font-size:13px;background:#2b2f27;color:#fff}
+.to h3{margin:0;font-family:Manrope,sans-serif;font-weight:800;font-size:15.5px;line-height:1.35}
+.to dl{margin:0}.to dt{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}.to dd{margin:0;font-size:13.5px;line-height:1.45}
+.to .cost dd{color:#8a4b12}.to .fix,.to .fut{border:0;padding:0;background:none}
+.to dt{display:none}
+.tohead{display:grid;grid-template-columns:32px 1.3fr 1fr 1.2fr 1.2fr;gap:8px 18px;padding:0 17px;margin-top:16px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+@media (max-width:900px){.tohead{display:none}.to dt{display:block}}
+.to .flip{grid-column:2 / -1;font-size:12.5px;color:var(--muted);border-top:1px dashed #e2e3db;padding-top:7px}
+@keyframes toin{to{opacity:1;transform:none}}
+@media (max-width:900px){.to{grid-template-columns:32px 1fr}.to .flip{grid-column:1 / -1}.to dl{grid-column:2}}
+@media (prefers-reduced-motion:reduce){.to{animation:none;opacity:1;transform:none}}
+.to h3 .alt{display:block;margin-top:5px;font-family:Mulish,sans-serif;font-weight:600;font-size:12.5px;line-height:1.4;color:var(--muted)}
+.to ul.bl{margin:0;padding-left:16px}.to ul.bl li{margin:0 0 3px}
+</style></head><body>
+<main class="area" style="max-width:1280px">
+<div id="stepper"></div>
+<div class="hhead"><h1>Trade-offs</h1></div>
+<div class="card howcard" id="stage"></div>
+</main>
+<script src="data.js?v=45"></script><script src="app.js?v=45"></script><script src="story-shared.js?v=47"></script>
+<script>
+/* The trade-offs we made, what each costs and how we handle it (PRD section 17; D23, D31, D53, D78, S5.3, S8; Prove it counts). */
+nav("choices.html", "", { demo: true });
+document.getElementById("stepper").innerHTML = storyStepper(5);
+const TO = [
+  ["No approved answer means 'not yet', never a guess", "Let the AI answer from whatever it finds",
+   ["107 of 253 test questions get 'not yet' at launch", "Members and advocates sometimes wait for an answer"],
+   ["Every 'not yet' goes on Priya's list", "Most-asked questions are written first: 33 dental questions became one answer", "Coverage is reported every week"],
+   ["The AI drafts the missing answer from approved sources", "Priya only reviews and approves", "Gaps close in days, not weeks"]],
+  ["Staff first, members last", "Start with member chat, where most questions come from",
+   ["Member chat only opens in the last phase", "Members keep today's experience for longer"],
+   ["Advocates use the answers first and prove them", "Members then get the same approved answers", "Member chat runs stricter rules, since nobody checks first"],
+   ["Member chat opens to a small group first", "It widens each time a measured gate holds", "Then it opens to everyone"]],
+  ["Answers stored as short topics, with Legal's sentences locked inside", "Chop documents into fixed-size chunks",
+   ["Every document is split into topics before it can be searched", "Legal's sentences must be marked first"],
+   ["The AI does the split and marks the sentences", "Priya only accepts or edits", "A change re-opens only the topic it touches"],
+   ["The AI learns from Priya's edits", "Templates for common document types cut set-up time"]],
+  ["The AI never merges duplicates on its own", "Auto-merge copies that look nearly the same",
+   ["A person rules on each conflict", "Old copies stay in place until they do"],
+   ["The AI shows the difference word by word, so a ruling is quick", "One ruling retires every copy", "Late reviews move to a backup reviewer"],
+   ["Once proposals are proven right, low-risk duplicates merge automatically, with an undo", "Legal wording always needs a person"]],
+  ["Strict rules for personal and cost questions", "Let the AI judge each question on its own",
+   ["4 of 253 ordinary questions were refused by mistake (1.6%); all 4 in personal records, 4 of 121 (3.3%)", "Example: 'How do I appeal a denied exception?' went to a person"],
+   ["At most 10% at launch on the probe sets, goal 2%", "Every mistake becomes a new test"],
+   ["A trained classifier replaces the word list", "Verified sign-in lets members get their own answers, not a hand-off"]],
+  ["The user's role is checked on every question", "Check it once, at sign-in",
+   ["Every search makes one extra check", "Searches are slightly slower"],
+   ["The delay is measured in the pilot", "Changed only if it slows calls down"],
+   ["Roles are cached briefly once the identity system can revoke access instantly"]]
+];
+const UL = a => `<ul class="bl">${a.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
+document.getElementById("stage").innerHTML = `<p class="eyebrow">Trade-offs</p>
+  <h2 class="hl">Six times we chose safety over speed.</h2>
+  
+  <div class="tohead"><span></span><span>We chose</span><span>The cost today</span><span>How we keep it small now</span><span>How later builds fix it</span></div><div class="tos">${TO.map((t, i) => `<div class="to" style="animation-delay:${(i * 0.16).toFixed(2)}s"><span class="n">${i + 1}</span><h3>${esc(t[0])}<small class="alt">instead of: ${esc(t[1].replace(/^./, c => c.toLowerCase()))}</small></h3><dl class="cost"><dt>The cost today</dt><dd>${UL(t[2])}</dd></dl><dl class="fix"><dt>How we keep it small now</dt><dd>${UL(t[3])}</dd></dl><dl class="fut"><dt>How later builds fix it</dt><dd>${UL(t[4])}</dd></dl></div>`).join("")}</div>
+  <div class="foot" style="margin-top:18px"><a class="btn" href="prd.html#decisions">All decisions in the PRD</a><a class="btn primary" href="prd.html">Next: the PRD →</a></div>`;
+document.querySelector("main").insertAdjacentHTML("beforeend", `<p class="small" style="margin-top:14px">From the PRD, section 17, and the Prove it results.</p>`);
+</script></body></html>
