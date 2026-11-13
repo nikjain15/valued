@@ -221,6 +221,8 @@ better supported, the value frame better anchored. Nothing waits for it.
    card that tests it>", "confirmedIf": "<a regex over the answer that would confirm it>" }`, each a plain
    statement the client can correct ("Most of the cycle time is lost before an adjuster is assigned"). Then
    `out/tools/c research` (it merges whatever has landed, which may be nothing, and renders the live page) and
+   If no research has landed by the end of Round 1, write `terms` yourself (6 to 8 of the industry's terms used in
+   the cards, each with a plain one-line meaning) so every term is still glossed; never write `facts` yourself.
    `out/tools/c render`. Say: "Here's how I'm thinking about it: the problem splits into these branches, here is
    what I'm assuming, and every question I ask tests one of them." `out/tools/c clock 0 end`.
 
@@ -244,6 +246,9 @@ sound like a strong partner from a top firm, not a form:
   sharper question). At most about 25 words, plain and warm, no internal ids in the text.
 - **MECE across the round.** The ten cards cover ten different things. Options inside a card are mutually
   exclusive and together cover the realistic space (ranges that do not overlap; roles that do not overlap).
+- **Drop or pre-fill what is already settled.** Before showing a screen, check every card against the case line
+  and all earlier answers. If an answer already settles it, do not ask it: record it with `"decision"` taken from
+  that answer and `"by": "<role> (earlier answer)"`, and say "You mentioned X, so I've noted that." instead.
 - **Never repeat.** Never ask what the case line, a framing answer or an earlier card already told us. Build on
   it instead: "You mentioned FNOL is slow. Roughly how many claims a month go through it?" `check` fails the run
   on any two cards that share most of their words.
@@ -278,7 +283,7 @@ prototype all show the answers within seconds. If the client would rather not an
 
 | Card | Gate | Header role | What it establishes | Options come from |
 |---|---|---|---|---|
-| R1-2 | V | sponsor | what is off the table from day one (multi) | e.g. nothing customer-facing unreviewed, existing platform only, data stays in; each with what it rules out |
+| R1-2 | V | sponsor | hard limits on data, platform, scope or channel (multi); never review or autonomy, which R1-4 owns | e.g. data stays in-house, existing platform only, one channel first, one product line first; each with what it rules out |
 | C-4 | L | data owner | where the data for this lives today, and whether we can start from it or need stand-ins | one system of record; spread across systems; mostly documents and email; start with synthetic stand-ins |
 | R1-3 | A | IT and risk | whether a hosted model may run on synthetic data | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
 | C-5 | D | operations owner | what happened the last time something like this was tried | stalled on adoption; stalled on data; stalled on risk sign-off; new territory; each with what it means for the plan |
@@ -292,8 +297,8 @@ prototype all show the answers within seconds. If the client would rather not an
 
 Where the answers go: C-1 becomes V's `stakeholders`; C-2 anchors V's value frame (the client's baseline
 beats our assumption); C-3 bounds A's first wave and sets D's `roadmap`; C-4 sets A's data feasibility and
-L's systems; C-5 sets D's `adoption`. After the last screen, mark each assumption in `r.json` confirmed or
-challenged by its card, say in one line which assumptions the client changed, and pass all of it on when you
+L's systems; C-5 sets D's `adoption`. After each screen, set `status` on every assumption that screen tested, judged on the meaning of the answer,
+never on a keyword: `"confirmed"` or `"challenged"` (with the client's words in `heardAs`). After the last screen, say in one line which assumptions the client changed, and pass all of it on when you
 launch each gate.
 
 Recommend: the outcome tied to the sponsor's stated goal; the constraint that de-risks a first wave; a hosted

@@ -34,7 +34,7 @@ function renderDiscovery(r, cards, client, qc) {
   }).join("");
 
   const assumptions = A(r.assumptions).slice(0, 8).map((a) => {
-    const c = a.card && byId[a.card]; const st = c && c.decision ? (a.confirmedIf && new RegExp(a.confirmedIf, "i").test(c.decision) ? "ok" : "check") : "open";
+    const c = a.card && byId[a.card]; const st = a.status === "confirmed" ? "ok" : a.status === "challenged" ? "check" : "open";
     const lab = { ok: "Confirmed", check: "Worth a closer look", open: "To discuss" }[st];
     return `<div class="row"><span class="chip ${st === "ok" ? "c2" : st === "check" ? "c3" : "c0"}">${lab}</span><p>${esc(a.text)}${cites(a.facts)}${c && c.decision ? `<span class="sub">You said: ${said(c.decision)}</span>` : ""}</p></div>`;
   }).join("");
@@ -101,7 +101,7 @@ h1{font-family:var(--font-display);font-size:26px;margin:4px 0 0;line-height:1.2
 </style></head><body><div class="wrap">
 <div class="top"><div><div class="eyebrow">Discovery brief</div><h1>${esc(r.title || "Understanding your world")}</h1></div>${client ? `<span class="client">${esc(client)}</span>` : ""}</div>
 ${r.summary ? `<p class="lede">${esc(r.summary)}</p>` : ""}
-<div class="status">${status}${checks}</div>
+<div class="status">${A(r.notes).length && !A(r.facts).length ? `<span class="stat">Published research is not reachable from this machine; everything below comes from our conversation</span>` : status}${checks}</div>
 ${section("Our early thinking", "Where we think the value is", "Working hypotheses; each one is tested in our conversation.", branches ? `${tree.problem ? `<div class="root">${esc(tree.problem)}</div>` : ""}${branches}` : "")}
 ${section("Stated up front", "What we're assuming", "So you can correct us early.", assumptions)}
 ${section("Published evidence", "What the research says", "Figures as published; each links to its source.", facts ? `<div class="facts">${facts}</div>` : "")}

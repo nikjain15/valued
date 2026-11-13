@@ -72,7 +72,7 @@ Schemas the prototype reads: `verdicts` in `case.json` is
    0.99 bar means zero misses. If subagents are unavailable, write the holdout yourself, run
    `conductor.js seal holdout single-context` and expect the audit to fail the run as not independent:
    that failure is the honest record, not a thing to work around.
-5. **Systems to connect** (an output, specific to the industry). If C-4 is answered, it says where the data lives today: name those systems first and mark their pilot status from it. **Start from the industry list** in
+5. **Systems to connect** (an output, specific to the industry). A system's pilot status stays "proposed" until its data-access and privacy governance rows are answered; never "connected" while sign-off is open. If C-4 is answered, it says where the data lives today: name those systems first and mark their pilot status from it. **Start from the industry list** in
    `connectors-library.json` in this skill's folder (key = `industry` from gate V, or the closest):
    keep every system the first wave touches (at least 6), rewrite `provides` and `usedFor` for this
    case, and add any system the case needs that the list lacks. These are the systems the first wave reads
