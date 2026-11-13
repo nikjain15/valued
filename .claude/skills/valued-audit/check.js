@@ -13,7 +13,7 @@ const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] :
 const PORT = Number(opt("--port", process.env.PORT || 4317));
 const NO_BROWSER = args.includes("--no-browser");
 const JSON_OUT = opt("--json", "");
-const CHROME = process.env.CHROME || "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const CHROME = process.env.CHROME || ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser", "/opt/pw-browsers/chromium"].find((p) => fs.existsSync(p)) || "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 const out = path.join(dir, "out"), proto = path.join(out, "proto");
 const read = (f) => { try { return fs.readFileSync(f, "utf8"); } catch { return ""; } };

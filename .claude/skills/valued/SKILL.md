@@ -13,7 +13,7 @@ pressure, 30 GenAI ideas, COO wants a plan in six weeks`. Flags:
 - `--persona "<who the client is>"`: rehearsal and regression mode. Every card round (framing, each Round 1
   screen, Round 2, E's ship-or-fix) goes to a `client-persona` sub-agent instead of AskUserQuestion: give it
   the persona, the case line, the answers so far and the screen's cards as printed, and record its answers with
-  `"by": "<role> (persona)"`. Ask exactly as you would a person; the persona may answer in its own words, push
+  `"by": "<role>"` and `"persona": true` (never write "(persona)" into `by` or `decision`: they reach the client's PRD). Ask exactly as you would a person; the persona may answer in its own words, push
   back, or choose a non-recommended option, and the run must adapt.
 - `--lean`: the low-token mode for regression runs. Do every gate in this context (score the three lenses one after
   another, run L, U and D inline) and launch only these subagents: the three background `discovery-researcher`s, the `client-persona` under `--persona`, `holdout-sealer` (Sonnet),
@@ -120,6 +120,33 @@ The harness shows each sub-agent's `· took Xs` when it returns, and `out/tools/
 the phase's real elapsed ("[4] L and U · done in 4m 10s"); for E, also emit the `step` sub-updates above. So
 the run always shows what is happening and how long it took, in one line each, without filling the context.
 
+## Our approach page (what the product lead reads out loud)
+
+`localhost:4317/approach` is the page the product lead speaks from. The client may see it, so it is written for
+them. It shows the six lifecycle stages, the client's latest answers live, and one card for the current stage.
+After each phase, write or update that stage's card in `out/gates/approach.json`, then `out/tools/c render`:
+
+| After phase | Stage card | It covers |
+|---|---|---|
+| 1 (Round 1) | `discover` | what we heard and where we think the problem sits |
+| 2 (V then A) | `frame` and `shape` | the priced problem and our early hypothesis; where AI could fit and where rules or people stay |
+| 3 (Round 2) | `align` | who might own it, who signs off, what it should never do |
+| 5 (E and D) | `prove` and `launch` | how we would know it works before launch; a pilot, what we watch, when we pause |
+
+Schema: `{ "current": "<stage>", "stages": [{ "stage", "headline", "heard", "option", "reasons": [3], "tradeoff",
+"checkIn" }] }`. Set `current` to the stage just written. **How it sounds:** a senior consultant thinking out
+loud with the client, never telling them.
+- **Soft, never assertive.** Offer options and early thinking: "One option might be ...", "Our early read is ...",
+  "It may make sense to ...", "We'd suggest exploring ...". Never "we will", "you must", "clearly", "the right answer".
+- **Answer first, still soft.** The headline is the recommendation as an option: "One option: start with assisted
+  intake, keeping coverage decisions with your adjusters".
+- **Readable in one breath.** `heard`, `option`, each of the three `reasons` and `tradeoff` are at most 12 words;
+  mark the two or three words that matter with `**bold**`.
+- **"What we heard" is their words and numbers**, from their answers, never ours.
+- **Always name what they would give up**, and end with an open check-in that invites pushback: "Does that match
+  where you'd want to start, or is there a reason to begin elsewhere?"
+`out/tools/c verify` and `check` flag assertive wording, long bullets and a missing third reason.
+
 ## Quality check after every phase (built in, never skipped)
 
 Every phase ends the same way, right after its `out/tools/c clock <n> end`:
@@ -133,6 +160,10 @@ Every phase ends the same way, right after its `out/tools/c clock <n> end`:
 3. **At the start of the next phase, read `out/qc/<n-1>.json`.** Fix each blocker and major in the owning gate
    JSON, render, and mark it `"fixed": true` in that file. Say one line to the client, in their language:
    `Checked the value and AI-fit work: two figures now carry their source.` or `Checked: nothing to fix.`
+`verify` and `check` also run a consistency check across every view: the approach card's numbers must come from
+an answer, the case line or a cited fact; the product name, the client name and every decision must match across
+the PRD, the prototype and the pages. All four views render from the same gate JSON and `cards.json`, so a fix
+always goes into that source, never into one view.
 The discovery page shows a "Checked" badge per phase, so the client sees the quality loop working.
 
 ## Phase 0: Frame (3 min)
@@ -170,10 +201,10 @@ better supported, the value frame better anchored. Nothing waits for it.
    node $B/prd-skeleton.js "<the case line>" out/prd.md
    P=${PORT:-4317}; lsof -ti :$P | xargs kill 2>/dev/null; PORT=$P node out/proto/server.js   # in the background
    ```
-   Open all three views in the browser, in this order so the discovery brief ends up in front (skip under
-   `--no-open`): `open http://localhost:4317/ ; open http://localhost:4317/prd ; open http://localhost:4317/discovery`.
-   All three fill in live as the session goes. Print:
-   `VALUED · we draft, you decide · discovery: localhost:4317/discovery · PRD: localhost:4317/prd · prototype: localhost:4317`.
+   Open all four views in the browser, in this order so the discovery brief ends up in front (skip under
+   `--no-open`): `open http://localhost:4317/approach ; open http://localhost:4317/ ; open http://localhost:4317/prd ; open http://localhost:4317/discovery`.
+   All four fill in live as the session goes. Print:
+   `VALUED · we draft, you decide · discovery: localhost:4317/discovery · our approach: localhost:4317/approach · PRD: localhost:4317/prd · prototype: localhost:4317`.
 3. Pick the industry key now: `out/tools/c seed <industry>` (a key of `.claude/skills/valued-labels/connectors-library.json`,
    or the closest) prints the systems, golden-set seeds and sweep templates every later gate starts from.
 4. **Research, in the background.** Launch three `discovery-researcher` sub-agents **in one message, with
@@ -201,8 +232,12 @@ part of the conversation ("While we were talking, we confirmed ..."), then fold 
 keys to the hypotheses and assumptions they support in `r.json`, and sharpen the next screen's cards with them.
 Facts and sources stay exactly as the researchers wrote them: never add, round or combine a figure yourself.
 
-**How a consultant asks.** These are the rules that make the round sound like a strong partner from a top firm,
-not a form:
+**How a consultant asks.** These are the rules that make every round (framing, Round 1, Round 2 and E's card)
+sound like a strong partner from a top firm, not a form:
+- **Soft, never assertive.** "My early read is ...", "One possibility is ...", "Would it be fair to say ...?" Never
+  tell the client what is true about their world.
+- **No recommendation on a fact card.** When a card asks for a fact only the client knows (a volume, where the
+  data lives, what was tried), no option is marked "(Recommended)"; recommend only on choices.
 - **Hypothesis-led.** Open with what you think and let them correct it: "My working assumption is that most of
   the delay sits before an adjuster picks it up. Is that what you see?" Never a blank "tell me about ...".
 - **One question per card.** Never double-barrelled ("who owns it and how clean is it" is two cards or one
@@ -276,6 +311,10 @@ and runs `out/tools/c render`. `out/tools/c clock 2 end`.
 ## Phase 3: Round 2 (2 min)
 
 `out/tools/c clock 3 start`. Draft six cards from the rendered gate files (V's priced problem, A's waves and
+Round 2 follows the same consultant rules as Round 1: build on what they already said and never re-ask it (R2-3
+asks what to connect *first* from the systems they named in C-4; it never asks again where the data lives), gloss
+every technical term the first time ("a separate bar (a pass mark just for that group)"), soft wording, one
+question per card.
 assistants, the seed groups), append with `"round": 2`, print or auto, record answers:
 
 | Card | Gate | Header role | Question |
@@ -294,7 +333,7 @@ prototype reflect round 2 at once. `out/tools/c clock 3 end`.
 
 ## Phase 4: L and U in parallel (5 min)
 
-`out/tools/c clock 4 start`. Launch `valued-labels` and `valued-user-loop` together. Both read `out/gates/v.json`,
+`out/tools/c clock 4 start`. Launch `valued-user-loop` and `valued-labels` together, and tell `valued-labels` to launch `holdout-sealer` only once `out/gates/u.json` exists (the sealer reads the never list and triggers from it); L writes its golden set meanwhile. Both read `out/gates/v.json`,
 `a.json` and the answered cards; neither asks the client anything. L writes `l.json` and `out/proto/golden.json`,
 `holdout.json`, `sources.json`; U writes `u.json`. When both are back, `out/tools/c render`. `out/tools/c clock 4 end`.
 

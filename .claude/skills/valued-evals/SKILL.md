@@ -26,6 +26,10 @@ the ship-or-fix decision go to the client, because they trade customer harm agai
 > phase; it renders once both gates are back). Never hand-edit the rendered files: wherever a step below says to
 > write a gate file, `case.json`, `state.md` or a PRD section, put that content in the gate JSON instead.
 
+## Never overstate a release
+
+Quote the eval runner's release lines as printed. A blocked holdout stays "blocked" everywhere (`e.json`, `sayIt`, the PRD); never write that it passed, passed after a repair, or is "close enough". Margins and thin groups are named next to every pass.
+
 ## Steps
 
 1. **Propose the gates** (max 8 rows): gate, metric, proposed threshold, why that bar. Always include:
