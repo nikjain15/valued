@@ -156,20 +156,24 @@ tables below are themes for ordering the questions, not batches.
 them. It shows the six lifecycle stages and one card for the current stage, which refreshes itself as you write it.
 After each phase, write or update that stage's card in `out/gates/approach.json`, then `out/tools/c render`:
 
-| After phase | Stage card | It covers |
-|---|---|---|
-| 1 (Round 1) | `discover` | what we heard and where we think the problem sits |
-| 2 (V then A) | `frame` and `shape` | the priced problem and our early hypothesis; where AI could fit and where rules or people stay |
-| 3 (Round 2) | `align` | who might own it, who signs off, what it should never do |
-| 5 (E and D) | `prove` and `launch` | how we would know it works before launch; a pilot, what we watch, when we pause |
+**Each stage adds something new; no line appears on two cards.** Every stage has its own job and its own rows:
 
-Schema: `{ "current": "<stage>", "stages": [{ "stage", "headline", "heard", "breaks", "evidence": [{ "text", "fact" }],
-"rule", "option", "reasons": [3], "tradeoff", "checkIn" }] }`. Write the `discover` card right after framing, from
-the case and the first answers, and update it after every Round 1 answer: `heard` (their words and numbers),
-`breaks` (where today's process breaks, from their answer or the research's process steps), `evidence` (one or
-two research facts as they land, `fact` = the fact key; the page cites the source), and the page adds the three
-lead assumptions from `r.json` with their live status. Use `rule` on the `align` card for the one regulation
-that shapes the design most. Every field is optional; leave out what you do not have yet.
+| After phase | Stage card | It answers | Its own rows (write these, not the Discover rows again) |
+|---|---|---|---|
+| 1 (Round 1) | `discover` | What is going on today? | `heard` (their words and numbers), `breaks`, `evidence`; the page adds the lead assumptions |
+| 2 (V) | `frame` | Is it worth solving, and what do we believe? | `prize` (the priced problem, one line with the figure), `hypothesis`, `wrongIf` (what would prove us wrong) |
+| 2 (A) | `shape` | Where does AI fit, and where not? | `aiDoes`, `rulesDo`, `peopleDo` (lists, up to 3 each), `sourcing` (build, buy or partner, one line), `option`, `reasons` (3), `tradeoff` |
+| 3 (Round 2) | `align` | Who owns it, and what must it never do? | `owner`, `signOff`, `never` (list, up to 3), `rule` (the one regulation that shapes the design most) |
+| 5 (E) | `prove` | How do we know it works before launch? | `answerKey` (what it is and its size), `passMark` (the bar in plain words, per group), `unseen` (the sealed test result) |
+| 5 (D) | `launch` | How do we pilot, watch and pause? | `pilot`, `watch` (list), `pause` (the pause point) |
+
+Schema: `{ "current": "<stage>", "stages": [{ "stage", "headline", "recap": [up to 3 one-line "so far" bullets],
+<that stage's rows above>, "evidence": [{ "text", "fact" }], "checkIn" }] }`. Every card may carry one or two `evidence`
+facts and a `checkIn` question; `heard` and `breaks` belong to Discover only, and `option`/`reasons`/`tradeoff` to Shape
+only. Write the `discover` card right after framing and update it after every Round 1 answer (`evidence`: one or two
+research facts as they land, `fact` = the fact key; the page cites the source). `recap` shows only on the current
+stage. `out/tools/c verify` flags any line already used on an earlier card; rewrite it for the stage before moving on.
+Every field is optional; leave out what you do not have yet.
 
 **Tweaks during the session.** When the client (or interviewer) asks to change anything, at any point, run
 `valued-feedback` with their words: it changes the answer and the owning gate at the source, updates the approach
