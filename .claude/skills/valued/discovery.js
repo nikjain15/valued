@@ -34,7 +34,7 @@ function renderDiscovery(r, cards, client, qc) {
   const nP = A(r.sources).filter((s) => s.tag === "P").length;
   const STR = [["process", "How the work runs"], ["regulation", "Rules and risk"], ["ai", "Where AI has worked"]];
   const landed = new Set(A(r.strands));
-  const status = STR.map(([k, l]) => `<span class="strand${landed.has(k) ? " done" : ""}">${landed.has(k) ? "&#10003;" : "&#9679;"} ${l}${landed.has(k) ? "" : ": researching"}</span>`).join("");
+  const status = STR.map(([k, l]) => `<span class="strand${landed.has(k) ? " done" : ""}">${landed.has(k) ? "&#10003;" : "&#9679;"} ${l}${landed.has(k) ? "" : A(r.thin).includes(k) ? ": still confirming" : ": researching"}</span>`).join("");
   const assumptions = A(r.assumptions).slice(0, 8).map((a) => { const c = a.card && byId[a.card]; const st = c && c.decision ? (a.confirmedIf && new RegExp(a.confirmedIf, "i").test(c.decision) ? "ok" : "check") : "open"; return `<li class="as ${st}"><span class="dot"></span><div><b>${esc(a.text)}</b><span>${a.facts && A(a.facts).length ? `Based on ${cites(a.facts)}` : "Our assumption, from experience"}${c ? ` · tested by ${esc(c.id)}${c.decision ? `: you said "${esc(c.decision)}"` : ""}` : ""}</span></div></li>`; }).join("");
 
   return `<!doctype html>
@@ -147,7 +147,8 @@ function mergeResearch(strands, prev) {
     for (const s of strands) for (const x of A(s[k])) { const id = k === "terms" ? String(x.term || "").toLowerCase() : k === "sources" ? x.url || x.key : JSON.stringify(x); if (id && !seen.has(id)) { seen.add(id); r[k].push(x); } }
   }
   r.notes = strands.filter((s) => s.note).map((s) => `${s.strand}: ${s.note}`);
-  r.strands = strands.filter((s) => s.done).map((s) => s.strand);
+  r.strands = strands.filter((s) => s.done && !s.thin).map((s) => s.strand);
+  r.thin = strands.filter((s) => s.done && s.thin).map((s) => s.strand);
   return r;
 }
 
