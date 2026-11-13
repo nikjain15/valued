@@ -203,6 +203,14 @@ better supported, the value frame better anchored. Nothing waits for it.
 **Order in this phase:** step 2 (setup), step 1's framing cards only if the case line lacks them, step 4
 (launch research in the background), step 3, step 5 (the first tree, from the case), then hand to Round 1.
 
+0. **Start fresh, every time.** If `out/` already exists from an earlier run, move it aside before anything
+   else (`mv out "out-prev-$(date +%Y%m%d-%H%M%S)"`; `out-*` is git-ignored) and never read from it again: no
+   answer, number, name or case detail from an earlier session may appear in this one. Stop anything already
+   listening on the port.
+   **No case line? Let them say it in their own words.** If `/valued` came with no case, do not show option cards
+   first. Print one warm line and wait for a typed reply: "Tell me about the client and the problem in a
+   sentence or two: who they are, what hurts today, and what they would like to see by when." Build the case line
+   from that reply, then ask framing cards only for what it still lacks (and the product name).
 1. Write the wrapper first (step 2's first two lines), then `out/tools/c clock 0 start`. If `out/select/select.json` exists (a `/valued-select` run), take the preferred option as the use case, its audience and assumptions as framing, and print `Case from out/select/select.json: <option>`; ask no framing card that file already answers.
    **Framing asks only what research needs to start: who the client is and what hurts.** Success measures,
    timelines, data and constraints belong to Round 1, so never ask them here (asking them twice is the most
