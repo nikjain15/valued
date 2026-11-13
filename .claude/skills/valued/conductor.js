@@ -31,7 +31,8 @@ const writeJson = (f, o) => write(f, JSON.stringify(o, null, 2) + "\n");
 // Observability: every command leaves one event in out/trace.jsonl (rendered by valued-audit/observe.js).
 const trace = (e) => { try { fs.mkdirSync(OUT, { recursive: true }); fs.appendFileSync(path.join(OUT, "trace.jsonl"), JSON.stringify({ t: Date.now(), ...e }) + "\n"); } catch {} };
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
-const clean = (s) => String(s ?? "").replace(/—/g, ", ").replace(/\|/g, "/").replace(/\s+/g, " ").trim();
+const flat = (s) => (s && typeof s === "object" && !Array.isArray(s) ? (s.text || s.label || s.value || s.headline || s.title || Object.values(s).filter((x) => typeof x === "string").join(" ")) : Array.isArray(s) ? s.map(flat).join("; ") : s);
+const clean = (s) => String(flat(s) ?? "").replace(/—/g, ", ").replace(/\|/g, "/").replace(/\s+/g, " ").trim();
 const cell = (s) => clean(s) || "";
 const tableAll = (head, rows) => rows.length ? [`| ${head.join(" | ")} |`, `|${head.map(() => "---").join("|")}|`, ...rows.map((r) => `| ${r.map(cell).join(" | ")} |`)].join("\n") : "";
 const byLabel = (x) => clean(String(x || "").replace(/\s*\((persona|auto)\)/gi, ""));
@@ -40,8 +41,8 @@ const A = (x) => (Array.isArray(x) ? x : []);
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 const PHASES = [
-  ["0", "Frame", 3], ["1", "Round 1", 4], ["2", "V then A", 7], ["3", "Round 2", 2],
-  ["4", "L and U", 5], ["5", "E and D", 6], ["6", "Build", 3],
+  ["0", "Frame", 3], ["1", "Round 1", 4], ["2", "V then A", 5], ["3", "Round 2", 2],
+  ["4", "L and U", 5], ["5", "E and D", 8], ["6", "Build", 3],
 ];
 const CUTS = {
   "2": ["fewer candidates: 8 instead of 12", "two wave options instead of three", "shorter reasons"],

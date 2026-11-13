@@ -79,15 +79,15 @@ never a generic "COO" unless the case says COO. 2 to 4 options per card.
 |---|---|---|---|
 | 0 Frame | workspace, server, live discovery page and PRD; framing (who and what hurts, product name); 3 researchers launched in the background (never waited on); first hypothesis tree and assumptions | 3 min | you, `discovery-researcher` × 3 in the background |
 | 1 Round 1 | discovery: 10 hypothesis-led cards in three screens, research findings read out between screens as they land | 4 min | client |
-| 2 V then A | value frame; then assistants, shape, sweeps, three scorers in parallel | 7 min | `valued-value`, `valued-ai-fit` |
+| 2 V then A | value frame; then assistants, shape, sweeps, three scorers in parallel | 5 min | `valued-value`, `valued-ai-fit` |
 | 3 Round 2 | 6 cards: first wave, riskiest group, what to connect, release bar, pilot scope, stop rule | 2 min | client |
 | 4 L and U in parallel | golden set, holdout, systems; autonomy table, never list, clocks | 5 min | `valued-labels` and `valued-user-loop` |
-| 5 E and D in parallel | builder writes the router, evals run; rollout and drive | 6 min | `valued-evals` and `valued-deploy` |
+| 5 E and D in parallel | builder writes the router, evals run; rollout and drive | 8 min | `valued-evals` and `valued-deploy` |
 | 6 B | PRD and prototype rendered from gate data; hosted page; run report | 3 min | `valued-build` |
 
 Cards in total: 16 in the two rounds, plus framing (1 to 3)
 and E's "Ship anyway, or fix first?" only when a release is blocked: 17 to 20. Start and end every phase with `out/tools/c clock <phase> start|end`; the start prints
-the header line (`[2] V then A · budget 7 min`). Between phases print nothing else.
+the header line (`[2] V then A · budget 5 min`). Between phases print nothing else.
 
 **Graceful overrun.** Before each phase starts and whenever a phase feels long, run `out/tools/c clock status`. If the
 running phase is past its budget, cut the next item in its cut order (`out/tools/c clock status` prints it), record it
@@ -316,7 +316,7 @@ approval; the existing escalation path. Then `out/tools/c render` so the PRD and
 answers at once, before any gate has run: the client sees the outcome, the constraint and the autonomy choice
 land in the document the moment they decide them. `out/tools/c clock 1 end`.
 
-## Phase 2: V then A (7 min)
+## Phase 2: V then A (5 min)
 
 `out/tools/c clock 2 start`. Run `valued-value` (it reads round 1, never asks), then `valued-ai-fit` (three
 `use-case-scorer` subagents in parallel, then the merge, shape, assistants and sweeps). Each writes its JSON
@@ -351,7 +351,7 @@ prototype reflect round 2 at once. `out/tools/c clock 3 end`.
 `a.json` and the answered cards; neither asks the client anything. L writes `l.json` and `out/proto/golden.json`,
 `holdout.json`, `sources.json`; U writes `u.json`. When both are back, `out/tools/c render`. `out/tools/c clock 4 end`.
 
-## Phase 5: E and D in parallel (6 min)
+## Phase 5: E and D in parallel (8 min)
 
 `out/tools/c clock 5 start`. Launch `valued-evals` (which launches `prototype-builder` and runs the evals) and
 `valued-deploy` together. If the dev eval is blocked, E asks the one extra card **"Ship anyway, or fix
