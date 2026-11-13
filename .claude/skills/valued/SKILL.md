@@ -96,7 +96,7 @@ keep running and land through the same revise path.
 | 2 V then A | collect V and A, render, write the Frame and Shape cards | 1 min | usually already done |
 | 3 Round 2 | 6 cards | 2 min | client; **L starts its golden set from A** while you ask; **D launches** once R2-5 and R2-6 are answered |
 | 4 L and U | L applies the round-2 groups, seals the holdout; U finishes | 3 min | `holdout-sealer` once `u.json` exists |
-| 5 E and D | router, evals, at most **one** repair live; D finishes | 4 min | `prototype-builder`, `guard-model` |
+| 5 E and D | router, evals; **hard stop at 4 min**, repairs go to phase 7; D finishes | 4 min | `prototype-builder`, `guard-model` |
 | 6 Build | three writers in parallel, then merge and render; present | 2 min | three `valued-build` writers |
 | 7 Improve | reviewer, audit, `gate-qc` sweep, a second repair if needed; fixes land via `valued-feedback` | background | after you present; never blocks |
 
@@ -502,9 +502,16 @@ prototype reflect round 2 at once. `out/tools/c clock 3 end`.
 
 `out/tools/c clock 5 start`. Launch `valued-evals` (which launches `prototype-builder` and runs the evals).
 `valued-deploy` is already running (launched in phase 3); if for any reason it is not, launch it now. If the dev eval is blocked, E asks the one extra card **"Ship anyway, or fix
-first?"** (round 3; "Fix first" recommended), fixes the router, never the labels, and runs the holdout.
-**Live, at most one repair round:** if it is still blocked after that, say so plainly ("Blocked on routing; a
-second fix is running in the background"), present, and run the next round in phase 7.Collect `valued-deploy` here. When both are back, `out/tools/c render`. `out/tools/c clock 5 end`.
+first?"** (round 3; "Fix first" recommended), fixes the router, never the labels, and runs the holdout, only
+while phase 5 is inside its time box below; otherwise the card and the fix move to phase 7.
+**Hard time box: 4 minutes for phase 5, then present.** Check `out/tools/c clock` before each E sub-step. When phase 5
+reaches 4 minutes and the sealed test has not passed (still running, or blocked and a repair would start), do not
+wait and do not start a repair live: run `out/tools/c evals pending "<one plain line on where it is>"`, collect D,
+`out/tools/c render`, and go straight to phase 6. The PRD's evaluation section and the "Building now" line say
+"Sealed test: still running" and the release stays blocked. Say once in chat: "The system won't call it passed until
+the sealed test proves it; that result lands in a few minutes." Finish the evals (and any repair, at most one round
+before the "Ship anyway, or fix first?" card is asked again) in phase 7, then `out/tools/c evals done` and
+`out/tools/c render`, and tell the product lead the result in one line. A repair never runs live.Collect `valued-deploy` here. When both are back, `out/tools/c render`. `out/tools/c clock 5 end`.
 
 **E is the longest and most opaque gate, so narrate its sub-steps.** Before each sub-step of E, run
 `out/tools/c step "<what it is doing>"`: it updates the live "Building now:" line on the PRD and prototype
