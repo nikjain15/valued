@@ -250,9 +250,17 @@ better supported, the value frame better anchored. Nothing waits for it.
    node $B/prd-skeleton.js "<the case line>" out/prd.md
    P=${PORT:-4317}; lsof -ti :$P | xargs kill 2>/dev/null; PORT=$P node out/proto/server.js   # in the background
    ```
-   Open all four views in the browser, in this order so the discovery brief ends up in front (skip under
-   `--no-open`): `open http://localhost:4317/research ; open http://localhost:4317/ ; open http://localhost:4317/prd ; open http://localhost:4317/approach`
-   (the approach page last, so it is in front). All four fill in live as the session goes. Print:
+   Open the four views (skip all of this under `--no-open`). All four fill in live as the session goes.
+   - **Approach and Research in Claude's built-in browser pane** (the product lead speaks from these): if a built-in
+     browser tool is available (tools named `mcp__Claude_Browser__*` or `mcp__remote-devices__Claude_Browser__*`; load
+     them with ToolSearch `Claude_Browser` if only the name is listed), open `http://localhost:4317/research` in one tab,
+     then `http://localhost:4317/approach` in a new tab so Approach is in front. If the first use asks for permission,
+     say once: "Please click Allow so I can open the approach and research pages beside our chat." If no built-in
+     browser tool is available, or it fails, fall back to Chrome for these two as below. Never wait on it.
+   - **PRD and prototype in Chrome:** `open -a "Google Chrome" http://localhost:4317/prd http://localhost:4317/`
+     (if Chrome is not installed, plain `open` for each). Under a fallback, also
+     `open -a "Google Chrome" http://localhost:4317/research http://localhost:4317/approach` (Approach last, so it is in front).
+   Use the port in use when it is not 4317. Print:
    `VALUED · we draft, you decide · our approach: localhost:4317/approach · research, live: localhost:4317/research · PRD: localhost:4317/prd · prototype: localhost:4317`.
 3. Pick the industry key now: `out/tools/c seed <industry>` (a key of `.claude/skills/valued-labels/connectors-library.json`,
    or the closest) prints the systems, golden-set seeds and sweep templates every later gate starts from.

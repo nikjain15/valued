@@ -70,7 +70,7 @@ in the orchestrator). This step fills what needs every gate at once. Target: 3 m
 6. Write `out/proto/CLAUDE.md` with three lines: read `../prd.md` first; work from section 19; never
    edit `golden.json` or read `holdout.json`.
 7. Append to `out/state-notes.md` (render copies it into state.md): `Build: PRD complete (localhost:4317/prd, out/prd.html); prototype on
-   localhost:4317 (engine <x>)`. Then `open http://localhost:4317` (skip under `--no-open`).
+   localhost:4317 (engine <x>)`. Then `open -a "Google Chrome" http://localhost:4317` (plain `open` if Chrome is missing; skip under `--no-open`).
 8. **Say it** (three lines): this is the decisions turned into a spec a team or a coding agent can build
    from; every requirement has a test, and the evals are the definition of done; the prototype is the
    same rules, clickable, with every action logged.
