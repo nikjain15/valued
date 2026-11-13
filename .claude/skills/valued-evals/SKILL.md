@@ -112,3 +112,10 @@ Quote the eval runner's release lines as printed. A blocked holdout stays "block
 ## Output: `out/gates/e.json`
 
 Keys (render and `conductor.js check` read them; keep strings to one line): `gateTable` (`{ gate, metric, threshold, why, judge }`), `repaired` (true when the one holdout repair round ran); `gates.json` `riskiest_slice` is the group key the client chose on card R2-2, `bar` (card R2-4), `runs` (`{ label, output }`: every eval output verbatim, dev and holdout), `fixes` (one line per router fix), `misses` (dev misses by id), `judgePolicy`, `reproduceNote`. Also `out/proto/gates.json` and the builder's `router.js` (`eval.js` is the shared runner, never written); plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.
+
+## Cue words (lexicon and router)
+
+- Match short stems (under six letters) as whole words only, never as prefixes: "dead" must not fire on "deadline".
+- Check every cue in each language served for an everyday meaning in this industry before adding it. "Reclamo"
+  (claim) is not a complaint, "denuncia" (police report) is not a legal threat, and "solo" is not distress. Put such
+  words in the golden set as answer rows, so a false alarm shows up in the dev eval.

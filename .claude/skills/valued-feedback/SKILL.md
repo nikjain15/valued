@@ -51,8 +51,13 @@ comment on a PRD section ("section 7 is missing a requirement for complaints by 
      is looking at shows the change. Same soft voice and length rules as the conductor.
    - **Downstream gates**, from the table above, and only those. If the eval reruns, show its result lines and
      say in one line whether the release status changed.
+   - **The case line.** If the change touches anything in `out/case-line.txt` (volume, timeline, outcome, team),
+     rewrite that line too, so the PRD header, state and gate files agree.
+   - **The approach page.** Put the change on the current stage's card as one `recap` line ("Now: first result within
+     six months"), and update the stage row that owns it (`pilot` on Launch, `prize` on Frame, and so on).
    - **The PRD version.** In `out/gates/b.json` (or the owning gate when B has not run), add a `history` row
-     `{ version, date, change, by, sections }`; render bumps the version.
+     `{ version, date, change, by, sections }`; render bumps the version. Before B exists, put it in the owning gate's
+     JSON, or in `v.json` if that is the only gate written; render reads history from every gate.
    - Then `out/tools/c render` and `out/tools/c verify <current phase>`. Fix anything the consistency check
      names (a number, a name or a decision that still differs between views) at the source, render again.
 4. **Republish** when the run was published: rerun the three publish commands from `valued-build` step 5
