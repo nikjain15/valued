@@ -301,7 +301,7 @@ function renderCase(g, ev) {
   const cs = cards();
   const c = {
     ...prev,
-    ownerShort: u.ownerShort || "", escalationOwners: u.escalationOwners || {}, mix: a.mix || null, panelTitle: a.panelTitle || "", profileFields: A(a.profileFields),
+    ownerShort: u.ownerShort || "", ownerByFamily: u.escalationOwners || {}, mix: a.mix || null, panelTitle: a.panelTitle || "", profileFields: A(a.profileFields).map((f) => (typeof f === "string" ? { label: f } : f)),
     title: productName() || v.title, client: v.client, useCase: productName() || v.useCase, headline: v.headline, scenario: v.scenario, user: v.user, inputLabel: v.inputLabel, persona: v.persona, industry: v.industry, labels: v.labels,
     accent: accentFor(v.industry, v.client),
     heroStat: A(v.metrics)[0] ? { metric: A(v.metrics)[0].metric, from: A(v.metrics)[0].baseline, to: A(v.metrics)[0].target } : (v.northStar?.preferred ? { metric: v.northStar.preferred, from: "", to: "" } : null),
