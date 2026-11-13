@@ -123,7 +123,7 @@ the run always shows what is happening and how long it took, in one line each, w
 ## Our approach page (what the product lead reads out loud)
 
 `localhost:4317/approach` is the page the product lead speaks from. The client may see it, so it is written for
-them. It shows the six lifecycle stages, the client's latest answers live, and one card for the current stage.
+them. It shows the six lifecycle stages and one card for the current stage, which refreshes itself as you write it.
 After each phase, write or update that stage's card in `out/gates/approach.json`, then `out/tools/c render`:
 
 | After phase | Stage card | It covers |
