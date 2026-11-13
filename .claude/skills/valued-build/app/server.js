@@ -153,7 +153,7 @@ function runEval(file) {
 }
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".md": "text/markdown; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml" };
-const PUBLIC = new Set(["app.html", "ff.css", "case.json", "build.json", "sources.json", "gates.json", "router.js", "golden.json", "holdout.json", "model-cache.json", "status.json"]);
+const PUBLIC = new Set(["app.html", "discovery.html", "ff.css", "case.json", "build.json", "sources.json", "gates.json", "router.js", "golden.json", "holdout.json", "model-cache.json", "status.json"]);
 
 function send(res, code, body, type = "application/json") {
   res.writeHead(code, { "content-type": type, "cache-control": "no-store" });
@@ -205,6 +205,7 @@ http.createServer(async (req, res) => {
       return send(res, 200, fs.existsSync(file) ? fs.readFileSync(file) : "[]", TYPES[".json"]);
     }
     if (url.pathname === "/prd") return send(res, 200, fs.readFileSync(path.join(DIR, "prd-viewer.html")), TYPES[".html"]);
+    if (url.pathname === "/discovery") return send(res, 200, fs.existsSync(path.join(DIR, "discovery.html")) ? fs.readFileSync(path.join(DIR, "discovery.html")) : "<p>The discovery brief appears once research is back.</p>", TYPES[".html"]);
     const name = url.pathname === "/" ? "app.html" : url.pathname.slice(1);
     if (!PUBLIC.has(name)) return send(res, 404, { error: "not found" });
     if (!fs.existsSync(path.join(DIR, name))) return send(res, 200, name.endsWith(".js") ? "" : /sources|golden|holdout/.test(name) ? "[]" : "{}");

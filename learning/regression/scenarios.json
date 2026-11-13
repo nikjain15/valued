@@ -22,14 +22,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": true
   },
@@ -54,14 +54,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": false
   },
@@ -86,14 +86,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": false
   },
@@ -118,14 +118,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": true
   },
@@ -151,14 +151,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": false
   },
@@ -184,14 +184,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28,
+    "maxMinutes": 30,
     "shapeNote": "desk when autonomy is draft with approval; chat when answers go to the end user directly"
    },
    "smoke": false
@@ -217,14 +217,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": false
   },
@@ -250,14 +250,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": false
   },
@@ -282,14 +282,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": true
   },
@@ -314,14 +314,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": false
   },
@@ -346,14 +346,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": false
   },
@@ -379,14 +379,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": false
   },
@@ -412,14 +412,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": false
   },
@@ -445,14 +445,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": false
   },
@@ -478,14 +478,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28,
+    "maxMinutes": 30,
     "shapeNote": "desk when autonomy is draft with approval; chat when answers go to the end user directly"
    },
    "smoke": true
@@ -512,14 +512,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28
+    "maxMinutes": 30
    },
    "smoke": false
   },
@@ -547,14 +547,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28,
+    "maxMinutes": 30,
     "framingCards": true
    },
    "smoke": true
@@ -583,14 +583,14 @@
     ],
     "cards": [
      16,
-     21
+     23
     ],
     "evalGates": 8,
     "pendingSections": 0,
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 28,
+    "maxMinutes": 30,
     "notGenAIFirst": true
    },
    "smoke": true

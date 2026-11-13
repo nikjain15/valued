@@ -18,6 +18,7 @@
 const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
+const { renderDiscovery, mergeResearch } = require("./discovery.js");
 
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, "out"), PROTO = path.join(OUT, "proto"), GATES = path.join(OUT, "gates");
@@ -36,7 +37,7 @@ const A = (x) => (Array.isArray(x) ? x : []);
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 const PHASES = [
-  ["0", "Frame", 2], ["1", "Round 1", 3], ["2", "V then A", 7], ["3", "Round 2", 2],
+  ["0", "Frame and research", 5], ["1", "Round 1", 3], ["2", "V then A", 6], ["3", "Round 2", 2],
   ["4", "L and U", 5], ["5", "E and D", 6], ["6", "Build", 3],
 ];
 const CUTS = {
@@ -153,7 +154,7 @@ function whyArch(a) {
 }
 
 const G = (k) => json(path.join(GATES, `${k}.json`), null);
-const gates = () => ({ v: G("v"), a: G("a"), l: G("l"), u: G("u"), e: G("e"), d: G("d"), b: G("b") });
+const gates = () => ({ r: G("r"), v: G("v"), a: G("a"), l: G("l"), u: G("u"), e: G("e"), d: G("d"), b: G("b") });
 const cards = () => json(path.join(OUT, "cards.json"), []);
 // The client's chosen product name (framing card) is the title shown everywhere, over the generic use-case label.
 const productName = () => { const c = cards().find((x) => /product name|what would you like to call|call (this|it)/i.test(x.question || "") && x.decision); return c ? String(c.decision).trim() : null; };
@@ -314,7 +315,9 @@ function renderPrd(g, ev, c) {
   const cs = cards();
   const s = {};
   s[1] = b ? table(["", ""], [["Problem", b.summary?.problem], ["Who it serves", b.summary?.who], ["What we build", b.summary?.build], ["What it never does", b.summary?.never || A(u?.neverList)[0]], ["How we know it works", b.summary?.works], ["First milestone", b.summary?.milestone]]) : P("B");
-  s[2] = v ? [clean(v.problem), "", table(["Value driver", "Today (baseline)", "Target", "How measured"], A(v.valueDrivers).map((r) => [r.driver, r.today, r.target, r.measured]))].join("\n") : P("V");
+  const rs = Object.fromEntries(A(g.r?.sources).map((x) => [x.key, x]));
+  const ctx = A(g.r?.facts).length ? ["", "**Industry context (published sources; full brief at /discovery)**", "", table(["Figure", "What it means here", "Source"], A(g.r.facts).slice(0, 8).map((f) => [f.figure, f.fact, rs[f.source] ? `${rs[f.source].publisher}, ${rs[f.source].year} (${rs[f.source].url})` : "source missing"]))].join("\n") : "";
+  s[2] = v ? [clean(v.problem), "", table(["Value driver", "Today (baseline)", "Target", "How measured"], A(v.valueDrivers).map((r) => [r.driver, r.today, r.target, r.measured])), ctx].join("\n") : (ctx ? [P("V"), ctx].join("\n") : P("V"));
   s[3] = v ? [table(["User", "Job to be done", "Pain today", "What changes"], A(v.users).map((r) => [r.user, r.job, r.pain, r.changes])), "", table(["ID", "As a", "I want to", "So that"], A(v.stories).map((r, i) => [`US-${String(i + 1).padStart(2, "0")}`, r.as, r.want, r.soThat])), "", `**Journey, future state:** ${clean(v.journey)}`, ...(A(v.stakeholders).length ? ["", "**Stakeholders and decision rights**", "", table(["Stakeholder", "Cares about", "Decides or can block", "How we keep them with us"], A(v.stakeholders).map((r) => [r.role, r.cares, r.decides, r.keep]))] : [])].join("\n") : P("V");
   s[4] = v ? ["**Goals**", ...A(v.goals).map((x, i) => `- G-${String(i + 1).padStart(2, "0")} ${clean(x)}`), "", "**Non-goals (this release)**", ...A(v.nonGoals).map((x) => `- ${clean(x)}`), "", table(["ID", "Metric", "Baseline", "Target", "Guardrail"], A(v.metrics).map((r, i) => [`M-${String(i + 1).padStart(2, "0")}`, r.metric, r.baseline, r.target, r.guardrail]))].join("\n") : P("V");
   s[5] = a ? table(["Candidate", "Lowest rung that works", "Decision", "Why"], A(a.scores).map((x) => [`${x.id} ${x.name || ""}`, x.rung, x.wave === 1 ? "**First wave**" : x.notGenAI ? "Not GenAI" : x.wave === 2 ? "Second wave" : "Later", x.notGenAI ? `${x.reason}; instead: ${x.instead || "rules"}` : x.reason])) + (A(d?.roadmap).length ? ["", "", "**Roadmap (each phase ends on evidence, not a date)**", "", table(["Phase", "What ships", "Evidence that ends it", "Depends on", "Release cadence"], A(d.roadmap).map((r) => [r.phase, r.ships, r.exit, r.dependsOn, r.cadence]))].join("\n") : "") : P("A");
@@ -383,6 +386,14 @@ function check(g, ev, c, quiet) {
   const miss = [];
   const need = (cond, std, msg) => { if (!cond) miss.push([std, msg]); };
   const must = (obj, keys, gate) => { if (!obj) { need(false, 5, `gate ${gate}: out/gates/${gate.toLowerCase()}.json missing`); return; } for (const k of keys) need(obj[k] !== undefined && obj[k] !== "" && !(Array.isArray(obj[k]) && !obj[k].length), 5, `gate ${gate}: ${k} missing`); };
+  if (g.r) {
+    const keys = new Set(A(g.r.sources).map((x) => x.key));
+    need(A(g.r.facts).length >= 5 && A(g.r.facts).every((f) => keys.has(f.source)), 1, "research: 5+ facts, each citing a source key");
+    need(A(g.r.sources).every((x) => /^https?:\/\//.test(x.url || "") && x.publisher && x.year), 1, "research: every source needs url, publisher, year");
+    need(A(g.r.tree?.branches).length >= 3 && A(g.r.tree.branches).every((b) => A(b.hypotheses).length && A(b.questions).length), 1, "research: tree needs 3+ branches, each with hypotheses and question ids");
+    need(A(g.r.terms).length >= 6, 1, "research: 6+ terms with plain meanings");
+    need(cards().filter((x) => Number(x.round) === 1).every((x) => x.why && x.branch), 1, "round 1: every card needs why and branch");
+  }
   must(g.v, ["client", "industry", "sponsorRole", "ownerRole", "useCase", "title", "headline", "scenario", "user", "inputLabel", "persona", "labels", "valueFrame", "candidates", "northStar", "problem", "valueDrivers", "users", "stories", "journey", "goals", "nonGoals", "metrics", "stakeholders", "hypotheses", "governance", "sayIt"], "V");
   must(g.a, ["scores", "waves", "sourcing", "numbersToQuote", "engine", "engineWhy", "shape", "shapeWhy", "agents", "sweeps", "itemNoun", "promise", "alternatives", "latency", "cost", "governance", "sayIt"], "A");
   must(g.l, ["verdicts", "groups", "labelling", "connectors", "dataPrivacy", "governance", "sayIt"], "L");
@@ -407,7 +418,7 @@ function check(g, ev, c, quiet) {
   if (g.a && g.a.engine !== "rules" && fs.existsSync(path.join(PROTO, "eval.js"))) { const cache = json(path.join(PROTO, "model-cache.json"), {}); const norm = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim(); const missing = ["golden.json", "holdout.json"].flatMap((f) => json(path.join(PROTO, f), [])).filter((r) => !cache[norm(r.text)]).length; need(missing === 0, 6, `guard model cache misses ${missing} texts: run model-inputs and the guard model again`); }
   const router = read(path.join(PROTO, "router.js")); if (router) need(!/\brequire\(|\bimport\s|readFileSync|fetch\(/.test(router) && /module\.exports\s*=\s*\{\s*decide/.test(router), 7, "router must be self-contained CommonJS");
   if (router) { const n = router.split("\n").filter((l) => l.trim() && !/^\s*\/\//.test(l)).length; need(n <= 200, 7, `router.js is ${n} lines of code (160 is the guideline, 200 the limit): move the wording lists into sources.json match lists or the trigger lexicon, not more branches`); }
-  const cs = cards(); need(cs.length >= 16 && cs.length <= 21, 1, `${cs.length} cards (16 to 21)`); need(cs.every((x) => x.role && x.question && x.format && A(x.options).length >= 2 && A(x.options).every((o) => o.label && o.tradeoff)), 1, "every card: role, question, format, 2+ options with trade-offs"); need(!cs.some((x) => /^COO$/i.test(x.role)) || /COO/i.test(caseLine()), 1, "card roles must be this case's sponsor and owner roles, not COO");
+  const cs = cards(); need(cs.length >= 16 && cs.length <= 23, 1, `${cs.length} cards (16 to 23)`); need(cs.every((x) => x.role && x.question && x.format && A(x.options).length >= 2 && A(x.options).every((o) => o.label && o.tradeoff)), 1, "every card: role, question, format, 2+ options with trade-offs"); need(!cs.some((x) => /^COO$/i.test(x.role)) || /COO/i.test(caseLine()), 1, "card roles must be this case's sponsor and owner roles, not COO");
   const scanDirs = [OUT]; const files = []; const walk = (d) => { for (const f of fs.readdirSync(d)) { const p = path.join(d, f); if (fs.statSync(p).isDirectory()) { if (!/hosted/.test(f)) walk(p); } else if (/\.(md|json|js|html)$/.test(f) && !/ff\.css|app\.html|prd-viewer|server\.js|audit\.jsonl/.test(f)) files.push(p); } }; if (fs.existsSync(OUT)) walk(OUT);
   const realCo = /\b(Acme|Contoso|Globex|Initech|Example Corp|Anthem|Aetna|UnitedHealth|Cigna|Humana|JPMorgan|Wells Fargo|Bank of America|Citibank|Capital One|Delta Air|United Airlines|American Airlines|Walmart|Amazon|Geico|Allstate|State Farm|Kaiser|CVS|Walgreens|Salesforce|Google|Microsoft|Workday|Oracle|SAP|Epic Systems|Cerner|Fidelity|CredR|EdCast|Coursewave|Enelek)\b/;
   for (const p of files) { const t = read(p); if (t.includes("—")) need(false, 8, `em-dash in ${path.relative(ROOT, p)}`); const m = t.replace(/e\.g\.[^)\n"]*\(assumed\)/g, "").replace(MODEL_VENDORS, "").match(realCo); if (m) need(false, 8, `real or employer name "${m[0]}" in ${path.relative(ROOT, p)}: use a synthetic name, or "e.g. ... (assumed)" for a vendor`); }
@@ -428,7 +439,7 @@ function clockStatus(print = true) {
   }
   const start = es[0]?.t, end = es.length && es.every((e) => e.event !== "start" || es.some((x) => x.phase === e.phase && x.event === "end")) ? Math.max(...es.map((e) => e.t)) : Date.now();
   const total = start ? Math.round((end - start) / 1000) : 0;
-  if (print) { console.log(table(["Phase", "Budget", "Used", "Status"], rows.map((r) => [`${r.phase} ${r.name}`, `${r.budget} min`, r.seconds === null ? "" : `${Math.floor(r.seconds / 60)}m ${r.seconds % 60}s`, r.seconds === null ? "not started" : r.running ? (r.over ? "RUNNING, OVER BUDGET: cut scope" : "running") : r.over ? "over" : "ok"]))); console.log(`Total: ${Math.floor(total / 60)}m ${total % 60}s of 28m`); const cur = rows.find((r) => r.running && r.over); if (cur && CUTS[cur.phase]) console.log(`Cut order for phase ${cur.phase}: ${CUTS[cur.phase].join("; ")}. Never cut governance, evals, the holdout or the never list.`); }
+  if (print) { console.log(table(["Phase", "Budget", "Used", "Status"], rows.map((r) => [`${r.phase} ${r.name}`, `${r.budget} min`, r.seconds === null ? "" : `${Math.floor(r.seconds / 60)}m ${r.seconds % 60}s`, r.seconds === null ? "not started" : r.running ? (r.over ? "RUNNING, OVER BUDGET: cut scope" : "running") : r.over ? "over" : "ok"]))); console.log(`Total: ${Math.floor(total / 60)}m ${total % 60}s of 30m`); const cur = rows.find((r) => r.running && r.over); if (cur && CUTS[cur.phase]) console.log(`Cut order for phase ${cur.phase}: ${CUTS[cur.phase].join("; ")}. Never cut governance, evals, the holdout or the never list.`); }
   return { rows, total };
 }
 
@@ -437,9 +448,9 @@ function report(g, ev, c) {
   const { rows, total } = clockStatus(false);
   const cs = cards(); const cuts = clockEntries().filter((e) => e.event === "cut");
   const flagged = read(path.join(PROTO, "audit.jsonl")).split("\n").filter((l) => /Flagged as wrong/.test(l)).length;
-  const r = { case: clean(caseLine()), date: today(), mode: read(path.join(OUT, "mode.txt")).trim() || "orchestrated", totalSeconds: total, budgetSeconds: 28 * 60, withinBudget: total <= 28 * 60, phases: rows.map((x) => ({ phase: `${x.phase} ${x.name}`, budgetMin: x.budget, seconds: x.seconds, over: x.over })), questionsAsked: cs.length, questions: cs.map((x) => ({ gate: x.gate, role: x.role, question: x.question, decision: x.decision, auto: Boolean(x.auto) })), revisions: cs.filter((x) => x.revised).length, flaggedWrong: flagged, evalBlocks: A(g.e?.runs).filter((x) => /RELEASE BLOCKED/.test(x.output || "")).length, evalFixes: A(g.e?.fixes), holdoutIndependent: ev.independent, release: { dev: ev.devPass, holdout: ev.holdPass }, cuts: cuts.map((x) => ({ phase: x.phase, what: x.note })), shape: g.a?.shape, systems: A(c?.connectors).length, assistants: A(g.a?.agents).length, sweeps: A(g.a?.sweeps).length, checks: check(g, ev, c, true).map(([s, m]) => `[${s}] ${m}`) };
+  const r = { case: clean(caseLine()), date: today(), mode: read(path.join(OUT, "mode.txt")).trim() || "orchestrated", totalSeconds: total, budgetSeconds: 30 * 60, withinBudget: total <= 30 * 60, phases: rows.map((x) => ({ phase: `${x.phase} ${x.name}`, budgetMin: x.budget, seconds: x.seconds, over: x.over })), questionsAsked: cs.length, questions: cs.map((x) => ({ gate: x.gate, role: x.role, question: x.question, decision: x.decision, auto: Boolean(x.auto) })), revisions: cs.filter((x) => x.revised).length, flaggedWrong: flagged, evalBlocks: A(g.e?.runs).filter((x) => /RELEASE BLOCKED/.test(x.output || "")).length, evalFixes: A(g.e?.fixes), holdoutIndependent: ev.independent, release: { dev: ev.devPass, holdout: ev.holdPass }, cuts: cuts.map((x) => ({ phase: x.phase, what: x.note })), shape: g.a?.shape, systems: A(c?.connectors).length, assistants: A(g.a?.agents).length, sweeps: A(g.a?.sweeps).length, checks: check(g, ev, c, true).map(([s, m]) => `[${s}] ${m}`) };
   writeJson(path.join(OUT, "run-report.json"), r);
-  console.log(`Run report: out/run-report.json · ${Math.floor(total / 60)}m ${total % 60}s of 28m · ${cs.length} questions · ${r.checks.length} open checks`);
+  console.log(`Run report: out/run-report.json · ${Math.floor(total / 60)}m ${total % 60}s of 30m · ${cs.length} questions · ${r.checks.length} open checks`);
 }
 
 // ---------- seeds ----------
@@ -477,7 +488,11 @@ if (cmd === "clock") {
   const cs = cards(); const round = Number(rest[1]);
   const mine = cs.filter((c) => Number(c.round) === round);
   if (rest[0] === "auto" || rest[0] === "skip") { const skip = rest[0] === "skip"; for (const c of mine) { c.decision = A(c.options)[0]?.label; c.auto = true; if (skip) c.skipped = true; c.by = skip ? "client (skipped, recommended taken)" : c.role; trace({ kind: "decision", id: c.id, gate: c.gate, role: c.role, question: c.question, decision: c.decision, auto: true, skipped: skip }); } writeJson(path.join(OUT, "cards.json"), cs); console.log(skip ? `Round ${round} skipped: ${mine.length} cards took the recommended option so we can move on; the PRD records them as client defaults.` : `Round ${round}: ${mine.length} cards answered with the recommended option (auto).`); }
-  else for (const c of mine) { console.log(`\n**"${c.role}": "${c.question}"** If none fits, answer with: ${c.format}`); A(c.options).forEach((o, i) => console.log(`${i + 1}. ${o.label}${i === 0 ? " (Recommended)" : ""}: ${clean(o.tradeoff)}`)); }
+  else for (const c of mine) { console.log(`\n**"${c.role}": "${c.question}"** If none fits, answer with: ${c.format}`); if (c.why) console.log(`Why we ask: ${clean(c.why)}`); A(c.options).forEach((o, i) => console.log(`${i + 1}. ${o.label}${i === 0 ? " (Recommended)" : ""}: ${clean(o.tradeoff)}`)); }
+} else if (cmd === "research") {
+  const dir = path.join(OUT, "research"); const strands = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => json(path.join(dir, f), {})) : [];
+  const r = mergeResearch(strands, G("r")); writeJson(path.join(GATES, "r.json"), r);
+  console.log(`Research: ${r.facts.length} cited facts, ${r.sources.length} sources (${r.sources.filter((x) => x.tag === "P").length} primary), ${r.terms.length} terms${r.notes.length ? ` · ${r.notes.join("; ")}` : ""}. Now write title, summary and tree into out/gates/r.json, then render.`);
 } else if (cmd === "seed") seed(rest[0]);
 else if (cmd === "seal") seal(rest[0], rest[1]);
 else if (cmd === "model-inputs") {
@@ -495,6 +510,7 @@ else if (cmd === "render" || cmd === "check" || cmd === "report") {
     const golden = json(path.join(PROTO, "golden.json"), []), holdout = json(path.join(PROTO, "holdout.json"), []);
     const counts = { golden: golden.length, holdout: holdout.length, holdoutEsc: holdout.filter((r) => r.expected === "escalate").length };
     for (const gr of A(g.l?.groups)) counts[gr.key] = `${golden.filter((r) => (r.slices || {})[gr.key]).length} / ${holdout.filter((r) => (r.slices || {})[gr.key]).length}`;
+    if (g.r) write(path.join(PROTO, "discovery.html"), renderDiscovery(g.r, cards(), g.v?.client || g.r.client));
     if (g.v) write(path.join(OUT, "1-value.md"), gateV({ ...g.v, gate: "V" }));
     if (g.a) write(path.join(OUT, "2-ai-fit.md"), gateA(g.a));
     if (g.l) write(path.join(OUT, "3-labels.md"), gateL(g.l, counts));
