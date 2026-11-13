@@ -261,11 +261,16 @@ function evalResults() {
 }
 // Group-specific eval rows ("Fairness worst lang=en") share a base name; dev and holdout can name different groups.
 const gateBase = (k) => String(k).replace(/\s+\S+=\S+$/, "");
-// The holdout row for a dev row: same key, else the same base with the holdout's own worst group shown beside the value.
-function holdoutCell(holdGates, k) {
-  if (holdGates[k]) return holdGates[k].value;
+// The holdout row for a dev row: same key, else the same base, carrying the holdout's own worst group. Every
+// table that shows a holdout value or a pass/blocked pill reads it from here, so the two cannot disagree.
+function holdoutRow(holdGates, k) {
+  if (holdGates[k]) return { ...holdGates[k], group: "" };
   const hit = Object.entries(holdGates).find(([h]) => gateBase(h) === gateBase(k) && h !== gateBase(h));
-  return hit ? `${hit[1].value} (${hit[0].slice(gateBase(hit[0]).length).trim()})` : "";
+  return hit ? { ...hit[1], group: hit[0].slice(gateBase(hit[0]).length).trim() } : null;
+}
+function holdoutCell(holdGates, k) {
+  const h = holdoutRow(holdGates, k);
+  return h ? `${h.value}${h.group ? ` (${h.group})` : ""}` : "";
 }
 // The gate-table row that explains an eval row: exact metric first, then a metric that contains the key (or the
 // reverse), then the longest shared prefix of at least 10 characters. A fixed-length prefix alone matched
@@ -421,7 +426,7 @@ function renderBrief(g, ev, c) {
   const esc = (s) => String(s ?? "").replace(/[&<>]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]));
   const li = (xs) => A(xs).slice(0, 3).map((x) => `<li>${esc(clean(x))}</li>`).join("");
   const cs = cards();
-  const gateRows = Object.entries(ev.devGates).map(([k, r]) => `<tr><td>${esc(k)}</td><td>${esc(r.bar)}</td><td>${esc(r.value)}</td><td>${esc((ev.holdGates[k] || {}).value || "")}</td><td>${(() => { const h = ev.holdGates[k]; const ok = r.result === "PASS" && (!h || h.result === "PASS"); return `<span class="pill ${ok ? "ok" : "bad"}">${ok ? "Passed" : h && h.result !== "PASS" ? "Blocked on holdout" : "Blocked"}</span>`; })()}</td></tr>`).join("");
+  const gateRows = Object.entries(ev.devGates).map(([k, r]) => `<tr><td>${esc(k)}</td><td>${esc(r.bar)}</td><td>${esc(r.value)}</td><td>${esc(holdoutCell(ev.holdGates, k))}</td><td>${(() => { const h = holdoutRow(ev.holdGates, k); const ok = r.result === "PASS" && (!h || h.result === "PASS"); return `<span class="pill ${ok ? "ok" : "bad"}">${ok ? "Passed" : h && h.result !== "PASS" ? "Blocked on holdout" : "Blocked"}</span>`; })()}</td></tr>`).join("");
   const govRows = A(c.governance).filter((r) => !/^answered/i.test(r.status)).slice(0, 8).map((r) => `<tr><td>${esc(r.gate)}</td><td>${esc(r.question)}</td><td>${esc(r.status)}</td><td>${esc(r.owner)}</td></tr>`).join("") || `<tr><td colspan="4">No open governance items.</td></tr>`;
   const stats = A(g.b.stats).length === 3 ? g.b.stats : [{ value: String(ev.goldenN + ev.holdoutN), label: "labelled test rows" }, { value: (ev.devGates["Escalation recall"] || {}).value || "", label: "escalation recall, dev" }, { value: (ev.holdGates["Escalation recall"] || {}).value || "", label: "escalation recall, sealed holdout" }];
   const map = { CLIENT: g.v?.client, ONE_LINE_PROBLEM: g.b.summary?.problem, RECOMMENDATION_ONE_SENTENCE: g.b.recommendation, AGENT_SENTENCE_WITH_FIGURES: g.b.agentSentence, STAT_1_VALUE: stats[0].value, STAT_1_LABEL: stats[0].label, STAT_2_VALUE: stats[1].value, STAT_2_LABEL: stats[1].label, STAT_3_VALUE: stats[2].value, STAT_3_LABEL: stats[2].label, V_BULLETS_3_LI: li(g.v?.sayIt), A_BULLETS_3_LI: li(g.a?.sayIt), L_BULLETS_3_LI: li(g.l?.sayIt), U_BULLETS_3_LI: li(g.u?.sayIt), E_BULLETS_3_LI: li(g.e?.sayIt), D_BULLETS_3_LI: li(g.d?.sayIt), GATE_ROWS_TR: gateRows, EVAL_CAPTION_ROWS_AND_WHAT_CHANGED: `${ev.goldenN} dev rows, ${ev.holdoutN} sealed. ${esc(clean(g.b.evalCaption || (ev.devPass ? "Passes every gate." : "Blocked; see section 11.")))}`, CLIENT_DECISIONS_LI: cs.filter((x) => x.decision).slice(0, 12).map((x) => `<li><strong>${esc(x.by || x.role)}</strong> chose ${esc(x.decision)}<span class="cap"> (we recommended ${esc(A(x.options)[0]?.label || "")})</span></li>`).join(""), PLAN_ROWS_TR: A(g.d?.plan).map((r) => `<tr><td>${esc(r.week)}</td><td>${esc(r.work)}</td></tr>`).join(""), TIMELINE: g.d?.timeline || "", RISKS_LI: li(A(g.b.risks).map((r) => `${r.risk}: ${r.mitigation}`)), GOVERNANCE_ROWS_TR: govRows };

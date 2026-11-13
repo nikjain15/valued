@@ -639,22 +639,22 @@ addressed by <change>, rejected: <reason>).
 ### S-117
 - Gate: conductor (renderer). Source: review (REV-05) and QC phase 5.
 - Evidence: PRD section 11 matches eval rows to `e.gateTable` on the first 10 characters of the metric, so "Escalation precision" takes the "Escalation recall" row's why-text and calls an assumed 0.80 bar "the client's bar (R2-4)".
-- Status: addressed on branch claude/fix-renderer-bugs (2026-11-13, conductor.js: gateWhy, holdoutCell, repair-count sentence, assumptionText); not merged
+- Status: addressed on main by PR #29 (gateWhy: exact metric, then contains, then longest shared prefix)
 
 ### S-118
 - Gate: conductor (renderer). Source: review (REV-01) and QC phase 6.
 - Evidence: section 11 always prints "passed after one disclosed repair" plus `e.fixes[0]` when `e.repaired`, though this run had two repair rounds; contradicts the PRD's own summary.
-- Status: addressed on branch claude/fix-renderer-bugs (2026-11-13, conductor.js: gateWhy, holdoutCell, repair-count sentence, assumptionText); not merged
+- Status: addressed on main by PR #25 (repair count from e.fixes)
 
 ### S-119
 - Gate: conductor (renderer). Source: review (REV-04).
 - Evidence: section 11 fairness row shows the dev worst group (lang=en) with a blank holdout cell when the holdout fails a different group (register=implied 0.67), hiding the failure.
-- Status: addressed on branch claude/fix-renderer-bugs (2026-11-13, conductor.js: gateWhy, holdoutCell, repair-count sentence, assumptionText); not merged
+- Status: addressed: section 11 cell on main by PR #29 (holdoutCell); brief gate table value and pass pill by PR #28 (holdoutRow)
 
 ### S-120
 - Gate: conductor (renderer). Source: gate V, gate B, review (REV-06).
 - Evidence: `renderState` prints r.json assumptions (objects with text, card, confirmedIf, as SKILL.md specifies) as "[object Object]" under Assumptions in state.md.
-- Status: addressed on branch claude/fix-renderer-bugs (2026-11-13, conductor.js: gateWhy, holdoutCell, repair-count sentence, assumptionText); not merged
+- Status: addressed on main by PR #24 (assumptions rendered as text)
 
 ### S-121
 - Gate: E. Source: QC phase 5 and review (REV-01, REV-02).
