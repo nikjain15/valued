@@ -6,7 +6,14 @@ description: Run a client AI case end to end through the six VALUED gates (Value
 # /valued: the conductor
 
 The argument is a one-line case, for example `/valued regional bank, 2M customers, contact centre cost
-pressure, 30 GenAI ideas, COO wants a plan in six weeks`. Flags:
+pressure, 30 GenAI ideas, COO wants a plan in six weeks`.
+
+**With no argument (plain `/valued`), never ask an open question** such as "tell me about the client". Do phase 0
+step 0 (start fresh), then go straight to the opening cards (Context, then Key outcome, then Timeline), one card at a
+time with the AskUserQuestion tool, each with "Other" for the client's own words, and build the case line from the
+answers. The first thing the product lead sees is the Context card.
+
+Flags:
 - `--teach`: stop reading here and follow `teach.md` in this folder (one gate at a time, cards at every gate).
 - `--auto`: take the recommended option on every card (`conductor.js cards auto <round>`), logged "(auto)".
 - `--no-open`: never run `open`; print paths instead.
