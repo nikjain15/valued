@@ -133,8 +133,17 @@ After each phase, write or update that stage's card in `out/gates/approach.json`
 | 3 (Round 2) | `align` | who might own it, who signs off, what it should never do |
 | 5 (E and D) | `prove` and `launch` | how we would know it works before launch; a pilot, what we watch, when we pause |
 
-Schema: `{ "current": "<stage>", "stages": [{ "stage", "headline", "heard", "option", "reasons": [3], "tradeoff",
-"checkIn" }] }`. Set `current` to the stage just written. **How it sounds:** a senior consultant thinking out
+Schema: `{ "current": "<stage>", "stages": [{ "stage", "headline", "heard", "breaks", "evidence": [{ "text", "fact" }],
+"rule", "option", "reasons": [3], "tradeoff", "checkIn" }] }`. Write the `discover` card right after framing, from
+the case and the first answers, and update it after each Round 1 screen: `heard` (their words and numbers),
+`breaks` (where today's process breaks, from their answer or the research's process steps), `evidence` (one or
+two research facts as they land, `fact` = the fact key; the page cites the source), and the page adds the three
+lead assumptions from `r.json` with their live status. Use `rule` on the `align` card for the one regulation
+that shapes the design most. Every field is optional; leave out what you do not have yet.
+
+**Tweaks during the session.** When the client (or interviewer) asks to change anything, at any point, run
+`valued-revise` with their words: it changes the answer and the owning gate at the source, updates the approach
+card, re-renders every view and checks they agree. Never patch one view by hand. Set `current` to the stage just written. **How it sounds:** a senior consultant thinking out
 loud with the client, never telling them.
 - **Soft, never assertive.** Offer options and early thinking: "One option might be ...", "Our early read is ...",
   "It may make sense to ...", "We'd suggest exploring ...". Never "we will", "you must", "clearly", "the right answer".
@@ -202,9 +211,9 @@ better supported, the value frame better anchored. Nothing waits for it.
    P=${PORT:-4317}; lsof -ti :$P | xargs kill 2>/dev/null; PORT=$P node out/proto/server.js   # in the background
    ```
    Open all four views in the browser, in this order so the discovery brief ends up in front (skip under
-   `--no-open`): `open http://localhost:4317/approach ; open http://localhost:4317/ ; open http://localhost:4317/prd ; open http://localhost:4317/discovery`.
-   All four fill in live as the session goes. Print:
-   `VALUED · we draft, you decide · discovery: localhost:4317/discovery · our approach: localhost:4317/approach · PRD: localhost:4317/prd · prototype: localhost:4317`.
+   `--no-open`): `open http://localhost:4317/research ; open http://localhost:4317/ ; open http://localhost:4317/prd ; open http://localhost:4317/approach`
+   (the approach page last, so it is in front). All four fill in live as the session goes. Print:
+   `VALUED · we draft, you decide · our approach: localhost:4317/approach · research, live: localhost:4317/research · PRD: localhost:4317/prd · prototype: localhost:4317`.
 3. Pick the industry key now: `out/tools/c seed <industry>` (a key of `.claude/skills/valued-labels/connectors-library.json`,
    or the closest) prints the systems, golden-set seeds and sweep templates every later gate starts from.
 4. **Research, in the background.** Launch three `discovery-researcher` sub-agents **in one message, with
