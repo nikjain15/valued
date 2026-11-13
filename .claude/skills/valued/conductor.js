@@ -154,6 +154,7 @@ function whyArch(a) {
 }
 
 const G = (k) => json(path.join(GATES, `${k}.json`), null);
+const qcAll = () => { const d = path.join(OUT, "qc"); return fs.existsSync(d) ? fs.readdirSync(d).filter((f) => /^\d\.json$/.test(f)).sort().map((f) => json(path.join(d, f), {})) : []; };
 const gates = () => ({ r: G("r"), v: G("v"), a: G("a"), l: G("l"), u: G("u"), e: G("e"), d: G("d"), b: G("b") });
 const cards = () => json(path.join(OUT, "cards.json"), []);
 // The client's chosen product name (framing card) is the title shown everywhere, over the generic use-case label.
@@ -495,6 +496,22 @@ if (cmd === "clock") {
   const mine = cs.filter((c) => Number(c.round) === round);
   if (rest[0] === "auto" || rest[0] === "skip") { const skip = rest[0] === "skip"; for (const c of mine) { c.decision = A(c.options)[0]?.label; c.auto = true; if (skip) c.skipped = true; c.by = skip ? "client (skipped, recommended taken)" : c.role; trace({ kind: "decision", id: c.id, gate: c.gate, role: c.role, question: c.question, decision: c.decision, auto: true, skipped: skip }); } writeJson(path.join(OUT, "cards.json"), cs); console.log(skip ? `Round ${round} skipped: ${mine.length} cards took the recommended option so we can move on; the PRD records them as client defaults.` : `Round ${round}: ${mine.length} cards answered with the recommended option (auto).`); }
   else for (const c of mine) { console.log(`\n**"${c.role}": "${c.question}"** If none fits, answer with: ${c.format}`); if (c.why) console.log(`Why we ask: ${clean(c.why)}`); A(c.options).forEach((o, i) => console.log(`${i + 1}. ${o.label}${i === 0 ? " (Recommended)" : ""}: ${clean(o.tradeoff)}`)); }
+} else if (cmd === "verify") {
+  // Fast, deterministic QC after a phase: only what that phase and the ones before it own. The gate-qc agent
+  // does the judgement checks in the background; this catches the mechanical ones in a second.
+  const ph = Number(rest[0]); const owns = { 0: ["R"], 1: ["R"], 2: ["R", "V", "A"], 3: ["R", "V", "A"], 4: ["R", "V", "A", "L", "U"], 5: ["R", "V", "A", "L", "U", "E", "D"], 6: ["R", "V", "A", "L", "U", "E", "D", "B"] }[ph] || [];
+  const g = gates(); const ev = evalResults(); const issues = [];
+  for (const [, m] of check(g, ev, json(path.join(PROTO, "case.json"), {}), true)) { const gm = m.match(/^gate ([A-Z])/); if (gm ? owns.includes(gm[1]) : (/research|round 1|repeated/.test(m) ? ph >= 1 : /round 2/.test(m) ? ph >= 3 : ph >= 6)) issues.push(m); }
+  const prd = read(path.join(OUT, "prd.md"));
+  for (const gt of owns) { const n = (prd.match(new RegExp(`Pending: fills at gate ${gt}\\b`, "g")) || []).length; if (n) issues.push(`PRD: ${n} section(s) still pending for gate ${gt}`); }
+  for (const f of [path.join(OUT, "prd.md"), ...fs.readdirSync(GATES).map((x) => path.join(GATES, x))]) if (/—/.test(read(f))) issues.push(`em-dash in ${path.relative(OUT, f)}`);
+  for (const row of A(g.v?.valueFrame)) if (/\d/.test(`${row.volumePerMonth}${row.costPerItem}`) && !/assumed|client|R1-|C-\d|\b[PRA]\d\b/i.test(JSON.stringify(row))) issues.push(`value frame row "${clean(row.item)}" has a number with no source: mark it (assumed), the client's answer, or a fact key`);
+  const port = process.env.PORT || 4317;
+  for (const u of ["/discovery", "/prd", "/"]) { const r = spawnSync("curl", ["-s", "-o", "/dev/null", "-w", "%{http_code}", "--max-time", "3", `http://localhost:${port}${u}`], { encoding: "utf8" }); if (r.stdout !== "200") issues.push(`localhost:${port}${u} not serving (HTTP ${r.stdout || "none"}): restart the server`); }
+  const prev = json(path.join(OUT, "qc", `${ph}.json`), {});
+  writeJson(path.join(OUT, "qc", `${ph}.json`), { ...prev, phase: ph, auto: issues, autoAt: today() });
+  console.log(issues.length ? `QC after phase ${ph}: ${issues.length} to fix before moving on:\n${issues.map((x) => `  - ${x}`).join("\n")}` : `QC after phase ${ph}: mechanical checks clean.`);
+  write(path.join(PROTO, "discovery.html"), renderDiscovery(G("r") || {}, cards(), G("v")?.client, qcAll()));
 } else if (cmd === "research") {
   // Non-blocking: merge whatever strands have landed so far, narrate only what is new, refresh the live page.
   const dir = path.join(OUT, "research"); const strands = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => json(path.join(dir, f), {})) : [];
@@ -507,7 +524,7 @@ if (cmd === "clock") {
   if (fs.existsSync(dir)) writeJson(seenFile, [...seen]);
   const open = ["process", "regulation", "ai"].filter((k) => !A(r.strands).includes(k));
   console.log(fresh.length ? `Research: ${r.facts.length} facts from ${r.sources.length} sources so far${open.length ? `; still reading: ${open.join(", ")}` : "; all three strands in"}.` : open.length ? `Research still reading: ${open.join(", ")}. Carry on; it joins when it lands.` : "Research complete.");
-  write(path.join(PROTO, "discovery.html"), renderDiscovery(r, cards(), G("v")?.client || r.client));
+  write(path.join(PROTO, "discovery.html"), renderDiscovery(r, cards(), G("v")?.client || r.client, qcAll()));
 } else if (cmd === "seed") seed(rest[0]);
 else if (cmd === "seal") seal(rest[0], rest[1]);
 else if (cmd === "model-inputs") {
@@ -525,7 +542,7 @@ else if (cmd === "render" || cmd === "check" || cmd === "report") {
     const golden = json(path.join(PROTO, "golden.json"), []), holdout = json(path.join(PROTO, "holdout.json"), []);
     const counts = { golden: golden.length, holdout: holdout.length, holdoutEsc: holdout.filter((r) => r.expected === "escalate").length };
     for (const gr of A(g.l?.groups)) counts[gr.key] = `${golden.filter((r) => (r.slices || {})[gr.key]).length} / ${holdout.filter((r) => (r.slices || {})[gr.key]).length}`;
-    if (g.r) write(path.join(PROTO, "discovery.html"), renderDiscovery(g.r, cards(), g.v?.client || g.r.client));
+    if (g.r) write(path.join(PROTO, "discovery.html"), renderDiscovery(g.r, cards(), g.v?.client || g.r.client, qcAll()));
     // Live-build evidence: keep the PRD and the prototype's case.json as they were after each render.
     process.on("exit", () => { try { const d = path.join(OUT, "snapshots"); fs.mkdirSync(d, { recursive: true }); const n = String(fs.readdirSync(d).filter((f) => f.endsWith(".prd.md")).length + 1).padStart(3, "0"); const answered = cards().filter((x) => x.decision).length; fs.copyFileSync(path.join(OUT, "prd.md"), path.join(d, `${n}-${answered}answers.prd.md`)); if (fs.existsSync(path.join(PROTO, "case.json"))) fs.copyFileSync(path.join(PROTO, "case.json"), path.join(d, `${n}-${answered}answers.case.json`)); } catch {} });
     if (g.v) write(path.join(OUT, "1-value.md"), gateV({ ...g.v, gate: "V" }));

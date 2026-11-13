@@ -110,6 +110,21 @@ The harness shows each sub-agent's `· took Xs` when it returns, and `out/tools/
 the phase's real elapsed ("[4] L and U · done in 4m 10s"); for E, also emit the `step` sub-updates above. So
 the run always shows what is happening and how long it took, in one line each, without filling the context.
 
+## Quality check after every phase (built in, never skipped)
+
+Every phase ends the same way, right after its `out/tools/c clock <n> end`:
+1. **`out/tools/c verify <n>`** (one second, mechanical): open checks this phase owns, sections still pending,
+   numbers with no source, em-dashes, and whether `/discovery`, `/prd` and `/` are serving. Fix every line it
+   prints now, in the owning gate JSON, then `out/tools/c render` and `verify` again. Never hand-edit a rendered file.
+2. **Launch `gate-qc` in the background** for that phase (`run_in_background: true`; workspace and phase number).
+   It checks the judgement calls: every client answer honoured, every number traced to an answer, a cited
+   fact or (assumed), no contradictions, PRD sections that read like a senior PM wrote them, questions that
+   do not repeat or overlap. Do not wait for it.
+3. **At the start of the next phase, read `out/qc/<n-1>.json`.** Fix each blocker and major in the owning gate
+   JSON, render, and mark it `"fixed": true` in that file. Say one line to the client, in their language:
+   `Checked the value and AI-fit work: two figures now carry their source.` or `Checked: nothing to fix.`
+The discovery page shows a "Checked" badge per phase, so the client sees the quality loop working.
+
 ## Phase 0: Frame (3 min)
 
 **Research never blocks the run.** It starts in the first minute, runs in the background through Round 1
@@ -145,8 +160,10 @@ better supported, the value frame better anchored. Nothing waits for it.
    node $B/prd-skeleton.js "<the case line>" out/prd.md
    P=${PORT:-4317}; lsof -ti :$P | xargs kill 2>/dev/null; PORT=$P node out/proto/server.js   # in the background
    ```
-   `open http://localhost:4317/discovery` (skip under `--no-open`). Print:
-   `VALUED · we draft, you decide · discovery brief: localhost:4317/discovery · live PRD: localhost:4317/prd`.
+   Open all three views in the browser, in this order so the discovery brief ends up in front (skip under
+   `--no-open`): `open http://localhost:4317/ ; open http://localhost:4317/prd ; open http://localhost:4317/discovery`.
+   All three fill in live as the session goes. Print:
+   `VALUED · we draft, you decide · discovery: localhost:4317/discovery · PRD: localhost:4317/prd · prototype: localhost:4317`.
 3. Pick the industry key now: `out/tools/c seed <industry>` (a key of `.claude/skills/valued-labels/connectors-library.json`,
    or the closest) prints the systems, golden-set seeds and sweep templates every later gate starts from.
 4. **Research, in the background.** Launch three `discovery-researcher` sub-agents **in one message, with
