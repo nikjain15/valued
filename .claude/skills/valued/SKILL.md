@@ -270,6 +270,13 @@ part of the conversation ("While we were talking, we confirmed ..."), then fold 
 keys to the hypotheses and assumptions they support in `r.json`, and sharpen the next questions with them.
 Facts and sources stay exactly as the researchers wrote them: never add, round or combine a figure yourself.
 
+**Research follows the conversation.** When an answer opens an angle the three standing strands do not
+cover (a storm surge, a regulator letter, a second channel, a system nobody mentioned), launch one
+`discovery-researcher` in the background with strand `followup-<n>`, a short `topic`, the answer that prompted it
+as `because`, and one focused question. At most three per session, same reputable-sources rule, never waited on.
+Say one line to the client ("I've asked our research to check storm-week volumes; I'll bring it in when it lands"),
+and fold its findings into the next question or the approach card when `out/tools/c research` shows them.
+
 **Launch gates while you ask (background, never waited on here).** The moment C-1, C-2, C-3 and R1-1 are
 answered, launch `valued-value`. Once `v.json` exists and R1-2, R1-3 and C-4 are answered, launch
 `valued-ai-fit`. Once R1-4 and R1-5 are answered **and `a.json` exists**, launch `valued-user-loop`: it builds its triggers and never list on A's assistants, so launching it earlier means re-running it. Each runs as a sub-agent with
