@@ -1339,7 +1339,7 @@ function addTool(name, category) {
 }
 function renderConnectors() {
   const list = CASE.connectors || [];
-  $("#connIntro").textContent = list.length ? `The systems this product reads from and hands off to at ${CASE.client || "the client"}, recommended during design. Connections here are simulated on synthetic data; nothing leaves this page.` : "Systems are recommended at gate L of the working session. Until then, bring your own files below.";
+  $("#connIntro").textContent = list.length ? `The systems this product reads from and hands off to at ${CASE.client || "the client"}, recommended during design. Connections here are simulated on synthetic data; nothing leaves this page.` : "Systems are recommended once we agree what data this needs. Until then, bring your own files below.";
   const on = list.filter((c) => c.status === "connected").length;
   $("#connTiles").innerHTML = [["ok", on, "Connected (simulated)"], ["warn", list.filter((c) => c.status !== "connected").length, "Planned"], ["", list.filter((c) => c.access !== "read-write").length, "Read-only"], ["", list.filter((c) => c.pii === "masked").length, "Personal data masked"]].map(([k, n, l]) => `<div class="tile ${k}"><b>${n}</b><span>${l}</span></div>`).join("");
   $("#cntConn").textContent = list.length ? `${on}/${list.length}` : "";
