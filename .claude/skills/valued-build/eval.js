@@ -25,6 +25,12 @@ const withBackstop = (r, raw) => {
   } };
 };
 const cache = (() => { try { return load("model-cache.json"); } catch { return {}; } })();
+// R-002: the guard model's answers for the holdout texts are frozen at the first sealed run, so a later
+// guard-model rerun (for new dev rows) cannot change the sealed score or the router fingerprint.
+const FROZEN = path.join(__dirname, "holdout-runs", "frozen-cache.json");
+if (sealed) { const keys = new Set(rows.map((r) => normKey(r.text))); let frozen = null; try { frozen = JSON.parse(fs.readFileSync(FROZEN, "utf8")); } catch {}
+  if (!frozen) { frozen = Object.fromEntries(Object.entries(cache).filter(([k]) => keys.has(normKey(k))).map(([k, v]) => [normKey(k), v])); fs.mkdirSync(path.dirname(FROZEN), { recursive: true }); fs.writeFileSync(FROZEN, JSON.stringify(frozen, null, 1)); }
+  for (const k of Object.keys(cache)) if (keys.has(normKey(k))) delete cache[k]; Object.assign(cache, frozen); }
 const { decide } = withBackstop(router, cache);
 
 // ---------- the sealed holdout is scored once per router version ----------
@@ -32,11 +38,14 @@ const { decide } = withBackstop(router, cache);
 // router fingerprint is the real one: its output is stored and every later run replays it verbatim.
 // A new fingerprint means the router changed, so it is a new attempt, numbered and declared.
 const RUNS = path.join(__dirname, "holdout-runs");
-// R-002/R-003: the fingerprint covers the router's code, not its layout (comments, blank lines and
-// trailing spaces are stripped), plus only the model-cache entries for the holdout texts, so new dev rows
+// R-002/R-003: the fingerprint covers the router's tokens, not its layout (comments, all whitespace and
+// trailing commas are stripped, so a reflow or repack is the same router), plus only the model-cache entries for the holdout texts, so new dev rows
 // that refresh other cache entries do not count as a new router version.
-const stripSource = (src) => src.replace(/^\s*\/\*[\s\S]*?\*\/\s*$/gm, "").split("\n").filter((l) => !/^\s*\/\//.test(l)).map((l) => l.replace(/\s+\/\/[^"'`/]*$/, "").replace(/\s+$/, "")).filter(Boolean).join("\n");
+const stripSource = (src) => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`\\])\/\/[^\n]*/g, "$1").replace(/\s+/g, "").replace(/,([\]}\)])/g, "$1");
 const fingerprint = () => { const ck = Object.fromEntries(Object.entries(cache || {}).map(([k, v]) => [normKey(k), v])); const slice = [...new Set(rows.map((r) => normKey(r.text)))].sort().filter((k) => ck[k] !== undefined).map((k) => [k, ck[k]]); const src = stripSource(fs.readFileSync(path.join(__dirname, "router.js"), "utf8")) + JSON.stringify(slice); let h = 0; for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0; return (h >>> 0).toString(16); };
+// N-02: the size limit is enforced before the sealed holdout is scored, so compaction never follows the seal.
+if (sealed) { const n = fs.readFileSync(path.join(__dirname, "router.js"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "").split("\n").filter((l) => !/^\s*\/\//.test(l)).join("").replace(/\s/g, "").length;
+  if (n > 10000) { console.log(`HOLDOUT NOT SCORED: router.js is ${n} non-whitespace characters (limit 10000). Move wording into sources.json match lists, rerun the dev eval, then score the holdout.`); process.exit(1); } }
 const fp = sealed ? fingerprint() : null;
 const attemptsBefore = () => { try { return fs.readdirSync(RUNS).filter((f) => f.endsWith(".txt")).length; } catch { return 0; } };
 if (sealed) {

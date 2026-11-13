@@ -83,3 +83,6 @@ it after your fix with `node out/proto/eval.js holdout.json`. Fix the general pa
 failure (the kind of phrasing), not the exact sentence, because the holdout will test the kind.
 
 No em-dashes in code comments or output. Synthetic data only.
+
+
+**Before the seal (N-02):** get `router.js` under the size limit (10000 non-whitespace characters outside comments) and pass the dev eval before `conductor.js seal router` or any holdout run; `eval.js` refuses to score the holdout above the limit. Never reformat or compact the router after the holdout is scored.
