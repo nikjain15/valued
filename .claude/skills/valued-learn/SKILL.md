@@ -49,5 +49,5 @@ free number (`S-NNN`), never editing earlier signals:
    "Status updates" in `signals.md`, add `S-NNN: addressed by P-NNN` (or `rejected in P-NNN: <reason>`).
 6. **Regression gate.** Before any push: `node learning/regression/run.js --static` on the existing
    audit copies, and for skill changes a fresh run of the affected scenarios (see `learning/regression/README.md`).
-   The suite must stay all pass and every run within 30 minutes. Report the table; never push on red.
+   The suite must stay all pass and every run within 20 minutes. Report the table; never push on red.
 7. **Commit** locally with a message listing the proposals and signals. Ask before pushing.

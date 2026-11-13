@@ -1,6 +1,6 @@
 ---
 name: valued
-description: Run a client AI case end to end through the six VALUED gates (Value, AI-fit, Labels, User-in-the-loop, Evals, Deploy and drive) plus Build, governed at every gate, in about 30 minutes. A conductor runs the gates in phases on a clock, asks the client's cards in two rounds, runs independent gates in parallel, and renders the PRD, prototype and brief from each gate's JSON. Use when the user types /valued, with or without a case. Add --teach for the slow, narrated pace.
+description: Run a client AI case end to end through the six VALUED gates (Value, AI-fit, Labels, User-in-the-loop, Evals, Deploy and drive) plus Build, governed at every gate, in about 18 minutes to a full PRD and prototype, then improves it in the background. A conductor runs the gates in phases on a clock, asks the client's cards in two rounds, runs independent gates in parallel, and renders the PRD, prototype and brief from each gate's JSON. Use when the user types /valued, with or without a case. Add --teach for the slow, narrated pace.
 ---
 
 # /valued: the conductor
@@ -73,21 +73,30 @@ watch); ask it with `multiSelect: true` and store the chosen labels joined with 
 recommendation. Roles are this case's people (head of card operations, chief nursing officer, controller),
 never a generic "COO" unless the case says COO. 2 to 4 options per card.
 
-## The run plan (30 minutes)
+## The run plan (about 18 minutes to a full PRD and prototype, then improved in the background)
 
-| Phase | Work | Budget | Who |
+The client's answering time hides the compute: each gate launches in the background the moment the answers it
+needs exist, while you keep talking. Present the PRD and prototype as soon as Build finishes; the deep checks
+keep running and land through the same revise path.
+
+| Phase | Work | Budget | Who, and what launches in the background |
 |---|---|---|---|
-| 0 Frame | workspace, server, live discovery page and PRD; framing (who and what hurts, product name); 3 researchers launched in the background (never waited on); first hypothesis tree and assumptions | 3 min | you, `discovery-researcher` × 3 in the background |
-| 1 Round 1 | discovery: 10 hypothesis-led cards in three screens, research findings read out between screens as they land | 4 min | client |
-| 2 V then A | value frame; then assistants, shape, sweeps, three scorers in parallel | 5 min | `valued-value`, `valued-ai-fit` |
-| 3 Round 2 | 6 cards: first wave, riskiest group, what to connect, release bar, pilot scope, stop rule | 2 min | client |
-| 4 L and U in parallel | golden set, holdout, systems; autonomy table, never list, clocks | 5 min | `valued-labels` and `valued-user-loop` |
-| 5 E and D in parallel | builder writes the router, evals run; rollout and drive | 8 min | `valued-evals` and `valued-deploy` |
-| 6 B | PRD and prototype rendered from gate data; hosted page; run report | 3 min | `valued-build` |
+| 0 Frame | workspace, server, the four pages; framing (who and what hurts, product name); first tree and assumptions; Discover card | 2 min | you; `discovery-researcher` × 3 |
+| 1 Round 1 | 10 hypothesis-led cards in three screens; research read out between screens | 4 min | client; **V after screen 1** (needs R1-1, C-1, C-2, C-3), **A after screen 2** once V is back (needs R1-2, R1-3, C-4), **U after screen 3** (needs R1-4, R1-5) |
+| 2 V then A | collect V and A, render, write the Frame and Shape cards | 1 min | usually already done |
+| 3 Round 2 | 6 cards | 2 min | client; **L starts its golden set from A** while you ask; **D launches** once R2-5 and R2-6 are answered |
+| 4 L and U | L applies the round-2 groups, seals the holdout; U finishes | 3 min | `holdout-sealer` once `u.json` exists |
+| 5 E and D | router, evals, at most **one** repair live; D finishes | 4 min | `prototype-builder`, `guard-model` |
+| 6 Build | three writers in parallel, then merge and render; present | 2 min | three `valued-build` writers |
+| 7 Improve | reviewer, audit, `gate-qc` sweep, a second repair if needed; fixes land via `valued-revise` | background | after you present; never blocks |
+
+**Background launches are non-blocking.** Launch with `run_in_background: true`, keep asking, and collect at the
+phase that needs the result. If a gate is not back when its phase starts, give the client the one-line status
+("Pricing the problem from your answers, about a minute") and continue with what does not depend on it.
 
 Cards in total: 16 in the two rounds, plus framing (1 to 3)
 and E's "Ship anyway, or fix first?" only when a release is blocked: 17 to 20. Start and end every phase with `out/tools/c clock <phase> start|end`; the start prints
-the header line (`[2] V then A · budget 5 min`). Between phases print nothing else.
+the header line (`[2] V then A · budget 1 min`). Between phases print nothing else.
 
 **Graceful overrun.** Before each phase starts and whenever a phase feels long, run `out/tools/c clock status`. If the
 running phase is past its budget, cut the next item in its cut order (`out/tools/c clock status` prints it), record it
@@ -175,7 +184,7 @@ the PRD, the prototype and the pages. All four views render from the same gate J
 always goes into that source, never into one view.
 The discovery page shows a "Checked" badge per phase, so the client sees the quality loop working.
 
-## Phase 0: Frame (3 min)
+## Phase 0: Frame (2 min)
 
 **Research never blocks the run.** It starts in the first minute, runs in the background through Round 1
 and gate V, and joins wherever it lands: a finding that arrives makes the next question sharper, the tree
@@ -242,6 +251,12 @@ since the last call, already in client language (`Just confirmed · 30 days · .
 part of the conversation ("While we were talking, we confirmed ..."), then fold them in: attach the new fact
 keys to the hypotheses and assumptions they support in `r.json`, and sharpen the next screen's cards with them.
 Facts and sources stay exactly as the researchers wrote them: never add, round or combine a figure yourself.
+
+**Launch gates while you ask (background, never waited on here).** After screen one is answered, launch
+`valued-value`. After screen two, launch `valued-ai-fit` once `v.json` exists (if V is still running, launch A
+the moment it lands). After screen three, launch `valued-user-loop`. Each runs as a sub-agent with
+`run_in_background: true`, reads the answered cards, writes its own JSON and does not render; render after each
+screen as usual and once more when each gate lands.
 
 **How a consultant asks.** These are the rules that make every round (framing, Round 1, Round 2 and E's card)
 sound like a strong partner from a top firm, not a form:
@@ -316,7 +331,7 @@ approval; the existing escalation path. Then `out/tools/c render` so the PRD and
 answers at once, before any gate has run: the client sees the outcome, the constraint and the autonomy choice
 land in the document the moment they decide them. `out/tools/c clock 1 end`.
 
-## Phase 2: V then A (5 min)
+## Phase 2: V then A (1 min, launched during Round 1)
 
 `out/tools/c clock 2 start`. Run `valued-value` (it reads round 1, never asks), then `valued-ai-fit` (three
 `use-case-scorer` subagents in parallel, then the merge, shape, assistants and sweeps). Each writes its JSON
@@ -324,7 +339,9 @@ and runs `out/tools/c render`. `out/tools/c clock 2 end`.
 
 ## Phase 3: Round 2 (2 min)
 
-`out/tools/c clock 3 start`. Draft six cards from the rendered gate files (V's priced problem, A's waves and
+`out/tools/c clock 3 start`. Draft six cards from the rendered gate files (V's priced problem, A's waves and While you ask this round, launch `valued-labels` in the background as soon as `a.json` exists (it drafts the
+golden set from A and applies the round-2 groups when they land), and launch `valued-deploy` the moment R2-5 and
+R2-6 are answered.
 Round 2 follows the same consultant rules as Round 1: build on what they already said and never re-ask it (R2-3
 asks what to connect *first* from the systems they named in C-4; it never asks again where the data lives), gloss
 every technical term the first time ("a separate bar (a pass mark just for that group)"), soft wording, one
@@ -345,18 +362,20 @@ client would rather move on. If the client picks a different first wave than A r
 (`waves.preferred`, the `wave` field on scores). Always `out/tools/c render` before phase 4, so the PRD and the
 prototype reflect round 2 at once. `out/tools/c clock 3 end`.
 
-## Phase 4: L and U in parallel (5 min)
+## Phase 4: L and U in parallel (3 min)
 
 `out/tools/c clock 4 start`. Launch `valued-user-loop` and `valued-labels` together, and tell `valued-labels` to launch `holdout-sealer` only once `out/gates/u.json` exists (the sealer reads the never list and triggers from it); L writes its golden set meanwhile. Both read `out/gates/v.json`,
 `a.json` and the answered cards; neither asks the client anything. L writes `l.json` and `out/proto/golden.json`,
 `holdout.json`, `sources.json`; U writes `u.json`. When both are back, `out/tools/c render`. `out/tools/c clock 4 end`.
 
-## Phase 5: E and D in parallel (8 min)
+## Phase 5: E and D in parallel (4 min, one repair live)
 
 `out/tools/c clock 5 start`. Launch `valued-evals` (which launches `prototype-builder` and runs the evals) and
 `valued-deploy` together. If the dev eval is blocked, E asks the one extra card **"Ship anyway, or fix
-first?"** (round 3; "Fix first" recommended), fixes the router, never the labels, and runs the holdout. When
-both are back, `out/tools/c render`. `out/tools/c clock 5 end`.
+first?"** (round 3; "Fix first" recommended), fixes the router, never the labels, and runs the holdout.
+**Live, at most one repair round:** if it is still blocked after that, say so plainly ("Blocked on routing; a
+second fix is running in the background"), present, and run the next round in phase 7. `valued-deploy` was
+launched in phase 3; collect it here. When both are back, `out/tools/c render`. `out/tools/c clock 5 end`.
 
 **E is the longest and most opaque gate, so narrate its sub-steps.** Before each sub-step of E, run
 `out/tools/c step "<what it is doing>"`: it updates the live "Building now:" line on the PRD and prototype
@@ -367,9 +386,14 @@ holdout"` (then its lines), and, only on a block, `step "repairing the router, r
 always know where E is. The other gates get their sub-agent `· took Xs` from the harness; E gets these
 sub-steps on top because it alone runs long enough to look stuck.
 
-## Phase 6: B (3 min)
+## Phase 6: B (2 min, three writers in parallel)
 
 `out/tools/c clock 6 start`. Run `valued-build`: it writes `b.json` (summary, recommendation, requirements, FAQ, sweep
+**Three writers in parallel.** Write `summary`, `recommendation` and `decisionAsked` yourself, then launch three
+`valued-build` writers in one message, each writing one part file: `out/gates/b-req.json` (`requirements`,
+`nfrs`, `tasks`), `out/gates/b-faq.json` (`faq`, `sweepFindings`, `agentSentence`, `stats`), `out/gates/b-risk.json`
+(`risks`, `dependencies`, `openQuestions`). Merge the three parts and your keys into `out/gates/b.json`, render,
+and present. The hosted page, audit and reviewer move to phase 7.
 findings, section 19), runs `out/tools/c render`, `out/tools/c check` until it prints `All checks pass.` (fix the JSON, never
 the rendered files), builds the hosted page, and publishes (or, if publishing is unavailable or not allowed,
 says so in one line and keeps localhost). Then `out/tools/c clock 6 end`, `out/tools/c report` (writes
@@ -399,6 +423,14 @@ the closing line, nothing else:
 `Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Run: out/observe.html · Review: out/review.md · Audit: /valued-audit · Feedback: /valued-revise <what to change>`
 
 Under `--no-open` skip every `open`; otherwise `open out/brief.html`.
+
+## Phase 7: Improve, in the background (after you present)
+
+Say: "That's the first full version. While we talk it through, the quality checks keep running, and anything they
+find will update here." Then launch in the background: the audit, the `valued-reviewer`, a `gate-qc` sweep over
+every phase, and any second repair round E deferred. Apply each confirmed finding through `valued-revise` (source
+first, then render and `verify`), so every page updates together while the client watches. Never hand-edit a
+rendered file. Close with the closing line once they are done.
 
 ## Rules for every gate (pass these on)
 
