@@ -1296,7 +1296,7 @@ async function loadSources(files) { let n = SOURCES.filter((x) => x.uploaded).le
 function renderSources() {
   const item = (x) => `<div class="srcitem"><div class="row between"><span class="code">${esc(x.id)}</span>${x.uploaded ? `<span class="row"><span class="pill info">${esc(x.file)}</span><button class="linkbtn" data-rmsrc="${esc(x.id)}">Remove</button></span>` : ""}</div><p>${esc(x.text.slice(0, 160))}${x.text.length > 160 ? "..." : ""}</p></div>`;
   const up = SOURCES.filter((x) => x.uploaded), base = SOURCES.filter((x) => !x.uploaded);
-  $("#srcList").innerHTML = `${up.length ? up.map(item).join("") : `<p class="small muted">No documents added yet.</p>`}<details class="more"><summary>${base.length} approved sources from the working session</summary>${base.map(item).join("")}</details>`;
+  $("#srcList").innerHTML = `${up.length ? up.map(item).join("") : `<p class="small muted">No documents added yet.</p>`}<details class="more"><summary>${base.length} approved sources agreed with your team</summary>${base.map(item).join("")}</details>`;
 }
 function wireDrop(label, input, handler) { input.addEventListener("change", () => input.files.length && handler(input.files)); label.addEventListener("dragover", (e) => { e.preventDefault(); label.classList.add("over"); }); label.addEventListener("dragleave", () => label.classList.remove("over")); label.addEventListener("drop", (e) => { e.preventDefault(); label.classList.remove("over"); if (e.dataTransfer.files.length) handler(e.dataTransfer.files); }); }
 wireDrop($("#caseDrop"), $("#caseFile"), (fs) => loadCases(fs[0])); wireDrop($("#srcDrop"), $("#srcFile"), (fs) => loadSources([...fs]));
