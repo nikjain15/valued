@@ -178,7 +178,7 @@ http.createServer(async (req, res) => {
     if (req.method === "POST" && url.pathname === "/api/ai") {
       const { prompt, model } = await readBody(req);
       if (!prompt) return send(res, 400, { ok: false, why: "empty prompt" });
-      const allowed = ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5"];
+      const allowed = ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5", "claude-fable-5-2"];
       return send(res, 200, await callModel("You are a careful assistant inside a prototype. Follow the user's format exactly.", String(prompt).slice(0, 60000), allowed.includes(model) ? model : MODEL));
     }
     if (url.pathname === "/api/eval") return send(res, 200, await runEval(url.searchParams.get("file")));
