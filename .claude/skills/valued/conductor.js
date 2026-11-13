@@ -41,7 +41,7 @@ const A = (x) => (Array.isArray(x) ? x : []);
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 const PHASES = [
-  ["0", "Frame", 2], ["1", "Round 1", 4], ["2", "V then A", 1], ["3", "Round 2", 2],
+  ["0", "Frame", 1], ["1", "Round 1", 5], ["2", "V then A", 1], ["3", "Round 2", 2],
   ["4", "L and U", 3], ["5", "E and D", 4], ["6", "Build", 2],
 ];
 const CUTS = {

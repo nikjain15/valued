@@ -10,9 +10,8 @@ pressure, 30 GenAI ideas, COO wants a plan in six weeks`. Flags:
 - `--teach`: stop reading here and follow `teach.md` in this folder (one gate at a time, cards at every gate).
 - `--auto`: take the recommended option on every card (`conductor.js cards auto <round>`), logged "(auto)".
 - `--no-open`: never run `open`; print paths instead.
-- `--persona "<who the client is>"`: rehearsal and regression mode. Every card round (framing, each Round 1
-  screen, Round 2, E's ship-or-fix) goes to a `client-persona` sub-agent instead of AskUserQuestion: give it
-  the persona, the case line, the answers so far and the screen's cards as printed, and record its answers with
+- `--persona "<who the client is>"`: rehearsal and regression mode. Every card (framing, Round 1, Round 2, E's ship-or-fix), one at a time, goes to a `client-persona` sub-agent instead of AskUserQuestion: give it
+  the persona, the case line, the answers so far and the card as printed, and record its answers with
   `"by": "<role>"` and `"persona": true` (never write "(persona)" into `by` or `decision`: they reach the client's PRD). Ask exactly as you would a person; the persona may answer in its own words, push
   back, or choose a non-recommended option, and the run must adapt.
 - `--lean`: the low-token mode for regression runs. Do every gate in this context (score the three lenses one after
@@ -81,8 +80,8 @@ keep running and land through the same revise path.
 
 | Phase | Work | Budget | Who, and what launches in the background |
 |---|---|---|---|
-| 0 Frame | workspace, server, the four pages; framing (who and what hurts, product name); first tree and assumptions; Discover card | 2 min | you; `discovery-researcher` × 3 |
-| 1 Round 1 | 10 hypothesis-led cards in three screens; research read out between screens | 4 min | client; **V after screen 1** (needs R1-1, C-1, C-2, C-3), **A after screen 2** once V is back (needs R1-2, R1-3, C-4), **U after screen 3** (needs R1-4, R1-5) |
+| 0 Frame | workspace, server, the four pages; framing (who and what hurts, product name); first tree and assumptions; Discover card | 1 min | you; `discovery-researcher` × 3 |
+| 1 Round 1 | 10 hypothesis-led cards, **one at a time**; the approach card updates after every answer; research read out as it lands | 5 min | client; **V once C-1, C-2, C-3 and R1-1 are answered**, **A once V is back and R1-2, R1-3, C-4 are answered**, **U once R1-4 and R1-5 are answered** |
 | 2 V then A | collect V and A, render, write the Frame and Shape cards | 1 min | usually already done |
 | 3 Round 2 | 6 cards | 2 min | client; **L starts its golden set from A** while you ask; **D launches** once R2-5 and R2-6 are answered |
 | 4 L and U | L applies the round-2 groups, seals the holdout; U finishes | 3 min | `holdout-sealer` once `u.json` exists |
@@ -129,6 +128,16 @@ The harness shows each sub-agent's `· took Xs` when it returns, and `out/tools/
 the phase's real elapsed ("[4] L and U · done in 4m 10s"); for E, also emit the `step` sub-updates above. So
 the run always shows what is happening and how long it took, in one line each, without filling the context.
 
+## Live from the first answer: one question at a time
+
+Ask every card on its own (one AskUserQuestion call per card, never a screen of four), in every round, so the
+client and the approach page move together. After **each** answer: record it, update the approach card that
+answer touches (the polished, consultant-voice version; never a raw echo of the answer), update assumption
+status in `r.json` if the answer tests one, and `out/tools/c render`. The page refreshes within three seconds,
+so the client sees their answer reshape the card before the next question. Keep each update to one or two
+fields of the card; a full rewrite of the card happens only at a stage change. The screen headers in the
+tables below are themes for ordering the questions, not batches.
+
 ## Our approach page (what the product lead reads out loud)
 
 `localhost:4317/approach` is the page the product lead speaks from. The client may see it, so it is written for
@@ -144,7 +153,7 @@ After each phase, write or update that stage's card in `out/gates/approach.json`
 
 Schema: `{ "current": "<stage>", "stages": [{ "stage", "headline", "heard", "breaks", "evidence": [{ "text", "fact" }],
 "rule", "option", "reasons": [3], "tradeoff", "checkIn" }] }`. Write the `discover` card right after framing, from
-the case and the first answers, and update it after each Round 1 screen: `heard` (their words and numbers),
+the case and the first answers, and update it after every Round 1 answer: `heard` (their words and numbers),
 `breaks` (where today's process breaks, from their answer or the research's process steps), `evidence` (one or
 two research facts as they land, `fact` = the fact key; the page cites the source), and the page adds the three
 lead assumptions from `r.json` with their live status. Use `rule` on the `align` card for the one regulation
@@ -246,17 +255,17 @@ better supported, the value frame better anchored. Nothing waits for it.
 
 ## Phase 1: Round 1, discovery (4 min)
 
-`out/tools/c clock 1 start`. **Before each screen, run `out/tools/c research`.** It prints only what is new
+`out/tools/c clock 1 start`. **Before each question, run `out/tools/c research`.** It prints only what is new
 since the last call, already in client language (`Just confirmed · 30 days · ...`); read those lines out as
 part of the conversation ("While we were talking, we confirmed ..."), then fold them in: attach the new fact
-keys to the hypotheses and assumptions they support in `r.json`, and sharpen the next screen's cards with them.
+keys to the hypotheses and assumptions they support in `r.json`, and sharpen the next questions with them.
 Facts and sources stay exactly as the researchers wrote them: never add, round or combine a figure yourself.
 
-**Launch gates while you ask (background, never waited on here).** After screen one is answered, launch
-`valued-value`. After screen two, launch `valued-ai-fit` once `v.json` exists (if V is still running, launch A
-the moment it lands). After screen three, launch `valued-user-loop`. Each runs as a sub-agent with
+**Launch gates while you ask (background, never waited on here).** The moment C-1, C-2, C-3 and R1-1 are
+answered, launch `valued-value`. Once `v.json` exists and R1-2, R1-3 and C-4 are answered, launch
+`valued-ai-fit`. Once R1-4 and R1-5 are answered, launch `valued-user-loop`. Each runs as a sub-agent with
 `run_in_background: true`, reads the answered cards, writes its own JSON and does not render; render after each
-screen as usual and once more when each gate lands.
+answer as usual and once more when each gate lands.
 
 **How a consultant asks.** These are the rules that make every round (framing, Round 1, Round 2 and E's card)
 sound like a strong partner from a top firm, not a form:
@@ -270,7 +279,7 @@ sound like a strong partner from a top firm, not a form:
   sharper question). At most about 25 words, plain and warm, no internal ids in the text.
 - **MECE across the round.** The ten cards cover ten different things. Options inside a card are mutually
   exclusive and together cover the realistic space (ranges that do not overlap; roles that do not overlap).
-- **Drop or pre-fill what is already settled.** Before showing a screen, check every card against the case line
+- **Drop or pre-fill what is already settled.** Before asking each card, check it against the case line
   and all earlier answers. If an answer already settles it, do not ask it: record it with `"decision"` taken from
   that answer and `"by": "<role> (earlier answer)"`, and say "You mentioned X, so I've noted that." instead.
 - **Never repeat.** Never ask what the case line, a framing answer or an earlier card already told us. Build on
@@ -284,14 +293,14 @@ sound like a strong partner from a top firm, not a form:
   A generic option ("another team", "other systems") fails the round. Before research lands, anchor on the
   case and say "(our assumption)".
 - **Shows the thinking.** Every card carries `why` (one line: the branch and hypothesis it tests, and the fact
-  key if any) and `branch`. Before each screen print its header, then one line per card, in client language:
+  key if any) and `branch`. Before each question print one line, in client language:
   `This tests whether most of the delay sits at intake (B1).` The discovery page shows the same thing live.
 
 Append all ten cards to `out/cards.json` with `"round": 1`, then `out/tools/c cards print 1` (or
-`out/tools/c cards auto 1` under `--auto`; under `--persona` the persona answers each screen). Ask them as three
-screens (AskUserQuestion takes at most four at a time), each with its own warm header. Record each answer as
-`decision` and `by`, then **`out/tools/c render` after every screen**, so the discovery page, the PRD and the
-prototype all show the answers within seconds. If the client would rather not answer a round, run
+`out/tools/c cards auto 1` under `--auto`; under `--persona` the persona answers one card at a time). Ask them
+**one at a time**, in the order of the three themes below, each with a short warm lead-in when the theme changes.
+Record each answer as `decision` and `by`, update the approach card, then **`out/tools/c render` after every
+answer**, so the approach page, the PRD and the prototype all show it within seconds. If the client would rather not answer a round, run
 `out/tools/c cards skip 1` and say the one line it prints.
 
 **Screen one: "Let's make sure we're solving the right problem"**
@@ -321,8 +330,8 @@ prototype all show the answers within seconds. If the client would rather not an
 
 Where the answers go: C-1 becomes V's `stakeholders`; C-2 anchors V's value frame (the client's baseline
 beats our assumption); C-3 bounds A's first wave and sets D's `roadmap`; C-4 sets A's data feasibility and
-L's systems; C-5 sets D's `adoption`. After each screen, set `status` on every assumption that screen tested, judged on the meaning of the answer,
-never on a keyword: `"confirmed"` or `"challenged"` (with the client's words in `heardAs`). After the last screen, say in one line which assumptions the client changed, and pass all of it on when you
+L's systems; C-5 sets D's `adoption`. After each answer, set `status` on every assumption that answer tested, judged on the meaning of the answer,
+never on a keyword: `"confirmed"` or `"challenged"` (with the client's words in `heardAs`). After the last question, say in one line which assumptions the client changed, and pass all of it on when you
 launch each gate.
 
 Recommend: the outcome tied to the sponsor's stated goal; the constraint that de-risks a first wave; a hosted
