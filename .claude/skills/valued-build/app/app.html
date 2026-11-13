@@ -1301,7 +1301,7 @@ function renderSources() {
 function wireDrop(label, input, handler) { input.addEventListener("change", () => input.files.length && handler(input.files)); label.addEventListener("dragover", (e) => { e.preventDefault(); label.classList.add("over"); }); label.addEventListener("dragleave", () => label.classList.remove("over")); label.addEventListener("drop", (e) => { e.preventDefault(); label.classList.remove("over"); if (e.dataTransfer.files.length) handler(e.dataTransfer.files); }); }
 wireDrop($("#caseDrop"), $("#caseFile"), (fs) => loadCases(fs[0])); wireDrop($("#srcDrop"), $("#srcFile"), (fs) => loadSources([...fs]));
 
-/* ---------- Data and tools: the client's systems, recommended at gate L; connections are simulated ---------- */
+/* ---------- Data and tools: the client's systems, recommended during design; connections are simulated ---------- */
 const CATS = [["channel", "Where work arrives", "The channels that feed the queue."], ["knowledge", "Knowledge", "Approved content the product may cite."], ["record", "Systems of record", "Where the outcome is filed or read from."], ["testing", "Test and labelling data", "What the release gates are measured on."], ["collab", "People and alerts", "Where hand-offs and escalations reach a person."]];
 const LOGO_COLORS = ["#32854c", "#4a6fa5", "#c97d1a", "#9c4a6b", "#2b7a78", "#6b5ca5", "#28323f"];
 const BASE_TOOLS = [
