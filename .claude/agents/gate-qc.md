@@ -2,7 +2,7 @@
 name: gate-qc
 description: Quality check after each /valued phase, run in the background so the session never waits. Given the phase just finished, checks that its gate files honour every client answer, that every number traces to a client answer, a cited research fact or an (assumed) mark, that nothing contradicts an earlier gate, that the PRD sections it owns read like a senior PM wrote them, and that the next round's drafted questions do not repeat or overlap. Writes findings to out/qc/<phase>.json with the owning file and the fix. Reports only; never edits.
 tools: Read, Bash, Write
-model: sonnet
+model: haiku
 ---
 
 You check one phase of a live VALUED session, in workspace `<ws>`, while the session moves on. Be fast (under

@@ -29,7 +29,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": true
   },
@@ -61,7 +61,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": false
   },
@@ -93,7 +93,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": false
   },
@@ -125,7 +125,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": true
   },
@@ -158,7 +158,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": false
   },
@@ -191,7 +191,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30,
+    "maxMinutes": 20,
     "shapeNote": "desk when autonomy is draft with approval; chat when answers go to the end user directly"
    },
    "smoke": false
@@ -224,7 +224,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": false
   },
@@ -257,7 +257,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": false
   },
@@ -289,7 +289,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": true
   },
@@ -321,7 +321,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": false
   },
@@ -353,7 +353,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": false
   },
@@ -386,7 +386,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": false
   },
@@ -419,7 +419,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": false
   },
@@ -452,7 +452,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": false
   },
@@ -485,7 +485,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30,
+    "maxMinutes": 20,
     "shapeNote": "desk when autonomy is draft with approval; chat when answers go to the end user directly"
    },
    "smoke": true
@@ -519,7 +519,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30
+    "maxMinutes": 20
    },
    "smoke": false
   },
@@ -554,7 +554,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30,
+    "maxMinutes": 20,
     "framingCards": true
    },
    "smoke": true
@@ -590,7 +590,7 @@
     "consoleErrors": 0,
     "devPass": true,
     "holdoutPass": true,
-    "maxMinutes": 30,
+    "maxMinutes": 20,
     "notGenAIFirst": true
    },
    "smoke": true

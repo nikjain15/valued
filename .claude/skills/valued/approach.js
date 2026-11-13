@@ -23,22 +23,26 @@ function renderApproach(ap, cards, title, client, r) {
   const byStage = Object.fromEntries(A(ap.stages).map((s) => [s.stage, s]));
   const nowKey = ap.current || [...STAGES].reverse().find(([k]) => byStage[k])?.[0] || "discover";
   const nowIdx = STAGES.findIndex(([k]) => k === nowKey);
-  const stepper = STAGES.map(([k, name, sub], i) => `<div class="st${i < nowIdx ? " done" : i === nowIdx ? " now" : ""}"><div class="dot">${i < nowIdx ? "&#10003;" : i + 1}</div><b>${name}</b>${sub}</div>`).join("");
-  const c = byStage[nowKey];
-  const reasons = c ? A(c.reasons).slice(0, 3).map((r) => `<li>${bold(r)}</li>`).join("") : "";
-  const card = c ? `<div class="card">
-<div class="k">${esc(STAGES[nowIdx][1])}</div>
+  const stepper = STAGES.map(([k, name, sub], i) => `<div class="st${i < nowIdx ? " done" : i === nowIdx ? " now" : ""}${byStage[k] ? " has" : ""}" data-go="${k}"><div class="dot">${i < nowIdx ? "&#10003;" : i + 1}</div><b>${name}</b>${sub}</div>`).join("");
+  const cardFor = (key) => {
+    const c = byStage[key]; const idx = STAGES.findIndex(([k]) => k === key);
+    const reasons = A(c.reasons).slice(0, 3).map((r) => `<li>${bold(r)}</li>`).join("");
+    return `<div class="stage" data-stage="${key}"${key === nowKey ? "" : " hidden"}><div class="card">
+<div class="k">${esc(STAGES[idx][1])}</div>
 <h2>${bold(c.headline)}</h2>
 ${c.heard ? `<div class="row"><span class="chip c1">What we heard</span><p>${bold(c.heard)}</p></div>` : ""}
 ${c.breaks ? `<div class="row"><span class="chip c3">Where it breaks</span><p>${bold(c.breaks)}</p></div>` : ""}
 ${A(c.evidence).slice(0, 2).map((e) => `<div class="row"><span class="chip c1">The research says</span><p>${bold(e.text)}${citeF(e.fact)}</p></div>`).join("")}
-${nowKey === "discover" && A(r.assumptions).length ? `<div class="row why"><span class="chip c0">We're assuming</span><ul class="as">${A(r.assumptions).slice(0, 3).map((a) => `<li><span class="st2 ${a.status === "confirmed" ? "ok" : a.status === "challenged" ? "chk" : ""}">${a.status === "confirmed" ? "Confirmed" : a.status === "challenged" ? "Worth a closer look" : "To discuss"}</span>${bold(a.short || a.text)}</li>`).join("")}</ul></div>` : ""}
+${key === "discover" && A(r.assumptions).length ? `<div class="row why"><span class="chip c0">We're assuming</span><ul class="as">${A(r.assumptions).slice(0, 3).map((a) => `<li><span class="st2 ${a.status === "confirmed" ? "ok" : a.status === "challenged" ? "chk" : ""}">${a.status === "confirmed" ? "Confirmed" : a.status === "challenged" ? "Worth a closer look" : "To discuss"}</span>${bold(a.short || a.text)}</li>`).join("")}</ul></div>` : ""}
 ${c.rule ? `<div class="row"><span class="chip c1">Rules to respect</span><p>${bold(c.rule)}</p></div>` : ""}
 ${c.option ? `<div class="row"><span class="chip c2">One way to start</span><p>${bold(c.option)}</p></div>` : ""}
 ${reasons ? `<div class="row why"><span class="chip c2">Why it might work</span><ol>${reasons}</ol></div>` : ""}
 ${c.tradeoff ? `<div class="row"><span class="chip c3">What we'd give up</span><p>${bold(c.tradeoff)}</p></div>` : ""}
 </div>
-${c.checkIn ? `<div class="ask"><div class="q">?</div><div><span class="l">Check in</span><p>"${esc(c.checkIn)}"</p></div></div>` : ""}` :
+${c.checkIn ? `<div class="ask"><div class="q">?</div><div><span class="l">Check in</span><p>"${esc(c.checkIn)}"</p></div></div>` : ""}</div>`;
+  };
+  const written = STAGES.map(([k]) => k).filter((k) => byStage[k]);
+  const card = written.length ? written.map(cardFor).join("") + `<p class="back" hidden><a href="#" data-back>Back to where we are</a></p>` :
     `<div class="card"><div class="k">Getting started</div><h2>We'll shape this together as we go</h2><p class="muted">Each stage fills in here as we learn more about your world.</p></div>`;
 
   return `<!doctype html>
@@ -59,6 +63,8 @@ h1{font-family:var(--font-display);font-size:26px;margin:4px 0 0}
 .st.now .dot{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 0 0 5px var(--brand-tint)}
 .st b{display:block;font-size:13px;color:var(--ink-3)}
 .st.now b{color:var(--brand-strong)}
+.st.has{cursor:pointer}.st.has:hover b{color:var(--brand-strong)}.st.pick .dot{box-shadow:0 0 0 5px var(--blue-bg);border-color:var(--blue)}
+.back{margin:10px 4px 0;font-size:13px}.back a{color:var(--brand-strong)}
 .live{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
 .live .l{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-4);font-weight:700;margin-right:4px}
 .pill{background:var(--white);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;color:var(--ink-2)}
@@ -94,14 +100,28 @@ ${cited.size ? `<p class="src">Sources: ${[...cited].map((k) => { const x = srcs
 </div>
 <script>
 (function () {
+  // Click a written stage to revisit it; the choice survives the live refresh until "Back to where we are".
+  let pinned = null;
+  const apply = () => {
+    const cur = document.querySelector(".st.now")?.dataset.go;
+    const show = pinned && document.querySelector('.stage[data-stage="' + pinned + '"]') ? pinned : cur;
+    document.querySelectorAll(".stage").forEach((e) => { e.hidden = e.dataset.stage !== show; });
+    document.querySelectorAll(".st").forEach((e) => e.classList.toggle("pick", !!pinned && e.dataset.go === pinned && pinned !== cur));
+    const b = document.querySelector(".back"); if (b) b.hidden = !pinned || pinned === cur;
+  };
+  document.addEventListener("click", (ev) => {
+    const st = ev.target.closest(".st.has"); if (st) { pinned = st.dataset.go; apply(); return; }
+    if (ev.target.closest("[data-back]")) { ev.preventDefault(); pinned = null; apply(); }
+  });
+  apply();
   let last = document.querySelector(".wrap").innerHTML;
   setInterval(async () => {
     try {
       const html = await (await fetch(location.pathname, { cache: "no-store" })).text();
       const next = new DOMParser().parseFromString(html, "text/html").querySelector(".wrap");
       if (!next || next.innerHTML === last) return;
-      const y = window.scrollY; document.querySelector(".wrap").innerHTML = next.innerHTML; last = next.innerHTML; window.scrollTo(0, y);
-      const c = document.querySelector(".card"); if (c) c.classList.add("fresh");
+      const y = window.scrollY; document.querySelector(".wrap").innerHTML = next.innerHTML; last = next.innerHTML; apply(); window.scrollTo(0, y);
+      const c = document.querySelector(".stage:not([hidden]) .card"); if (c) c.classList.add("fresh");
     } catch (e) {}
   }, 3000);
 })();

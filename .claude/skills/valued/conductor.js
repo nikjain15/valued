@@ -41,8 +41,8 @@ const A = (x) => (Array.isArray(x) ? x : []);
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 const PHASES = [
-  ["0", "Frame", 3], ["1", "Round 1", 4], ["2", "V then A", 5], ["3", "Round 2", 2],
-  ["4", "L and U", 5], ["5", "E and D", 8], ["6", "Build", 3],
+  ["0", "Frame", 2], ["1", "Round 1", 4], ["2", "V then A", 1], ["3", "Round 2", 2],
+  ["4", "L and U", 3], ["5", "E and D", 4], ["6", "Build", 2],
 ];
 const CUTS = {
   "2": ["fewer candidates: 8 instead of 12", "two wave options instead of three", "shorter reasons"],
@@ -487,7 +487,7 @@ function clockStatus(print = true) {
   }
   const start = es[0]?.t, end = es.length && es.every((e) => e.event !== "start" || es.some((x) => x.phase === e.phase && x.event === "end")) ? Math.max(...es.map((e) => e.t)) : Date.now();
   const total = start ? Math.round((end - start) / 1000) : 0;
-  if (print) { console.log(table(["Phase", "Budget", "Used", "Status"], rows.map((r) => [`${r.phase} ${r.name}`, `${r.budget} min`, r.seconds === null ? "" : `${Math.floor(r.seconds / 60)}m ${r.seconds % 60}s`, r.seconds === null ? "not started" : r.running ? (r.over ? "RUNNING, OVER BUDGET: cut scope" : "running") : r.over ? "over" : "ok"]))); console.log(`Total: ${Math.floor(total / 60)}m ${total % 60}s of 30m`); const cur = rows.find((r) => r.running && r.over); if (cur && CUTS[cur.phase]) console.log(`Cut order for phase ${cur.phase}: ${CUTS[cur.phase].join("; ")}. Never cut governance, evals, the holdout or the never list.`); }
+  if (print) { console.log(table(["Phase", "Budget", "Used", "Status"], rows.map((r) => [`${r.phase} ${r.name}`, `${r.budget} min`, r.seconds === null ? "" : `${Math.floor(r.seconds / 60)}m ${r.seconds % 60}s`, r.seconds === null ? "not started" : r.running ? (r.over ? "RUNNING, OVER BUDGET: cut scope" : "running") : r.over ? "over" : "ok"]))); console.log(`Total: ${Math.floor(total / 60)}m ${total % 60}s of ${PHASES.reduce((t, p) => t + p[2], 0)}m`); const cur = rows.find((r) => r.running && r.over); if (cur && CUTS[cur.phase]) console.log(`Cut order for phase ${cur.phase}: ${CUTS[cur.phase].join("; ")}. Never cut governance, evals, the holdout or the never list.`); }
   return { rows, total };
 }
 
@@ -496,9 +496,9 @@ function report(g, ev, c) {
   const { rows, total } = clockStatus(false);
   const cs = cards(); const cuts = clockEntries().filter((e) => e.event === "cut");
   const flagged = read(path.join(PROTO, "audit.jsonl")).split("\n").filter((l) => /Flagged as wrong/.test(l)).length;
-  const r = { case: clean(caseLine()), date: today(), mode: read(path.join(OUT, "mode.txt")).trim() || "orchestrated", totalSeconds: total, budgetSeconds: 30 * 60, withinBudget: total <= 30 * 60, phases: rows.map((x) => ({ phase: `${x.phase} ${x.name}`, budgetMin: x.budget, seconds: x.seconds, over: x.over })), questionsAsked: cs.length, questions: cs.map((x) => ({ gate: x.gate, role: x.role, question: x.question, decision: x.decision, auto: Boolean(x.auto) })), revisions: cs.filter((x) => x.revised).length, flaggedWrong: flagged, evalBlocks: A(g.e?.runs).filter((x) => /RELEASE BLOCKED/.test(x.output || "")).length, evalFixes: A(g.e?.fixes), holdoutIndependent: ev.independent, release: { dev: ev.devPass, holdout: ev.holdPass }, cuts: cuts.map((x) => ({ phase: x.phase, what: x.note })), shape: g.a?.shape, systems: A(c?.connectors).length, assistants: A(g.a?.agents).length, sweeps: A(g.a?.sweeps).length, checks: check(g, ev, c, true).map(([s, m]) => `[${s}] ${m}`) };
+  const r = { case: clean(caseLine()), date: today(), mode: read(path.join(OUT, "mode.txt")).trim() || "orchestrated", totalSeconds: total, budgetSeconds: PHASES.reduce((t, p) => t + p[2], 0) * 60, withinBudget: total <= PHASES.reduce((t, p) => t + p[2], 0) * 60, phases: rows.map((x) => ({ phase: `${x.phase} ${x.name}`, budgetMin: x.budget, seconds: x.seconds, over: x.over })), questionsAsked: cs.length, questions: cs.map((x) => ({ gate: x.gate, role: x.role, question: x.question, decision: x.decision, auto: Boolean(x.auto) })), revisions: cs.filter((x) => x.revised).length, flaggedWrong: flagged, evalBlocks: A(g.e?.runs).filter((x) => /RELEASE BLOCKED/.test(x.output || "")).length, evalFixes: A(g.e?.fixes), holdoutIndependent: ev.independent, release: { dev: ev.devPass, holdout: ev.holdPass }, cuts: cuts.map((x) => ({ phase: x.phase, what: x.note })), shape: g.a?.shape, systems: A(c?.connectors).length, assistants: A(g.a?.agents).length, sweeps: A(g.a?.sweeps).length, checks: check(g, ev, c, true).map(([s, m]) => `[${s}] ${m}`) };
   writeJson(path.join(OUT, "run-report.json"), r);
-  console.log(`Run report: out/run-report.json · ${Math.floor(total / 60)}m ${total % 60}s of 30m · ${cs.length} questions · ${r.checks.length} open checks`);
+  console.log(`Run report: out/run-report.json · ${Math.floor(total / 60)}m ${total % 60}s of ${PHASES.reduce((t, p) => t + p[2], 0)}m · ${cs.length} questions · ${r.checks.length} open checks`);
 }
 
 // ---------- seeds ----------
