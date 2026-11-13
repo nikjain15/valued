@@ -150,3 +150,28 @@ Fields: **Signals** · **Gate** · **Problem** · **Options** · **Preference** 
 | P-011 | 2026-11-12 | Roadmap, Trade-offs, one build list | S-112 | approved | 922243d |
 | P-012 | 2026-11-12 | demo-auditor agent and demo-check.js | S-113, S-115 | approved | 922243d |
 | P-013 | 2026-11-12 | talk track template, PDF script and check | S-114 | approved | 922243d |
+
+### P-014: holdout integrity
+- Signals: S-118, S-119, S-120, S-138 (R-002, R-003, R-004, R-022) · Gate: E, conductor, audit
+- Change: the sealed-run fingerprint hashes the normalised router (no comments or blank lines) plus only the holdout's own model-cache entries; `seal` writes a hash chain into provenance.json and mirrors each entry to holdout-log.jsonl; check.js fails standard 6 on any mismatch; the scorecard keeps the release verdict line. Old workspaces sealed before the chain fail standard 6 until re-run fresh. Not yet verified: a live seal round trip (the sandbox refused it).
+- Status: accepted by Nik, 2026-11-13 (Apply)
+
+### P-015: cards and builder
+- Signals: S-117, S-131, S-132, S-133, S-134 (R-001, R-015 to R-018) · Gate: conductor, E, B
+- Change: Product name counts inside the 1 to 4 framing cards (cap 16 holds); "(Recommended)" printed once; the builder writes the harder dev rows in its single pass and the conductor never adds rows after it; router size measured in non-whitespace characters outside comments (guideline 8000, limit 10000); the PRD appendix lists every card with its answer source. Needs a fresh nocase run to confirm R-001.
+- Status: accepted by Nik, 2026-11-13 (Apply)
+
+### P-016: deep-path tooling
+- Signals: S-121 to S-129, S-139, S-140 (R-005 to R-013, R-023, R-024) · Gate: valued-deep
+- Change: demo-check fails on missing inputs, requires both flags, Prove it, PRD, full tab labels and a stated tab count, scans subfolders and asset paths with "/"; the standard and templates agree on six steps with Prove it as job 4 and eight timing values; the kit has one stamp per file; the auditor's holdout wording matches the kit; check.js gains `--client`.
+- Status: accepted by Nik, 2026-11-13 (Apply)
+
+### P-017: regression suite and select
+- Signals: S-130, S-135, S-136, S-137 (R-014, R-019, R-020, R-021) · Gate: regression suite, S
+- Change: fresh workspaces in new dated folders; run.js marks rows older than the checker STALE and never counts them as pass; one concurrency number (3); one checker name; `valued-select/validate.js` with every select path under `--out`, gate "S" in the enum and quick-mode counts defined.
+- Status: accepted by Nik, 2026-11-13 (Apply)
+
+| P-014 | 2026-11-13 | holdout integrity | S-118 to S-120, S-138 | approved | ad16879 |
+| P-015 | 2026-11-13 | cards and builder | S-117, S-131 to S-134 | approved | ad16879 |
+| P-016 | 2026-11-13 | deep-path tooling | S-121 to S-129, S-139, S-140 | approved | ad16879 |
+| P-017 | 2026-11-13 | regression suite and select | S-130, S-135 to S-137 | approved | ad16879 |

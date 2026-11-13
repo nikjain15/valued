@@ -585,6 +585,150 @@ addressed by <change>, rejected: <reason>).
 - Evidence: Labels drifted across pages ('Fixed rule' on Roadmap vs 'System' on How it works; 'False refusals' vs plain 'Wrongly refused'). Nik asked for one plain vocabulary everywhere, industry terms with a one-line meaning beside each.
 - Status: open
 
+### S-117
+- Source: regression, 2026-11-12 · Scenario: R-001 (report-2026-11-12.md) · Gate: conductor · Severity: High
+- Evidence: nocase asks 17 cards, std 1 fails. Root cause: Framing "0 to 4" plus the always-on "Product name" card plus 11 rounds plus "Ship anyway" can reach 17; the cap is 16. Where: `.claude/skills/valued/SKILL.md:73,127`.
+- Proposed fix: Count "Product name" inside the 0 to 4 framing cards, or raise the cap to 17 in `check.js:42-43` and the SKILL together.
+- Status: open
+
+### S-118
+- Source: regression, 2026-11-12 · Scenario: R-002 (report-2026-11-12.md) · Gate: E, build · Severity: High
+- Evidence: Router unchanged, yet holdout counts as attempt 2 (card-dispute, portal). Root cause: Fingerprint hashes `router.js` plus the whole `model-cache.json`; adding dev rows reruns the guard model and changes the cache. Where: `.claude/skills/valued-build/eval.js:35`.
+- Proposed fix: Hash only cache entries for holdout texts, or hash router plus holdout-keyed cache slice.
+- Status: open
+
+### S-119
+- Source: regression, 2026-11-12 · Scenario: R-003 (report-2026-11-12.md) · Gate: E, build · Severity: High
+- Evidence: university: a blank-line trim made a 3rd router version and failed std 6. Root cause: Fingerprint is over raw source, whitespace and comments included. Where: `.claude/skills/valued-build/eval.js:35`.
+- Proposed fix: Normalise source (strip comments and blank lines) before hashing; tell the builder not to touch router.js after the seal.
+- Status: open
+
+### S-120
+- Source: regression, 2026-11-12 · Scenario: R-004 (report-2026-11-12.md) · Gate: conductor, audit · Severity: High
+- Evidence: rules: an agent hand-edited `provenance.json` to delete a wrong entry and the audit passed. Root cause: Provenance is self-reported and editable (open S-089). Where: `.claude/skills/valued/conductor.js` seal, `valued-audit/check.js:118-122`.
+- Proposed fix: Append-only: `seal` writes a hash chain or also logs to `holdout-log.jsonl`; checker refuses edited files.
+- Status: open
+
+### S-121
+- Source: regression, 2026-11-12 · Scenario: R-005 (report-2026-11-12.md) · Gate: valued-deep · Severity: High
+- Evidence: A missing or mistyped `--talk` or `--build` warns and prints Clean, exit 0; missing plan.html or prd-data.js also skipped. Root cause: Absent inputs treated as nothing to compare. Where: `.claude/skills/valued-deep/demo-check.js:22,34,38,41,50`.
+- Proposed fix: Fail when a flag names a missing file; require `--talk` and `--build` (demo-standard.md:94 says both).
+- Status: open
+
+### S-122
+- Source: regression, 2026-11-12 · Scenario: R-006 (report-2026-11-12.md) · Gate: valued-deep · Severity: High
+- Evidence: Heading says six steps, table has seven (Prove it its own row). Root cause: Prove it moved inside How it works in code, not in the standard. Where: `.claude/skills/valued-deep/demo-standard.md:6-20` vs `SKILL.md:202-203`, `story-shared.js` STORY5.
+- Proposed fix: Make Prove it job 4 under How it works in the table.
+- Status: open
+
+### S-123
+- Source: regression, 2026-11-12 · Scenario: R-007 (report-2026-11-12.md) · Gate: valued-deep · Severity: High
+- Evidence: Says "The five steps", lists five; Roadmap and Trade-offs never audited. Root cause: Template not updated for P-011. Where: `.claude/skills/valued-deep/audit-prompt-template.md:41`.
+- Proposed fix: List the six steps plus Prove it as job 4.
+- Status: open
+
+### S-124
+- Source: regression, 2026-11-12 · Scenario: R-008 (report-2026-11-12.md) · Gate: valued-deep · Severity: High
+- Evidence: Talk track that never says "Prove it" or "PRD" passes coverage. Root cause: Coverage reads STORY5 names only. Where: `.claude/skills/valued-deep/demo-check.js:43-44`.
+- Proposed fix: Add Prove it and PRD to required names.
+- Status: open
+
+### S-125
+- Source: regression, 2026-11-12 · Scenario: R-009 (report-2026-11-12.md) · Gate: valued-deep · Severity: Med
+- Evidence: Stamp check skips how2, how3 and other job pages, and paths with "/" (fonts/fonts.css). Root cause: Scans STORY5 pages only; regex `[\w.-]+`. Where: `.claude/skills/valued-deep/demo-check.js:26-27`.
+- Proposed fix: Scan every .html; allow "/" in the path class.
+- Status: open
+
+### S-126
+- Source: regression, 2026-11-12 · Scenario: R-010 (report-2026-11-12.md) · Gate: valued-deep · Severity: Med
+- Evidence: The kit fails its own stamp check (v=42 vs 45, flowmap v=5 vs 49); `out/uc2-proto` inherits it. Root cause: Kit copied from a mid-edit build. Where: `.claude/skills/valued-deep/demo-kit/day.html:3,106`, `how1.html:3,83`.
+- Proposed fix: Bump the kit to one stamp per file; run demo-check on the kit in the suite.
+- Status: open
+
+### S-127
+- Source: regression, 2026-11-12 · Scenario: R-011 (report-2026-11-12.md) · Gate: valued-deep · Severity: Med
+- Evidence: Tab names matched on prefix only; tab count only if the talk says "N tabs"; em dashes not checked in talk, build, subfolders. Root cause: Loose checks. Where: `.claude/skills/valued-deep/demo-check.js:46,48,53`.
+- Proposed fix: Match full labels; fail with no count; scan `--talk`, `--build`, `--prd` and subfolders.
+- Status: open
+
+### S-128
+- Source: regression, 2026-11-12 · Scenario: R-012 (report-2026-11-12.md) · Gate: valued-deep · Severity: Med
+- Evidence: Auditor says the scorer runs "never loading the holdout"; Prove it loads `holdout.js` in the browser. Root cause: Wording contradicts the kit. Where: `.claude/skills/valued-deep/demo-kit/prove.html:50` vs `.claude/agents/demo-auditor.md:18`.
+- Proposed fix: Say the page loads the holdout for counts only and the auditor never prints rows.
+- Status: open
+
+### S-129
+- Source: regression, 2026-11-12 · Scenario: R-013 (report-2026-11-12.md) · Gate: valued-deep · Severity: Med
+- Evidence: No `out/deep` exists; UC2 used `out/uc2-*` so `check.js` cannot run on the only real deep case; on a copy it flags 94 real-name hits for the real client. Root cause: Layout drift plus no client-name allowlist for real-client runs. Where: `.claude/skills/valued-deep/check.js:5`, `SKILL.md:18`.
+- Proposed fix: Enforce `--out` layout in go build; add `--client <name>` allowlist to check.js.
+- Status: open
+
+### S-130
+- Source: regression, 2026-11-12 · Scenario: R-014 (report-2026-11-12.md) · Gate: valued-select · Severity: Med
+- Evidence: README says select.json and cards.json "must validate", no validator exists; `--out` ignored by hard-coded `out/select/`; gate enum has no "S"; quick-mode counts undefined. Root cause: Skill and README out of step. Where: `learning/regression/README.md:29`, `.claude/skills/valued-select/SKILL.md:30,83,112`.
+- Proposed fix: Ship `select/validate.js`; route every path through `--out`; add "S" to the enum; print "n/a" in quick mode.
+- Status: open
+
+### S-131
+- Source: regression, 2026-11-12 · Scenario: R-015 (report-2026-11-12.md) · Gate: conductor · Severity: Med
+- Evidence: Card labels print "(Recommended) (Recommended)" (saas). Root cause: Printer appends the suffix even when the label already has it, as CLAUDE.md tells drafters to write it. Where: `.claude/skills/valued/conductor.js:480`.
+- Proposed fix: Append only if the label lacks it.
+- Status: open
+
+### S-132
+- Source: regression, 2026-11-12 · Scenario: R-016 (report-2026-11-12.md) · Gate: conductor, E · Severity: Med
+- Evidence: In 4 of 6 runs the conductor, not the builder, wrote the harder dev rows. Root cause: Under `--lean` the builder has already returned when harder rows are due. Where: `.claude/skills/valued/SKILL.md:80`, `.claude/agents/prototype-builder.md:67`.
+- Proposed fix: Make harder rows part of the builder's single pass, before it returns.
+- Status: open
+
+### S-133
+- Source: regression, 2026-11-12 · Scenario: R-017 (report-2026-11-12.md) · Gate: E, audit · Severity: Med
+- Evidence: Routers reach 189 lines by packing several phrases per line. Root cause: Line count is gameable. Where: `.claude/agents/prototype-builder.md` (160/200 limit).
+- Proposed fix: Count statements or bytes, or move lexicons to `sources.json` and lint for it.
+- Status: open
+
+### S-134
+- Source: regression, 2026-11-12 · Scenario: R-018 (report-2026-11-12.md) · Gate: B, conductor · Severity: Med
+- Evidence: PRD decisions appendix drops the "(auto)" mark and omits 3 cards. Root cause: Renderer filters cards it should list. Where: rules `out/review.md` REV-01 (render).
+- Proposed fix: Render every card in `cards.json` with its answer source.
+- Status: open
+
+### S-135
+- Source: regression, 2026-11-12 · Scenario: R-019 (report-2026-11-12.md) · Gate: regression suite · Severity: Med
+- Evidence: rsync with `--exclude out` into an existing workspace keeps the old `out/`, so "fresh" runs are not fresh; 18 stale rows look like regressions. Root cause: README step 1 and no staleness flag. Where: `learning/regression/README.md:15`, `run.js`.
+- Proposed fix: Use a new folder or `--delete` with an `out` move-aside; `run.js` marks rows whose `prd.md` predates `check.js` as STALE.
+- Status: open
+
+### S-136
+- Source: regression, 2026-11-12 · Scenario: R-020 (report-2026-11-12.md) · Gate: regression suite · Severity: Low
+- Evidence: "at most 6 at once" vs "at most 3 at once". Root cause: Two edits. Where: `learning/regression/README.md:16` vs `:28`.
+- Proposed fix: Pick one (3).
+- Status: open
+
+### S-137
+- Source: regression, 2026-11-12 · Scenario: R-021 (report-2026-11-12.md) · Gate: regression suite · Severity: Low
+- Evidence: Refers to `audit.js --no-browser`; suite and SKILL use `check.js`. Root cause: Naming drift. Where: `learning/regression/README.md:25`.
+- Proposed fix: Name one entry point.
+- Status: open
+
+### S-138
+- Source: regression, 2026-11-12 · Scenario: R-022 (report-2026-11-12.md) · Gate: regression suite · Severity: Low
+- Evidence: Scorecard holdout line shows the replay notice, not the verdict (university shows the notice while blocked). Root cause: Picks the last line. Where: `run.js` holdoutLine.
+- Proposed fix: Store the verdict line separately.
+- Status: open
+
+### S-139
+- Source: regression, 2026-11-12 · Scenario: R-023 (report-2026-11-12.md) · Gate: valued-deep · Severity: Low
+- Evidence: Timing placeholder has 5 values vs 8; talk sections number Prove it as step 4; provenance cited twice. Root cause: Follow-on drift from R-006. Where: `audit-prompt-template.md:34`, `talk-track-template.md:30-32`, `demo-standard.md:4,9`.
+- Proposed fix: Align after R-006.
+- Status: open
+
+### S-140
+- Source: regression, 2026-11-12 · Scenario: R-024 (report-2026-11-12.md) · Gate: valued-deep · Severity: Low
+- Evidence: Missing proto dir or story-shared.js throws a stack trace instead of a FAIL. Root cause: No guards. Where: `demo-check.js:11,42`.
+- Proposed fix: Check existence, exit 2 with a message.
+- Status: open
+
 ## Status updates
 
 ### S-079
@@ -633,45 +777,54 @@ addressed by <change>, rejected: <reason>).
 - S-112: addressed by P-011 (applied 2026-11-12)
 - S-113, S-115: addressed by P-012 (applied 2026-11-12)
 - S-114: addressed by P-013 (applied 2026-11-12)
+- S-117 to S-140: addressed by P-014 to P-017 (applied 2026-11-13; R-001 and the seal round trip await a fresh run)
 
 ## Rehearsal 2026-11-13 (insurance claims intake, persona, valued-live clone at PR 14)
 
-### S-117
+### S-141
+- Renumbered from S-117 on merge (2026-11-13): the local P-014 to P-017 work had already used S-117 to S-140.
 - Gate: conductor (renderer). Source: review (REV-05) and QC phase 5.
 - Evidence: PRD section 11 matches eval rows to `e.gateTable` on the first 10 characters of the metric, so "Escalation precision" takes the "Escalation recall" row's why-text and calls an assumed 0.80 bar "the client's bar (R2-4)".
-- Status: addressed on branch claude/fix-renderer-bugs (2026-11-13, conductor.js: gateWhy, holdoutCell, repair-count sentence, assumptionText); not merged
+- Status: addressed and merged 2026-11-13 (PR 29: gateWhy, holdoutCell, repair-count sentence, assumptionText)
 
-### S-118
+### S-142
+- Renumbered from S-118 on merge (2026-11-13): the local P-014 to P-017 work had already used S-117 to S-140.
 - Gate: conductor (renderer). Source: review (REV-01) and QC phase 6.
 - Evidence: section 11 always prints "passed after one disclosed repair" plus `e.fixes[0]` when `e.repaired`, though this run had two repair rounds; contradicts the PRD's own summary.
-- Status: addressed on branch claude/fix-renderer-bugs (2026-11-13, conductor.js: gateWhy, holdoutCell, repair-count sentence, assumptionText); not merged
+- Status: addressed and merged 2026-11-13 (PR 29: gateWhy, holdoutCell, repair-count sentence, assumptionText)
 
-### S-119
+### S-143
+- Renumbered from S-119 on merge (2026-11-13): the local P-014 to P-017 work had already used S-117 to S-140.
 - Gate: conductor (renderer). Source: review (REV-04).
 - Evidence: section 11 fairness row shows the dev worst group (lang=en) with a blank holdout cell when the holdout fails a different group (register=implied 0.67), hiding the failure.
-- Status: addressed on branch claude/fix-renderer-bugs (2026-11-13, conductor.js: gateWhy, holdoutCell, repair-count sentence, assumptionText); not merged
+- Status: addressed and merged 2026-11-13 (PR 29: gateWhy, holdoutCell, repair-count sentence, assumptionText)
 
-### S-120
+### S-144
+- Renumbered from S-120 on merge (2026-11-13): the local P-014 to P-017 work had already used S-117 to S-140.
 - Gate: conductor (renderer). Source: gate V, gate B, review (REV-06).
 - Evidence: `renderState` prints r.json assumptions (objects with text, card, confirmedIf, as SKILL.md specifies) as "[object Object]" under Assumptions in state.md.
-- Status: addressed on branch claude/fix-renderer-bugs (2026-11-13, conductor.js: gateWhy, holdoutCell, repair-count sentence, assumptionText); not merged
+- Status: addressed and merged 2026-11-13 (PR 29: gateWhy, holdoutCell, repair-count sentence, assumptionText)
 
-### S-121
+### S-145
+- Renumbered from S-121 on merge (2026-11-13): the local P-014 to P-017 work had already used S-117 to S-140.
 - Gate: E. Source: QC phase 5 and review (REV-01, REV-02).
 - Evidence: after holdout attempt 1 blocked, the E sub-agent ran a second "family-level" router repair using the holdout's printed family and groups; holdout result unchanged, but the holdout is spent. The skill allows one dev repair, then the holdout; it should forbid any repair informed by holdout output.
 - Status: open
 
-### S-122
+### S-146
+- Renumbered from S-122 on merge (2026-11-13): the local P-014 to P-017 work had already used S-117 to S-140.
 - Gate: conductor (rehearsal). Source: QC phase 0.
 - Evidence: the conductor passed the persona's private backstory (chatbot pilot misrouted claims) to the AI researcher and into r.json as fact before the client said it. Under --persona, the conductor must only use the case line and answered cards.
 - Status: open
 
-### S-123
+### S-147
+- Renumbered from S-123 on merge (2026-11-13): the local P-014 to P-017 work had already used S-117 to S-140.
 - Gate: conductor (round 2 drafting). Source: QC phase 3.
 - Evidence: round-2 cards carried no `why` or `branch`, R2-1 options restated settled answers (C-3, R1-4, R1-3), R2-3 overlapped C-4, and urgent-claim tolerance was set in three cards. Round 2 needs the same hypothesis-led and no-repeat rules as round 1.
 - Status: open
 
-### S-124
+### S-148
+- Renumbered from S-124 on merge (2026-11-13): the local P-014 to P-017 work had already used S-117 to S-140.
 - Gate: conductor (clock). Source: run report.
 - Evidence: 52m of 30m. V then A 13m 46s (budget 7), L and U 11m 51s (5), E and D 13m 26s (6), Build 6m 7s (3); each gate sub-agent took 4 to 13 minutes re-reading skill files and inputs. Phase budgets are not met in the default sub-agent mode.
 - Status: open

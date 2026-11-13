@@ -1,7 +1,7 @@
 # Demo standard for `/valued-deep go build`
 
-The level a deep-path demo must reach before it is shown. Learned on UC2 (signals S-097 to S-103,
-proposals P-006 and P-007). The reference implementation is in `demo-kit/`; start from it.
+The level a deep-path demo must reach before it is shown. The reference implementation is in `demo-kit/`;
+start from it.
 
 ## The story: six steps, in this order
 
@@ -12,14 +12,13 @@ Learned on UC2 (S-097 to S-103, then S-107 to S-116; P-006, P-007, P-010 to P-01
 |---|---|---|
 | **Current state** | The main user's day across every channel the case touches, one tab per channel, plus a Key takeaway tab | Real artefacts on screen, the approved wording beside what was delivered; dated, composite and synthetic stories; takeaways MECE (no overlap, nothing missing), at most two lines each |
 | **Solution architecture** | The design as jobs on a map, with sources, channels and feedback loops | Builds one layer per press of the right arrow (headline, sources, each job, channels, loops); clicking a job reveals only up to that job; each job has a "How it runs" step list, techniques (by kind, never vendor) and its checks |
-| **How it works** | One page per job; its step list is the architecture's "How it runs" list, row for row | A real example and a record card on every step; the AI's part beside the system's part; the window title says whose screen it is; a "Meet the people" strip; **advances on click** (Next, the right arrow or space), never on a timer |
-| **Prove it** | The last job (Test), as tabs | See "Prove it" below |
+| **How it works** | One page per job; its step list is the architecture's "How it runs" list, row for row. Job 4, the last job (Test), is **Prove it**, its own page `prove.html`, as tabs (see "Prove it" below) | A real example and a record card on every step; the AI's part beside the system's part; the window title says whose screen it is; a "Meet the people" strip; **advances on click** (Next, the right arrow or space), never on a timer |
 | **Future state** | The same day, same tabs, same layout as Current state | The step that removes today's break is marked; model runs said aloud as "recorded ahead of time, replayed" |
 | **Roadmap** | Phases from prototype to production, one card at a time | See "Roadmap and Trade-offs" below |
 | **Trade-offs** | Ranked choices where we chose safety over speed | See "Roadmap and Trade-offs" below |
 
-Default timing for 30 minutes: Current state 5, architecture 4, How it works 8, Prove it 4, Future state 2,
-Roadmap 4, Trade-offs 1, PRD 2. Personal stories are told aloud, never put in the prototype.
+Default timing for 30 minutes: Current state 5, Solution architecture 4, How it works 8 (including Prove it 4),
+Future state 2, Roadmap 4, Trade-offs 1, PRD 2. Personal stories are told aloud, never put in the prototype.
 
 ## Prove it
 
@@ -71,7 +70,8 @@ Roadmap 4, Trade-offs 1, PRD 2. Personal stories are told aloud, never put in th
 
 Keep `out/<case>-final-story.md` (template: `talk-track-template.md`): per step On screen, Say, Click and
 Q&A; a Never say list; a timing line. Rebuild the PDF with `demo-kit/talktrack.py` after every change, and run
-`demo-check.js --talk` so its step names, tab names, tab count and rates match the site.
+`demo-check.js --talk` so its step names, "Prove it", "PRD", full tab names, the tab count (always stated) and
+rates match the site.
 
 ## Visual and interaction rules
 
@@ -92,7 +92,7 @@ Q&A; a Never say list; a timing line. Rebuild the PDF with `demo-kit/talktrack.p
 ## Before showing it
 
 - `node .claude/skills/valued-deep/demo-check.js <proto> --talk out/<case>-final-story.md --build
-  out/<case>-build-list.json` prints `Clean`.
+  out/<case>-build-list.json` prints `Clean`. Both flags are required; a missing file, Roadmap or PRD file fails.
 - The final audit (three `demo-auditor` passes, see `audit-prompt-template.md`) has no High or Med finding open.
 
 - Play every step end to end with Watch it play; zero console errors.

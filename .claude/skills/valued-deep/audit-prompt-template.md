@@ -31,15 +31,16 @@ You fix nothing without <presenter>'s answer on that specific item.
   only with `<abs path to publish script>`, never by hand.
 - **State of record.** Decision log D1 to D<n>; the demo as built is strategy section <S-section> (rows <ids>).
   The session that owns the log and the strategy is "<owner session>"; send it every decision.
-- **The story.** Opens straight on Current state. Timing <6-4-9-6-5>. Told aloud, not on screen: <stories>.
+- **The story.** Opens straight on Current state. Timing <Current state 5, Solution architecture 4, How it works 8 (incl. Prove it 4), Future state 2, Roadmap 4, Trade-offs 1, PRD 2>. Told aloud, not on screen: <stories>.
 - **Baseline eval numbers.** Any change to these is a finding: <release verdict>, golden <x of y>, sealed
   holdout <x of y> (seal intact), probe sets <x of y> (<n> questions), <each known miss with its denominator>,
   <disputed labels>.
 
 ## What to audit
 
-- **The five steps:** Current state `<page>`, Solution architecture `<page>`, How it works `<pages>`,
-  Future state `<page>`, Prove it `<page>`. Serve locally with `python3 -m http.server <port> --bind 127.0.0.1`
+- **The six steps, plus the PRD link:** Current state `<page>`, Solution architecture `<page>`, How it works
+  `<pages>` (job 4, its last job, is Prove it `<prove.html>`), Future state `<page>`, Roadmap `<page>`,
+  Trade-offs `<page>`, PRD `<page>`. Serve locally with `python3 -m http.server <port> --bind 127.0.0.1`
   from `<abs proto path>`, and check the live copy at <public URL>.
 - **Product and deep-dive pages:** <list>.
 - **Engine and data:** <answer contract file>, <data files>, `eval-core.js`, <probe files>, <scene files>.
@@ -77,7 +78,7 @@ apply every High and Med finding before the showing:
 
 | Scope | Files | Must check |
 |---|---|---|
-| `story` | Current state, Solution architecture, How it works, Prove it, Future state | Claims against strategy, log and PRD; numbers against a live `evalAll` run; tests named on screen exist; who decides what (approver by content type); holdout wording; overclaims |
+| `story` | Current state, Solution architecture, How it works (Prove it as job 4), Future state | Claims against strategy, log and PRD; numbers against a live `evalAll` run; tests named on screen exist; who decides what (approver by content type); holdout wording; overclaims |
 | `roadmap-prd` | Roadmap, Trade-offs, the whole PRD | Phases, success, risks and tools match the strategy rows; one build list everywhere; technical lines match the FRs; bars not merged across denominators; header version and D-range current |
 | `talk-hygiene` | Talk track and the public folder | Tab names, counts, click paths and rates match the site; vendor names only as market examples; no em dashes, real or placeholder names; no broken links; Nik's authorship only |
 

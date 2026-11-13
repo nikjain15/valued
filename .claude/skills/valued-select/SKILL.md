@@ -14,7 +14,7 @@ framework's weighting quietly picking the winner; an unverified figure reaching 
 |---|---|
 | **Asks the client** | Which matters most (dollars, feasibility, strategic leverage, audience fit)? Which risk would you rather carry: the bigger number with the weaker chain, or the smaller number with the sourced chain? (Their priorities and risk appetite.) |
 | **Uses** | A fact register verified in parallel by `fact-checker` agents; stress tests on each option's causal chain; sourced sizing with unit economics; five fixed lenses under several weightings; audience-fit signals read from the brief or rubric; a decision log and a citations register. |
-| **Gives** | `out/select/select.md` (the memo), `out/select/citations.md`, `out/select/decision-log.md`, `out/select/select.json` (ranked options gate A can seed from), `out/select/cards.json`. |
+| **Gives** | `<out>/select.md` (the memo), `<out>/citations.md`, `<out>/decision-log.md`, `<out>/select.json` (ranked options gate A can seed from), `<out>/cards.json`. |
 | **Governance asks** | Does any option sit inside an active regulatory dispute or litigation? Which option's wrong output reaches a customer or regulator? Which facts are inferred rather than sourced, and who must confirm them? |
 
 ## Arguments and modes
@@ -26,11 +26,12 @@ inline list. Flags:
 - `--top N`: verify only the N finalists after a quick first pass (default: verify all options with a stated dollar lever).
 - `--strengths "<what the chooser is good at>"`: used by the audience-fit lens; omit to skip that signal.
 - `--auto`: take the recommended option on both cards, logged "(auto)"; for regression runs and dry runs.
-- `--out <dir>`: write outputs there instead of `out/select/` (for example `examples/<slug>-select/` to keep a
+- `--out <dir>`: the output folder, written `<out>` everywhere below; default `out/select`. Every file
+  this skill writes goes under it, never to a hard-coded path (for example `examples/<slug>-select/` to keep a
   de-identified selection with the repository; `out/` is git-ignored). Never write real client material there.
 
 Budget: deep, 60 to 90 minutes with web access; quick, 10 minutes. Print one header line per step; write
-notes to `out/select/run-notes.md`, not to the screen.
+notes to `<out>/run-notes.md`, not to the screen.
 
 ## Sourcing standard (binding)
 
@@ -52,7 +53,7 @@ URL, the quoted sentence or cell, access date and tag. Derived numbers show the 
 1. **Intake (print `Select · N options · audience: …`).** Read the options document. Build the options
    register (max 12 rows): id, name, business area, what the AI does, deliverables or rubric rows the
    option carries, sample data supplied, the dollar lever the option implies, the "why now" claimed.
-   Record the audience and the chooser's strengths if given. Write `out/select/run-notes.md`.
+   Record the audience and the chooser's strengths if given. Write `<out>/run-notes.md`.
 2. **Fact register.** List every quantitative or factual claim the user supplied, plus the facts each option
    needs to be sized (the lever's dollar pool, the why-now date, incumbents, regulatory state). One row per
    claim: id, claim, why it matters to which option, the source the user gave if any. Max 40 rows; prioritise
@@ -60,9 +61,12 @@ URL, the quoted sentence or cell, access date and tag. Derived numbers show the 
 3. **Verify in parallel (deep mode).** Launch `fact-checker` agents **in a single message**, 6 to 10 claims
    each, with the sourcing standard above and the primary-source list for this industry. Each returns, per
    claim: verdict (exact, right number wrong label or base, wrong, stale, unsourced, not found), what the
-   source actually says (quoted), URL, date, tag. Merge into `out/select/citations.md`. Print
+   source actually says (quoted), URL, date, tag. Merge into `<out>/citations.md`. Print
    `Verified X of Y claims · wrong N · relabel M · not found K`. In `--quick` mode skip this step and mark
-   every claim (assumed). **Prior register:** if a citations register from an earlier run exists (any
+   every claim (assumed). **Quick-mode counts:** nothing is verified, so print `Verified n/a`, write
+   `citations` in `select.json` as `P: 0, S: 0, AJI: <every fact>`, and print `n/a` for `<k>`, `<m>` and
+   `<w>` in the closing line (`n/a facts verified, n/a relabelled, n/a wrong`); a chain strength is still
+   given, marked J. **Prior register:** if a citations register from an earlier run exists (any
    `citations.md` under `out/` or a path the user names), reuse its keys and tags instead of re-verifying;
    say which run they came from in `run-notes.md`. Facts a checker read only as a tool summary rather than
    page text are tagged S, never P.
@@ -78,9 +82,11 @@ URL, the quoted sentence or cell, access date and tag. Derived numbers show the 
    benchmark** list naming the inputs only the organisation holds (these become discovery questions).
    Never sum units into a total unless every input is sourced; label any total "illustrative".
 6. **Ask the client (2 cards, AskUserQuestion, our preference first "(Recommended)").**
+   Card `gate` enum for this skill: `S|Frame|V|A|L|U|E|D` (the `valued/SKILL.md` schema plus `S`); select
+   cards always use `"gate": "S"`, `"round": 0`, ids `S-1`, `S-2`.
    - **"<sponsor or chooser role>": "Which matters most?"** Options: dollars at stake; speed and feasibility;
      strategic leverage (what it enables); audience fit (what the evaluator rewards). The answer sets the
-     client weighting in step 7. Record in `out/select/cards.json` using the card schema in `valued/SKILL.md`
+     client weighting in step 7. Record in `<out>/cards.json` using the card schema in `valued/SKILL.md`
      with `gate: "S"`.
    - **"<same role>": "Which risk would you rather carry?"** Options: the bigger number with the weaker
      chain; the smaller number with the sourced chain; a platform bet whose value lands in other products'
@@ -103,24 +109,26 @@ URL, the quoted sentence or cell, access date and tag. Derived numbers show the 
     industry standards), with what each provides; (iii) what no retrieved documentation provides, stated as
     an absence in the documents read, never as a vendor statement. End with "proven" and "not proven" lines;
     the "not proven" items become discovery questions.
-10. **Decision log** `out/select/decision-log.md`: one row per decision (the pick, why not each other option,
+10. **Decision log** `<out>/decision-log.md`: one row per decision (the pick, why not each other option,
     any framing choice): decision, alternatives, why, evidence keys with tags, what would change it, one
     line to say in the room. Mark who decided and the date; mark recommendations awaiting the client.
 11. **Governance check** (question, answer, status) at the end of `select.md`: active disputes or
     litigation touching any option; which option's wrong output reaches a customer or regulator; the inferred
     or secondary facts and who must confirm them. Open rows go to the Governance log when `/valued` runs next.
-12. **Write** `out/select/select.md`, `citations.md`, `decision-log.md`, `select.json`, `cards.json`. Then
+12. **Write** `<out>/select.md`, `citations.md`, `decision-log.md`, `select.json`, `cards.json`. Then
     print the citations count: facts P / S / A-J-I, and the closing line: `Pick: <option>. Chain strength
-    <n>/5. <k> facts verified, <m> relabelled, <w> wrong. Decision log: out/select/decision-log.md`.
+    <n>/5. <k> facts verified, <m> relabelled, <w> wrong. Decision log: <out>/decision-log.md`.
+    Before the closing line run `node .claude/skills/valued-select/validate.js <out>`; fix every problem it
+    lists and rerun until it prints `Valid`.
 13. **Say it** (three lines, to the client): why verification ran before any lens; which lens each option
     won and why no single weighting decided; what the pick costs and what would change our mind.
 
-## Output: `out/select/select.json`
+## Output: `<out>/select.json`
 
 `{ "audience": "...", "options": [ { "id", "name", "lever": { "pool", "poolKey", "units": [ { "unit", "value", "formula", "keys" } ], "pricedRange", "tail", "noBenchmark": [] }, "chainStrength", "scores": { "attractiveness", "feasibility", "financial", "member", "strategic", "audience" }, "lensWins": [], "qaExposure": [], "rubricRows" } ], "weightings": { "client": {}, "direct": {}, "platform": {}, "purePlatform": {} }, "recommendation": { "options": [ { "label", "tradeoff" } ], "preferred", "why", "changeMind", "tieBreaker" }, "citations": { "P", "S", "AJI" }, "governance": [ { "question", "answer", "status", "owner" } ], "assumptions": [] }`.
 Gate A (`valued-ai-fit`) seeds its candidates and scores from this file when it exists.
 
-## Memo format: `out/select/select.md`
+## Memo format: `<out>/select.md`
 
 Sections, in order, tables of at most 12 rows: 0 The answer (pick, one-line reason per option, tie-breaker) ·
 1 Verification (claim, verdict, what the source says, key) · 2 Stress tests · 3 Sourced sizing · 4 Lenses

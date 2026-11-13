@@ -15,6 +15,11 @@ const smokeOnly = args.includes("--smoke");
 const outDir = path.resolve(__dirname, opt("--out", "results"));
 const { scenarios } = JSON.parse(fs.readFileSync(path.join(__dirname, "scenarios.json"), "utf8"));
 fs.mkdirSync(outDir, { recursive: true });
+// R-019: a workspace whose out/prd.md predates the last commit to the checker was built before the checker
+// changed, so its failures are not regressions. Such rows show STALE and must be rerun.
+const repo = path.resolve(__dirname, "..", "..");
+const checkerTime = (() => { const g = spawnSync("git", ["log", "-1", "--format=%ct", "--", ".claude/skills/valued-audit/check.js"], { cwd: repo, encoding: "utf8" }); const n = Number((g.stdout || "").trim()); return n > 0 ? n * 1000 : 0; })();
+const isStale = (dir) => { try { return fs.statSync(path.join(dir, "out", "prd.md")).mtimeMs < checkerTime; } catch { return false; } };
 
 const minutes = (meta) => {
   if (!meta) return null;
@@ -27,6 +32,7 @@ const rows = [];
 for (const s of scenarios.filter((x) => (!only.length || only.includes(x.slug)) && (!smokeOnly || x.smoke))) {
   const dir = prefix + s.slug;
   if (!fs.existsSync(path.join(dir, "out"))) { rows.push({ s, missing: true }); continue; }
+  if (isStale(dir)) { rows.push({ s, stale: true }); continue; }
   const jf = path.join(outDir, `${s.slug}.json`);
   spawnSync("node", [path.join(__dirname, "check.js"), dir, "--port", String(s.port), "--json", jf].concat(args.includes("--static") ? ["--no-browser"] : []), { encoding: "utf8", timeout: 300000 });
   const r = JSON.parse(fs.readFileSync(jf, "utf8"));
@@ -43,11 +49,13 @@ for (const s of scenarios.filter((x) => (!only.length || only.includes(x.slug)) 
   rows.push({ s, r });
 }
 const head = "| # | Scenario | Shape | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | Cards | Minutes |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|";
-const lines = rows.map(({ s, r, missing }) => missing ? `| ${s.n} | ${s.slug} | not run | | | | | | | | | | |` : `| ${s.n} | ${s.slug} | ${r.shape} | ${[1, 2, 3, 4, 5, 6, 7, 8].map((k) => r.row[k] === "pass" ? "pass" : "**FAIL**").join(" | ")} | ${r.questions} | ${r.minutes === null || r.minutes === undefined ? "n/a" : r.minutes.toFixed(1)} |`);
+const lines = rows.map(({ s, r, missing, stale }) => missing ? `| ${s.n} | ${s.slug} | not run | | | | | | | | | | |` : stale ? `| ${s.n} | ${s.slug} | STALE | | | | | | | | | | |` : `| ${s.n} | ${s.slug} | ${r.shape} | ${[1, 2, 3, 4, 5, 6, 7, 8].map((k) => r.row[k] === "pass" ? "pass" : "**FAIL**").join(" | ")} | ${r.questions} | ${r.minutes === null || r.minutes === undefined ? "n/a" : r.minutes.toFixed(1)} |`);
 const fails = rows.filter((x) => x.r).flatMap(({ s, r }) => r.failures.map((f) => `- ${s.slug} [${f.std || "time"}] ${f.msg}${f.file ? ` (${f.file})` : ""}`));
-const md = [head, ...lines, "", "Failures:", ...(fails.length ? fails : ["- none"])].join("\n");
+const staleSlugs = rows.filter((x) => x.stale).map((x) => x.s.slug);
+const md = [head, ...lines, "", "Failures:", ...(fails.length ? fails : ["- none"]), "", `Stale (out/prd.md older than the last check.js commit; rerun, not counted as regressions): ${staleSlugs.length ? staleSlugs.join(", ") : "none"}`].join("\n");
 fs.writeFileSync(path.join(outDir, "scorecard.md"), md + "\n");
 console.log(md);
-const allPass = rows.every((x) => x.r && x.r.failures.length === 0);
-console.log(allPass ? "\nREGRESSION PASSES" : "\nREGRESSION FAILS");
-process.exit(allPass ? 0 : 1);
+const scored = rows.filter((x) => !x.stale);
+const allPass = scored.every((x) => x.r && x.r.failures.length === 0);
+console.log(!allPass ? "\nREGRESSION FAILS" : staleSlugs.length ? `\nREGRESSION INCOMPLETE: ${staleSlugs.length} stale` : "\nREGRESSION PASSES");
+process.exit(allPass && !staleSlugs.length ? 0 : 1);

@@ -191,7 +191,7 @@ function gov(rows) { return table(["Question", "Answer", "Status"], A(rows).map(
 function sayIt(lines) { return A(lines).length ? ["**Say it**", ...A(lines).map((l) => `- ${clean(l)}`)].join("\n") : ""; }
 function cardsMd(gate) {
   const cs = cards().filter((c) => c.gate === gate);
-  return cs.length ? ["**Cards**", "", table(["Card", "Options (recommended first)", "Decision"], cs.map((c) => [`${c.role}: ${c.question} If none fits, answer with: ${c.format}`, A(c.options).map((o, i) => `${o.label}${i === 0 ? " (Recommended: " + clean(o.tradeoff) + ")" : " (" + clean(o.tradeoff) + ")"}`).join(" · "), c.decision ? `${c.decision}${c.auto ? " (auto)" : ""}` : "open"]))].join("\n") : "";
+  return cs.length ? ["**Cards**", "", table(["Card", "Options (recommended first)", "Decision"], cs.map((c) => [`${c.role}: ${c.question} If none fits, answer with: ${c.format}`, A(c.options).map((o, i) => `${String(o.label).replace(/\s*\(Recommended\)\s*$/i, "")}${i === 0 ? " (Recommended: " + clean(o.tradeoff) + ")" : " (" + clean(o.tradeoff) + ")"}`).join(" · "), c.decision ? `${c.decision}${c.auto ? " (auto)" : ""}` : "open"]))].join("\n") : "";
 }
 
 // ---------- gate files ----------
@@ -232,9 +232,16 @@ const PROV = () => path.join(PROTO, "provenance.json");
 function seal(what, by) {
   if (!["holdout", "router"].includes(what)) return console.log("Usage: conductor.js seal holdout|router <by>");
   if (!by) return console.log(`Usage: conductor.js seal ${what} <by>   (the agent name, for example holdout-sealer)`);
+  // R-004: append-only. Each entry carries seq, the previous entry's hash and its own, and is mirrored to
+  // holdout-log.jsonl ({kind:"seal"}); the audit fails standard 6 when the chain or the mirror disagrees.
   const p = json(PROV(), {});
-  p[what] = A(p[what]).concat([{ by, at: new Date().toISOString() }]);
+  const all = ["holdout", "router"].flatMap((k) => A(p[k])).sort((a, b) => (a.seq || 0) - (b.seq || 0));
+  const prev = all.length ? all[all.length - 1].hash || "" : "";
+  const e = { seq: all.length + 1, by, at: new Date().toISOString(), prev };
+  e.hash = require("crypto").createHash("sha256").update(JSON.stringify([what, e.seq, e.by, e.at, e.prev])).digest("hex");
+  p[what] = A(p[what]).concat([e]);
   fs.mkdirSync(PROTO, { recursive: true }); writeJson(PROV(), p);
+  fs.appendFileSync(path.join(PROTO, "holdout-log.jsonl"), JSON.stringify({ kind: "seal", what, ...e }) + "\n");
   console.log(`Recorded: ${what} written by ${by}. Writers so far: holdout ${A(p.holdout).map((x) => x.by).join(", ") || "none"}; router ${A(p.router).map((x) => x.by).join(", ") || "none"}.`);
 }
 function provenance() {
@@ -255,7 +262,7 @@ function evalResults() {
   const prov = provenance();
   const independent = prov.independent;
   const hlog = read(path.join(PROTO, "holdout-log.jsonl")).split("\n").filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
-  const versions = [...new Set(hlog.map((x) => x.router))].length;
+  const versions = [...new Set(hlog.filter((x) => x.router).map((x) => x.router))].length;
   const seen = versions > 1 ? `holdout scored against ${versions} router versions; only the last counts, and the earlier attempts may have informed the change` : "";
   return { seen, prov, versions, dev, holdout, devGates: parse(dev), holdGates: parse(holdout), devPass: /RELEASE PASSES ALL GATES/.test(dev), holdPass: /RELEASE PASSES ALL GATES/.test(holdout), independent, goldenN: json(path.join(PROTO, "golden.json"), []).length, holdoutN: json(path.join(PROTO, "holdout.json"), []).length };
 }
@@ -407,7 +414,7 @@ function renderPrd(g, ev, c) {
   const md = [`# ${productName() || v?.useCase || "(use case, from gate V)"}: product requirements`, "", `<!-- Case: ${clean(caseLine())} -->`, "", `**Client:** ${v?.client || "(from gate V)"} · **Version:** ${version} · **Owner:** product lead · **Date:** ${today()} · **Source:** VALUED run, every decision traceable to a gate file in \`out/\``, "",
     ...(b ? [`> **Recommendation.** ${clean(b.recommendation)}`, `> **Decision asked of the client.** ${clean(b.decisionAsked)}`, ""] : []),
     ...Object.entries(titles).flatMap(([n, t]) => [`## ${n}. ${t}`, "", s[n], ""]),
-    "## Appendix: client decisions", "", cs.some((x) => x.decision) ? tableAll(["Gate", "Decision", "Chosen by", "Our recommendation"], cs.filter((x) => x.decision).map((x) => [x.gate, byLabel(x.decision), byLabel(x.by || x.role), A(x.options)[0]?.label])) : P("B"), "",
+    "## Appendix: client decisions", "", cs.some((x) => x.decision) ? tableAll(["Gate", "Card", "Decision", "Answer source", "Our recommendation"], cs.map((x) => [x.gate, clean(x.question), x.decision ? `${byLabel(x.decision)}${x.revised ? " (revised)" : ""}` : "open", x.decision ? (x.skipped ? "recommended default (round skipped)" : x.auto ? "recommended option" : `client: ${byLabel(x.by || x.role)}`) : "not answered", byLabel(A(x.options)[0]?.label)])) : P("B"), "",
     history || ["## Appendix: document history", "", "| Version | Date | Change | Requested by | Sections |", "|---|---|---|---|---|", `| 0.1 | ${today()} | First draft, built gate by gate through the VALUED gates | Product lead | All |`].join("\n"), ""].join("\n");
   // Client-ready: bracketed question references stay in the decisions appendix, not in the client's prose.
   const cut = md.indexOf("## Appendix: client decisions");
@@ -480,7 +487,8 @@ function check(g, ev, c, quiet) {
   need(!fs.existsSync(path.join(PROTO, "eval.js")) || ev.devPass, 6, "dev eval blocked"); need(!fs.existsSync(path.join(PROTO, "eval.js")) || ev.holdPass, 6, "holdout eval blocked");
   if (g.a && g.a.engine !== "rules" && fs.existsSync(path.join(PROTO, "eval.js"))) { const cache = json(path.join(PROTO, "model-cache.json"), {}); const norm = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim(); const missing = ["golden.json", "holdout.json"].flatMap((f) => json(path.join(PROTO, f), [])).filter((r) => !cache[norm(r.text)]).length; need(missing === 0, 6, `guard model cache misses ${missing} texts: run model-inputs and the guard model again`); }
   const router = read(path.join(PROTO, "router.js")); if (router) need(!/\brequire\(|\bimport\s|readFileSync|fetch\(/.test(router) && /module\.exports\s*=\s*\{\s*decide/.test(router), 7, "router must be self-contained CommonJS");
-  if (router) { const n = router.split("\n").filter((l) => l.trim() && !/^\s*\/\//.test(l)).length; need(n <= 200, 7, `router.js is ${n} lines of code (160 is the guideline, 200 the limit): move the wording lists into sources.json match lists or the trigger lexicon, not more branches`); }
+  // R-017: the same measure as the audit (valued-audit/check.js standard 7): non-whitespace characters outside comments.
+  if (router) { const n = router.replace(/\/\*[\s\S]*?\*\//g, "").split("\n").filter((l) => !/^\s*\/\//.test(l)).join("").replace(/\s/g, "").length; need(n <= 10000, 7, `router.js is ${n} non-whitespace characters of code; 8000 is the guideline and 10000 the limit: move trigger phrases and wording into sources.json match lists`); }
   { // No repeated questions: any two cards sharing most of their content words are one question asked twice.
     const stop = new Set("the a an and or of to in for on with your you we our is are be this that what how who which do does would could it its as at by from if any".split(" "));
     const toks = (q) => new Set(String(q || "").toLowerCase().replace(/\([^)]*\)/g, " ").match(/[a-z]{3,}/g)?.filter((w) => !stop.has(w)) || []);
@@ -556,7 +564,7 @@ if (cmd === "clock") {
   const cs = cards(); const round = Number(rest[1]);
   const mine = cs.filter((c) => Number(c.round) === round);
   if (rest[0] === "auto" || rest[0] === "skip") { const skip = rest[0] === "skip"; for (const c of mine) { c.decision = A(c.options)[0]?.label; c.auto = true; if (skip) c.skipped = true; c.by = skip ? "client (skipped, recommended taken)" : c.role; trace({ kind: "decision", id: c.id, gate: c.gate, role: c.role, question: c.question, decision: c.decision, auto: true, skipped: skip }); } writeJson(path.join(OUT, "cards.json"), cs); console.log(skip ? `Round ${round} skipped: ${mine.length} cards took the recommended option so we can move on; the PRD records them as client defaults.` : `Round ${round}: ${mine.length} cards answered with the recommended option (auto).`); }
-  else for (const c of mine) { console.log(`\n**"${c.role}": "${c.question}"** If none fits, answer with: ${c.format}`); if (c.why) console.log(`Why we ask: ${clean(c.why)}`); A(c.options).forEach((o, i) => console.log(`${i + 1}. ${o.label}${i === 0 ? " (Recommended)" : ""}: ${clean(o.tradeoff)}`)); }
+  else for (const c of mine) { console.log(`\n**"${c.role}": "${c.question}"** If none fits, answer with: ${c.format}`); if (c.why) console.log(`Why we ask: ${clean(c.why)}`); A(c.options).forEach((o, i) => console.log(`${i + 1}. ${o.label}${i === 0 && !/\(Recommended\)/i.test(o.label || "") ? " (Recommended)" : ""}: ${clean(o.tradeoff)}`)); }
 } else if (cmd === "verify") {
   // Fast, deterministic QC after a phase: only what that phase and the ones before it own. The gate-qc agent
   // does the judgement checks in the background; this catches the mechanical ones in a second.
