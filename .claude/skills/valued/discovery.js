@@ -4,7 +4,7 @@
 const A = (x) => (Array.isArray(x) ? x : []);
 const esc = (s) => String(s ?? "").replace(/—/g, ", ").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-function renderDiscovery(r, cards, client) {
+function renderDiscovery(r, cards, client, qc) {
   const src = Object.fromEntries(A(r.sources).map((s, i) => [s.key, { ...s, n: i + 1 }]));
   const cite = (k) => { const s = src[k]; return s ? `<a class="cite" href="#src-${esc(k)}" title="${esc(s.publisher)}, ${esc(s.year)}">${s.n}</a>` : ""; };
   const cites = (ks) => A(ks).map(cite).join("");
@@ -110,6 +110,7 @@ tr:first-child td{border-top:0}
 <p class="lede">${esc(r.summary || "")}</p>
 <div class="meta"><span class="pill">${A(r.sources).length} sources, ${nP} primary</span><span class="pill">${A(r.facts).length} cited facts</span><span class="pill">${answered} of ${A(cards).filter((c) => Number(c.round) === 1).length} questions answered</span></div>
 <div class="strands">${status}</div>
+${A(qc).length ? `<div class="strands qc">${A(qc).map((q) => { const n = A(q.auto).length + A(q.findings).filter((f) => f.severity !== "minor" && !f.fixed).length; const names = ["Framing", "Discovery", "Value and AI-fit", "Your steers", "Answer key and guardrails", "Evals and launch", "PRD and prototype"]; return `<span class="strand${n ? "" : " done"}">${n ? "&#9679;" : "&#10003;"} Checked: ${names[q.phase] || q.phase}${n ? `, ${n} being fixed` : ""}</span>`; }).join("")}</div>` : ""}
 ${assumptions ? `<h2>What we are assuming</h2><p class="sub">Stated up front so you can correct us. Each one is tested by a question.</p><ul class="assume">${assumptions}</ul>` : ""}
 ${facts ? `<h2>What the evidence says</h2><p class="sub">Published figures only; every number links to its source.</p><div class="facts">${facts}</div>` : ""}
 ${flow ? `<h2>How the work runs today</h2><p class="sub">The industry's own steps, and where they typically break.</p><ol class="flow">${flow}</ol>` : ""}
