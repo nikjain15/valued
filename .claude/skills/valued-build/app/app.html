@@ -415,7 +415,7 @@
         <div class="stack">
           <div class="three" id="govStats"></div>
           <div class="card"><div class="eyebrow">Controls running in this prototype</div><p class="small muted" style="margin-top:4px">Each control is enforced in the product you are using, with the evidence that shows it.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Control</th><th>How it is enforced</th><th>Evidence</th></tr></thead><tbody id="controls"></tbody></table></div></div>
-          <div class="card"><div class="eyebrow">Governance checks, step by step</div><p class="small muted" style="margin-top:4px">Asked at each step of the working session. Anything not answered has a named owner.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Step</th><th>Question</th><th>Answer</th><th>Status</th><th>Closes it</th></tr></thead><tbody id="govRows"></tbody></table></div></div>
+          <div class="card"><div class="eyebrow">Governance checks, step by step</div><p class="small muted" style="margin-top:4px">Answered step by step during discovery and design. Anything not answered has a named owner.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Step</th><th>Question</th><th>Answer</th><th>Status</th><th>Closes it</th></tr></thead><tbody id="govRows"></tbody></table></div></div>
         </div>
       </section>
 
@@ -456,7 +456,7 @@
         <div class="stack">
           <p class="muted" id="howIntro" style="max-width:75ch"></p>
           <div class="flow" id="flow"></div>
-          <div class="card"><div class="eyebrow">Decisions that shaped it</div><p class="small muted" style="margin-top:4px">Every choice made in the working session, who made it, and what it changed here.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Step</th><th>Decision</th><th>Chosen by</th><th>What it changed</th></tr></thead><tbody id="decisionRows"></tbody></table></div></div>
+          <div class="card"><div class="eyebrow">Decisions that shaped it</div><p class="small muted" style="margin-top:4px">Every choice made with your team during design, who made it, and what it changed here.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Step</th><th>Decision</th><th>Chosen by</th><th>What it changed</th></tr></thead><tbody id="decisionRows"></tbody></table></div></div>
           <div class="two">
             <div class="card"><div class="eyebrow">Release gates</div><div class="tbl" style="margin-top:8px"><table><tbody id="gateRows"></tbody></table></div></div>
             <div class="card"><div class="eyebrow">Approved knowledge</div><div class="tbl" style="margin-top:8px"><table><tbody id="sourceRows"></tbody></table></div></div>
@@ -466,7 +466,7 @@
 
       <!-- FAQ -->
       <section class="page" id="p-faq" hidden>
-        <div class="card"><p class="small muted">Every answer comes from a decision made in the working session; the tag shows which.</p><div class="faq" id="faqList" style="margin-top:8px"></div></div>
+        <div class="card"><p class="small muted">Every answer comes from a decision made with your team; the tag shows which.</p><div class="faq" id="faqList" style="margin-top:8px"></div></div>
       </section>
 
       <!-- Observability -->
@@ -1219,7 +1219,7 @@ function renderEvalControls() {
   const rows = rowsFor(evalSet), e_ = rows.filter((r) => r.expected === "escalate").length;
   $("#setDev").textContent = `Development set (${GOLDEN.length})`; $("#setHold").textContent = `Sealed holdout (${HOLDOUT.length})`;
   $("#setCustom").hidden = !CUSTOM.length; $("#setCustom").textContent = `Your data and flags (${CUSTOM.length})`;
-  $("#setInfo").textContent = evalSet === "holdout" ? `${rows.length} ${SHAPE.noun[1]} the system never saw while it was built or fixed. The honest score; individual items stay hidden.` : `${rows.length} ${SHAPE.noun[1]}, each labelled with the right outcome before anything was built: ${e_} should escalate, ${rows.filter((r) => r.expected === "answer").length} are ready, ${rows.filter((r) => r.expected === "human").length} need a person.`;
+  $("#setInfo").textContent = evalSet === "holdout" ? `${rows.length} ${SHAPE.noun[1]} never used to build or tune the decision rules. The honest score; individual items stay hidden.` : `${rows.length} ${SHAPE.noun[1]}, each labelled with the right outcome before anything was built: ${e_} should escalate, ${rows.filter((r) => r.expected === "answer").length} are ready, ${rows.filter((r) => r.expected === "human").length} need a person.`;
   $("#engineSeg").innerHTML = ENGINES.map((e) => `<button class="design" data-engine="${e.id}" aria-pressed="${e.id === engine}"><span class="t">Design ${e.letter}: ${e.name}${e.rec ? ' <span class="pill ok">Recommended</span>' : ""}</span><div class="path">${esc(e.path)}</div><p>${esc(e.what)}</p><p><span class="pro">+</span> ${esc(e.pro)}<br><span class="con">-</span> ${esc(e.con)}</p></button>`).join("");
   $("#engineDesc").textContent = engine !== "rules" ? `Model for designs B and C: ${model().short}. Change it in the top bar.` : "Design A uses no model.";
   $("#runTest").disabled = !ROUTER || (engine !== "rules" && !AI);
@@ -1339,7 +1339,7 @@ function addTool(name, category) {
 }
 function renderConnectors() {
   const list = CASE.connectors || [];
-  $("#connIntro").textContent = list.length ? `The systems this product reads from and hands off to at ${CASE.client || "the client"}, recommended in the working session. Connections here are simulated on synthetic data; nothing leaves this page.` : "Systems are recommended at gate L of the working session. Until then, bring your own files below.";
+  $("#connIntro").textContent = list.length ? `The systems this product reads from and hands off to at ${CASE.client || "the client"}, recommended during design. Connections here are simulated on synthetic data; nothing leaves this page.` : "Systems are recommended at gate L of the working session. Until then, bring your own files below.";
   const on = list.filter((c) => c.status === "connected").length;
   $("#connTiles").innerHTML = [["ok", on, "Connected (simulated)"], ["warn", list.filter((c) => c.status !== "connected").length, "Planned"], ["", list.filter((c) => c.access !== "read-write").length, "Read-only"], ["", list.filter((c) => c.pii === "masked").length, "Personal data masked"]].map(([k, n, l]) => `<div class="tile ${k}"><b>${n}</b><span>${l}</span></div>`).join("");
   $("#cntConn").textContent = list.length ? `${on}/${list.length}` : "";

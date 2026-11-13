@@ -42,7 +42,7 @@ const out = [
   "",
   "| Version | Date | Change | Requested by | Sections |",
   "|---|---|---|---|---|",
-  `| 0.1 | ${today} | First draft, built gate by gate in the working session | Product lead | All |`,
+  `| 0.1 | ${today} | First draft, built step by step with your team | Product lead | All |`,
   "",
 ];
 fs.writeFileSync(dest, out.join("\n"));

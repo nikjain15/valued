@@ -87,7 +87,7 @@ h1{font-family:var(--font-display);font-size:26px;margin:4px 0 0}
 .fresh{animation:fresh 2.4s ease-out}@keyframes fresh{from{box-shadow:0 0 0 4px var(--brand-soft)}to{box-shadow:var(--shadow-float)}}
 @media (max-width:720px){.stepper{flex-wrap:wrap;row-gap:12px}.stepper:before{display:none}.st{flex:0 0 33%}.row{grid-template-columns:1fr;gap:6px}.row p,.row ol{font-size:18px}.card h2{font-size:23px}}
 </style></head><body><div class="wrap">
-<div class="top"><div><div class="eyebrow">Our approach</div><h1>${esc(title || "Working session")}</h1></div>${client ? `<span class="client">${esc(client)}</span>` : ""}</div>
+<div class="top"><div><div class="eyebrow">Our approach</div><h1>${esc(title || "Our approach")}</h1></div>${client ? `<span class="client">${esc(client)}</span>` : ""}</div>
 <div class="stepper">${stepper}</div>
 ${card}
 ${cited.size ? `<p class="src">Sources: ${[...cited].map((k) => { const x = srcs.find((y) => y.key === k); return `${srcN[k]}. ${esc(x.publisher)}, ${esc(x.title)}, ${esc(x.year)}`; }).join(" · ")} · <a href="/research">Full research</a></p>` : ""}
