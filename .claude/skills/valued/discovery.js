@@ -19,6 +19,13 @@ function renderDiscovery(r, cards, client, qc) {
     const log = A(x.log).slice(-5).map((l) => `<li>${esc(l.step || l)}</li>`).join("");
     return `<div class="strand"><div class="sh"><b>${name}</b><span class="chip ${state[0]}">${state[1]}</span></div><p class="what">${what}</p><div class="nums"><span><b>${facts.length}</b> findings</span><span><b>${new Set(facts.map((f) => f.source)).size}</b> sources</span></div>${log ? `<ul class="log">${log}</ul>` : ""}</div>`;
   }).join("");
+  // Follow-ups: short targeted checks launched when an answer opens a new angle (strand "followup-<n>").
+  const fups = A(r.runs).filter((x) => /^followup/.test(x.strand || "")).map((x) => {
+    const ff = A(r.facts).filter((f) => (f.followup || "") === x.strand);
+    const state = x.done ? (x.thin ? ["c3", "Still confirming"] : ["c2", "Done"]) : x.note ? ["c0", "Not reachable"] : ["c1", "Researching"];
+    const log = A(x.log).slice(-4).map((l) => `<li>${esc(l.step || l)}</li>`).join("");
+    return `<div class="strand"><div class="sh"><b>${esc(x.topic || "Following your answer")}</b><span class="chip ${state[0]}">${state[1]}</span></div><p class="what">Following your answer${x.because ? `: "${esc(x.because)}"` : ""}</p><div class="nums"><span><b>${ff.length}</b> findings</span></div>${log ? `<ul class="log">${log}</ul>` : ""}</div>`;
+  }).join("");
   const facts = A(r.facts).map((f) => `<div class="fact"><div class="fig">${esc(f.figure)}</div><p>${esc(f.fact)}</p><div class="by">${src[f.source] ? `${esc(src[f.source].publisher)}, ${esc(src[f.source].year)} <span class="tag">${src[f.source].tag === "P" ? "Primary" : "Secondary"}</span>` : ""}${cite(f.source)}</div></div>`).join("");
   const flow = A(r.process).slice(0, 7).map((p, i) => `<li class="step${p.breaks ? " hot" : ""}"><span class="n">${i + 1}</span><b>${esc(p.step)}</b><span>${esc(p.plain)}</span>${p.breaks ? `<em>Where it breaks: ${esc(p.breaks)}</em>` : ""}</li>`).join("");
   const regs = A(r.regulation).slice(0, 6).map((g) => `<div class="row"><span class="chip c1">${esc(g.rule)}</span><p>${esc(g.plain)}${cite(g.source)}</p></div>`).join("");
@@ -77,6 +84,7 @@ h1{font-family:var(--font-display);font-size:26px;margin:4px 0 0;line-height:1.2
 ${blocked ? `<p class="note">Published sources are not reachable from this machine right now, so this page stays empty; everything in our approach comes from what you told us.</p>` : ""}
 <div class="totals"><div class="tot"><b>${A(r.facts).length}</b><span>findings</span></div><div class="tot"><b>${A(r.sources).length}</b><span>sources</span></div><div class="tot"><b>${nP}</b><span>primary sources</span></div></div>
 ${section("Live", "Three research streams", "Running in the background; they never hold up our conversation.", `<div class="strands">${strands}</div>`)}
+${section("Following your answers", "Research that follows the conversation", "Short checks we started when an answer opened a new angle.", fups ? `<div class="strands">${fups}</div>` : "")}
 ${section("Findings", "What we found", "Figures as published, with what each means for you.", facts ? `<div class="facts">${facts}</div>` : "")}
 ${section("Today", "How the work typically runs", "The industry's own steps, and where they tend to break.", flow ? `<ol class="flow">${flow}</ol>` : "")}
 ${section("Boundaries", "Rules that shape the design", "", regs)}
@@ -110,7 +118,8 @@ function mergeResearch(strands, prev) {
   }
   r.notes = strands.filter((s) => s.note).map((s) => `${s.strand}: ${s.note}`);
   r.strands = strands.filter((s) => s.done && !s.thin).map((s) => s.strand);
-  r.runs = strands.map((s) => ({ strand: s.strand, done: !!s.done, thin: !!s.thin, note: s.note || "", log: A(s.log) }));
+  r.runs = strands.map((s) => ({ strand: s.strand, done: !!s.done, thin: !!s.thin, note: s.note || "", log: A(s.log), topic: s.topic || "", because: s.because || "" }));
+  for (const st of strands) if (/^followup/.test(st.strand || "")) for (const f of A(st.facts)) { const m = r.facts.find((x) => x.key === f.key); if (m) m.followup = st.strand; }
   r.thin = strands.filter((s) => s.done && s.thin).map((s) => s.strand);
   return r;
 }
