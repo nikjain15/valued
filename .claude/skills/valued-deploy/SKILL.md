@@ -51,6 +51,15 @@ description: VALUED gate D. Plan the launch and the life after it, recommend pil
 5. **Ask the client (max 2 cards):** **"<sponsor role>": "What is the pilot scope?"** and **"<sponsor role>": "What would
    make you stop?"**, each with the options from step 3, our preference first "(Recommended)", every
    option with its trade-off.
+5b. **Around the launch** (what a consultant plans beyond the gates), each table at most 6 rows:
+   - `roadmap`: Now, Next, Later. Each row: phase, what ships, the evidence that ends it (never a date alone),
+     what it depends on (other teams, products, systems), release cadence. Bound "Now" by C-3's window.
+   - `supportModel`: one row per tier: tier, who, what they own (a user's question, a wrong answer, drift and
+     cost, the switch-off).
+   - `adoption` from C-5: who changes how they work, what changes, how we bring them in (co-design,
+     champions, a shadow period), the adoption signal we watch.
+   - `operatingModel`: role (product, engineering, data, design, ML, the client's own people), who does it in
+     the first wave, who owns it after handover.
 6. **Governance check** in `out/6-deploy.md` (question, answer, status):
    - Sign-offs: the signer we propose for each stage, by role; status "client to confirm".
    - Audit trail and kill switch: what is retained (from gate U's logging spec) and the named owner of
@@ -64,4 +73,4 @@ description: VALUED gate D. Plan the launch and the life after it, recommend pil
 
 ## Output: `out/gates/d.json`
 
-Keys (render and `conductor.js check` read them; keep strings to one line): `deploy` (`{ step, proves, exit, signs }`), `drive` (`{ metric, why, alert }`), `pilot` and `stop` (recommendations; preferred = cards R2-5 and R2-6), `plan` (`{ week, work }`, up to 6 rows), `timeline` (one line), `signoffs` (`{ name, role, signs }`, name "to confirm"), `killSwitchOwner`, `observability` (`{ signals: [{ signal, group, source, alert }] across quality and safety, cost and tokens, speed and volume, and human workload; dashboard; telemetry }`, for PRD section 18); plus `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.
+Keys (render and `conductor.js check` read them; keep strings to one line): `deploy` (`{ step, proves, exit, signs }`), `drive` (`{ metric, why, alert }`), `pilot` and `stop` (recommendations; preferred = cards R2-5 and R2-6), `plan` (`{ week, work }`, up to 6 rows), `timeline` (one line), `signoffs` (`{ name, role, signs }`, name "to confirm"), `killSwitchOwner`, `observability` (`{ signals: [{ signal, group, source, alert }] across quality and safety, cost and tokens, speed and volume, and human workload; dashboard; telemetry }`, for PRD section 18); plus `roadmap` (`{ phase, ships, exit, dependsOn, cadence }`), `supportModel` (`{ tier, who, owns }`), `adoption` (`{ group, changes, bringIn, signal }`), `operatingModel` (`{ role, firstWave, afterHandover }`), `governance` (rows `{ question, answer, status, owner }`), `sayIt` (3 lines), `assumptions` (strings). Recommendations use `{ options: [{ label, tradeoff }], preferred, why, changeMind }`. Then run `node .claude/skills/valued/conductor.js render`.

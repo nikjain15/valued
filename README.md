@@ -15,9 +15,14 @@ gates, in order:
 | **U** User-in-the-loop | Per action: suggest, draft, act with approval, or act. What the AI never does. Escalation wins every race |
 | **E** Evals | Release thresholds set first, metrics by slice, a missed gate blocks the release |
 | **D** Deploy and drive | Shadow mode, pilot, sign-off, rollback; drift, adoption, edit rate; scale, fix or retire |
-| **Deep** (instead of the 28-minute run, when one case must survive a technical panel or an investment committee) | The same questions over days: parallel research against primary sources, a decision log, a citations register where every number carries a key, evals as rule gates plus model metrics per group, every bar defended against what the industry publishes, two independent eval reviews on a second model, one strategy document with stable row IDs, and revalidation passes until it is solid. Nothing is built until `go build`. `/valued-deep <case>` |
+| **Deep** (instead of the 30-minute run, when one case must survive a technical panel or an investment committee) | The same questions over days: parallel research against primary sources, a decision log, a citations register where every number carries a key, evals as rule gates plus model metrics per group, every bar defended against what the industry publishes, two independent eval reviews on a second model, one strategy document with stable row IDs, and revalidation passes until it is solid. Nothing is built until `go build`. `/valued-deep <case>` |
 
 Production misses become new labels, so D loops back to L.
+
+Before any gate, the run opens the way a consultant would: who is involved and who can block, what today
+costs, the commitment window, what the data looks like, and what has been tried before. Those answers land in
+the PRD as stakeholders and decision rights, a roadmap that ends each phase on evidence, a support model,
+an adoption plan, an operating model, responsible-AI controls and the hypotheses the plan rests on.
 
 ## How it runs
 

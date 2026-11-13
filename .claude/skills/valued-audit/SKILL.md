@@ -32,7 +32,7 @@ Works in the case workspace (the folder with `out/` and `.claude/`). Prints only
 
 | Standard | Checks |
 |---|---|
-| 1 Questions | 11 to 16 cards; recommended first with its trade-off; "If none fits, answer with"; case roles on headers |
+| 1 Questions | 16 to 23 cards; recommended first with its trade-off; "If none fits, answer with"; case roles on headers |
 | 2 Agentic | 3 to 6 named assistants, the first a rules safety guard; 1 to 3 sweeps with 2+ findings each |
 | 3 Product shape | Today (greeting, tiles, readiness, overnight, "While you were away", "Close to their clock", top 3), Queue tabs, the right detail shape, trail and "This is wrong" on every item, 6+ systems, industry labels |
 | 4 Traceability | decisions with gate, who and effect; FAQ "from" tags; governance rows with owners; app.html unchanged |
@@ -44,7 +44,7 @@ Works in the case workspace (the folder with `out/` and `.claude/`). Prints only
 ## Observability
 
 `node .claude/skills/valued-audit/observe.js` re-renders `out/observe.html` at any time: run time and phases
-against the 28-minute budget, scope cuts, the eight standards and every issue (open and closed), eval gates
+against the 30-minute budget, scope cuts, the eight standards and every issue (open and closed), eval gates
 on dev and holdout and the release status at each render, every client decision (auto and overruled marked),
 what people did in the prototype (including "This is wrong" flags), and the full event log from
 `out/trace.jsonl`. Across runs, `learning/runs.jsonl` holds one line per audit for `/valued-learn`.

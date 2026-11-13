@@ -44,8 +44,8 @@ const maxBar = Math.max(...phases.map((p) => Math.max(p.secs || 0, p.budget * 60
 const bars = phases.map((p) => `<div class="ph"><div class="phl">${p.id} ${esc(p.name)}</div><div class="track"><div class="budget" style="width:${(p.budget * 60 / maxBar) * 100}%"></div><div class="used ${p.secs > p.budget * 60 ? "over" : ""}" style="width:${((p.secs || 0) / maxBar) * 100}%"></div></div><div class="phv">${p.secs === null ? "not started" : `${dur(p.secs)} of ${p.budget}m${p.running ? " (running)" : ""}`}</div></div>`).join("");
 
 const kpis = [
-  [dur(total) || "0m 00s", "run time, budget 28m", total <= 28 * 60],
-  [String(cards.filter((c) => c.decision).length), "client decisions", cards.length >= 11 && cards.length <= 16],
+  [dur(total) || "0m 00s", "run time, budget 30m", total <= 30 * 60],
+  [String(cards.filter((c) => c.decision).length), "client decisions", cards.length >= 16 && cards.length <= 23],
   [lastRender.dev === undefined ? "not run" : lastRender.dev && lastRender.holdout ? "Passes" : "Blocked", "release, dev and holdout", Boolean(lastRender.dev && lastRender.holdout)],
   [last ? String(open.length) : "not run", "open audit issues", last ? open.length === 0 : false],
 ];
@@ -74,7 +74,7 @@ code, .mono { font-family:var(--mono); font-size:12px } details summary { cursor
 <div class="muted">${t0 ? `Started ${new Date(t0).toLocaleString()}` : "Not started"} · ${trace.length} events · ${audits.length} audit${audits.length === 1 ? "" : "s"} · ${report.mode || "orchestrated"}</div>
 <div class="kpis">${kpis.map(([v, l, ok]) => `<div class="kpi ${ok ? "ok" : "bad"}"><b>${esc(v)}</b><span class="muted">${esc(l)}</span></div>`).join("")}</div>
 
-<h2>Phases against the 28-minute budget</h2>
+<h2>Phases against the 30-minute budget</h2>
 <div class="card">${bars}${cuts.length ? `<p class="muted">Scope cut: ${cuts.map((c) => `phase ${esc(c.phase)}, ${esc(c.note)}`).join("; ")}</p>` : ""}</div>
 
 <h2>Audit: the eight standards</h2>
@@ -97,4 +97,4 @@ ${renders.length ? `<p class="muted">Release status at each render: ${renders.ma
 `;
 fs.mkdirSync(OUT, { recursive: true });
 fs.writeFileSync(path.join(OUT, "observe.html"), html);
-console.log(`Observability: out/observe.html · ${trace.length} events · ${open.length} open issues · ${dur(total)} of 28m`);
+console.log(`Observability: out/observe.html · ${trace.length} events · ${open.length} open issues · ${dur(total)} of 30m`);

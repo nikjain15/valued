@@ -29,7 +29,7 @@ const OWNERS = [
   [/clocks|never list|Close to their clock/i, "U", "valued-user-loop", "Set clocks { escalate, human, answer: { hours, label } } and the never list in u.json, then render."],
   [/connector|systems|vendor|verdicts/i, "L", "valued-labels", "Fix connectors in l.json (6+, vendors only as e.g. ... (assumed)), then render."],
   [/shape|persona|labels missing|itemNoun|dismissReasons/i, "A", "valued-ai-fit", "Fix shape, persona, labels or item nouns in a.json or v.json, then render."],
-  [/questions asked|card|Recommended|COO|a decision lacks/i, "conductor", "valued", "Fix out/cards.json: 11 to 16 cards, recommended first, case roles on headers."],
+  [/questions asked|card|Recommended|COO|a decision lacks/i, "conductor", "valued", "Fix out/cards.json: 16 to 23 cards, recommended first, case roles on headers."],
   [/governance|FAQ/i, "B", "valued-build", "Fill governance owners and FAQ 'from' tags in the gate JSON, then render."],
   [/em-dash|company name|employer/i, "B", "valued-build", "Replace the text in the gate JSON with a synthetic name or a comma, then render."],
   [/app\.html differs/i, "app", "valued-build", "Copy the skill's app.html back into out/proto; case data belongs in case.json, never in the app."],
