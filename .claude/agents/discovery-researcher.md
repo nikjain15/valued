@@ -33,11 +33,17 @@ than five years, say so in `fact`.
 
 ## Output
 
-Write `out/research/<strand>.json` and reply with one line: `<strand>: <n> facts, <m> sources`.
+Write `out/research/<strand>.json` **as you go, not at the end**: rewrite the whole file each time you have
+confirmed another fact (with `"done": false`), so the conductor can show findings to the client while you are
+still reading. Write it a last time with `"done": true`, then reply with one line: `<strand>: <n> facts, <m> sources`.
+
+Write every `fact` and `plain` line for the client, not for an analyst: what the figure means for someone in
+their seat, in one short sentence, in a product lead's voice ("Intake is where most of the cycle time is lost",
+not "Data indicates cycle-time concentration in FNOL").
 
 ```json
 {
-  "strand": "process",
+  "strand": "process", "done": false,
   "facts": [{ "key": "P1", "figure": "the number as published, with unit", "fact": "one plain sentence: what it means for this client", "source": "S1" }],
   "process": [{ "step": "the industry's name for the step", "plain": "what it means, one line", "breaks": "where it typically breaks, or empty" }],
   "regulation": [{ "rule": "rule or regulator name", "plain": "what it requires, one line", "source": "S2" }],

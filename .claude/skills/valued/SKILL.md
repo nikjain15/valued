@@ -10,8 +10,13 @@ pressure, 30 GenAI ideas, COO wants a plan in six weeks`. Flags:
 - `--teach`: stop reading here and follow `teach.md` in this folder (one gate at a time, cards at every gate).
 - `--auto`: take the recommended option on every card (`conductor.js cards auto <round>`), logged "(auto)".
 - `--no-open`: never run `open`; print paths instead.
+- `--persona "<who the client is>"`: rehearsal and regression mode. Every card round (framing, each Round 1
+  screen, Round 2, E's ship-or-fix) goes to a `client-persona` sub-agent instead of AskUserQuestion: give it
+  the persona, the case line, the answers so far and the screen's cards as printed, and record its answers with
+  `"by": "<role> (persona)"`. Ask exactly as you would a person; the persona may answer in its own words, push
+  back, or choose a non-recommended option, and the run must adapt.
 - `--lean`: the low-token mode for regression runs. Do every gate in this context (score the three lenses one after
-  another, run L, U and D inline) and launch only three subagents: `holdout-sealer` (Sonnet),
+  another, run L, U and D inline) and launch only these subagents: the three background `discovery-researcher`s, the `client-persona` under `--persona`, `holdout-sealer` (Sonnet),
   `prototype-builder` (Sonnet) and `guard-model` (Haiku). Those three are never cut, in any mode: the
   sealer is the only reason the holdout number means anything, because this context must never hold both
   the holdout rows and the router. Read each gate skill once; keep printed output to the phase headers,
@@ -62,17 +67,17 @@ never a generic "COO" unless the case says COO. 2 to 4 options per card.
 
 | Phase | Work | Budget | Who |
 |---|---|---|---|
-| 0 Frame and research | workspace, server, live PRD; 3 researchers on the web in parallel (process, regulation, AI) while the framing cards run; hypothesis tree; discovery brief at /discovery | 5 min | you, `discovery-researcher` × 3 |
-| 1 Round 1 | discovery: 10 cards in three screens (people, today's cost, outcome, commitment; constraint, data, hosted model, history; autonomy, escalation owner) | 3 min | client |
-| 2 V then A | value frame; then assistants, shape, sweeps, three scorers in parallel | 6 min | `valued-value`, `valued-ai-fit` |
+| 0 Frame | workspace, server, live discovery page and PRD; framing (who and what hurts, product name); 3 researchers launched in the background (never waited on); first hypothesis tree and assumptions | 3 min | you, `discovery-researcher` × 3 in the background |
+| 1 Round 1 | discovery: 10 hypothesis-led cards in three screens, research findings read out between screens as they land | 4 min | client |
+| 2 V then A | value frame; then assistants, shape, sweeps, three scorers in parallel | 7 min | `valued-value`, `valued-ai-fit` |
 | 3 Round 2 | 6 cards: first wave, riskiest group, what to connect, release bar, pilot scope, stop rule | 2 min | client |
 | 4 L and U in parallel | golden set, holdout, systems; autonomy table, never list, clocks | 5 min | `valued-labels` and `valued-user-loop` |
 | 5 E and D in parallel | builder writes the router, evals run; rollout and drive | 6 min | `valued-evals` and `valued-deploy` |
 | 6 B | PRD and prototype rendered from gate data; hosted page; run report | 3 min | `valued-build` |
 
-Cards in total: 16 in the two rounds, plus framing (0 to 4, and up to 2 sharpening cards while research runs)
-and E's "Ship anyway, or fix first?" only when a release is blocked: 16 to 23. Start and end every phase with `out/tools/c clock <phase> start|end`; the start prints
-the header line (`[2] V then A · budget 6 min`). Between phases print nothing else.
+Cards in total: 16 in the two rounds, plus framing (1 to 3)
+and E's "Ship anyway, or fix first?" only when a release is blocked: 17 to 20. Start and end every phase with `out/tools/c clock <phase> start|end`; the start prints
+the header line (`[2] V then A · budget 7 min`). Between phases print nothing else.
 
 **Graceful overrun.** Before each phase starts and whenever a phase feels long, run `out/tools/c clock status`. If the
 running phase is past its budget, cut the next item in its cut order (`out/tools/c clock status` prints it), record it
@@ -105,38 +110,34 @@ The harness shows each sub-agent's `· took Xs` when it returns, and `out/tools/
 the phase's real elapsed ("[4] L and U · done in 4m 10s"); for E, also emit the `step` sub-updates above. So
 the run always shows what is happening and how long it took, in one line each, without filling the context.
 
-## Phase 0: Frame and research (5 min)
+## Phase 0: Frame (3 min)
 
-**Order in this phase:** run step 2 (setup) first, then step 4 (launch research in the background), then
-step 1's framing cards while the researchers work, then step 3, then step 5 (the tree) once research is back.
+**Research never blocks the run.** It starts in the first minute, runs in the background through Round 1
+and gate V, and joins wherever it lands: a finding that arrives makes the next question sharper, the tree
+better supported, the value frame better anchored. Nothing waits for it.
 
-1. Write the wrapper first (step 2's first two lines), then `out/tools/c clock 0 start`. If `out/select/select.json` exists (a `/valued-select` run), take the preferred option as the use case, its audience and assumptions as framing, and print `Case from out/select/select.json: <option>`; ask no framing card that file already answers. Otherwise, if the argument is empty or lacks the client, the business problem, or the success
-   measure and deadline, ask only the missing framing cards (round 0), each 3 to 4 typical options.
-   Phrase every card the way a consultant opens the conversation on a shared screen: a warm, low-stakes
-   question the client can answer by pointing at an option, never a form field. Keep the format hint so a
-   client who prefers their own words still has the shape.
-   **"Client context": "Just so I'm picturing it right, tell me a bit about your world and which team lives
-   closest to this."** (format "industry, size, and the unit that owns it (e.g. 'P&C insurer, 40k claims a
-   month, claims operations')"), **"Business problem": "Help me understand where things get clunky today.
-   No need to be precise, roughly what happens and how often?"** (format "the process, how it shows up, and
-   a rough number (e.g. 'FNOL setup, 20 fields re-keyed, 18 minutes a claim')"), **"Success and timeline":
-   "If we are celebrating in a few months, what would have changed for you? A ballpark is great."** (format
-   "a metric, a target and a date (e.g. 'setup under 10 minutes, pilot in 8 weeks')"). Whenever `inputs/`
-   is empty, also ask **"Material": "Totally fine either way, do you have examples we could look at, or
-   should we start with stand-ins and bring yours in later?"** ("Synthetic only for now" recommended when
-   nothing is ready; "Documents in inputs/"; "Sample requests or transcripts, de-identified"; "Both";
-   format "the material, its rough size and who owns it (e.g. '300 policy PDFs, owned by HR operations')"). If files are in `inputs/`, list them in one
-   table instead and print `Grounded in: <n> client files`.
-   **Always ask one more framing card, even when the case line is complete: "Product name": "What would you
-   like to call this, so your team recognizes it on screen?"** (3 to 4 short, human product names built from
-   the case in the client's own words, e.g. "MemberReply", "Harbor Claims Copilot", plus "Other"; format "a
-   short product name (e.g. 'MemberReply')"). This name is the title of the prototype and the PRD, so it is
-   shown everywhere instead of the generic use-case label. Append it to `out/cards.json` with `"round": 0`
-   and `"gate": "Frame"`; render reads it as the title. Under `--auto` take the first option of each.
-   Print `Engagement: <case line>` when you built it from answers.
+**Order in this phase:** step 2 (setup), step 1's framing cards only if the case line lacks them, step 4
+(launch research in the background), step 3, step 5 (the first tree, from the case), then hand to Round 1.
+
+1. Write the wrapper first (step 2's first two lines), then `out/tools/c clock 0 start`. If `out/select/select.json` exists (a `/valued-select` run), take the preferred option as the use case, its audience and assumptions as framing, and print `Case from out/select/select.json: <option>`; ask no framing card that file already answers.
+   **Framing asks only what research needs to start: who the client is and what hurts.** Success measures,
+   timelines, data and constraints belong to Round 1, so never ask them here (asking them twice is the most
+   common way a session feels scripted). If the case line lacks them, ask at most two cards (round 0):
+   **"Client context": "So I'm picturing this right, which part of the business are we talking about, and
+   roughly how big is it?"** (format "industry, size, and the unit that owns it (e.g. 'P&C insurer, 40k claims a
+   month, claims operations')"), and **"Business problem": "Where does it hurt today? A rough sense is plenty."**
+   (format "the process and how it shows up (e.g. 'FNOL setup is slow and error-prone')"). No numbers here;
+   Round 1 asks for them and refers back to this answer instead of re-asking it.
+   **Always ask one more framing card: "Product name": "What would you like to call this, so your team
+   recognizes it on screen?"** (3 to 4 short, human names built from the case in the client's own words, e.g.
+   "MemberReply", "Harbor Claims Copilot"; format "a short product name (e.g. 'MemberReply')"). It is the
+   title of the prototype and the PRD. Append framing cards to `out/cards.json` with `"round": 0` and
+   `"gate": "Frame"`. Under `--auto` take the first option of each; under `--persona`, the persona answers.
+   Whenever `inputs/` is empty, the "Material" question is asked later, as a Round 1 data card, never here.
+   If files are in `inputs/`, list them in one table and print `Grounded in: <n> client files`.
 2. Set up:
    ```bash
-   B=.claude/skills/valued-build; mkdir -p out/proto out/gates out/tools inputs
+   B=.claude/skills/valued-build; mkdir -p out/proto out/gates out/tools out/research inputs
    printf '#!/bin/sh\nexport PORT=${PORT:-%s}\nexec node .claude/skills/valued/conductor.js "$@"\n' "${PORT:-4317}" > out/tools/c; chmod +x out/tools/c
    cp $B/app/app.html $B/app/server.js $B/app/ff.css $B/prd-viewer.html $B/eval.js out/proto/
    echo '{}' > out/proto/case.json; echo '[]' > out/cards.json
@@ -144,87 +145,94 @@ step 1's framing cards while the researchers work, then step 3, then step 5 (the
    node $B/prd-skeleton.js "<the case line>" out/prd.md
    P=${PORT:-4317}; lsof -ti :$P | xargs kill 2>/dev/null; PORT=$P node out/proto/server.js   # in the background
    ```
-   `open http://localhost:4317/prd` (skip under `--no-open`). Print:
-   `VALUED · 6 gates · governed at every gate · we draft, you decide · live PRD, filling as we go: localhost:4317/prd`.
+   `open http://localhost:4317/discovery` (skip under `--no-open`). Print:
+   `VALUED · we draft, you decide · discovery brief: localhost:4317/discovery · live PRD: localhost:4317/prd`.
 3. Pick the industry key now: `out/tools/c seed <industry>` (a key of `.claude/skills/valued-labels/connectors-library.json`,
    or the closest) prints the systems, golden-set seeds and sweep templates every later gate starts from.
+4. **Research, in the background.** Launch three `discovery-researcher` sub-agents **in one message, with
+   `run_in_background: true`**, one per strand (`process`, `regulation`, `ai`), each given the case line, the
+   framing answers, the industry and the region if known. Do not wait for them, now or later. Say one line,
+   to the client: `While we talk, three research agents are reading the published evidence on your world: how
+   this work runs, the rules around it, and where AI has worked. I'll bring in what they find as it lands.`
+5. **The first tree, from the case.** Write `out/gates/r.json` now, before any research is back: `title` (the
+   client's problem in their industry's words, one line), `summary` (two sentences: where we think the value
+   sits and why), `tree` `{ "problem", "branches": [{ "id": "B1", "driver", "hypotheses": [{ "text", "facts": [] }],
+   "questions": ["C-2", ...] }] }` with three or four branches that split the problem **MECE** (mutually
+   exclusive, together exhaustive: for example volume, cost per item, quality or risk, readiness), every round-1
+   card id on exactly one branch, and `assumptions`: 3 to 6 rows `{ "text", "facts": [], "card": "<the round-1
+   card that tests it>", "confirmedIf": "<a regex over the answer that would confirm it>" }`, each a plain
+   statement the client can correct ("Most of the cycle time is lost before an adjuster is assigned"). Then
+   `out/tools/c research` (it merges whatever has landed, which may be nothing, and renders the live page) and
+   `out/tools/c render`. Say: "Here's how I'm thinking about it: the problem splits into these branches, here is
+   what I'm assuming, and every question I ask tests one of them." `out/tools/c clock 0 end`.
 
-4. **Research, in parallel.** Create `out/research/`, then launch three `discovery-researcher` sub-agents
-   **in one message, in the background**, one per strand (`process`, `regulation`, `ai`), each given the case
-   line, the industry and the region if known. Print one line: `Researching your industry: how the work runs,
-   the rules that govern it, and where AI has worked, from published sources only`. Ask the framing cards
-   while they run. **If the framing cards are done and the researchers are not back, keep the conversation
-   useful instead of waiting:** ask up to two sharpening cards (round 0, gate "Frame"), each tailored to the
-   case, for example the jurisdiction or region the work sits in, the line of business or segment that hurts
-   most, or the "Material" card if not yet asked. Never ask a question just to fill time; each must change
-   what we build. Stop waiting at the phase budget: run `out/tools/c research` with what has arrived and say
-   in one line which strand is still open.
-5. **The hypothesis tree.** `out/tools/c research` merges the strands into `out/gates/r.json`. Add, in that file:
-   `title` (the client's problem in their industry's words, one line), `summary` (two sentences: what the
-   evidence says and where we think the value sits), and `tree`: `{ "problem": "...", "branches": [{ "id": "B1",
-   "driver": "...", "hypotheses": [{ "text": "...", "facts": ["P1"] }], "questions": ["C-2", "R1-1"] }] }`, three
-   or four branches that split the problem MECE (for example volume, cost per item, quality or risk, readiness),
-   each hypothesis tied to cited fact keys, and every round-1 card id placed on exactly one branch. Facts and
-   sources stay exactly as the researchers wrote them: never add a figure here. `out/tools/c render`, then
-   `open http://localhost:4317/discovery` and say one line: "Before we start, here is what the published
-   evidence says about your world, how we think the value splits, and each question I ask tests one branch."
-   `out/tools/c clock 0 end`.
+## Phase 1: Round 1, discovery (4 min)
 
-## Phase 1: Round 1, discovery (3 min)
+`out/tools/c clock 1 start`. **Before each screen, run `out/tools/c research`.** It prints only what is new
+since the last call, already in client language (`Just confirmed · 30 days · ...`); read those lines out as
+part of the conversation ("While we were talking, we confirmed ..."), then fold them in: attach the new fact
+keys to the hypotheses and assumptions they support in `r.json`, and sharpen the next screen's cards with them.
+Facts and sources stay exactly as the researchers wrote them: never add, round or combine a figure yourself.
 
-`out/tools/c clock 1 start` before drafting anything. **Draft every card from `out/gates/r.json`, never from a
-generic template.** The rules that make the round read as researched, not generic:
-- **The industry's words.** Use the terms the research found (`r.json` `terms`) and the industry's own step names
-  from `process`. The first time a technical term appears in a question, gloss it inline in at most eight plain
-  words, e.g. "your FNOL (first notice of loss, the first report of a claim) cycle time".
-- **Anchored on evidence.** Where a published benchmark exists, the question says it and asks for theirs, e.g.
-  "Published figures put this at about 30 days (Source 2). Where are you?" Options are ranges around that
-  benchmark, the named roles of this industry, the real steps of this process. A generic option ("another team",
-  "other systems") fails the round.
-- **Shows the thinking.** Every card carries `why` (one line: the hypothesis it tests and the fact behind it,
-  with the fact key) and `branch` (its tree branch id). Before each screen, print the screen's header, then one
-  line per card: `C-2 tests B1: <why>`. The client sees the reasoning; the discovery page shows the same, live.
-- **Client-facing and professional.** Warm, short, no jargon left unexplained, no internal ids in the question
-  text itself.
+**How a consultant asks.** These are the rules that make the round sound like a strong partner from a top firm,
+not a form:
+- **Hypothesis-led.** Open with what you think and let them correct it: "My working assumption is that most of
+  the delay sits before an adjuster picks it up. Is that what you see?" Never a blank "tell me about ...".
+- **One question per card.** Never double-barrelled ("who owns it and how clean is it" is two cards or one
+  sharper question). At most about 25 words, plain and warm, no internal ids in the text.
+- **MECE across the round.** The ten cards cover ten different things. Options inside a card are mutually
+  exclusive and together cover the realistic space (ranges that do not overlap; roles that do not overlap).
+- **Never repeat.** Never ask what the case line, a framing answer or an earlier card already told us. Build on
+  it instead: "You mentioned FNOL is slow. Roughly how many claims a month go through it?" `check` fails the run
+  on any two cards that share most of their words.
+- **The industry's words, glossed once.** Use the terms the research found and the industry's own step names.
+  The first time a technical term appears, gloss it inline in at most eight plain words: "your FNOL (first
+  notice of loss, the first report of a claim) cycle time".
+- **Anchored on evidence when it has landed.** "Published figures put this near 30 days (Source 2). Where are
+  you?" Options are ranges around that benchmark, this industry's named roles, the real steps of this process.
+  A generic option ("another team", "other systems") fails the round. Before research lands, anchor on the
+  case and say "(our assumption)".
+- **Shows the thinking.** Every card carries `why` (one line: the branch and hypothesis it tests, and the fact
+  key if any) and `branch`. Before each screen print its header, then one line per card, in client language:
+  `This tests whether most of the delay sits at intake (B1).` The discovery page shows the same thing live.
 
-This round is the conversation a consultant has before
-any idea is ranked: who is involved, what today costs, what the commitment looks like, what the data is
-like, and what has been tried. Draft all ten cards from the case line alone (no gate has run yet, so options
-come from the case, the industry and the seed library), append them to `out/cards.json` with `"round": 1`,
-then `out/tools/c cards print 1` (or `out/tools/c cards auto 1` under `--auto`) and record each answer as
-`decision` and `by`, then `out/tools/c render` after each screen so the discovery page marks the answers live. Ask them as three screens (AskUserQuestion takes at most four at a time), each with its
-own warm header. If the client would rather not answer a round, run `out/tools/c cards skip 1`: it takes the
-recommended option on every card of the round, logs each as skipped, and lets you move on at once. Say the
-one line it prints.
+Append all ten cards to `out/cards.json` with `"round": 1`, then `out/tools/c cards print 1` (or
+`out/tools/c cards auto 1` under `--auto`; under `--persona` the persona answers each screen). Ask them as three
+screens (AskUserQuestion takes at most four at a time), each with its own warm header. Record each answer as
+`decision` and `by`, then **`out/tools/c render` after every screen**, so the discovery page, the PRD and the
+prototype all show the answers within seconds. If the client would rather not answer a round, run
+`out/tools/c cards skip 1` and say the one line it prints.
 
 **Screen one: "Let's make sure we're solving the right problem"**
 
-| Card | Gate | Header role | Question | Options come from |
+| Card | Gate | Header role | What it establishes | Options come from |
 |---|---|---|---|---|
-| C-1 | V | sponsor | Who's involved here: who feels this day to day, who signs off, and who could slow it down? (multi) | the owner, user, approver and blocker roles typical of this industry |
-| C-2 | V | operations owner | How does this work today, and roughly what does it cost you? | 3 baselines, each a rough volume, time per item and rework rate, every figure (assumed) |
-| R1-1 | V | sponsor | If we could move just one thing, what would you most want it to be? | 2 to 3 north-star metrics with what each rewards and can hide |
-| C-3 | D | sponsor | What's the shape of the commitment: how soon do you need to see something, and roughly what envelope? | pilot in 6 to 8 weeks on a small budget; a quarter with a funded team; a year-long program; each with what it allows |
+| C-2 | V | operations owner | the size of today's problem, building on the framing answer: volume, time per item or rework, as one number the client can point at | 3 to 4 non-overlapping ranges anchored on a benchmark or the case |
+| R1-1 | V | sponsor | the one outcome that must move | 2 to 3 north-star metrics with what each rewards and can hide |
+| C-1 | V | sponsor | who must say yes for this to go live, and who could slow it down (multi) | this industry's named owner, approver and blocker roles |
+| C-3 | D | sponsor | the commitment window: how soon they need to see something working | 6 to 8 weeks; a quarter; this fiscal year; each with what it allows |
 
 **Screen two: "And the boundaries we design around"**
 
-| Card | Gate | Header role | Question | Options come from |
+| Card | Gate | Header role | What it establishes | Options come from |
 |---|---|---|---|---|
-| R1-2 | V | sponsor | Anything that is off the table for you, something we should design around from the start? (multi) | e.g. nothing customer-facing unreviewed, existing platform only, data stays in; each with what it rules out |
-| C-4 | L | data owner | What does the data look like today: where it lives, who owns it, how clean it is? | in one system and clean; spread across systems; mostly documents and email; not yet captured |
-| R1-3 | A | IT and risk | Where are you comfortable having this run, can we let it try a hosted model on synthetic data? | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
-| C-5 | D | operations owner | Has anything like this been tried before, and who would need to work differently if it lands? | tried and stalled on adoption; tried and stalled on data; new territory; each with what it means for the plan |
+| R1-2 | V | sponsor | what is off the table from day one (multi) | e.g. nothing customer-facing unreviewed, existing platform only, data stays in; each with what it rules out |
+| C-4 | L | data owner | where the data for this lives today, and whether we can start from it or need stand-ins | one system of record; spread across systems; mostly documents and email; start with synthetic stand-ins |
+| R1-3 | A | IT and risk | whether a hosted model may run on synthetic data | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
+| C-5 | D | operations owner | what happened the last time something like this was tried | stalled on adoption; stalled on data; stalled on risk sign-off; new territory; each with what it means for the plan |
 
 **Screen three: "Last two, on how hands-on you want to be"**
 
-| Card | Gate | Header role | Question | Options come from |
+| Card | Gate | Header role | What it establishes | Options come from |
 |---|---|---|---|---|
-| R1-4 | U | risk owner | How hands-on do you want to stay in the first 90 days? | suggest only, draft with approval, act on low-risk actions |
-| R1-5 | U | operations owner | When it is a tougher call, who should it loop in? | the existing path, a specialist team, the risk desk |
+| R1-4 | U | risk owner | how much it may do on its own in the first 90 days | suggest only, draft with approval, act on low-risk actions |
+| R1-5 | U | operations owner | who it loops in on a hard call | the existing path, a specialist team, the risk desk, named for this industry |
 
 Where the answers go: C-1 becomes V's `stakeholders`; C-2 anchors V's value frame (the client's baseline
-beats our assumption); C-3 bounds A's first wave to what fits the window and sets D's `roadmap`; C-4 sets
-A's data feasibility and L's systems; C-5 sets D's `adoption`. Pass these on when you launch each gate.
+beats our assumption); C-3 bounds A's first wave and sets D's `roadmap`; C-4 sets A's data feasibility and
+L's systems; C-5 sets D's `adoption`. After the last screen, mark each assumption in `r.json` confirmed or
+challenged by its card, say in one line which assumptions the client changed, and pass all of it on when you
+launch each gate.
 
 Recommend: the outcome tied to the sponsor's stated goal; the constraint that de-risks a first wave; a hosted
 model on synthetic data whenever a free-text job exists (rules only when the case is mostly rules); draft with

@@ -37,7 +37,7 @@ const A = (x) => (Array.isArray(x) ? x : []);
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 const PHASES = [
-  ["0", "Frame and research", 5], ["1", "Round 1", 3], ["2", "V then A", 6], ["3", "Round 2", 2],
+  ["0", "Frame", 3], ["1", "Round 1", 4], ["2", "V then A", 7], ["3", "Round 2", 2],
   ["4", "L and U", 5], ["5", "E and D", 6], ["6", "Build", 3],
 ];
 const CUTS = {
@@ -393,6 +393,7 @@ function check(g, ev, c, quiet) {
     need(A(g.r.tree?.branches).length >= 3 && A(g.r.tree.branches).every((b) => A(b.hypotheses).length && A(b.questions).length), 1, "research: tree needs 3+ branches, each with hypotheses and question ids");
     need(A(g.r.terms).length >= 6, 1, "research: 6+ terms with plain meanings");
     need(cards().filter((x) => Number(x.round) === 1).every((x) => x.why && x.branch), 1, "round 1: every card needs why and branch");
+    need(A(g.r.assumptions).length >= 3, 1, "research: 3+ stated assumptions, each tied to the card that tests it");
   }
   must(g.v, ["client", "industry", "sponsorRole", "ownerRole", "useCase", "title", "headline", "scenario", "user", "inputLabel", "persona", "labels", "valueFrame", "candidates", "northStar", "problem", "valueDrivers", "users", "stories", "journey", "goals", "nonGoals", "metrics", "stakeholders", "hypotheses", "governance", "sayIt"], "V");
   must(g.a, ["scores", "waves", "sourcing", "numbersToQuote", "engine", "engineWhy", "shape", "shapeWhy", "agents", "sweeps", "itemNoun", "promise", "alternatives", "latency", "cost", "governance", "sayIt"], "A");
@@ -418,7 +419,12 @@ function check(g, ev, c, quiet) {
   if (g.a && g.a.engine !== "rules" && fs.existsSync(path.join(PROTO, "eval.js"))) { const cache = json(path.join(PROTO, "model-cache.json"), {}); const norm = (t) => String(t || "").toLowerCase().replace(/\s+/g, " ").trim(); const missing = ["golden.json", "holdout.json"].flatMap((f) => json(path.join(PROTO, f), [])).filter((r) => !cache[norm(r.text)]).length; need(missing === 0, 6, `guard model cache misses ${missing} texts: run model-inputs and the guard model again`); }
   const router = read(path.join(PROTO, "router.js")); if (router) need(!/\brequire\(|\bimport\s|readFileSync|fetch\(/.test(router) && /module\.exports\s*=\s*\{\s*decide/.test(router), 7, "router must be self-contained CommonJS");
   if (router) { const n = router.split("\n").filter((l) => l.trim() && !/^\s*\/\//.test(l)).length; need(n <= 200, 7, `router.js is ${n} lines of code (160 is the guideline, 200 the limit): move the wording lists into sources.json match lists or the trigger lexicon, not more branches`); }
-  const cs = cards(); need(cs.length >= 16 && cs.length <= 23, 1, `${cs.length} cards (16 to 23)`); need(cs.every((x) => x.role && x.question && x.format && A(x.options).length >= 2 && A(x.options).every((o) => o.label && o.tradeoff)), 1, "every card: role, question, format, 2+ options with trade-offs"); need(!cs.some((x) => /^COO$/i.test(x.role)) || /COO/i.test(caseLine()), 1, "card roles must be this case's sponsor and owner roles, not COO");
+  { // No repeated questions: any two cards sharing most of their content words are one question asked twice.
+    const stop = new Set("the a an and or of to in for on with your you we our is are be this that what how who which do does would could it its as at by from if any".split(" "));
+    const toks = (q) => new Set(String(q || "").toLowerCase().replace(/\([^)]*\)/g, " ").match(/[a-z]{3,}/g)?.filter((w) => !stop.has(w)) || []);
+    const cz = cards(); for (let i = 0; i < cz.length; i++) for (let j = i + 1; j < cz.length; j++) { const a = toks(cz[i].question), b = toks(cz[j].question); const inter = [...a].filter((w) => b.has(w)).length; const sim = inter / Math.max(1, Math.min(a.size, b.size)); need(sim < 0.6, 1, `repeated question: ${cz[i].id} and ${cz[j].id} overlap ${Math.round(sim * 100)}%`); }
+  }
+  const cs = cards(); need(cs.length >= 17 && cs.length <= 20, 1, `${cs.length} cards (17 to 20)`); need(cs.every((x) => x.role && x.question && x.format && A(x.options).length >= 2 && A(x.options).every((o) => o.label && o.tradeoff)), 1, "every card: role, question, format, 2+ options with trade-offs"); need(!cs.some((x) => /^COO$/i.test(x.role)) || /COO/i.test(caseLine()), 1, "card roles must be this case's sponsor and owner roles, not COO");
   const scanDirs = [OUT]; const files = []; const walk = (d) => { for (const f of fs.readdirSync(d)) { const p = path.join(d, f); if (fs.statSync(p).isDirectory()) { if (!/hosted/.test(f)) walk(p); } else if (/\.(md|json|js|html)$/.test(f) && !/ff\.css|app\.html|prd-viewer|server\.js|audit\.jsonl/.test(f)) files.push(p); } }; if (fs.existsSync(OUT)) walk(OUT);
   const realCo = /\b(Acme|Contoso|Globex|Initech|Example Corp|Anthem|Aetna|UnitedHealth|Cigna|Humana|JPMorgan|Wells Fargo|Bank of America|Citibank|Capital One|Delta Air|United Airlines|American Airlines|Walmart|Amazon|Geico|Allstate|State Farm|Kaiser|CVS|Walgreens|Salesforce|Google|Microsoft|Workday|Oracle|SAP|Epic Systems|Cerner|Fidelity|CredR|EdCast|Coursewave|Enelek)\b/;
   for (const p of files) { const t = read(p); if (t.includes("—")) need(false, 8, `em-dash in ${path.relative(ROOT, p)}`); const m = t.replace(/e\.g\.[^)\n"]*\(assumed\)/g, "").replace(MODEL_VENDORS, "").match(realCo); if (m) need(false, 8, `real or employer name "${m[0]}" in ${path.relative(ROOT, p)}: use a synthetic name, or "e.g. ... (assumed)" for a vendor`); }
@@ -490,9 +496,18 @@ if (cmd === "clock") {
   if (rest[0] === "auto" || rest[0] === "skip") { const skip = rest[0] === "skip"; for (const c of mine) { c.decision = A(c.options)[0]?.label; c.auto = true; if (skip) c.skipped = true; c.by = skip ? "client (skipped, recommended taken)" : c.role; trace({ kind: "decision", id: c.id, gate: c.gate, role: c.role, question: c.question, decision: c.decision, auto: true, skipped: skip }); } writeJson(path.join(OUT, "cards.json"), cs); console.log(skip ? `Round ${round} skipped: ${mine.length} cards took the recommended option so we can move on; the PRD records them as client defaults.` : `Round ${round}: ${mine.length} cards answered with the recommended option (auto).`); }
   else for (const c of mine) { console.log(`\n**"${c.role}": "${c.question}"** If none fits, answer with: ${c.format}`); if (c.why) console.log(`Why we ask: ${clean(c.why)}`); A(c.options).forEach((o, i) => console.log(`${i + 1}. ${o.label}${i === 0 ? " (Recommended)" : ""}: ${clean(o.tradeoff)}`)); }
 } else if (cmd === "research") {
+  // Non-blocking: merge whatever strands have landed so far, narrate only what is new, refresh the live page.
   const dir = path.join(OUT, "research"); const strands = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => json(path.join(dir, f), {})) : [];
-  const r = mergeResearch(strands, G("r")); writeJson(path.join(GATES, "r.json"), r);
-  console.log(`Research: ${r.facts.length} cited facts, ${r.sources.length} sources (${r.sources.filter((x) => x.tag === "P").length} primary), ${r.terms.length} terms${r.notes.length ? ` · ${r.notes.join("; ")}` : ""}. Now write title, summary and tree into out/gates/r.json, then render.`);
+  const prev = G("r") || {}; const r = mergeResearch(strands, prev); writeJson(path.join(GATES, "r.json"), r);
+  const seenFile = path.join(dir, ".seen.json"); const seen = new Set(json(seenFile, []));
+  const srcs = Object.fromEntries(A(r.sources).map((x) => [x.key, x]));
+  const fresh = A(r.facts).filter((f) => !seen.has(f.key));
+  for (const f of fresh) { const sx = srcs[f.source] || {}; console.log(`Just confirmed · ${clean(f.figure)} · ${clean(f.fact)} (${clean(sx.publisher)}, ${clean(sx.year)})`); seen.add(f.key); }
+  for (const g of A(r.regulation)) { const k = `reg:${g.rule}`; if (!seen.has(k)) { console.log(`Rule to design around · ${clean(g.rule)}: ${clean(g.plain)}`); seen.add(k); } }
+  if (fs.existsSync(dir)) writeJson(seenFile, [...seen]);
+  const open = ["process", "regulation", "ai"].filter((k) => !A(r.strands).includes(k));
+  console.log(fresh.length ? `Research: ${r.facts.length} facts from ${r.sources.length} sources so far${open.length ? `; still reading: ${open.join(", ")}` : "; all three strands in"}.` : open.length ? `Research still reading: ${open.join(", ")}. Carry on; it joins when it lands.` : "Research complete.");
+  write(path.join(PROTO, "discovery.html"), renderDiscovery(r, cards(), G("v")?.client || r.client));
 } else if (cmd === "seed") seed(rest[0]);
 else if (cmd === "seal") seal(rest[0], rest[1]);
 else if (cmd === "model-inputs") {
@@ -511,6 +526,8 @@ else if (cmd === "render" || cmd === "check" || cmd === "report") {
     const counts = { golden: golden.length, holdout: holdout.length, holdoutEsc: holdout.filter((r) => r.expected === "escalate").length };
     for (const gr of A(g.l?.groups)) counts[gr.key] = `${golden.filter((r) => (r.slices || {})[gr.key]).length} / ${holdout.filter((r) => (r.slices || {})[gr.key]).length}`;
     if (g.r) write(path.join(PROTO, "discovery.html"), renderDiscovery(g.r, cards(), g.v?.client || g.r.client));
+    // Live-build evidence: keep the PRD and the prototype's case.json as they were after each render.
+    process.on("exit", () => { try { const d = path.join(OUT, "snapshots"); fs.mkdirSync(d, { recursive: true }); const n = String(fs.readdirSync(d).filter((f) => f.endsWith(".prd.md")).length + 1).padStart(3, "0"); const answered = cards().filter((x) => x.decision).length; fs.copyFileSync(path.join(OUT, "prd.md"), path.join(d, `${n}-${answered}answers.prd.md`)); if (fs.existsSync(path.join(PROTO, "case.json"))) fs.copyFileSync(path.join(PROTO, "case.json"), path.join(d, `${n}-${answered}answers.case.json`)); } catch {} });
     if (g.v) write(path.join(OUT, "1-value.md"), gateV({ ...g.v, gate: "V" }));
     if (g.a) write(path.join(OUT, "2-ai-fit.md"), gateA(g.a));
     if (g.l) write(path.join(OUT, "3-labels.md"), gateL(g.l, counts));

@@ -32,7 +32,7 @@ Works in the case workspace (the folder with `out/` and `.claude/`). Prints only
 
 | Standard | Checks |
 |---|---|
-| 1 Questions | 16 to 23 cards; recommended first with its trade-off; "If none fits, answer with"; case roles on headers |
+| 1 Questions | 17 to 20 cards; recommended first with its trade-off; "If none fits, answer with"; case roles on headers |
 | 2 Agentic | 3 to 6 named assistants, the first a rules safety guard; 1 to 3 sweeps with 2+ findings each |
 | 3 Product shape | Today (greeting, tiles, readiness, overnight, "While you were away", "Close to their clock", top 3), Queue tabs, the right detail shape, trail and "This is wrong" on every item, 6+ systems, industry labels |
 | 4 Traceability | decisions with gate, who and effect; FAQ "from" tags; governance rows with owners; app.html unchanged |

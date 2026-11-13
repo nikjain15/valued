@@ -45,7 +45,7 @@ const bars = phases.map((p) => `<div class="ph"><div class="phl">${p.id} ${esc(p
 
 const kpis = [
   [dur(total) || "0m 00s", "run time, budget 30m", total <= 30 * 60],
-  [String(cards.filter((c) => c.decision).length), "client decisions", cards.length >= 16 && cards.length <= 23],
+  [String(cards.filter((c) => c.decision).length), "client decisions", cards.length >= 17 && cards.length <= 20],
   [lastRender.dev === undefined ? "not run" : lastRender.dev && lastRender.holdout ? "Passes" : "Blocked", "release, dev and holdout", Boolean(lastRender.dev && lastRender.holdout)],
   [last ? String(open.length) : "not run", "open audit issues", last ? open.length === 0 : false],
 ];
