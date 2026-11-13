@@ -44,7 +44,7 @@ Works in the case workspace (the folder with `out/` and `.claude/`). Prints only
 ## Observability
 
 `node .claude/skills/valued-audit/observe.js` re-renders `out/observe.html` at any time: run time and phases
-against the 30-minute budget, scope cuts, the eight standards and every issue (open and closed), eval gates
+against the 18-minute budget, scope cuts, the eight standards and every issue (open and closed), eval gates
 on dev and holdout and the release status at each render, every client decision (auto and overruled marked),
 what people did in the prototype (including "This is wrong" flags), and the full event log from
 `out/trace.jsonl`. Across runs, `learning/runs.jsonl` holds one line per audit for `/valued-learn`.

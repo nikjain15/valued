@@ -31,11 +31,21 @@ not open. If the only support for a figure is one of those, drop the figure. Nev
 combine figures into a new one; quote what the source says, with its year, base and unit. If a figure is older
 than five years, say so in `fact`.
 
+## Quality bar (a thin strand is worse than a late one)
+
+- **Same sector.** Every fact is about the client's industry and this kind of work. An adjacent sector (for
+  example consumer finance for an insurer) is used only when labelled as an analogue in `fact`.
+- **At least two independent publishers** per strand, and no more than half the facts from one source.
+- **Recent.** Prefer the last three years; anything older than five says so in `fact`.
+- **Keep going** until you have at least five facts meeting this bar, or your time is up. If you stop short,
+  write `"thin": true` and a one-line `note` naming what you could not find, so the page shows "still confirming"
+  instead of presenting weak evidence as settled.
+
 ## Output
 
 Write `out/research/<strand>.json` **as you go, not at the end**: rewrite the whole file each time you have
 confirmed another fact (with `"done": false`), so the conductor can show findings to the client while you are
-still reading. Write it a last time with `"done": true`, then reply with one line: `<strand>: <n> facts, <m> sources`.
+still reading. Keep a short `log` of what you are doing, in plain words the client can follow ("Searching ...", "Opened: <publisher> (primary)", "Dropped: vendor page, not a reputable source"), at most 8 lines, newest last; the research page shows it live. Write it a last time with `"done": true`, then reply with one line: `<strand>: <n> facts, <m> sources`.
 
 Write every `fact` and `plain` line for the client, not for an analyst: what the figure means for someone in
 their seat, in one short sentence, in a product lead's voice ("Intake is where most of the cycle time is lost",
@@ -43,7 +53,7 @@ not "Data indicates cycle-time concentration in FNOL").
 
 ```json
 {
-  "strand": "process", "done": false,
+  "strand": "process", "done": false, "log": [{ "step": "Searching regulator guidance on claim acknowledgement deadlines" }, { "step": "Opened: NAIC model act (primary)" }],
   "facts": [{ "key": "P1", "figure": "the number as published, with unit", "fact": "one plain sentence: what it means for this client", "source": "S1" }],
   "process": [{ "step": "the industry's name for the step", "plain": "what it means, one line", "breaks": "where it typically breaks, or empty" }],
   "regulation": [{ "rule": "rule or regulator name", "plain": "what it requires, one line", "source": "S2" }],

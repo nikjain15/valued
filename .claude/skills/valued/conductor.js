@@ -19,6 +19,7 @@ const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
 const { renderDiscovery, mergeResearch } = require("./discovery.js");
+const { renderApproach, approachIssues } = require("./approach.js");
 
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, "out"), PROTO = path.join(OUT, "proto"), GATES = path.join(OUT, "gates");
@@ -30,15 +31,18 @@ const writeJson = (f, o) => write(f, JSON.stringify(o, null, 2) + "\n");
 // Observability: every command leaves one event in out/trace.jsonl (rendered by valued-audit/observe.js).
 const trace = (e) => { try { fs.mkdirSync(OUT, { recursive: true }); fs.appendFileSync(path.join(OUT, "trace.jsonl"), JSON.stringify({ t: Date.now(), ...e }) + "\n"); } catch {} };
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
-const clean = (s) => String(s ?? "").replace(/—/g, ", ").replace(/\|/g, "/").replace(/\s+/g, " ").trim();
+const flat = (s) => (s && typeof s === "object" && !Array.isArray(s) ? (s.text || s.label || s.value || s.headline || s.title || Object.values(s).filter((x) => typeof x === "string").join(" ")) : Array.isArray(s) ? s.map(flat).join("; ") : s);
+const clean = (s) => String(flat(s) ?? "").replace(/—/g, ", ").replace(/\|/g, "/").replace(/\s+/g, " ").trim();
 const cell = (s) => clean(s) || "";
+const tableAll = (head, rows) => rows.length ? [`| ${head.join(" | ")} |`, `|${head.map(() => "---").join("|")}|`, ...rows.map((r) => `| ${r.map(cell).join(" | ")} |`)].join("\n") : "";
+const byLabel = (x) => clean(String(x || "").replace(/\s*\((persona|auto)\)/gi, ""));
 const table = (head, rows) => rows.length ? [`| ${head.join(" | ")} |`, `|${head.map(() => "---").join("|")}|`, ...rows.slice(0, 12).map((r) => `| ${r.map(cell).join(" | ")} |`)].join("\n") : "";
 const A = (x) => (Array.isArray(x) ? x : []);
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 const PHASES = [
-  ["0", "Frame", 3], ["1", "Round 1", 4], ["2", "V then A", 7], ["3", "Round 2", 2],
-  ["4", "L and U", 5], ["5", "E and D", 6], ["6", "Build", 3],
+  ["0", "Frame", 1], ["1", "Round 1", 5], ["2", "V then A", 1], ["3", "Round 2", 2],
+  ["4", "L and U", 3], ["5", "E and D", 4], ["6", "Build", 2],
 ];
 const CUTS = {
   "2": ["fewer candidates: 8 instead of 12", "two wave options instead of three", "shorter reasons"],
@@ -54,7 +58,7 @@ const MODEL_MENU = [
   { provider: "Anthropic", model: "Claude Haiku 5.5", id: "claude-haiku-5-5", in: 0.10, out: 0.50, latency: "fastest", bestFor: "high-volume guards, routing, simple extraction", runnable: true },
   { provider: "Anthropic", model: "Claude Sonnet 5.5", id: "claude-sonnet-5-5", in: 2, out: 10, latency: "balanced", bestFor: "the default: grounded drafting and most answers", runnable: true },
   { provider: "Anthropic", model: "Claude Opus 5.5", id: "claude-opus-5-5", in: 4, out: 20, latency: "slower", bestFor: "the hardest, highest-stakes reasoning", runnable: true },
-  { provider: "Anthropic", model: "Claude Fable 5.1", id: "claude-fable-5-1", in: 0.05, out: 0.25, latency: "fastest", bestFor: "lightweight multi-purpose, cost-sensitive volume", runnable: true },
+  { provider: "Anthropic", model: "Claude Fable 5.2", id: "claude-fable-5-2", in: 0.05, out: 0.25, latency: "fastest", bestFor: "lightweight multi-purpose, cost-sensitive volume", runnable: true },
   { provider: "OpenAI", model: "GPT flagship", id: "", in: 2.5, out: 10, latency: "balanced", bestFor: "general reasoning, broad tooling", runnable: false },
   { provider: "OpenAI", model: "GPT mini", id: "", in: 0.15, out: 0.60, latency: "fast", bestFor: "cheap general tasks", runnable: false },
   { provider: "Google", model: "Gemini Pro", id: "", in: 1.25, out: 5, latency: "balanced", bestFor: "long context, multimodal", runnable: false },
@@ -148,12 +152,28 @@ function whyArch(a) {
   const built = A(a.sourcing).filter((x) => /build/i.test(x.choice)).map((x) => String(x.component).toLowerCase()).slice(0, 3).join(", ");
   const modelChoice = (A(a.sourcing).find((x) => /model/i.test(x.component)) || {}).choice || "partnered";
   return ["**Why we recommend this architecture**", "",
-    `- Deterministic where it must be: the guards, retrieval, citation check and routing are fixed rules, so escalation and the cited-source promise cannot drift. ${clean(a.engineWhy)}`,
-    `- Agentic where it helps: the model takes only the one job a rule cannot do well, drafting from passages it was handed. ${clean(a.shapeWhy)}`,
-    `- Build where the moat is, partner where it is a commodity: ${built || "the index, citation and guards"} are built in-house; the answer model is ${modelChoice}, because a frontier model is a commodity.`].join("\n");
+    `- Deterministic where it must be: the guards, retrieval, citation check and routing are fixed rules, so escalation and the cited-source promise are held by rules we can test, not left to the model. ${clean(a.engineWhy)}`,
+    a.engine === "rules" ? `- Rules only in the first wave, as you chose: no model drafts or decides yet; a model is a later option, behind the same guards. ${clean(a.shapeWhy)}` : `- Agentic where it helps: the model takes only the one job a rule cannot do well, drafting from passages it was handed. ${clean(a.shapeWhy)}`,
+    `- Build where the moat is, partner where it is a commodity: ${built || "the index, citation and guards"} are built in-house; ${a.engine === "rules" ? "a model, when one is added, would be partnered" : `the answer model is ${modelChoice}`}, because a frontier model is a commodity.`].join("\n");
 }
 
 const G = (k) => json(path.join(GATES, `${k}.json`), null);
+const writeApproach = () => write(path.join(PROTO, "approach.html"), renderApproach(json(path.join(GATES, "approach.json"), {}), cards(), productName() || G("v")?.useCase || G("r")?.title, G("v")?.client ? `${G("v").client}` : "", G("r")));
+// One source of truth: every page renders from the gate JSON and cards.json. The only hand-written client text is the
+// approach cards and the gate prose, so this checks that their names and numbers match what the client said or the
+// research cited, and that the four views agree on the product, the client and the decisions.
+function consistency() {
+  const out = []; const g = gates(); const cs = cards(); const ap = json(path.join(GATES, "approach.json"), {});
+  const said = [caseLine(), ...cs.map((x) => `${x.decision || ""}`), ...A(g.r?.facts).map((f) => f.figure)].join(" ").toLowerCase();
+  const nums = (t) => (String(t || "").replace(/\*\*/g, "").match(/\d[\d,.]*\s*(%|k|m|min|minutes|hours|days|weeks)?/gi) || []).map((n) => n.trim().toLowerCase());
+  for (const s of A(ap.stages)) for (const n of nums(s.heard)) if (!said.includes(n.replace(/\s.*$/, ""))) out.push(`approach ${s.stage}: "What we heard" says ${n}, which no client answer, the case line or a cited fact contains`);
+  const name = productName(); const c = json(path.join(PROTO, "case.json"), {}); const prd = read(path.join(OUT, "prd.md"));
+  if (name && c.title && c.title !== name) out.push(`prototype title "${c.title}" differs from the product name "${name}"`);
+  if (name && prd && !prd.startsWith(`# ${name}`)) out.push(`PRD title differs from the product name "${name}"`);
+  if (g.v?.client && c.client && c.client !== g.v.client) out.push(`client name differs: PRD "${g.v.client}", prototype "${c.client}"`);
+  for (const x of cs.filter((y) => y.decision && Number(y.round) >= 1)) if (prd && !prd.includes(byLabel(x.decision).slice(0, 40))) out.push(`decision ${x.id} ("${byLabel(x.decision).slice(0, 40)}") is missing from the PRD`);
+  return out;
+}
 const qcAll = () => { const d = path.join(OUT, "qc"); return fs.existsSync(d) ? fs.readdirSync(d).filter((f) => /^\d\.json$/.test(f)).sort().map((f) => json(path.join(d, f), {})) : []; };
 const gates = () => ({ r: G("r"), v: G("v"), a: G("a"), l: G("l"), u: G("u"), e: G("e"), d: G("d"), b: G("b") });
 const cards = () => json(path.join(OUT, "cards.json"), []);
@@ -239,33 +259,32 @@ function evalResults() {
   const seen = versions > 1 ? `holdout scored against ${versions} router versions; only the last counts, and the earlier attempts may have informed the change` : "";
   return { seen, prov, versions, dev, holdout, devGates: parse(dev), holdGates: parse(holdout), devPass: /RELEASE PASSES ALL GATES/.test(dev), holdPass: /RELEASE PASSES ALL GATES/.test(holdout), independent, goldenN: json(path.join(PROTO, "golden.json"), []).length, holdoutN: json(path.join(PROTO, "holdout.json"), []).length };
 }
-// Group-specific eval rows ("Fairness worst lang=en") share a base name; dev and holdout can name different groups.
+// Group-specific eval rows ("Fairness worst lang=en") share a base name, and dev and holdout can name different
+// groups. The holdout row for a dev row is the same key, else the same base; its own group is shown beside the value.
 const gateBase = (k) => String(k).replace(/\s+\S+=\S+$/, "");
-// The holdout row for a dev row: same key, else the same base with the holdout's own worst group shown beside the value.
-function holdoutCell(holdGates, k) {
-  if (holdGates[k]) return holdGates[k].value;
-  const hit = Object.entries(holdGates).find(([h]) => gateBase(h) === gateBase(k) && h !== gateBase(h));
-  return hit ? `${hit[1].value} (${hit[0].slice(gateBase(hit[0]).length).trim()})` : "";
+function holdoutRow(holdGates, k) {
+  if (holdGates[k]) return { ...holdGates[k], group: "" };
+  const hit = Object.entries(holdGates).find(([h]) => h !== gateBase(h) && gateBase(h) === gateBase(k));
+  return hit ? { ...hit[1], group: hit[0].slice(gateBase(hit[0]).length).trim() } : null;
 }
-// The gate-table row that explains an eval row: exact metric first, then a metric that contains the key (or the
-// reverse), then the longest shared prefix of at least 10 characters. A fixed-length prefix alone matched
-// "Escalation precision" to the "Escalation recall" row.
+const holdoutCell = (holdGates, k) => { const h = holdoutRow(holdGates, k); return h ? `${h.value}${h.group ? ` (${h.group})` : ""}` : ""; };
+// The gate-table row that explains an eval row: an exact name, then a name that contains the key (or the reverse),
+// then the longest shared prefix of at least 10 characters. A fixed 10-character prefix alone matched
+// "Escalation precision" to the "Escalation recall" row and showed the client's bar for an assumed one.
 function gateWhy(rows, k) {
-  const key = String(k).toLowerCase(), m = (x) => String(x.metric || x.gate || "").toLowerCase();
+  const key = String(k).toLowerCase(), names = (x) => [x.metric, x.gate].filter(Boolean).map((n) => String(n).toLowerCase());
   const shared = (a, b) => { let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i; };
-  const best = rows.find((x) => m(x) === key) || rows.find((x) => m(x) && (key.startsWith(m(x)) || m(x).startsWith(key)))
-    || rows.map((x) => [x, shared(m(x), key)]).filter(([, n]) => n >= 10).sort((p, q) => q[1] - p[1])[0]?.[0];
-  return (best || {}).why || "";
+  const best = rows.find((x) => names(x).includes(key)) || rows.find((x) => names(x).some((n) => key.startsWith(n) || n.startsWith(key)))
+    || rows.map((x) => [x, Math.max(0, ...names(x).map((n) => shared(n, key)))]).filter(([, n]) => n >= 10).sort((p, q) => q[1] - p[1])[0]?.[0];
+  return best ? best.why || "" : "";
 }
-// r.json assumptions are objects ({ text, card, confirmedIf }); the other gates write strings.
-const assumptionText = (x) => typeof x === "string" ? x : x && x.text ? `${x.text}${x.card ? ` (tested by ${x.card})` : ""}` : "";
 
 // ---------- state.md ----------
 function renderState(g) {
   const cs = cards(), open = Object.values(g).filter(Boolean).flatMap((x) => A(x.governance).filter((r) => !/^answered/i.test(r.status || "")).map((r) => [x.gate || "", r.question, r.status, r.owner || "to assign"]));
-  const assumptions = Object.values(g).filter(Boolean).flatMap((x) => A(x.assumptions)).map(assumptionText).filter(Boolean);
+  const assumptions = Object.values(g).filter(Boolean).flatMap((x) => A(x.assumptions)).map((a) => (typeof a === "string" ? a : a && a.text) || "").filter(Boolean);
   const engine = (g.a || {}).engine;
-  return ["# State", "", "## Case line", "", clean(caseLine()), "", `Mode: ${read(path.join(OUT, "mode.txt")).trim() || "orchestrated"}. Live PRD: localhost:${process.env.PORT || 4317}/prd.`, "", "## Client decisions", "", table(["Gate", "Card", "Decision", "By"], cs.filter((c) => c.decision).map((c) => [c.gate, c.question, `${c.decision}${c.auto ? " (auto)" : ""}${c.revised ? " (revised)" : ""}`, c.by || c.role])), "", engine ? `Build engine: ${engine} (chosen by ${(g.a || {}).engineBy || "IT and risk"})` : "", "", "## Assumptions", "", ...assumptions.map((x) => `- ${clean(x)}`), "", "## Governance log", "", table(["Gate", "Item", "Status", "Closes it"], open), "", read(path.join(OUT, "state-notes.md")), ""].join("\n");
+  return ["# State", "", "## Case line", "", clean(caseLine()), "", `Mode: ${read(path.join(OUT, "mode.txt")).trim() || "orchestrated"}. Live PRD: localhost:${process.env.PORT || 4317}/prd.`, "", "## Client decisions", "", tableAll(["Gate", "Card", "Decision", "By"], cs.filter((c) => c.decision).map((c) => [c.gate, c.question, `${byLabel(c.decision)}${c.revised ? " (revised)" : ""}`, byLabel(c.by || c.role)])), "", engine ? `Build engine: ${engine} (chosen by ${(g.a || {}).engineBy || "IT and risk"})` : "", "", "## Assumptions", "", ...assumptions.map((x) => `- ${clean(x)}`), "", "## Governance log", "", table(["Gate", "Item", "Status", "Closes it"], open), "", read(path.join(OUT, "state-notes.md")), ""].join("\n");
 }
 
 // ---------- case.json ----------
@@ -302,6 +321,7 @@ function renderCase(g, ev) {
   const cs = cards();
   const c = {
     ...prev,
+    ownerShort: u.ownerShort || "", ownerByFamily: u.escalationOwners || {}, mix: a.mix || null, panelTitle: a.panelTitle || "", profileFields: A(a.profileFields).map((f) => (typeof f === "string" ? { label: f } : f)),
     title: productName() || v.title, client: v.client, useCase: productName() || v.useCase, headline: v.headline, scenario: v.scenario, user: v.user, inputLabel: v.inputLabel, persona: v.persona, industry: v.industry, labels: v.labels,
     accent: accentFor(v.industry, v.client),
     heroStat: A(v.metrics)[0] ? { metric: A(v.metrics)[0].metric, from: A(v.metrics)[0].baseline, to: A(v.metrics)[0].target } : (v.northStar?.preferred ? { metric: v.northStar.preferred, from: "", to: "" } : null),
@@ -337,21 +357,23 @@ function renderPrd(g, ev, c) {
   const s = {};
   s[1] = b ? table(["", ""], [["Problem", b.summary?.problem], ["Who it serves", b.summary?.who], ["What we build", b.summary?.build], ["What it never does", b.summary?.never || A(u?.neverList)[0]], ["How we know it works", b.summary?.works], ["First milestone", b.summary?.milestone]]) : P("B");
   const rs = Object.fromEntries(A(g.r?.sources).map((x) => [x.key, x]));
-  const ctx = A(g.r?.facts).length ? ["", "**Industry context (published sources; full brief at /discovery)**", "", table(["Figure", "What it means here", "Source"], A(g.r.facts).slice(0, 8).map((f) => [f.figure, f.fact, rs[f.source] ? `${rs[f.source].publisher}, ${rs[f.source].year} (${rs[f.source].url})` : "source missing"]))].join("\n") : "";
+  const ctx = A(g.r?.facts).length ? ["", "**Industry context (published sources; full research at /research)**", "", table(["Figure", "What it means here", "Source"], A(g.r.facts).slice(0, 8).map((f) => [f.figure, f.fact, rs[f.source] ? `${rs[f.source].publisher}, ${rs[f.source].year} (${rs[f.source].url})` : "source missing"]))].join("\n") : "";
   s[2] = v ? [clean(v.problem), "", table(["Value driver", "Today (baseline)", "Target", "How measured"], A(v.valueDrivers).map((r) => [r.driver, r.today, r.target, r.measured])), ctx].join("\n") : (ctx ? [P("V"), ctx].join("\n") : P("V"));
-  s[3] = v ? [table(["User", "Job to be done", "Pain today", "What changes"], A(v.users).map((r) => [r.user, r.job, r.pain, r.changes])), "", table(["ID", "As a", "I want to", "So that"], A(v.stories).map((r, i) => [`US-${String(i + 1).padStart(2, "0")}`, r.as, r.want, r.soThat])), "", `**Journey, future state:** ${clean(v.journey)}`, ...(A(v.stakeholders).length ? ["", "**Stakeholders and decision rights**", "", table(["Stakeholder", "Cares about", "Decides or can block", "How we keep them with us"], A(v.stakeholders).map((r) => [r.role, r.cares, r.decides, r.keep]))] : [])].join("\n") : P("V");
-  s[4] = v ? ["**Goals**", ...A(v.goals).map((x, i) => `- G-${String(i + 1).padStart(2, "0")} ${clean(x)}`), "", "**Non-goals (this release)**", ...A(v.nonGoals).map((x) => `- ${clean(x)}`), "", table(["ID", "Metric", "Baseline", "Target", "Guardrail"], A(v.metrics).map((r, i) => [`M-${String(i + 1).padStart(2, "0")}`, r.metric, r.baseline, r.target, r.guardrail]))].join("\n") : P("V");
+  const dec = (id) => byLabel((cs.find((x) => x.id === id) || {}).decision || "");
+  const early = (rows) => { const r = rows.filter(([, d]) => d); return r.length ? ["**From our conversation so far** (the full section fills in as we work through it)", "", tableAll(["", "You told us"], r)].join("\n") : ""; };
+  s[3] = v ? [table(["User", "Job to be done", "Pain today", "What changes"], A(v.users).map((r) => [r.user, r.job, r.pain, r.changes])), "", table(["ID", "As a", "I want to", "So that"], A(v.stories).map((r, i) => [`US-${String(i + 1).padStart(2, "0")}`, r.as, r.want, r.soThat])), "", `**Journey, future state:** ${clean(v.journey)}`, ...(A(v.stakeholders).length ? ["", "**Stakeholders and decision rights**", "", table(["Stakeholder", "Cares about", "Decides or can block", "How we keep them with us"], A(v.stakeholders).map((r) => [r.role, r.cares, r.decides, r.keep]))] : [])].join("\n") : (early([["Who needs to say yes, and who could slow it down", dec("C-1")]]) || P("V"));
+  s[4] = v ? ["**Goals**", ...A(v.goals).map((x, i) => `- G-${String(i + 1).padStart(2, "0")} ${clean(x)}`), "", "**Non-goals (this release)**", ...A(v.nonGoals).map((x) => `- ${clean(x)}`), "", table(["ID", "Metric", "Baseline", "Target", "Guardrail"], A(v.metrics).map((r, i) => [`M-${String(i + 1).padStart(2, "0")}`, r.metric, r.baseline, r.target, r.guardrail]))].join("\n") : (early([["The one outcome that matters most", dec("R1-1")], ["Off the table from day one", dec("R1-2")], ["When you want to see something working", dec("C-3")], ["Today's baseline", dec("C-2")]]) || P("V"));
   s[5] = a ? table(["Candidate", "Lowest rung that works", "Decision", "Why"], A(a.scores).map((x) => [`${x.id} ${x.name || ""}`, x.rung, x.wave === 1 ? "**First wave**" : x.notGenAI ? "Not GenAI" : x.wave === 2 ? "Second wave" : "Later", x.notGenAI ? `${x.reason}; instead: ${x.instead || "rules"}` : x.reason])) + (A(d?.roadmap).length ? ["", "", "**Roadmap (each phase ends on evidence, not a date)**", "", table(["Phase", "What ships", "Evidence that ends it", "Depends on", "Release cadence"], A(d.roadmap).map((r) => [r.phase, r.ships, r.exit, r.dependsOn, r.cadence]))].join("\n") : "") : P("A");
   s[6] = a ? [`**Engine (gate A, client decision):** ${({ rules: "Rules only", "rules+model": "Rules decide, model drafts", "model-first": "Model proposes, rules guard" })[a.engine] || a.engine}, because ${clean(a.engineWhy)}.`, "", table(["Component", "Rung", "Build, buy or partner", "Why", "What would change our mind"], A(a.sourcing).map((x) => [x.component, x.rung, x.choice, x.why, x.changeMind])), "", "**Architecture flow**", "", archSvg(a, c), "", whyArch(a), "", "**Assistants (agentic design)**", "", table(["Assistant", "Rules or AI", "Job", "Never", "Measured by"], A(a.agents).map((x) => [x.name, x.kind === "model" ? "AI" : "Rules", x.job, A(x.never).join("; "), x.gate])), "", "**Sweeps (proactive work)**", "", table(["Sweep", "Rules or AI", "Schedule", "What it checks", "Decision it hands to a person"], A(a.sweeps).map((x) => [x.agent, x.kind === "model" ? "AI" : "Rules", x.schedule, x.checks, x.decision])), "", "**Alternatives considered**", "", table(["Alternative", "Why not now", "When we would revisit"], A(a.alternatives).map((x) => [x.alternative, x.whyNot, x.revisit])), "", `**Latency budget:** ${clean(a.latency)}. **Unit of cost:** cost per resolved task, ${clean(a.cost)}${/\(assumed\)/i.test(a.cost || "") ? "" : " (assumed)"}.`].join("\n") : P("A");
   s[7] = b ? table(["ID", "Requirement", "Story", "Priority", "Acceptance criteria"], A(b.requirements).map((r, i) => [`FR-${String(i + 1).padStart(2, "0")}`, r.requirement, storyId(r.story), r.priority, r.acceptance])) : P("B");
   const contract = { desk: "input = the request + one cited source; output = 2 to 4 sentences from that source only, or `NO_ANSWER`.", chat: "input = the question + one cited source; output = 2 to 4 sentences from that source only, or `NO_ANSWER`; sensitive topics never reach the model.", review: "input = the document + the type's field list; output = each field's value with the exact evidence span, empty when absent; a value without evidence is dropped.", rank: "input = the record's facts + the rule that fired; output = a two-sentence talking point using only those facts." };
   s[8] = u && l ? [`**Verdicts:** \`answer\` (${clean(l.verdicts?.answer?.desc)}), \`human\` (${clean(l.verdicts?.human?.desc)}), \`escalate\` (${clean(l.verdicts?.escalate?.desc)}).`, "", "**Decision order:** escalation triggers first, in every language served; then source match; otherwise a person.", "", table(["Escalation trigger", "Example phrasing", "Goes to", "Response time"], A(u.triggers).map((t) => [t.trigger, `"${t.example}"`, t.goesTo, t.responseTime])), "", "**Never list**", ...A(u.neverList).map((x) => `- ${clean(x)}`), "", `**Model contract (${a?.shape || "desk"}):** ${contract[a?.shape] || contract.desk} In every shape, a refusal or error falls back to a person, never to a guess. Model: claude-sonnet-5-5 by default (Haiku for cost, Opus for the hardest rows), low effort, server-side fallback on.`].join("\n") : P("U");
-  s[9] = u ? [table(["Action", "Autonomy (first 90 days)", "Approver", "AI shows", "On failure"], A(u.autonomyTable).map((r) => [r.action, r.level, r.approver, r.shows, r.onFailure])), "", "**Clocks**", "", table(["Outcome", "Respond within", "Regulatory clock"], [["Escalate", `${u.clocks?.escalate?.hours} h`, u.clocks?.escalate?.label], ["Needs a person", `${u.clocks?.human?.hours} h`, u.clocks?.human?.label], ["Prepared for review", `${u.clocks?.answer?.hours} h`, u.clocks?.answer?.label]]), "", "**Learning loop:** any reviewer can mark an outcome wrong; it joins the labelled test set with the right answer and every design is re-scored.", "", `**Disclosure (compliance to confirm):** "${clean(u.disclosure)}".`].join("\n") : P("U");
+  s[9] = u ? [table(["Action", "Autonomy (first 90 days)", "Approver", "AI shows", "On failure"], A(u.autonomyTable).map((r) => [r.action, r.level, r.approver, r.shows, r.onFailure])), "", "**Clocks**", "", table(["Outcome", "Respond within", "Regulatory clock"], [["Escalate", `${u.clocks?.escalate?.hours} h`, u.clocks?.escalate?.label], ["Needs a person", `${u.clocks?.human?.hours} h`, u.clocks?.human?.label], ["Prepared for review", `${u.clocks?.answer?.hours} h`, u.clocks?.answer?.label]]), "", "**Learning loop:** any reviewer can mark an outcome wrong; it joins the labelled test set with the right answer and every design is re-scored.", "", `**Disclosure (compliance to confirm):** "${clean(u.disclosure)}".`].join("\n") : (early([["How hands-on you want to be in the first 90 days", dec("R1-4")], ["Who it loops in on a hard call", dec("R1-5")]]) || P("U"));
   s[10] = l ? [table(["Data", "Owner", "Purpose", "Personal data", "Minimisation", "Retention"], A(l.dataPrivacy).map((r) => [r.data, r.owner, r.purpose, r.personal, r.minimisation, r.retention])), "", "**Systems to connect**", "", table(["System", "Category", "Provides", "Access", "Personal data", "Owner", "Pilot status"], A(c.connectors).map((x) => [`${x.name} (${x.vendor || "vendor to confirm"})`, x.category, x.provides, x.access, x.pii, x.owner, x.status])), "", `**Golden set:** ${ev.goldenN} dev rows plus ${ev.holdoutN} sealed holdout rows; groups: ${A(l.groups).map((x) => `${x.key} (${A(x.values).join(", ")})`).join("; ")}. Labelled ${clean(l.labelling?.preferred || A(l.labelling?.options)[0]?.label)}. Synthetic until ${clean((cs.find((x) => /connect/i.test(x.question)) || {}).decision || "the client provides data")}.`].join("\n") : P("L");
   const names = { "Escalation recall": "Riskiest miss", "Escalation precision": "False alarms", "Answers without source": "Approved knowledge only", "Routing accuracy": "Right outcome", "Recall gap": "Equal across groups", "Fairness": "No group below the bar", "Never-list answers": "Forbidden topics", "Verdicts outside allowed": "Only allowed outcomes" };
-  s[11] = e ? [table(["Gate", "Metric", "Bar", "Why this bar", "Latest dev", "Holdout"], Object.entries(ev.devGates).map(([k, r]) => [Object.entries(names).find(([n]) => k.toLowerCase().startsWith(n.toLowerCase().slice(0, 12)))?.[1] || k, k, r.bar, gateWhy(A(e.gateTable), k), r.value, holdoutCell(ev.holdGates, k)])), "", `**Release status:** ${ev.devPass && ev.holdPass ? "Passes all gates on dev and holdout" : `Blocked on ${Object.entries(ev.devGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k).concat(Object.entries(ev.holdGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k + " (holdout)")).join(", ") || "a missing eval"}`}${ev.independent ? "" : `; holdout not independent (${ev.prov.recorded ? `${ev.prov.shared.join(", ")} wrote both the holdout rows and the router` : "no record of who wrote which"})`}${ev.seen ? `; ${ev.seen}` : e.repaired ? "; holdout seen once before a family-level repair" : ""}${e.repaired && A(e.fixes).length ? `. The first dev run was blocked; after ${A(e.fixes).length} disclosed router ${A(e.fixes).length === 1 ? "fix" : "fixes"} (all listed in gate E) it ${ev.devPass ? "passes on dev" : "still fails on dev"}; the first: ${clean(A(e.fixes)[0])}` : ""}. **LLM judge policy:** ${clean(e.judgePolicy) || "none in the pilot; a judge may score draft quality only after it is validated against labels; escalation never uses one"}.`, "", "**Reproduce:** `node out/proto/eval.js` (dev) and `node out/proto/eval.js holdout.json` (sealed)."].join("\n") : P("E");
+  s[11] = e ? [table(["Gate", "Metric", "Bar", "Why this bar", "Latest dev", "Holdout"], Object.entries(ev.devGates).map(([k, r], gi) => [Object.entries(names).find(([n]) => k.toLowerCase().startsWith(n.toLowerCase().slice(0, 12)))?.[1] || k, k, r.bar, gateWhy(A(e.gateTable), k) || (A(e.gateTable)[gi] || {}).why || "", r.value, holdoutCell(ev.holdGates, k)])), "", `**Release status:** ${ev.devPass && ev.holdPass ? (() => { const thin = Object.entries(ev.holdGates).filter(([, r]) => { const b = parseFloat(String(r.bar).replace(/[^\d.]/g, "")); return r.result === "PASS" && b > 0 && !/<|max/i.test(String(r.bar)) && parseFloat(r.value) === b; }).map(([k]) => k.toLowerCase()); return thin.length ? `Meets every pass mark on the practice set and the sealed test set, with no margin on ${thin.length > 1 ? `${thin.slice(0, -1).join(", ")} and ${thin.slice(-1)}` : thin[0]}` : "Meets every pass mark on the practice set and the sealed test set"; })() : `Blocked on ${Object.entries(ev.devGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k).concat(Object.entries(ev.holdGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k + " (holdout)")).join(", ") || "a missing eval"}`}${ev.independent ? "" : `; holdout not independent (${ev.prov.recorded ? `${ev.prov.shared.join(", ")} wrote both the holdout rows and the router` : "no record of who wrote which"})`}${ev.seen ? `; ${ev.seen}` : e.repaired ? "; holdout seen once before a family-level repair" : ""}${e.repaired && A(e.fixes).length ? `. The first eval run was blocked; ${A(e.fixes).length === 1 ? "one repair" : `${A(e.fixes).length} repair rounds`} followed, each disclosed: ${A(e.fixes).map(clean).join("; ")}` : ""}. **LLM judge policy:** ${clean(e.judgePolicy) || "none in the pilot; a judge may score draft quality only after it is validated against labels; escalation never uses one"}.`, "", "**Reproduce:** `node out/proto/eval.js` (dev) and `node out/proto/eval.js holdout.json` (sealed)."].join("\n") : P("E");
   s[12] = (() => {
-    const menu = table(["Provider", "Model", "In $/1M", "Out $/1M", "Latency", "Best for"], MODEL_MENU.map((m) => [m.provider, m.model + (m.runnable ? " (runs in the prototype)" : ""), `$${m.in}`, `$${m.out}`, m.latency, m.bestFor]));
+    const menu = table(["Provider", "Model", "In $/1M", "Out $/1M", "Latency", "Best for"], MODEL_MENU.map((m) => [m.provider, m.model + (a?.engine !== "rules" && (m.id === (process.env.VALUED_MODEL || "claude-sonnet-5-5")) ? " (drafts in the prototype)" : ""), `$${m.in}`, `$${m.out}`, m.latency, m.bestFor]));
     const pr = a?.pricing, bc = b?.businessCase;
     const dflt = pr?.default ? `**Multi-purpose default:** ${clean(pr.default.model)}, because ${clean(pr.default.why)}.` : "";
     const perUse = pr && A(pr.perUseCase).length ? ["**Which model for which job**", "", table(["Job", "Recommended model", "Why"], A(pr.perUseCase).map((r) => [r.job, r.model, r.why]))].join("\n") : "";
@@ -364,7 +386,7 @@ function renderPrd(g, ev, c) {
     return ["**Model menu (the client chooses; prices are list prices, (assumed), confirm at the vendor)**", "", menu, "", dflt, perUse, "", tierRule, "", types, "", pipe, "", runCost, "", roi, "", commercial, (pr || bc) ? "" : P("A")].filter((x) => x !== "").join("\n");
   })();
   s[13] = b ? table(["ID", "Requirement", "Target"], A(b.nfrs).map((r, i) => [`NFR-${String(i + 1).padStart(2, "0")}`, r.requirement, r.target])) : P("B");
-  s[14] = d ? [table(["Step", "Proves", "Exit criterion", "Signs"], A(d.deploy).map((r) => [r.step, r.proves, r.exit, r.signs])), "", table(["Drive metric", "Why", "Alert threshold"], A(d.drive).map((r) => [r.metric, r.why, r.alert])), "", `**Stop rule (client decision):** ${clean((cs.find((x) => /stop/i.test(x.question)) || {}).decision || d.stop?.preferred)}. **Kill switch:** per behaviour, owned by ${clean(d.killSwitchOwner || "the product owner")}.`, "", "**Plan**", "", table(["Week", "Work"], A(d.plan).map((r) => [r.week, r.work])), ...(A(d.supportModel).length ? ["", "**Support model after launch**", "", table(["Tier", "Who", "Owns"], A(d.supportModel).map((r) => [r.tier, r.who, r.owns]))] : []), ...(A(d.adoption).length ? ["", "**Adoption and change**", "", table(["Who changes how they work", "What changes", "How we bring them in", "Adoption signal"], A(d.adoption).map((r) => [r.group, r.changes, r.bringIn, r.signal]))] : []), ...(A(d.operatingModel).length ? ["", "**Operating model**", "", table(["Role", "First wave", "After handover"], A(d.operatingModel).map((r) => [r.role, r.firstWave, r.afterHandover]))] : [])].join("\n") : P("D");
+  s[14] = d ? [table(["Step", "Proves", "Exit criterion", "Signs"], A(d.deploy).map((r) => [r.step, r.proves, r.exit, r.signs])), "", table(["Drive metric", "Why", "Alert threshold"], A(d.drive).map((r) => [r.metric, r.why, r.alert])), "", `**Stop rule (client decision):** ${clean((cs.find((x) => x.id === "R2-6") || cs.find((x) => x.gate === "D" && /\bpause\b|\bstop rule\b/i.test(x.question)) || {}).decision || d.stop?.preferred)}. **Kill switch:** per behaviour, owned by ${clean(d.killSwitchOwner || "the product owner")}.`, "", "**Plan**", "", table(["Week", "Work"], A(d.plan).map((r) => [r.week, r.work])), ...(A(d.supportModel).length ? ["", "**Support model after launch**", "", table(["Tier", "Who", "Owns"], A(d.supportModel).map((r) => [r.tier, r.who, r.owns]))] : []), ...(A(d.adoption).length ? ["", "**Adoption and change**", "", table(["Who changes how they work", "What changes", "How we bring them in", "Adoption signal"], A(d.adoption).map((r) => [r.group, r.changes, r.bringIn, r.signal]))] : []), ...(A(d.operatingModel).length ? ["", "**Operating model**", "", table(["Role", "First wave", "After handover"], A(d.operatingModel).map((r) => [r.role, r.firstWave, r.afterHandover]))] : [])].join("\n") : P("D");
   s[15] = d ? [table(["Approver", "Role", "Signs off on"], A(d.signoffs).map((r) => [r.name || "to confirm", r.role, r.signs])), "", table(["Gate", "Question", "Answer", "Status", "Closes it"], [...A(c.governance).filter((r) => !/^answered/i.test(r.status)), ...A(c.governance).filter((r) => /^answered/i.test(r.status))].map((r) => [r.gate, r.question, r.answer, r.status, r.owner])), ...(A(u?.responsibleAi).length ? ["", "**Responsible AI**", "", table(["Area", "Risk in this case", "Control", "Owner", "Evidence a reviewer can sign"], A(u.responsibleAi).map((r) => [r.area, r.risk, r.control, r.owner, r.evidence]))] : [])].join("\n") : P("D");
   s[16] = b ? table(["ID", "Risk", "Likelihood", "Impact", "Mitigation"], A(b.risks).map((r, i) => [`R-${String(i + 1).padStart(2, "0")}`, r.risk, r.likelihood, r.impact, r.mitigation])) + (A(v?.hypotheses).length ? ["", "", "**Hypotheses this plan rests on**", "", table(["ID", "Bet", "Weakest link", "Cheapest test that would kill it"], A(v.hypotheses).map((r, i) => [`H-${String(i + 1).padStart(2, "0")}`, r.bet, r.weakestLink, r.killTest]))].join("\n") : "") : P("B");
   s[17] = b ? [table(["Dependency", "Owner", "Needed for", "Status"], A(b.dependencies).map((r) => [r.dependency, r.owner, r.neededFor, r.status])), "", table(["ID", "Question or assumption", "Owner", "Needed by"], A(b.openQuestions).map((r, i) => [`Q-${String(i + 1).padStart(2, "0")}`, r.question, r.owner, r.neededBy]))].join("\n") : P("B");
@@ -384,9 +406,12 @@ function renderPrd(g, ev, c) {
   const md = [`# ${productName() || v?.useCase || "(use case, from gate V)"}: product requirements`, "", `<!-- Case: ${clean(caseLine())} -->`, "", `**Client:** ${v?.client || "(from gate V)"} · **Version:** ${version} · **Owner:** product lead · **Date:** ${today()} · **Source:** VALUED run, every decision traceable to a gate file in \`out/\``, "",
     ...(b ? [`> **Recommendation.** ${clean(b.recommendation)}`, `> **Decision asked of the client.** ${clean(b.decisionAsked)}`, ""] : []),
     ...Object.entries(titles).flatMap(([n, t]) => [`## ${n}. ${t}`, "", s[n], ""]),
-    "## Appendix: client decisions", "", cs.some((x) => x.decision) ? table(["Gate", "Decision", "Chosen by", "Our recommendation"], cs.filter((x) => x.decision).map((x) => [x.gate, x.decision, x.by || x.role, A(x.options)[0]?.label])) : P("B"), "",
+    "## Appendix: client decisions", "", cs.some((x) => x.decision) ? tableAll(["Gate", "Decision", "Chosen by", "Our recommendation"], cs.filter((x) => x.decision).map((x) => [x.gate, byLabel(x.decision), byLabel(x.by || x.role), A(x.options)[0]?.label])) : P("B"), "",
     history || ["## Appendix: document history", "", "| Version | Date | Change | Requested by | Sections |", "|---|---|---|---|---|", `| 0.1 | ${today()} | First draft, built gate by gate through the VALUED gates | Product lead | All |`].join("\n"), ""].join("\n");
-  write(path.join(OUT, "prd.md"), md);
+  // Client-ready: bracketed question references stay in the decisions appendix, not in the client's prose.
+  const cut = md.indexOf("## Appendix: client decisions");
+  const clientMd = cut > 0 ? md.slice(0, cut).replace(/\s*\((?:\s*(?:C-\d+|R\d-\d+)\s*[,;]?\s*)+\)/g, "").replace(/\s*\((?:C-\d+|R\d-\d+)[,;]\s*([^)]*)\)/g, " ($1)").replace(/\(([^)]*?)[,;]\s*(?:C-\d+|R\d-\d+)\)/g, "($1)") + md.slice(cut) : md;
+  write(path.join(OUT, "prd.md"), clientMd);
 }
 
 // ---------- brief ----------
@@ -395,7 +420,7 @@ function renderBrief(g, ev, c) {
   const esc = (s) => String(s ?? "").replace(/[&<>]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]));
   const li = (xs) => A(xs).slice(0, 3).map((x) => `<li>${esc(clean(x))}</li>`).join("");
   const cs = cards();
-  const gateRows = Object.entries(ev.devGates).map(([k, r]) => `<tr><td>${esc(k)}</td><td>${esc(r.bar)}</td><td>${esc(r.value)}</td><td>${esc((ev.holdGates[k] || {}).value || "")}</td><td><span class="pill ${r.result === "PASS" ? "ok" : "bad"}">${r.result === "PASS" ? "Passed" : "Blocked"}</span></td></tr>`).join("");
+  const gateRows = Object.entries(ev.devGates).map(([k, r]) => `<tr><td>${esc(k)}</td><td>${esc(r.bar)}</td><td>${esc(r.value)}</td><td>${esc(holdoutCell(ev.holdGates, k))}</td><td>${(() => { const h = holdoutRow(ev.holdGates, k); const ok = r.result === "PASS" && (!h || h.result === "PASS"); return `<span class="pill ${ok ? "ok" : "bad"}">${ok ? "Passed" : h && h.result !== "PASS" ? "Blocked on holdout" : "Blocked"}</span>`; })()}</td></tr>`).join("");
   const govRows = A(c.governance).filter((r) => !/^answered/i.test(r.status)).slice(0, 8).map((r) => `<tr><td>${esc(r.gate)}</td><td>${esc(r.question)}</td><td>${esc(r.status)}</td><td>${esc(r.owner)}</td></tr>`).join("") || `<tr><td colspan="4">No open governance items.</td></tr>`;
   const stats = A(g.b.stats).length === 3 ? g.b.stats : [{ value: String(ev.goldenN + ev.holdoutN), label: "labelled test rows" }, { value: (ev.devGates["Escalation recall"] || {}).value || "", label: "escalation recall, dev" }, { value: (ev.holdGates["Escalation recall"] || {}).value || "", label: "escalation recall, sealed holdout" }];
   const map = { CLIENT: g.v?.client, ONE_LINE_PROBLEM: g.b.summary?.problem, RECOMMENDATION_ONE_SENTENCE: g.b.recommendation, AGENT_SENTENCE_WITH_FIGURES: g.b.agentSentence, STAT_1_VALUE: stats[0].value, STAT_1_LABEL: stats[0].label, STAT_2_VALUE: stats[1].value, STAT_2_LABEL: stats[1].label, STAT_3_VALUE: stats[2].value, STAT_3_LABEL: stats[2].label, V_BULLETS_3_LI: li(g.v?.sayIt), A_BULLETS_3_LI: li(g.a?.sayIt), L_BULLETS_3_LI: li(g.l?.sayIt), U_BULLETS_3_LI: li(g.u?.sayIt), E_BULLETS_3_LI: li(g.e?.sayIt), D_BULLETS_3_LI: li(g.d?.sayIt), GATE_ROWS_TR: gateRows, EVAL_CAPTION_ROWS_AND_WHAT_CHANGED: `${ev.goldenN} dev rows, ${ev.holdoutN} sealed. ${esc(clean(g.b.evalCaption || (ev.devPass ? "Passes every gate." : "Blocked; see section 11.")))}`, CLIENT_DECISIONS_LI: cs.filter((x) => x.decision).slice(0, 12).map((x) => `<li><strong>${esc(x.by || x.role)}</strong> chose ${esc(x.decision)}<span class="cap"> (we recommended ${esc(A(x.options)[0]?.label || "")})</span></li>`).join(""), PLAN_ROWS_TR: A(g.d?.plan).map((r) => `<tr><td>${esc(r.week)}</td><td>${esc(r.work)}</td></tr>`).join(""), TIMELINE: g.d?.timeline || "", RISKS_LI: li(A(g.b.risks).map((r) => `${r.risk}: ${r.mitigation}`)), GOVERNANCE_ROWS_TR: govRows };
@@ -409,13 +434,28 @@ function check(g, ev, c, quiet) {
   const must = (obj, keys, gate) => { if (!obj) { need(false, 5, `gate ${gate}: out/gates/${gate.toLowerCase()}.json missing`); return; } for (const k of keys) need(obj[k] !== undefined && obj[k] !== "" && !(Array.isArray(obj[k]) && !obj[k].length), 5, `gate ${gate}: ${k} missing`); };
   if (g.r) {
     const keys = new Set(A(g.r.sources).map((x) => x.key));
-    need(A(g.r.facts).length >= 5 && A(g.r.facts).every((f) => keys.has(f.source)), 1, "research: 5+ facts, each citing a source key");
+    const external = new Set(A(g.r.sources).filter((x) => /^https?:\/\//.test(x.url || "") && !/localhost|client|inputs\//i.test(`${x.url} ${x.publisher}`)).map((x) => x.key));
+    need(A(g.r.facts).filter((f) => external.has(f.source)).length >= 5, 1, "research: 5+ facts from external published sources (client answers are never research)");
     need(A(g.r.sources).every((x) => /^https?:\/\//.test(x.url || "") && x.publisher && x.year), 1, "research: every source needs url, publisher, year");
     need(A(g.r.tree?.branches).length >= 3 && A(g.r.tree.branches).every((b) => A(b.hypotheses).length && A(b.questions).length), 1, "research: tree needs 3+ branches, each with hypotheses and question ids");
     need(A(g.r.terms).length >= 6, 1, "research: 6+ terms with plain meanings");
     need(cards().filter((x) => Number(x.round) === 1).every((x) => x.why && x.branch), 1, "round 1: every card needs why and branch");
     need(A(g.r.assumptions).length >= 3, 1, "research: 3+ stated assumptions, each tied to the card that tests it");
   }
+  for (const m of approachIssues(json(path.join(GATES, "approach.json"), {}))) need(false, 8, m);
+  for (const m of consistency()) need(false, 4, m);
+  { // Client-ready language: internal ids never reach a client view (the decisions appendix keeps its gate column).
+    const body = read(path.join(OUT, "prd.md")).split("## Appendix")[0];
+    const ids = body.match(/\b(?:C-\d+|R\d-\d+|[PRA]\d{1,2}(?=[\s,).;])|B\d(?=[\s,).;:]))/g) || [];
+    need(!ids.length, 8, `PRD body shows internal ids (${[...new Set(ids)].slice(0, 5).join(", ")}): say what the client said or cite the source in words`);
+    const ap = JSON.stringify(json(path.join(GATES, "approach.json"), {}));
+    need(!/\b(?:C-\d+|R\d-\d+|B\d)\b/.test(ap), 8, "approach cards show internal ids: write them for the client");
+    const cj = JSON.stringify({ ...json(path.join(PROTO, "case.json"), {}), decisions: undefined });
+    const leak = cj.match(/\bGate [VALUED]\b|\b(?:C-\d+|R\d-\d+)\b|\([^)]*recommended[^)]*\)/gi) || [];
+    need(!leak.length, 8, `prototype text shows method internals (${[...new Set(leak)].slice(0, 4).join(", ")}): write it for the user of the product`);
+    for (const a of A(g.r?.assumptions)) { const c = cards().find((x) => x.id === a.card); if (c && c.decision) need(["confirmed", "challenged"].includes(a.status), 1, `assumption "${String(a.text).slice(0, 50)}" was tested by an answer but has no status (confirmed or challenged)`); }
+  }
+  need(!/\(persona\)/i.test(read(path.join(OUT, "prd.md"))), 8, "PRD shows \"(persona)\": record the persona flag separately, never in by or decision");
   must(g.v, ["client", "industry", "sponsorRole", "ownerRole", "useCase", "title", "headline", "scenario", "user", "inputLabel", "persona", "labels", "valueFrame", "candidates", "northStar", "problem", "valueDrivers", "users", "stories", "journey", "goals", "nonGoals", "metrics", "stakeholders", "hypotheses", "governance", "sayIt"], "V");
   must(g.a, ["scores", "waves", "sourcing", "numbersToQuote", "engine", "engineWhy", "shape", "shapeWhy", "agents", "sweeps", "itemNoun", "promise", "alternatives", "latency", "cost", "governance", "sayIt"], "A");
   must(g.l, ["verdicts", "groups", "labelling", "connectors", "dataPrivacy", "governance", "sayIt"], "L");
@@ -466,7 +506,7 @@ function clockStatus(print = true) {
   }
   const start = es[0]?.t, end = es.length && es.every((e) => e.event !== "start" || es.some((x) => x.phase === e.phase && x.event === "end")) ? Math.max(...es.map((e) => e.t)) : Date.now();
   const total = start ? Math.round((end - start) / 1000) : 0;
-  if (print) { console.log(table(["Phase", "Budget", "Used", "Status"], rows.map((r) => [`${r.phase} ${r.name}`, `${r.budget} min`, r.seconds === null ? "" : `${Math.floor(r.seconds / 60)}m ${r.seconds % 60}s`, r.seconds === null ? "not started" : r.running ? (r.over ? "RUNNING, OVER BUDGET: cut scope" : "running") : r.over ? "over" : "ok"]))); console.log(`Total: ${Math.floor(total / 60)}m ${total % 60}s of 30m`); const cur = rows.find((r) => r.running && r.over); if (cur && CUTS[cur.phase]) console.log(`Cut order for phase ${cur.phase}: ${CUTS[cur.phase].join("; ")}. Never cut governance, evals, the holdout or the never list.`); }
+  if (print) { console.log(table(["Phase", "Budget", "Used", "Status"], rows.map((r) => [`${r.phase} ${r.name}`, `${r.budget} min`, r.seconds === null ? "" : `${Math.floor(r.seconds / 60)}m ${r.seconds % 60}s`, r.seconds === null ? "not started" : r.running ? (r.over ? "RUNNING, OVER BUDGET: cut scope" : "running") : r.over ? "over" : "ok"]))); console.log(`Total: ${Math.floor(total / 60)}m ${total % 60}s of ${PHASES.reduce((t, p) => t + p[2], 0)}m`); const cur = rows.find((r) => r.running && r.over); if (cur && CUTS[cur.phase]) console.log(`Cut order for phase ${cur.phase}: ${CUTS[cur.phase].join("; ")}. Never cut governance, evals, the holdout or the never list.`); }
   return { rows, total };
 }
 
@@ -475,9 +515,9 @@ function report(g, ev, c) {
   const { rows, total } = clockStatus(false);
   const cs = cards(); const cuts = clockEntries().filter((e) => e.event === "cut");
   const flagged = read(path.join(PROTO, "audit.jsonl")).split("\n").filter((l) => /Flagged as wrong/.test(l)).length;
-  const r = { case: clean(caseLine()), date: today(), mode: read(path.join(OUT, "mode.txt")).trim() || "orchestrated", totalSeconds: total, budgetSeconds: 30 * 60, withinBudget: total <= 30 * 60, phases: rows.map((x) => ({ phase: `${x.phase} ${x.name}`, budgetMin: x.budget, seconds: x.seconds, over: x.over })), questionsAsked: cs.length, questions: cs.map((x) => ({ gate: x.gate, role: x.role, question: x.question, decision: x.decision, auto: Boolean(x.auto) })), revisions: cs.filter((x) => x.revised).length, flaggedWrong: flagged, evalBlocks: A(g.e?.runs).filter((x) => /RELEASE BLOCKED/.test(x.output || "")).length, evalFixes: A(g.e?.fixes), holdoutIndependent: ev.independent, release: { dev: ev.devPass, holdout: ev.holdPass }, cuts: cuts.map((x) => ({ phase: x.phase, what: x.note })), shape: g.a?.shape, systems: A(c?.connectors).length, assistants: A(g.a?.agents).length, sweeps: A(g.a?.sweeps).length, checks: check(g, ev, c, true).map(([s, m]) => `[${s}] ${m}`) };
+  const r = { case: clean(caseLine()), date: today(), mode: read(path.join(OUT, "mode.txt")).trim() || "orchestrated", totalSeconds: total, budgetSeconds: PHASES.reduce((t, p) => t + p[2], 0) * 60, withinBudget: total <= PHASES.reduce((t, p) => t + p[2], 0) * 60, phases: rows.map((x) => ({ phase: `${x.phase} ${x.name}`, budgetMin: x.budget, seconds: x.seconds, over: x.over })), questionsAsked: cs.length, questions: cs.map((x) => ({ gate: x.gate, role: x.role, question: x.question, decision: x.decision, auto: Boolean(x.auto) })), revisions: cs.filter((x) => x.revised).length, flaggedWrong: flagged, evalBlocks: A(g.e?.runs).filter((x) => /RELEASE BLOCKED/.test(x.output || "")).length, evalFixes: A(g.e?.fixes), holdoutIndependent: ev.independent, release: { dev: ev.devPass, holdout: ev.holdPass }, cuts: cuts.map((x) => ({ phase: x.phase, what: x.note })), shape: g.a?.shape, systems: A(c?.connectors).length, assistants: A(g.a?.agents).length, sweeps: A(g.a?.sweeps).length, checks: check(g, ev, c, true).map(([s, m]) => `[${s}] ${m}`) };
   writeJson(path.join(OUT, "run-report.json"), r);
-  console.log(`Run report: out/run-report.json · ${Math.floor(total / 60)}m ${total % 60}s of 30m · ${cs.length} questions · ${r.checks.length} open checks`);
+  console.log(`Run report: out/run-report.json · ${Math.floor(total / 60)}m ${total % 60}s of ${PHASES.reduce((t, p) => t + p[2], 0)}m · ${cs.length} questions · ${r.checks.length} open checks`);
 }
 
 // ---------- seeds ----------
@@ -527,11 +567,14 @@ if (cmd === "clock") {
   for (const f of [path.join(OUT, "prd.md"), ...fs.readdirSync(GATES).map((x) => path.join(GATES, x))]) if (/—/.test(read(f))) issues.push(`em-dash in ${path.relative(OUT, f)}`);
   for (const row of A(g.v?.valueFrame)) if (/\d/.test(`${row.volumePerMonth}${row.costPerItem}`) && !/assumed|client|R1-|C-\d|\b[PRA]\d\b/i.test(JSON.stringify(row))) issues.push(`value frame row "${clean(row.item)}" has a number with no source: mark it (assumed), the client's answer, or a fact key`);
   const port = process.env.PORT || 4317;
-  for (const u of ["/discovery", "/prd", "/"]) { const r = spawnSync("curl", ["-s", "-o", "/dev/null", "-w", "%{http_code}", "--max-time", "3", `http://localhost:${port}${u}`], { encoding: "utf8" }); if (r.stdout !== "200") issues.push(`localhost:${port}${u} not serving (HTTP ${r.stdout || "none"}): restart the server`); }
+  for (const u of ["/approach", "/research", "/prd", "/"]) { const r = spawnSync("curl", ["-s", "-o", "/dev/null", "-w", "%{http_code}", "--max-time", "3", `http://localhost:${port}${u}`], { encoding: "utf8" }); if (r.stdout !== "200") issues.push(`localhost:${port}${u} not serving (HTTP ${r.stdout || "none"}): restart the server`); }
+  for (const m of approachIssues(json(path.join(GATES, "approach.json"), {}))) issues.push(m);
+  if (ph >= 1) for (const m of consistency()) issues.push(m);
   const prev = json(path.join(OUT, "qc", `${ph}.json`), {});
   writeJson(path.join(OUT, "qc", `${ph}.json`), { ...prev, phase: ph, auto: issues, autoAt: today() });
   console.log(issues.length ? `QC after phase ${ph}: ${issues.length} to fix before moving on:\n${issues.map((x) => `  - ${x}`).join("\n")}` : `QC after phase ${ph}: mechanical checks clean.`);
   write(path.join(PROTO, "discovery.html"), renderDiscovery(G("r") || {}, cards(), G("v")?.client, qcAll()));
+  writeApproach();
 } else if (cmd === "research") {
   // Non-blocking: merge whatever strands have landed so far, narrate only what is new, refresh the live page.
   const dir = path.join(OUT, "research"); const strands = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => json(path.join(dir, f), {})) : [];
@@ -542,9 +585,11 @@ if (cmd === "clock") {
   for (const f of fresh) { const sx = srcs[f.source] || {}; console.log(`Just confirmed · ${clean(f.figure)} · ${clean(f.fact)} (${clean(sx.publisher)}, ${clean(sx.year)})`); seen.add(f.key); }
   for (const g of A(r.regulation)) { const k = `reg:${g.rule}`; if (!seen.has(k)) { console.log(`Rule to design around · ${clean(g.rule)}: ${clean(g.plain)}`); seen.add(k); } }
   if (fs.existsSync(dir)) writeJson(seenFile, [...seen]);
-  const open = ["process", "regulation", "ai"].filter((k) => !A(r.strands).includes(k));
+  const open = ["process", "regulation", "ai"].filter((k) => !A(r.strands).includes(k) && !A(r.thin).includes(k));
+  if (A(r.thin).length) console.log(`Still confirming: ${r.thin.join(", ")} (evidence so far is thin; treat it as a lead, not a finding).`);
   console.log(fresh.length ? `Research: ${r.facts.length} facts from ${r.sources.length} sources so far${open.length ? `; still reading: ${open.join(", ")}` : "; all three strands in"}.` : open.length ? `Research still reading: ${open.join(", ")}. Carry on; it joins when it lands.` : "Research complete.");
   write(path.join(PROTO, "discovery.html"), renderDiscovery(r, cards(), G("v")?.client || r.client, qcAll()));
+  writeApproach();
 } else if (cmd === "seed") seed(rest[0]);
 else if (cmd === "seal") seal(rest[0], rest[1]);
 else if (cmd === "model-inputs") {
@@ -558,11 +603,13 @@ else if (cmd === "model-inputs") {
 else if (cmd === "render" || cmd === "check" || cmd === "report") {
   const g = gates(); const ev = evalResults();
   if (cmd === "render") {
+    { const cz = cards(); let changed = false; for (const x of cz) { for (const k of ["decision", "by"]) if (typeof x[k] === "string" && /\s*\((?:recommended|persona|auto)\)/i.test(x[k])) { x[k] = x[k].replace(/\s*\((?:recommended|persona|auto)\)/gi, "").trim(); changed = true; } } if (changed) writeJson(path.join(OUT, "cards.json"), cz); }
     const c = renderCase(g, ev);
     const golden = json(path.join(PROTO, "golden.json"), []), holdout = json(path.join(PROTO, "holdout.json"), []);
     const counts = { golden: golden.length, holdout: holdout.length, holdoutEsc: holdout.filter((r) => r.expected === "escalate").length };
     for (const gr of A(g.l?.groups)) counts[gr.key] = `${golden.filter((r) => (r.slices || {})[gr.key]).length} / ${holdout.filter((r) => (r.slices || {})[gr.key]).length}`;
     if (g.r) write(path.join(PROTO, "discovery.html"), renderDiscovery(g.r, cards(), g.v?.client || g.r.client, qcAll()));
+    writeApproach();
     // Live-build evidence: keep the PRD and the prototype's case.json as they were after each render.
     process.on("exit", () => { try { const d = path.join(OUT, "snapshots"); fs.mkdirSync(d, { recursive: true }); const n = String(fs.readdirSync(d).filter((f) => f.endsWith(".prd.md")).length + 1).padStart(3, "0"); const answered = cards().filter((x) => x.decision).length; fs.copyFileSync(path.join(OUT, "prd.md"), path.join(d, `${n}-${answered}answers.prd.md`)); if (fs.existsSync(path.join(PROTO, "case.json"))) fs.copyFileSync(path.join(PROTO, "case.json"), path.join(d, `${n}-${answered}answers.case.json`)); } catch {} });
     if (g.v) write(path.join(OUT, "1-value.md"), gateV({ ...g.v, gate: "V" }));

@@ -8,7 +8,7 @@ const { execFile } = require("child_process");
 
 const DIR = __dirname;
 const PORT = Number(process.env.PORT || 4317);
-const MODEL = process.env.VALUED_MODEL || "claude-opus-5-5";
+const MODEL = process.env.VALUED_MODEL || "claude-sonnet-5-5"; // matches the PRD model menu default
 const KEY = process.env.ANTHROPIC_API_KEY || "";
 const LOG = path.join(DIR, "audit.jsonl");
 
@@ -153,7 +153,7 @@ function runEval(file) {
 }
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".md": "text/markdown; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml" };
-const PUBLIC = new Set(["app.html", "discovery.html", "ff.css", "case.json", "build.json", "sources.json", "gates.json", "router.js", "golden.json", "holdout.json", "model-cache.json", "status.json"]);
+const PUBLIC = new Set(["app.html", "discovery.html", "approach.html", "marked.min.js", "ff.css", "case.json", "build.json", "sources.json", "gates.json", "router.js", "golden.json", "holdout.json", "model-cache.json", "status.json"]);
 
 function send(res, code, body, type = "application/json") {
   res.writeHead(code, { "content-type": type, "cache-control": "no-store" });
@@ -178,7 +178,7 @@ http.createServer(async (req, res) => {
     if (req.method === "POST" && url.pathname === "/api/ai") {
       const { prompt, model } = await readBody(req);
       if (!prompt) return send(res, 400, { ok: false, why: "empty prompt" });
-      const allowed = ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5"];
+      const allowed = ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5", "claude-fable-5-2"];
       return send(res, 200, await callModel("You are a careful assistant inside a prototype. Follow the user's format exactly.", String(prompt).slice(0, 60000), allowed.includes(model) ? model : MODEL));
     }
     if (url.pathname === "/api/eval") return send(res, 200, await runEval(url.searchParams.get("file")));
@@ -205,6 +205,8 @@ http.createServer(async (req, res) => {
       return send(res, 200, fs.existsSync(file) ? fs.readFileSync(file) : "[]", TYPES[".json"]);
     }
     if (url.pathname === "/prd") return send(res, 200, fs.readFileSync(path.join(DIR, "prd-viewer.html")), TYPES[".html"]);
+    if (url.pathname === "/approach") return send(res, 200, fs.existsSync(path.join(DIR, "approach.html")) ? fs.readFileSync(path.join(DIR, "approach.html")) : "<p>Our approach appears once the session starts.</p>", TYPES[".html"]);
+    if (url.pathname === "/research") return send(res, 200, fs.existsSync(path.join(DIR, "discovery.html")) ? fs.readFileSync(path.join(DIR, "discovery.html")) : "<p>Research appears once the session starts.</p>", TYPES[".html"]);
     if (url.pathname === "/discovery") return send(res, 200, fs.existsSync(path.join(DIR, "discovery.html")) ? fs.readFileSync(path.join(DIR, "discovery.html")) : "<p>The discovery brief appears once research is back.</p>", TYPES[".html"]);
     const name = url.pathname === "/" ? "app.html" : url.pathname.slice(1);
     if (!PUBLIC.has(name)) return send(res, 404, { error: "not found" });

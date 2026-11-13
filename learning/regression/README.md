@@ -16,7 +16,7 @@ The 18 audit scenarios, kept as a gate every approved change must pass before a 
 2. Launch one subagent per workspace with its brief, at most 6 at once.
 3. `node learning/regression/run.js` (add `--only slug,slug` for a subset, `--static` to skip the browser).
 
-The suite passes when every row is all pass and every run is within 30 minutes. Never push on red.
+The suite passes when every row is all pass and every run is within 20 minutes. Never push on red.
 
 ## Keep it cheap
 

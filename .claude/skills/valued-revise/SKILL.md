@@ -38,21 +38,25 @@ comment on a PRD section ("section 7 is missing a requirement for complaints by 
    restate it as a concrete change in the format the gate's card used, and ask **one card**:
    **"<role>": "Apply this change?"** with "Apply (Recommended)" and its consequence, "Apply and also
    <the natural follow-on>" if there is one, and "Leave as is".
-3. **Apply**, in order:
-   - Update the owning gate file `out/<n>-<gate>.md`: change the decision, keep the old one in a
-     "Revisions" table at the end (date, old, new, requested by).
-   - In `out/state.md`, add a row to "Client decisions" with the new choice and `(revised)` after the
-     role; leave the original row in place.
-   - In `out/proto/case.json`, find the decision in `decisions`, set `"was"` to the old decision and
-     `"revised": true`, and update `decision` and `effect`. Update any field the change touches
-     (see the table) and any FAQ answer whose `from` names this gate.
-   - Refresh each downstream item from the table above, and only those. If the eval reruns, show its
-     output and say in one line whether the release status changed.
-   - Update the PRD sections the change touches, keeping the rest of the document as it is. Then bump
-     `Version` in the meta line (0.1 to 0.2, and so on) and add a row to `## Appendix: document history`:
-     `| <version> | <date> | <what changed, one line> | <requested by> | <sections> |`.
+3. **Apply, at the source only**, in order. Never hand-edit a rendered file (`prd.md`, `case.json`, the gate
+   pages, the approach or research page): every view renders from the gate JSON and `cards.json`, and editing
+   the source is what keeps them aligned.
+   - **The answer.** In `out/cards.json`, on the card that holds the decision, set `"was"` to the old decision,
+     `"decision"` to the new one, `"revised": true` and `"by"` to who asked. If no card holds it, append one with
+     `"round": 9` and the owning gate.
+   - **The owning gate.** Change the decision in `out/gates/<k>.json`, keep the old one in its `revisions` array
+     (`{ date, old, new, by }`), and update every key the change touches (see the table).
+   - **The approach card.** Update the stage card in `out/gates/approach.json` that the change touches (the
+     option, the reasons, the trade-off, what we heard) and set `current` to that stage, so the page the client
+     is looking at shows the change. Same soft voice and length rules as the conductor.
+   - **Downstream gates**, from the table above, and only those. If the eval reruns, show its result lines and
+     say in one line whether the release status changed.
+   - **The PRD version.** In `out/gates/b.json` (or the owning gate when B has not run), add a `history` row
+     `{ version, date, change, by, sections }`; render bumps the version.
+   - Then `out/tools/c render` and `out/tools/c verify <current phase>`. Fix anything the consistency check
+     names (a number, a name or a decision that still differs between views) at the source, render again.
 4. **Republish** when the run was published: rerun the three publish commands from `valued-build` step 5
    to the same file paths, so the links stay the same.
-5. **Print** a short summary: what changed, what moved (for example "Release still passes; recall 0.97
+5. **Print** a short summary, to the client, in their language: what changed, what moved (for example "Release still passes; recall 0.97
    bar now met with margin"), the new PRD version, and three "Say it" lines: what the client asked,
    what it changed, and what it did not change.

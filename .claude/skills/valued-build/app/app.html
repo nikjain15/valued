@@ -227,14 +227,74 @@
   details.more summary { cursor: pointer; font-size: var(--fs-label); color: var(--ink-3); padding: 8px 0; }
   .toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); background: var(--dark); color: var(--white); padding: 10px 18px; border-radius: var(--r-pill); font-size: var(--fs-label); opacity: 0; transition: opacity var(--dur-base); z-index: 60; pointer-events: none; }
   .toast.show { opacity: 1; }
+  /* Work desk home: greeting with three small stats beside it, then the work grouped by urgency. */
+  .desk-top { display: flex; gap: 18px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .desk-top .hello { flex: 1 1 360px; min-width: 0; }
+  .mini { display: grid; grid-template-columns: repeat(3, minmax(96px, 1fr)); gap: 10px; margin: 0; flex: 0 1 420px; }
+  .mini .tile { padding: 10px 14px; }
+  .mini .tile b { font-size: 22px; }
+  .mini .tile span { font-size: var(--fs-micro); }
+  .desk-foot { margin-top: 28px; display: grid; gap: 10px; }
+  .desk-foot .overnight { margin-top: 0; padding: 12px 14px; }
+  .desk-foot .ready-banner { margin-top: 0; }
+  .testset { display: grid; gap: 12px; }
+  .testset .tiles { margin-top: 0; } .testset > * { min-width: 0; }
+  .testset .hero-band { margin-top: 0; } .testset .hero-move { white-space: normal; flex-wrap: wrap; }
+  .atag { display: inline-block; vertical-align: middle; margin-left: 4px; font: 500 11px/1.6 var(--font-sans); color: var(--ink-3); background: var(--paper); border: 1px solid var(--line-2); border-radius: var(--r-pill); padding: 0 7px; letter-spacing: 0; white-space: nowrap; }
+
+  /* The decision moment: one bold instruction, one primary action, one secondary, and Why? for the reasoning. */
+  .decide { border-left: 4px solid var(--error); background: var(--paper); border-radius: 0 var(--r-card) var(--r-card) 0; padding: 14px 16px; display: grid; gap: 12px; }
+  .decide.warn { border-left-color: var(--amber); }
+  .decide-say { font-size: 17px; line-height: 1.45; color: var(--ink); margin: 0; }
+  .decide-say b { font-weight: 700; }
+  .decide-sub { font-size: var(--fs-label); color: var(--ink-3); margin: -6px 0 0; }
+  .decide-acts { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .decide-acts .btn { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .why-btn { text-decoration: underline; }
+  .why-box { background: var(--white); border: 1px solid var(--line-2); border-radius: var(--r-card); padding: 12px 14px; }
+  .why-box dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; margin: 0; font-size: var(--fs-label); }
+  .why-box dt { color: var(--ink-3); } .why-box dd { margin: 0; color: var(--ink-2); }
+
+  /* Phone: a bottom tab bar replaces the sidebar. */
+  .tabbar { display: none; }
+  .content { overflow-wrap: anywhere; }
   @media (max-width: 1000px) {
     .conn-grid { grid-template-columns: 1fr; }
     .shell { grid-template-columns: 1fr; }
     .side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 12px 16px; }
     .nav { flex-direction: row; flex-wrap: wrap; } .nav .eyebrow, .me { display: none; }
-    .split, .two, .three, .tiles { grid-template-columns: 1fr; } .flow { grid-template-columns: 1fr 1fr; }
+    .split, .two, .three { grid-template-columns: 1fr; } .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .flow { grid-template-columns: 1fr 1fr; }
     .content { padding: 18px 16px 40px; } .top { padding: 12px 16px; }
     .frow { grid-template-columns: 18px 1fr; } .frow > :nth-child(3) { grid-column: 1 / -1; }
+  }
+  @media (max-width: 720px) {
+    body { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+    .side { display: none; }
+    body.more-open .side { display: flex; flex-direction: column; flex-wrap: nowrap; align-items: stretch; position: fixed; inset: 0 0 calc(64px + env(safe-area-inset-bottom, 0px)) 0; z-index: 50; height: auto; overflow-y: auto; padding: 18px 16px; }
+    body.more-open .side .nav { flex-direction: column; } body.more-open .side .nav .eyebrow { display: block; }
+    .tabbar { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 55; background: var(--white); border-top: 1px solid var(--line); padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px)); }
+    .tabbar button { all: unset; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 2px; font-size: 11px; font-weight: 500; color: var(--ink-3); cursor: pointer; position: relative; border-radius: 10px; }
+    .tabbar button[aria-current="page"] { color: var(--brand-strong); }
+    .tabbar svg { width: 20px; height: 20px; }
+    .tabbar .count { position: absolute; top: 2px; left: calc(50% + 6px); font-size: 10px; font-weight: 700; background: var(--error); color: var(--white); border-radius: var(--r-pill); padding: 0 5px; line-height: 16px; }
+    .tabbar .count:empty { display: none; }
+    .top { padding: 10px 16px; gap: 8px; } .top h1 { font-size: 18px; } .top .ctx, #model, #aiPill { display: none; }
+    .content { padding: 16px 16px 32px; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tiles > .tile:nth-child(n+5) { display: none; }
+    .mini { grid-template-columns: repeat(3, minmax(0, 1fr)); flex-basis: 100%; gap: 8px; } .mini .tile { padding: 8px 10px; } .mini .tile b { font-size: 19px; }
+    .hello h2 { font-size: 21px; }
+    .qitem { flex-wrap: wrap; gap: 10px 12px; padding: 12px 14px; }
+    .qitem .qbody { flex: 1 1 calc(100% - 46px); }
+    .qitem .qside { flex-direction: row; flex-wrap: wrap; align-items: center; width: 100%; padding-left: 42px; }
+    .finding { grid-template-columns: 30px minmax(0, 1fr); } .finding > :last-child { grid-column: 2; flex-direction: row !important; align-items: center !important; }
+    .hero-band { padding: 14px 16px; } .hero-move { white-space: normal; flex-wrap: wrap; }
+    .qhead { flex-wrap: wrap; gap: 2px 10px; margin-top: 22px; }
+    .decide-acts .btn { flex: 1 1 auto; }
+    .why-box dl { grid-template-columns: 1fr; gap: 2px; } .why-box dd { margin-bottom: 6px; }
+    .doc { padding: 16px; } .doc-h { flex-wrap: wrap; gap: 6px; }
+    .row { min-width: 0; } select { max-width: 100%; }
+    .seg { max-width: 100%; }
+    .flow { grid-template-columns: 1fr; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -285,17 +345,17 @@
     <main class="content">
       <!-- Home -->
       <section class="page" id="p-home">
-        <div class="hello"><span class="spark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></span>
-          <div><h2 id="greet">Good morning.</h2><p id="greetSub"></p></div></div>
-        <div class="tiles" id="kpis"></div>
-        <div id="hero"></div>
+        <div class="desk-top">
+          <div class="hello"><span class="spark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></span>
+            <div><h2 id="greet">Good morning.</h2><p id="greetSub"></p></div></div>
+          <div class="tiles mini" id="tiles"></div>
+        </div>
         <div id="decided"></div>
-        <div class="tiles" id="tiles"></div>
-        <div id="readyBanner"></div>
-        <div class="overnight" id="overnight"></div>
-        <div id="away"></div>
         <div id="clocks"></div>
         <div id="queues"></div>
+        <div id="readyList"></div>
+        <div id="away"></div>
+        <div class="desk-foot"><div class="overnight" id="overnight"></div><div id="readyBanner"></div></div>
       </section>
 
       <!-- Queue -->
@@ -319,6 +379,7 @@
       <!-- Evals -->
       <section class="page" id="p-evals" hidden>
         <div class="stack">
+          <div class="card testset"><div><div class="eyebrow">Test-set results</div><p class="small muted" style="margin-top:4px" id="kpiNote"></p></div><div class="tiles" id="kpis"></div><div id="hero"></div></div>
           <div class="card emph stack">
             <div class="row between">
               <div><div class="eyebrow">Release readiness</div><h2 style="margin-top:6px">Is it safe to release?</h2></div>
@@ -354,7 +415,7 @@
         <div class="stack">
           <div class="three" id="govStats"></div>
           <div class="card"><div class="eyebrow">Controls running in this prototype</div><p class="small muted" style="margin-top:4px">Each control is enforced in the product you are using, with the evidence that shows it.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Control</th><th>How it is enforced</th><th>Evidence</th></tr></thead><tbody id="controls"></tbody></table></div></div>
-          <div class="card"><div class="eyebrow">Governance checks, gate by gate</div><p class="small muted" style="margin-top:4px">Asked inside each gate of the working session. Anything not answered has a named owner.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Gate</th><th>Question</th><th>Answer</th><th>Status</th><th>Closes it</th></tr></thead><tbody id="govRows"></tbody></table></div></div>
+          <div class="card"><div class="eyebrow">Governance checks, step by step</div><p class="small muted" style="margin-top:4px">Answered step by step during discovery and design. Anything not answered has a named owner.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Step</th><th>Question</th><th>Answer</th><th>Status</th><th>Closes it</th></tr></thead><tbody id="govRows"></tbody></table></div></div>
         </div>
       </section>
 
@@ -395,7 +456,7 @@
         <div class="stack">
           <p class="muted" id="howIntro" style="max-width:75ch"></p>
           <div class="flow" id="flow"></div>
-          <div class="card"><div class="eyebrow">Decisions that shaped it</div><p class="small muted" style="margin-top:4px">Every choice made in the working session, who made it, and what it changed here.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Gate</th><th>Decision</th><th>Chosen by</th><th>What it changed</th></tr></thead><tbody id="decisionRows"></tbody></table></div></div>
+          <div class="card"><div class="eyebrow">Decisions that shaped it</div><p class="small muted" style="margin-top:4px">Every choice made with your team during design, who made it, and what it changed here.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Step</th><th>Decision</th><th>Chosen by</th><th>What it changed</th></tr></thead><tbody id="decisionRows"></tbody></table></div></div>
           <div class="two">
             <div class="card"><div class="eyebrow">Release gates</div><div class="tbl" style="margin-top:8px"><table><tbody id="gateRows"></tbody></table></div></div>
             <div class="card"><div class="eyebrow">Approved knowledge</div><div class="tbl" style="margin-top:8px"><table><tbody id="sourceRows"></tbody></table></div></div>
@@ -405,7 +466,7 @@
 
       <!-- FAQ -->
       <section class="page" id="p-faq" hidden>
-        <div class="card"><p class="small muted">Every answer comes from a decision made in the working session; the tag shows which.</p><div class="faq" id="faqList" style="margin-top:8px"></div></div>
+        <div class="card"><p class="small muted">Every answer comes from a decision made with your team; the tag shows which.</p><div class="faq" id="faqList" style="margin-top:8px"></div></div>
       </section>
 
       <!-- Observability -->
@@ -428,6 +489,12 @@
     </main>
   </div>
 </div>
+<nav class="tabbar" aria-label="Sections">
+  <button data-tab="home" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Home<span class="count" id="tabEsc"></span></button>
+  <button data-tab="queue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l2-8h12l2 8"/><path d="M4 13v6h16v-6h-5l-1 2h-4l-1-2z"/></svg>Queue</button>
+  <button data-tab="evals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Quality</button>
+  <button data-tab="more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>More</button>
+</nav>
 <div class="toast" id="toast" role="status"></div>
 <!--VALUED_DATA-->
 <script>
@@ -445,7 +512,7 @@ const MODELS = [
 /* What each product shape calls things. The run sets `shape` at gate A; everything else follows. */
 const SHAPES = {
   desk:   { noun: ["message", "messages"], verbs: { answer: "Approve and send", human: "Assign to a person", escalate: "Escalate" }, idp: "C-", greetLine: () => "came in since this morning:", newHelp: "Paste a customer message as it arrived.", sideIn: "Customer", personaRole: "Contact-centre agent" },
-  review: { noun: ["notice", "notices"], verbs: { answer: "Confirm and file", human: "Request missing details", escalate: "Send to specialist" }, idp: "FN-", greetLine: () => "arrived overnight:", newHelp: "Paste the text of a notice: an email, a PDF's text or a call note.", sideIn: "Claimant", personaRole: "Intake adjuster" },
+  review: { noun: ["notice", "notices"], verbs: { answer: "Confirm and file", human: "Request missing details", escalate: "Send to specialist" }, idp: "FN-", greetLine: () => "arrived overnight:", newHelp: "Paste the text of a notice: an email, a PDF's text or a call note.", sideIn: "Sender", personaRole: "Reviewer" },
   rank:   { noun: ["household", "households"], verbs: { answer: "Accept", human: "Add a note", escalate: "Send to supervisor" }, idp: "HH-", greetLine: () => "in your book have something new:", newHelp: "Paste a household summary: age, accounts, allocation, beneficiaries, notes.", sideIn: "Household", personaRole: "Financial advisor" },
   chat:   { noun: ["question", "questions"], verbs: { answer: "Answered", human: "Hand off", escalate: "Route to a specialist" }, idp: "Q-", greetLine: () => "were asked today:", newHelp: "Ask a question the way an employee would.", sideIn: "Employee", personaRole: "Service desk lead" },
 };
@@ -454,7 +521,7 @@ const NAMES = {
   es: ["Lucía Fernández", "Carlos Mendes", "Isabel Cruz", "Diego Ramos", "Sofía Herrera", "Mateo Vargas", "Valentina Ruiz", "Javier Soto"],
   de: ["Lukas Weber", "Hannah Schmidt", "Jonas Fischer", "Lea Wagner", "Felix Braun", "Mia Hoffmann", "Paul Richter", "Emma Koch"],
 };
-let CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules" }, ROUTER = null, AI = null, GOLDEN = [], HOLDOUT = [], CUSTOM = [], CARDS = [], STATUS = {};
+let RAW_CASE = {}, CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules" }, ROUTER = null, AI = null, GOLDEN = [], HOLDOUT = [], CUSTOM = [], CARDS = [], STATUS = {};
 let SHAPE = SHAPES.desk, ITEMS = [], OPEN = null, LOG = [], stats = { approved: 0, edited: 0 };
 let evalSet = "golden", engine = "rules", RUNS = [], selRun = null, ctl = null;
 const model = () => MODELS.find((m) => m.id === $("#model").value) || MODELS.find((m) => m.tier === "default") || MODELS[0];
@@ -463,6 +530,84 @@ const clean = (t) => String(t || "").replace(/^\[[A-Z]{2,3}\]\s*/, "");
 const initials = (n) => n.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 const srcOf = (id) => SOURCES.find((s) => s.id === id) || null;
 const srcTitle = (s) => s?.title || (s?.id || "").replace(/^[A-Z]\d+-/, "").replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase());
+
+/* ---------- Client-ready text: no method internals on screen ---------- */
+const STEP = { V: "Value", A: "AI fit", L: "Answer key", U: "People in the loop", E: "Quality checks", D: "Launch", B: "Build", S: "Selection", Frame: "Framing", Setup: "Set-up" };
+const stepName = (g) => STEP[String(g || "").trim()] || String(g || "");
+const ID_RE = /\b(?:R\d-\d+|C-\d+|B\d|P\d|F-\d+)\b/;
+/* Strips gate letters, card and question ids, "(persona)" and snake_case keys from any string shown to the client. */
+function clientText(t) {
+  let s = String(t ?? "");
+  if (!s) return s;
+  s = s.replace(/\s*\(([^()]*)\)/g, (m, inner) => (ID_RE.test(inner) || /\b(card|gate|persona)\b/i.test(inner) ? "" : m));
+  s = s.replace(/\b(?:cites\s+)?Gate\s+[A-Z]\b\s*:?\s*/g, (m) => (/^cites/i.test(m) ? "cites " : ""));
+  s = s.replace(/\b(?:card|question)\s+(?:R\d-\d+|C-\d+)\b/gi, "").replace(new RegExp(ID_RE.source, "g"), "");
+  s = s.replace(/\b([a-z]+(?:_[a-z]+)+)\b/g, (m) => m.replace(/_/g, " "));
+  s = s.replace(/\(\s*[,;]?\s*\)/g, "").replace(/\s+([,.;:])/g, "$1").replace(/([,;:])(?=[^\s\d])/g, "$1 ").replace(/\s{2,}/g, " ").trim();
+  return s;
+}
+const SKIP_CLEAN = new Set(["samples", "accent", "connectors", "models", "pricing", "itemNoun"]);
+function cleanDeep(v, key = "") {
+  if (SKIP_CLEAN.has(key)) return v;
+  if (typeof v === "string") return clientText(v);
+  if (Array.isArray(v)) return v.map((x) => cleanDeep(x));
+  if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, k === "gate" && /^(?:[A-Z]|R\d|Frame|Setup)$/.test(String(x).trim()) ? x : cleanDeep(x, k)]));
+  return v;
+}
+/* "(assumed)" reads as a quiet tag, not inline shouting. Takes already-escaped HTML. */
+const tagAssumed = (html) => String(html).replace(/\s*\((assumed|client baseline|estimate)\)/gi, ' <span class="atag">$1</span>');
+const sentence = (t) => { const s = String(t || "").trim(); if (!s) return ""; const c = s.charAt(0).toUpperCase() + s.slice(1); return /[.!?]$/.test(c) ? c : c + "."; };
+const listWords = (a) => (a.length <= 1 ? a.join("") : `${a.slice(0, -1).join(", ")} and ${a[a.length - 1]}`);
+
+/* What fired, in plain words, from the router's reason. */
+function familyOf(d) {
+  const r = String(d?.reason || "");
+  return (r.match(/^model backstop \(([^)]+)\)/) || r.match(/^([a-z_]+)\s+(?:to\s+[^:]+:\s*)?fired on/i) || r.match(/\(([a-z_]+)\)\s*$/) || [])[1] || "";
+}
+const famWords = (f) => String(f || "").replace(/_/g, " ").trim();
+function reasonText(d) {
+  const r = String(d?.reason || "").trim(), fam = famWords(familyOf(d));
+  if (!r) return "";
+  const quoted = [...r.matchAll(/"([^"]{1,60})"/g)].map((m) => `"${m[1]}"`);
+  if (/^model backstop/i.test(r)) { const why = r.replace(/^model backstop \([^)]*\):\s*/i, ""); return sentence(`The model check read this as ${fam || "an escalation"}${why ? `: ${why}` : ""}`); }
+  if (/fired on/i.test(r)) return sentence(`The safety rules found ${listWords(quoted.slice(0, 4))}${fam ? `, a sign of ${fam}` : ""}`);
+  let s = r.replace(/\b[A-Z]{1,3}\d{1,3}\b/g, (id) => { const src = srcOf(id); return src ? `"${srcTitle(src)}"` : id; });
+  s = s.replace(/^matched\s+("[^"]+")\s*.*$/i, "Matches the approved source $1").replace(/^tie between (.+?): a person decides$/i, "More than one source could apply ($1), so a person decides");
+  return sentence(clientText(s));
+}
+const shortReason = (d) => {
+  if (d?.verdict === "escalate") { const f = famWords(familyOf(d)); return f ? `Flagged: ${f}` : "Flagged for a person"; }
+  if (d?.verdict === "answer" && d.source) return `Matches: ${srcTitle(srcOf(d.source))}`;
+  return reasonText(d).replace(/\.$/, "");
+};
+
+/* Who an escalation goes to, as a short name for the button. */
+const shortOwner = (o) => {
+  let s = String(o || "").replace(/\([^)]*\)/g, "").replace(/\bdirectly\b/gi, "").replace(/\s+/g, " ").trim();
+  s = s.split(/\s+/).slice(0, 4).join(" ");
+  return /^[A-Z][a-z]/.test(s) && !/^[A-Z]{2}/.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s;
+};
+function ownerSegments() {
+  const raw = String(CASE.escalationOwner || "").replace(/^split\s*:\s*/i, "").replace(/\([^)]*\)/g, "");
+  return raw.split(/;/).map((seg) => seg.trim()).map((seg) => {
+    let m = seg.match(/^(.+?)\s+to\s+(.+)$/i); if (m && !/:/.test(m[1])) return { fams: m[1], owner: shortOwner(m[2]) };
+    m = seg.match(/^(.+?)\s+for\s+(.+)$/i); if (m && !/:/.test(m[1])) return { fams: m[2], owner: shortOwner(m[1]) };
+    return null;
+  }).filter(Boolean);
+}
+const stems = (t) => String(t || "").toLowerCase().split(/[^a-z]+/).filter((w) => w.length > 3 && !/^(and|families|family|mentions|threats?|signals?)$/.test(w)).map((w) => w.slice(0, 5));
+function ownerFor(it) {
+  const r = String(it?.d?.reason || ""), fam = familyOf(it?.d);
+  const direct = r.match(/^[a-z_]+\s+to\s+([^:(]+?)\s*(?:\([^)]*\))?:/i); if (direct) return shortOwner(direct[1]);
+  const map = CASE.ownerByFamily || {}; if (fam && map[fam]) return map[fam];
+  const segs = ownerSegments();
+  if (segs.length > 1 && fam) { const fs = stems(fam); const hit = segs.find((s) => stems(s.fams).some((w) => fs.includes(w))); if (hit) return hit.owner; }
+  const short = CASE.ownerShort || CASE.escalationOwnerShort; if (short) return short;
+  if (segs.length) return segs[0].owner;
+  const head = String(CASE.escalationOwner || "").split(/[:;,.]/)[0].split(/\s+(?:already|who|that|which|covering|within|with|for|on)\s+/i)[0].trim();
+  const words = head.split(/\s+/).filter(Boolean).slice(0, 3).join(" ");
+  return words ? (/^(the|a|an)\s/i.test(words) ? words.charAt(0).toLowerCase() + words.slice(1) : shortOwner(words)) : "a specialist";
+}
 
 async function load(name, fallback) {
   if (HOSTED) return window.__VALUED__[name] ?? fallback;
@@ -486,7 +631,7 @@ const withBackstop = (r, raw) => {
 /* The router also runs in the browser. If it reads its data files from disk anyway, hand it the copies already loaded. */
 function compileRouter(src) {
   if (!src) return null;
-  const files = { "sources.json": SOURCES, "gates.json": GATES, "case.json": CASE, "build.json": BUILD };
+  const files = { "sources.json": SOURCES, "gates.json": GATES, "case.json": RAW_CASE, "build.json": BUILD };
   const base = (p) => String(p).split(/[\\/]/).pop();
   const shim = (name) => name === "fs" ? { readFileSync: (p) => JSON.stringify(files[base(p)] ?? null), existsSync: (p) => base(p) in files }
     : name === "path" ? { join: (...a) => a.join("/"), resolve: (...a) => a.join("/"), dirname: () => "", basename: base }
@@ -529,11 +674,12 @@ function highlight(text, phrases, cls = "") {
   }
   return html;
 }
-const triggerOf = (d) => { const q = [...String(d.reason || "").matchAll(/"([^"]{2,60})"/g)].map((m) => m[1]); return q.length ? q[q.length - 1] : null; };
+const triggerOf = (d) => { const q = [...String(d.reason || "").matchAll(/"([^"]{2,60})"/g)].map((m) => m[1]); return q.length ? q.reduce((a, b) => (b.length > a.length ? b : a)) : null; };
 
 /* ---------- Data and queue ---------- */
 async function boot() {
   [CASE, SOURCES, GATES, BUILD, GOLDEN, HOLDOUT, CARDS, STATUS] = await Promise.all([load("case.json", {}), load("sources.json", []), load("gates.json", {}), load("build.json", { engine: "rules" }), load("golden.json", []), load("holdout.json", []), load("cards.json", []), load("status.json", {})]);
+  RAW_CASE = CASE || {}; CASE = cleanDeep(RAW_CASE);
   ROUTER = withBackstop(compileRouter(await load("router.js", "")), await load("model-cache.json", {}));
   SHAPE = { ...(SHAPES[CASE.shape] || SHAPES.desk) }; if (Array.isArray(CASE.itemNoun)) SHAPE.noun = CASE.itemNoun;
   const persona = CASE.persona || { name: "Maya Brooks", role: SHAPE.personaRole };
@@ -550,35 +696,59 @@ async function boot() {
   buildQueue(persona);
   renderHome(persona); renderKpis(); renderHow(); renderFaq(); renderGov(); renderEvalControls(); renderBoard(); renderSources(); renderConnectors(); renderObs(); renderModels();
 }
-function identity(row, i) {
+function identity(row, i, verdict) {
   const lang = row.slices?.lang || row.slices?.language || row.slices?.region || "en";
   const pool = NAMES[lang] || NAMES.en;
   const name = pool[i % pool.length];
   const channel = row.slices?.channel || ({ desk: "chat", review: "email", rank: "book", chat: (row.slices?.region || "").toUpperCase() || "Teams" })[CASE.shape || "desk"];
   // Ages are a share of the item's own clock, so a few items always sit close to their deadline.
-  const ck = (CASE.clocks || {})[row.expected], hrs = typeof ck === "number" ? ck : (ck || {}).hours;
-  const share = [0.12, 0.45, 0.82, 0.3, 0.9, 0.6, 0.2, 1.04][i % 8];
+  const ck = (CASE.clocks || {})[verdict || row.expected], hrs = typeof ck === "number" ? ck : (ck || {}).hours;
+  // Mostly comfortable; about one in eight sits close to its clock. Nothing is shown overdue by default.
+  const share = [0.12, 0.45, 0.84, 0.3, 0.6, 0.2, 0.5, 0.7][i % 8];
   const mins = hrs ? Math.max(4, Math.round(hrs * 60 * share)) : 4 + ((i * 37) % 300);
   return { name, id: `${SHAPE.idp}${26104 + i * 7}`, channel, mins, ago: mins < 60 ? `${mins} min ago` : mins < 2880 ? `${Math.floor(mins / 60)} h ago` : `${Math.floor(mins / 1440)} d ago` };
 }
+/* The visible queue is a day's work, not the test set: sample it to the case's real mix (case.json "mix"),
+   or, without one, keep escalations to at most 1 in 5. The full test set stays on the quality page. */
+function sampleToMix(all) {
+  const pool = { escalate: [], human: [], answer: [] };
+  for (const it of all) (pool[it.d.verdict] || (pool[it.d.verdict] = [])).push(it);
+  const mix = CASE.mix && typeof CASE.mix === "object" ? CASE.mix : null;
+  let take;
+  if (mix) {
+    const keys = ["escalate", "human", "answer"], sum = keys.reduce((a, k) => a + (Number(mix[k]) || 0), 0) || 1;
+    const f = Object.fromEntries(keys.map((k) => [k, (Number(mix[k]) || 0) / sum]));
+    let n = all.length; while (n > 1 && keys.some((k) => Math.round(f[k] * n) > pool[k].length)) n--;
+    take = Object.fromEntries(keys.map((k) => [k, Math.min(pool[k].length, Math.round(f[k] * n))]));
+    if (pool.escalate.length && !take.escalate) take.escalate = 1;
+  } else {
+    const rest = pool.human.length + pool.answer.length;
+    take = { escalate: Math.min(pool.escalate.length, Math.max(1, Math.floor(rest / 4))), human: pool.human.length, answer: pool.answer.length };
+  }
+  const keep = new Set(Object.entries(take).flatMap(([k, n]) => { const p = pool[k] || [], step = p.length / Math.max(n, 1); return Array.from({ length: n }, (_, i) => p[Math.floor(i * step)]); }));
+  return all.filter((it) => keep.has(it));
+}
 function buildQueue() {
-  ITEMS = (ROUTER ? GOLDEN : []).map((row, i) => ({ key: row.id, row, text: row.text, who: identity(row, i), d: ROUTER.decide(row.text), state: "open", ai: null }));
+  const all = (ROUTER ? GOLDEN : []).map((row, i) => { const d = ROUTER.decide(row.text); return { key: row.id, row, text: row.text, who: identity(row, i, d.verdict), d, state: "open", ai: null }; });
+  ITEMS = sampleToMix(all);
 }
 function counts() { const c = { escalate: 0, human: 0, answer: 0 }; for (const it of ITEMS) if (it.state === "open") c[it.d.verdict] = (c[it.d.verdict] || 0) + 1; return c; }
 function renderReadiness() {
   const open = (CASE.governance || []).filter((g) => !/^answered/i.test(g.status || ""));
   const owners = [...new Set(open.map((g) => g.owner).filter(Boolean))];
-  $("#readyBanner").innerHTML = open.length ? `<div class="banner warn ready-banner"><span><strong>Not ready for go-live yet.</strong> ${open.length} control${open.length === 1 ? "" : "s"} still open${owners.length ? `, owned by ${owners.slice(0, 3).join(", ")}${owners.length > 3 ? " and others" : ""}` : ""}. The pilot can run on synthetic data meanwhile.</span><button class="btn ghost sm" data-go="gov">Close the gaps</button></div>` : `<div class="banner ok ready-banner"><span><strong>Ready for go-live review.</strong> Every control has an answer.</span></div>`;
+  $("#readyBanner").innerHTML = open.length ? `<div class="banner warn ready-banner"><span><strong>Pilot on synthetic data.</strong> ${open.length} sign-off${open.length === 1 ? "" : "s"} still open before go-live${owners.length ? `, with ${esc(owners.slice(0, 2).join(" and "))}${owners.length > 2 ? " and others" : ""}` : ""}.</span><button class="btn ghost sm" data-go="gov">See sign-offs</button></div>` : `<div class="banner ok ready-banner"><span><strong>Ready for go-live review.</strong> Every sign-off has an answer.</span></div>`;
 }
 function renderAway() {
   const sw = CASE.sweeps || []; const items = sw.flatMap((s, si) => (s.findings || []).map((f, fi) => ({ ...f, agent: s.agent, kind: s.kind, key: `${si}-${fi}` })));
-  $("#away").innerHTML = items.length ? `<div class="qhead"><h3>While you were away</h3><span>${sw.length} sweep${sw.length === 1 ? "" : "s"} ran ${esc(sw[0]?.schedule || "overnight")} and found ${items.length} things only you can decide</span></div>
-    <div class="queue">${items.slice(0, 4).map((f) => `<div class="finding ${FIND_DONE.has(f.key) ? "done" : ""}"><span class="ic">${f.kind === "model" ? "AI" : "R"}</span><div><b>${esc(f.title)}</b><p>${esc(f.why)}</p><div class="meta" style="margin-top:4px">${esc(f.agent)}${f.cite ? ` · cites ${esc(f.cite)}` : ""}</div></div><div class="row" style="flex-direction:column;align-items:flex-end;gap:6px">${f.due ? `<span class="clock soon">${esc(f.due)}</span>` : ""}<button class="btn ghost sm" data-find="${f.key}">${FIND_DONE.has(f.key) ? "Reviewed" : "Mark reviewed"}</button></div></div>`).join("")}</div>` : "";
+  $("#away").innerHTML = items.length ? `<div class="qhead"><h3>While you were away</h3><span>${items.length} finding${items.length === 1 ? "" : "s"} from ${sw.length} background check${sw.length === 1 ? "" : "s"}</span></div>
+    <div class="queue">${items.slice(0, 4).map((f) => `<div class="finding ${FIND_DONE.has(f.key) ? "done" : ""}"><span class="ic">${f.kind === "model" ? "AI" : "R"}</span><div><b>${esc(f.title)}</b><p>${tagAssumed(esc(f.why))}</p><div class="meta" style="margin-top:4px">${esc(f.agent)}${f.cite ? ` · based on ${tagAssumed(esc(f.cite))}` : ""}</div></div><div class="row" style="flex-direction:column;align-items:flex-end;gap:6px">${f.due ? `<span class="clock soon">${esc(f.due)}</span>` : ""}<button class="btn ghost sm" data-find="${f.key}">${FIND_DONE.has(f.key) ? "Reviewed" : "Mark reviewed"}</button></div></div>`).join("")}</div>` : "";
 }
 const FIND_DONE = new Set();
+let CLOCK_KEYS = new Set();
 function renderClocks() {
   const urgent = ITEMS.map((it) => ({ it, c: clockOf(it) })).filter((x) => x.c && x.c.cls).sort((a, b) => a.c.left - b.c.left).slice(0, 3);
-  $("#clocks").innerHTML = urgent.length ? `<div class="qhead"><h3>Close to their clock</h3><span>${esc(Object.values(CASE.clocks || {}).map((c) => c.label).filter(Boolean)[0] || "Response deadlines")} set in the working session</span></div><div class="queue">${urgent.map((x) => qcard(x.it)).join("")}</div>` : "";
+  CLOCK_KEYS = new Set(urgent.map((x) => x.it.key));
+  $("#clocks").innerHTML = urgent.length ? `<div class="qhead"><h3>Close to their clock</h3><span>Sorted by time left</span></div><div class="queue">${urgent.map((x) => qcard(x.it)).join("")}</div>` : "";
 }
 // While the product is being built, the home reflects the decisions as product configuration, not as a
 // Q&A list: each answer becomes a setting of the thing being built. Once the router exists, the real
@@ -597,7 +767,7 @@ function renderHero() {
   const el = $("#hero"); if (!el) return;
   const h = CASE.heroStat;
   if (!h || !h.metric) { el.innerHTML = ""; return; }
-  const arrow = (h.from && h.to) ? `<span class="hero-move"><b>${esc(String(h.from))}</b><span class="hero-arr">→</span><b>${esc(String(h.to))}</b></span>` : "";
+  const arrow = (h.from && h.to) ? `<span class="hero-move"><b>${tagAssumed(esc(String(h.from)))}</b><span class="hero-arr">→</span><b>${tagAssumed(esc(String(h.to)))}</b></span>` : "";
   el.innerHTML = `<div class="hero-band"><div><span class="hero-eyebrow">The number we move</span><div class="hero-metric">${esc(h.metric)}</div></div>${arrow}</div>`;
 }
 function renderBuilding() {
@@ -608,10 +778,10 @@ function renderBuilding() {
   // Turn a card's "effect" (what the answer sets) into a product-setting label, never the question text.
   const labelFor = (c) => {
     const e = String(c.effect || "").replace(/^sets?\s+(the\s+)?/i, "").replace(/\s*\(.*\)\s*$/, "").trim();
-    return e ? e.charAt(0).toUpperCase() + e.slice(1) : (c.gate ? `Gate ${c.gate}` : "Setting");
+    return e ? e.charAt(0).toUpperCase() + e.slice(1) : (c.gate ? stepName(c.gate) : "Setting");
   };
   const settings = ans.filter((c) => c.round !== 0 || !/product name|call (this|it)/i.test(c.question || ""))
-    .map((c) => `<div class="finding"><span class="ic">${esc(String(c.gate || "·").slice(0, 1))}</span><div><b>${esc(labelFor(c))}</b><p>${esc(c.decision)}${c.skipped ? " · default" : ""}</p></div></div>`).join("");
+    .map((c) => `<div class="finding"><span class="ic">${esc(String(stepName(c.gate) || "·").slice(0, 1))}</span><div><b>${esc(labelFor(c))}</b><p>${esc(c.decision)}${c.skipped ? " · default" : ""}</p></div></div>`).join("");
   const built = SHAPE && CASE.shape ? ` Shape: ${esc(SHAPE.noun ? SHAPE.noun[1] : CASE.shape)}.` : "";
   const now = STATUS && STATUS.running && STATUS.label
     ? `<div class="banner" style="margin:10px 0;display:flex;align-items:center;gap:8px"><span class="spin" aria-hidden="true"></span><span><strong>Working now:</strong> ${esc(STATUS.label)}${STATUS.phase ? " (phase " + esc(String(STATUS.phase)) + ")" : ""}. The screen updates as each step lands.</span></div>`
@@ -619,24 +789,30 @@ function renderBuilding() {
   el.innerHTML = `<div class="card" style="margin-top:14px">
     <div class="qhead"><h3>Building ${esc(name)}</h3><span>${client ? "for " + esc(client) + " · " : ""}taking shape from your decisions</span></div>
     ${now}
-    <div class="banner warn" style="margin:10px 0"><strong>Being built.</strong> This is how your answers are configuring the product.${built} The live queue and evals come online once the agents are built at the evals gate.</div>
+    <div class="banner warn" style="margin:10px 0"><strong>Being built.</strong> This is how your answers are configuring the product.${built} The live queue and quality checks come online once the assistants are built and tested.</div>
     <div class="queue">${settings}</div>
   </div>`;
 }
 function renderHome(persona = CASE.persona || { name: "there" }) {
-  renderHero();
   renderBuilding();
-  const c = counts(), total = ITEMS.length, V = CASE.verdicts || {};
+  const c = counts(), V = CASE.verdicts || {}, open = c.escalate + c.human + c.answer;
   const hour = new Date().getHours(), part = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
-  $("#greet").textContent = `Good ${part}, ${String(persona.name).split(" ")[0]}. Here is what came in.`;
-  $("#greetSub").textContent = `${total} ${SHAPE.noun[1]} ${SHAPE.greetLine("").trim()} ${c.escalate} to escalate first, ${c.human} need you, ${c.answer} ready for your review.`;
-  $("#tiles").innerHTML = [["bad", c.escalate, V.escalate?.label || "Escalate"], ["warn", c.human, V.human?.label || "Need you"], ["ok", c.answer, V.answer?.label || "Ready"], ["", stats.approved, `Handled this session${stats.approved ? ` · edit rate ${Math.round((stats.edited / stats.approved) * 100)}%` : ""}`]]
-    .map(([k, n, l]) => `<div class="tile ${k}"><b>${n}</b><span>${esc(l)}</span></div>`).join("");
-  const urgent = ["escalate", "human", "answer"].flatMap((v) => ITEMS.filter((it) => it.d.verdict === v && it.state === "open")).slice(0, 3);
-  $("#queues").innerHTML = ITEMS.length ? `<div class="qhead"><h3>Needs you now</h3><span>The ${urgent.length} most urgent of ${c.escalate + c.human + c.answer} open</span></div><div class="queue">${urgent.map(qcard).join("")}</div>
-    <button class="btn ghost sm more-btn" data-go="queue">Open the full queue</button>` : `<div class="card" style="margin-top:18px"><p class="muted">The queue fills when the agents are built at gate E.</p></div>`;
-  $("#cntQueue").textContent = c.escalate + c.human + c.answer || "";
+  $("#greet").textContent = `Good ${part}, ${String(persona.name).split(" ")[0]}. Here is what needs you.`;
+  const lbl = (v, n) => `${V[v]?.label || v}: ${n}`;
+  $("#greetSub").textContent = ITEMS.length ? [c.escalate ? lbl("escalate", c.escalate) : "", c.human ? lbl("human", c.human) : "", c.answer ? lbl("answer", c.answer) : ""].filter(Boolean).join(" · ") : "";
+  const soon = ITEMS.filter((it) => clockOf(it)?.cls).length;
+  $("#tiles").innerHTML = ITEMS.length ? [["", open, `${SHAPE.noun[1]} open`], [soon ? "warn" : "", soon, "close to their clock"], ["ok", stats.approved, "handled today"]]
+    .map(([k, n, l]) => `<div class="tile ${k}"><b>${n}</b><span>${esc(l)}</span></div>`).join("") : "";
+  // Work grouped by urgency: escalations first, then items that need a person, then prepared items to review.
+  const openOf = (v) => ITEMS.filter((it) => it.d.verdict === v && it.state === "open" && !CLOCK_KEYS.has(it.key)).sort((a, b) => (clockOf(a)?.left ?? 1e9) - (clockOf(b)?.left ?? 1e9));
+  const urgent = [...openOf("escalate"), ...openOf("human")].slice(0, 3), ready = openOf("answer").slice(0, 3);
+  $("#queues").innerHTML = ITEMS.length ? (urgent.length ? `<div class="qhead"><h3>Needs you now</h3><span>${urgent.length} of ${c.escalate + c.human} waiting on a person</span></div><div class="queue">${urgent.map(qcard).join("")}</div>` : "")
+    : `<div class="card" style="margin-top:18px"><p class="muted">The queue fills once the assistants are built and tested.</p></div>`;
+  $("#readyList").innerHTML = ready.length ? `<div class="qhead"><h3>Ready for your review</h3><span>Prepared from approved sources; nothing goes out without you</span></div><div class="queue">${ready.map(qcard).join("")}</div>
+    <button class="btn ghost sm more-btn" data-go="queue">Open the full queue</button>` : (ITEMS.length ? `<button class="btn ghost sm more-btn" data-go="queue">Open the full queue</button>` : "");
+  $("#cntQueue").textContent = open || "";
   $("#cntEsc").textContent = c.escalate || ""; $("#cntEsc").hidden = !c.escalate;
+  if ($("#tabEsc")) $("#tabEsc").textContent = c.escalate || "";
 }
 let qTab = "escalate";
 function renderQueue() {
@@ -660,7 +836,7 @@ function qcard(it) {
   return `<button class="qitem ${it.d.verdict === "escalate" ? "bad" : ""}" data-open="${esc(it.key)}">
     <span class="av sm">${initials(it.who.name)}</span>
     <div class="qbody"><div class="qtop"><strong>${esc(it.who.name)}</strong><span class="meta">${esc(it.who.id)} · ${esc(it.who.channel)} · ${esc(it.who.ago)}</span></div>
-      <p>${highlight(excerpt, [trig])}</p>${it.d.reason ? `<div class="why" style="margin-top:4px">${esc(it.d.reason)}</div>` : ""}</div>
+      <p>${highlight(excerpt, [trig])}</p>${it.d.reason ? `<div class="why" style="margin-top:4px">${esc(shortReason(it.d))}</div>` : ""}</div>
     <div class="qside"><span class="pill ${VSTYLE[it.d.verdict]}">${esc(V[it.d.verdict]?.label || it.d.verdict)}</span>${(() => { const c = clockOf(it); return c ? `<span class="clock ${c.cls}" title="${esc(c.label)}">${esc(c.txt)}</span>` : ""; })()}${it.state !== "open" ? `<span class="meta">${esc(it.state)}</span>` : ""}</div></button>`;
 }
 
@@ -670,10 +846,10 @@ const DEFAULT_AGENTS = {
          ["Safety guard", "rules", "Checks every message for complaint, fraud, vulnerability and legal signals before anything else. Nothing overrides it.", ["Stop the item and route it to a person"], ["Draft anything once a signal fires"], "Catches every escalation"],
          ["Routing assistant", "rules", "Matches the message to exactly one approved source, or hands it to a person.", ["Pick one approved source"], ["Guess when no source matches"], "Sends each item the right way"],
          ["Drafting assistant", "model", "Writes the reply from the cited source only, in the customer's language.", ["Draft for review"], ["Send anything", "Use facts outside the source"], "Never acts without approved knowledge"]],
-  review: [["Intake assistant", "rules", "Reads each notice from email, PDF text or call notes.", ["Read the notice"], ["Contact the claimant"], "Only allowed outcomes"],
-           ["Safety guard", "rules", "Checks for injury, litigation and fraud indicators first; nothing is pre-filled once one fires.", ["Route to a senior adjuster or SIU"], ["Accuse or refer a claimant"], "Catches every escalation"],
+  review: [["Intake assistant", "rules", "Reads each item from email, document text or call notes.", ["Read the item"], ["Contact the sender"], "Only allowed outcomes"],
+           ["Safety guard", "rules", "Checks for urgent and high-risk signals first; nothing is pre-filled once one fires.", ["Route to the named owner"], ["Accuse or refer anyone"], "Catches every escalation"],
            ["Extraction assistant", "model", "Pulls each required field with the exact words it came from; a value without evidence is dropped.", ["Pre-fill fields for confirmation"], ["File a claim", "Infer a value not in the notice"], "Never acts without approved knowledge"],
-           ["Completeness check", "rules", "Checks the fields against the claim type's intake rule and lists what is missing.", ["Request missing details"], ["Decide coverage"], "Sends each item the right way"]],
+           ["Completeness check", "rules", "Checks the fields against the item type's rule and lists what is missing.", ["Request missing details"], ["Make the final decision"], "Sends each item the right way"]],
   rank: [["Safety guard", "rules", "Checks notes for vulnerability, exploitation and conduct signals first.", ["Route to the supervisor"], ["Show a recommendation once a signal fires"], "Catches every escalation"],
          ["Detectors", "rules", "One per rule: RMD, beneficiary, drift, cash. Each fires with the facts it read.", ["Raise an action with its rule"], ["Recommend a product"], "Sends each item the right way"],
          ["Ranking assistant", "rules", "Orders the actions, must-do first.", ["Rank actions"], ["Hide an action"], "Sends each item the right way"],
@@ -711,16 +887,15 @@ function renderAgents() {
 function renderOvernight() {
   const c = counts(), A = agentsFor(), drafter = A.find((a) => a.kind === "model");
   $("#overnight").innerHTML = `<span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01"/></svg></span>
-    <div><b>${A.length} assistants worked the queue.</b><p>The safety guard checked all ${ITEMS.length} ${SHAPE.noun[1]} first and stopped ${c.escalate} for a person. ${c.answer} were matched to approved knowledge${drafter ? ` and prepared by the ${drafter.name.toLowerCase()}` : ""}; ${c.human} had no clear match and wait for you. Nothing was sent or filed without you.</p>
-    <p style="margin-top:6px"><button class="linkbtn" data-go="agents">What each assistant does, and what it may never do</button></p></div>`;
+    <div><b>${A.length} assistants prepared this queue.</b><p>Every ${SHAPE.noun[0]} was checked for urgent signals first; ${c.answer} were prepared from approved sources${drafter ? ` by the ${esc(drafter.name.toLowerCase())}` : ""}. Nothing was sent or filed without you. <button class="linkbtn" data-go="agents">What each one may and may never do</button></p></div>`;
 }
 function trailFor(it) {
   const A = agentsFor(), guard = A.find((a) => /guard/i.test(a.name)), rulesSteps = A.filter((a) => a.kind === "rules" && a !== guard), mdl = A.find((a) => a.kind === "model");
   const steps = [];
   if (rulesSteps[0] && A.indexOf(rulesSteps[0]) < A.indexOf(guard)) steps.push([rulesSteps.shift(), "rules", `Read the ${SHAPE.noun[0]} from ${it.who.channel}.`]);
-  if (guard) steps.push([guard, it.d.verdict === "escalate" ? "stop" : "rules", it.d.verdict === "escalate" ? `Stopped it. ${it.d.reason}` : "No escalation signal."]);
+  if (guard) steps.push([guard, it.d.verdict === "escalate" ? "stop" : "rules", it.d.verdict === "escalate" ? `Stopped it. ${reasonText(it.d)}` : "No escalation signal."]);
   if (it.d.verdict !== "escalate") {
-    if (rulesSteps[0]) steps.push([rulesSteps[0], "rules", it.d.verdict === "answer" ? `Matched approved knowledge: ${srcTitle(srcOf(it.d.source))}.` : it.d.reason]);
+    if (rulesSteps[0]) steps.push([rulesSteps[0], "rules", it.d.verdict === "answer" ? `Matched approved knowledge: ${srcTitle(srcOf(it.d.source))}.` : reasonText(it.d)]);
     if (it.d.verdict === "answer" && mdl) steps.push([mdl, it.ai?.by && !/template|rules/.test(it.ai.by) ? "model" : "rules", it.ai?.meta || (AI && BUILD.engine !== "rules" ? "Working..." : "AI is off here, so it is assembled from the approved source by rule.")]);
   }
   steps.push([{ name: CASE.shape === "chat" ? "Service desk" : (CASE.persona || {}).name || "You" }, "person", it.state !== "open" ? `${it.state}.` : CASE.shape === "chat" ? (it.d.verdict === "answer" ? "Answered directly; any hand-off reaches the desk." : "Ticket or case opened for a person.") : "Waiting for your decision."]);
@@ -728,7 +903,7 @@ function trailFor(it) {
 }
 function wrongBox(it) {
   const V = CASE.verdicts || {};
-  return `<div class="wrong" id="wrongBox"><button class="linkbtn" id="wrongOpen">This is wrong</button><div id="wrongForm" hidden>
+  return `<div class="wrong" id="wrongBox"><button class="linkbtn" id="wrongOpen"${it.d.verdict === "escalate" ? " hidden" : ""}>This is wrong</button><div id="wrongForm" hidden>
     <div class="label">What should it have been?</div>
     <div class="row"><select id="wrongV">${["answer", "human", "escalate"].map((v) => `<option value="${v}" ${v === it.d.verdict ? "" : ""}>${esc(V[v]?.label || v)}</option>`).join("")}</select>
     <select id="wrongS"><option value="">No source</option>${SOURCES.map((s) => `<option value="${esc(s.id)}">${esc(srcTitle(s))}</option>`).join("")}</select>
@@ -752,13 +927,20 @@ function obsMetrics() {
   return { recall: escTot ? escHit / escTot : null, routing: n ? correct / n : null, cited: ans ? ansCited / ans : null, toPerson: n ? toPerson / n : null, n };
 }
 const pctOf = (x) => (x == null ? "-" : Math.round(x * 100) + "%");
+/* Latency shows only when a run measured it; an estimate never fills the tile. */
+function measuredLatency() {
+  if (BUILD.engine === "rules") return "<1 ms";
+  const r = (typeof RUNS !== "undefined" ? RUNS : []).find((x) => x && x.model && x.p50);
+  return r ? fmtMs(r.p50) : (BUILD.latencyMs ? fmtMs(Number(BUILD.latencyMs)) : "");
+}
 function renderKpis() {
   if (!$("#kpis")) return;
   const m = obsMetrics(), mdl = model();
   const costK = mdl ? fmtUsd(costOf(mdl, 800, 200) * 1000) : "-";
-  const lat = BUILD.engine === "rules" ? "<1 ms" : AI && AI.exact ? "measured" : "~ est";
-  const tiles = [["ok", pctOf(m.recall), "Escalations caught"], ["", costK, "Est cost / 1,000"], ["", lat, "Latency / call"], ["warn", pctOf(m.toPerson), "To a person"]];
+  const lat = measuredLatency();
+  const tiles = [["ok", pctOf(m.recall), "Escalations caught"], ["", pctOf(m.routing), "Routed correctly"], ["warn", pctOf(m.toPerson), "Sent to a person"], lat ? ["", lat, "Median latency"] : ["", costK, "Est. cost per 1,000"]];
   $("#kpis").innerHTML = tiles.map(([k, n, l]) => `<div class="tile ${k}"><b>${esc(String(n))}</b><span>${esc(l)}</span></div>`).join("");
+  if ($("#kpiNote")) $("#kpiNote").textContent = m.n ? `Measured on the labelled test set (${m.n} items, deliberately heavy on hard cases). These are not live volumes or a day's mix.` : "Appears once the assistants are built and tested.";
 }
 function renderObs() {
   const el = $("#obsBody"); if (!el) return;
@@ -766,7 +948,7 @@ function renderObs() {
   const groups = [
     ["Quality and safety", [["Escalations caught", pctOf(m.recall)], ["Answers with a citation", pctOf(m.cited)], ["Routed correctly", pctOf(m.routing)]]],
     ["Cost and tokens", [["Est cost / 1,000", mdl ? fmtUsd(costOf(mdl, 800, 200) * 1000) : "-"], ["Model", mdl ? mdl.short : "-"], ["Per item (est)", mdl ? fmtUsd(costOf(mdl, 800, 200)) : "-"]]],
-    ["Speed and volume", [["Latency / call", BUILD.engine === "rules" ? "<1 ms" : "~ est"], ["Items in set", String(m.n || 0)]]],
+    ["Speed and volume", [...(measuredLatency() ? [["Median latency", measuredLatency()]] : []), ["Items in test set", String(m.n || 0)]]],
     ["Human workload", [["To a person", pctOf(m.toPerson)], ["Handled by AI", m.toPerson == null ? "-" : pctOf(1 - m.toPerson)]]],
   ];
   const sigNote = (g) => { const rows = (ob.signals || []).filter((s) => String(s.group || "").toLowerCase().startsWith(g.toLowerCase().split(" ")[0])); return rows.length ? `<p class="small muted" style="margin-top:8px">Alerts: ${rows.map((s) => `${esc(s.signal)} ${esc(s.alert || "")}`).join("; ")}</p>` : ""; };
@@ -788,7 +970,7 @@ function updateModelCost() {
 function renderModels() {
   const el = $("#modelsBody"); if (!el) return;
   const models = CASE.models || [], pr = CASE.pricing || {}, tok = CASE.tokenStrategy || [];
-  const menu = models.length ? `<div class="card"><div class="eyebrow">Model menu</div><p class="small muted" style="margin-top:4px">List prices per 1M tokens (assumed), confirm at the vendor. Claude models run in this prototype; pick any below to compare.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Provider</th><th>Model</th><th>In $/1M</th><th>Out $/1M</th><th>Latency</th><th>Best for</th></tr></thead><tbody>${models.map((m) => `<tr><td>${esc(m.provider)}</td><td>${esc(m.model)}${m.runnable ? ` <span class="small muted">· runs here</span>` : ""}</td><td>$${esc(String(m.in))}</td><td>$${esc(String(m.out))}</td><td>${esc(m.latency)}</td><td>${esc(m.bestFor)}</td></tr>`).join("")}</tbody></table></div></div>` : `<div class="card"><p class="muted">The model menu fills when the case is built at gate A.</p></div>`;
+  const menu = models.length ? `<div class="card"><div class="eyebrow">Model menu</div><p class="small muted" style="margin-top:4px">List prices per 1M tokens (assumed), confirm at the vendor. Claude models run in this prototype; pick any below to compare.</p><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Provider</th><th>Model</th><th>In $/1M</th><th>Out $/1M</th><th>Latency</th><th>Best for</th></tr></thead><tbody>${models.map((m) => `<tr><td>${esc(m.provider)}</td><td>${esc(m.model)}${m.runnable ? ` <span class="small muted">· runs here</span>` : ""}</td><td>$${esc(String(m.in))}</td><td>$${esc(String(m.out))}</td><td>${esc(m.latency)}</td><td>${esc(m.bestFor)}</td></tr>`).join("")}</tbody></table></div></div>` : `<div class="card"><p class="muted">The model menu fills once the assistants are designed.</p></div>`;
   const selStyle = `style="min-width:160px"`;
   const dflt = pr.default ? `<div class="card"><div class="eyebrow">Recommendation (customizable)</div><div class="row between" style="margin-top:8px"><span class="small"><b>Multi-purpose default</b></span>${models.length ? `<select ${selStyle} onchange="updateModelCost()">${modelOpts(pr.default.model)}</select>` : `<span class="small">${esc(pr.default.model)}</span>`}</div><p class="small muted" style="margin-top:4px">${esc(pr.default.why)}</p>${pr.runCost ? `<p class="small muted">Run cost: ${esc(pr.runCost.perItem)} per item, about ${esc(pr.runCost.monthly)} a month (${esc(pr.runCost.basis)}).</p>` : ""}</div>` : "";
   const per = (pr.perUseCase || []).length ? `<div class="card"><div class="eyebrow">Which model for which job (change any)</div><div class="tbl" style="margin-top:8px"><table><thead><tr><th>Job</th><th>Model</th><th>Why</th></tr></thead><tbody>${pr.perUseCase.map((r, i) => `<tr><td>${esc(r.job)}</td><td>${models.length ? `<select data-jobpick="${i}" ${selStyle} onchange="updateModelCost()">${modelOpts(r.model)}</select>` : esc(r.model)}</td><td>${esc(r.why)}</td></tr>`).join("")}</tbody></table></div><p class="small" id="modelCost" style="margin-top:10px"></p></div>` : "";
@@ -798,10 +980,11 @@ function renderModels() {
 }
 function go(view, key) {
   document.querySelectorAll(".page").forEach((p) => (p.hidden = true));
-  document.querySelectorAll(".nav button").forEach((b) => b.removeAttribute("aria-current"));
+  document.querySelectorAll(".nav button, .tabbar button").forEach((b) => b.removeAttribute("aria-current"));
+  document.querySelector(`.tabbar [data-tab="${view === "item" ? "queue" : ["home", "queue", "evals"].includes(view) ? view : "more"}"]`)?.setAttribute("aria-current", "page");
   if (view === "item") { $("#p-item").hidden = false; openItem(key); document.querySelector('[data-go="home"]').setAttribute("aria-current", "page"); }
   else { $("#p-" + view).hidden = false; document.querySelector(`.nav [data-go="${view}"]`)?.setAttribute("aria-current", "page"); $("#pageTitle").textContent = TITLES[view] || ""; $("#pageCtx").textContent = view === "home" ? `${CASE.client || ""} · ${new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}` : ""; }
-  if (view === "home") { renderKpis(); renderHome(); renderOvernight(); renderReadiness(); renderAway(); renderClocks(); } if (view === "queue") renderQueue(); if (view === "audit") renderLog(); if (view === "gov") renderGov(); if (view === "agents") renderAgents(); if (view === "obs") renderObs(); if (view === "models") renderModels();
+  if (view === "home") { renderClocks(); renderHome(); renderOvernight(); renderReadiness(); renderAway(); } if (view === "evals") { renderKpis(); renderHero(); } if (view === "queue") renderQueue(); if (view === "audit") renderLog(); if (view === "gov") renderGov(); if (view === "agents") renderAgents(); if (view === "obs") renderObs(); if (view === "models") renderModels();
   scrollTo(0, 0);
 }
 function logAction(it, action, extra = {}) {
@@ -820,15 +1003,31 @@ function openItem(key) {
   view(it, V); addTrail(it);
 }
 function outcomeHead(it, V) {
-  return `<div class="panel-h"><span class="pill ${VSTYLE[it.d.verdict]}">${esc(V[it.d.verdict]?.label || it.d.verdict)}</span></div><p class="small muted" style="margin-top:6px">${esc(V[it.d.verdict]?.desc || "")}</p>`;
+  return `<div class="panel-h"><span class="pill ${VSTYLE[it.d.verdict]}">${esc(V[it.d.verdict]?.label || it.d.verdict)}</span></div>${it.d.verdict === "escalate" ? "" : `<p class="small muted" style="margin-top:6px">${tagAssumed(esc(V[it.d.verdict]?.desc || ""))}</p>`}`;
 }
-const escBanner = (it) => `<div class="banner bad"><strong>Escalation wins.</strong> ${esc(it.d.reason || "")}${/nothing/i.test(it.d.reason || "") ? "" : " Nothing is prepared."} It goes to ${esc(CASE.escalationOwner || "a specialist")} within ${esc(CASE.escalationSla || "the agreed time")}.</div>`;
+/* The decision moment: one bold instruction, one primary action with a short label, one secondary, and Why? for the reasoning. */
+function decideBlock(it, primaryAct) {
+  const owner = ownerFor(it), c = clockOf(it), V = CASE.verdicts || {};
+  const sla = String(CASE.escalationSla || "").trim(), full = String(CASE.escalationOwner || "").trim();
+  const sub = [`Nothing is drafted for it.`, c ? `${c.txt}.` : ""].filter(Boolean).join(" ");
+  const why = [["What we found", reasonText(it.d)], ["Who owns it", full ? sentence(full) : ""], ["Response time", sla ? sentence(sla) : ""], ["What happens", "A person takes it from here. The assistants prepare nothing once a signal fires, and nothing is sent without a person."]].filter(([, v]) => v);
+  return `<div class="decide">
+    <p class="decide-say"><b>Send this ${esc(SHAPE.noun[0])} to ${esc(owner)}.</b></p>
+    <p class="decide-sub">${esc(sub)}</p>
+    <div class="decide-acts"><button class="btn solid" data-act="${esc(primaryAct)}" title="Send to ${esc(owner)}">Send to ${esc(owner)}</button><button class="btn ghost" data-notesc="1">Not an escalation</button><button class="linkbtn why-btn" data-why="1" aria-expanded="false">Why?</button></div>
+    <div class="why-box" hidden><dl>${why.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${tagAssumed(esc(v))}</dd>`).join("")}</dl></div>
+  </div>`;
+}
+/* Items that need a person: the same shape, softer. */
+function humanBlock(it, actsHtml) {
+  return `<div class="decide warn"><p class="decide-say"><b>Read this one and decide.</b></p><p class="decide-sub">${esc(reasonText(it.d) || "No single approved source covers it, so the system does not guess.")}</p>${actsHtml ? `<div class="decide-acts">${actsHtml}</div>` : ""}</div>`;
+}
 
 /* A small, stable synthetic profile per person, so the screen reads like a real record. */
 function profile(it) {
+  // Only fields the case names (case.json "profileFields": [{ label, values: [...] } or { label, value }]); none means no panel.
   const n = [...it.key].reduce((a, c) => a + c.charCodeAt(0), 0);
-  const prods = (CASE.profileProducts || ["Checking", "Savings", "Credit card", "Mortgage", "Personal loan"]);
-  return [["Customer since", String(2009 + (n % 15))], ["Products", [prods[n % prods.length], prods[(n + 2) % prods.length]].filter((x, i, a) => a.indexOf(x) === i).join(", ")], ["Last contact", `${3 + (n % 40)} days ago`], ["Language", (it.row.slices?.lang || "en") === "es" ? "Spanish" : "English"], ["Contacts in 90 days", String(1 + (n % 4))]];
+  return (Array.isArray(CASE.profileFields) ? CASE.profileFields : []).map((f) => typeof f === "string" ? null : [f.label, Array.isArray(f.values) && f.values.length ? f.values[n % f.values.length] : f.value]).filter((x) => x && x[0] && x[1] != null && x[1] !== "");
 }
 /* Desk: the message beside the assist panel. */
 function deskView(it, V) {
@@ -836,11 +1035,11 @@ function deskView(it, V) {
   $("#item").innerHTML = `<div class="split">
     <div class="card stack"><div class="row"><span class="av">${initials(it.who.name)}</span><div><b>${esc(it.who.name)}</b><div class="meta">${esc(SHAPE.sideIn)} · ${esc(it.who.channel)} · ${esc(it.who.ago)}</div></div></div>
       <div class="bubble them">${highlight(it.text, [trig])}</div>
-      <div class="tbl"><table><tbody>${profile(it).map(([k, v]) => `<tr><td class="muted" style="width:40%">${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}</tbody></table></div>
-      <p class="meta">Profile is synthetic, for the prototype.</p></div>
+      ${profile(it).length ? `<div class="tbl"><table><tbody>${profile(it).map(([k, v]) => `<tr><td class="muted" style="width:40%">${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}</tbody></table></div>
+      <p class="meta">Profile is synthetic, for the prototype.</p>` : ""}</div>
     <div class="card emph stack assist"><div class="eyebrow">Assist</div>${outcomeHead(it, V)}
-      ${it.d.verdict === "escalate" ? escBanner(it) + `<div class="row"><button class="btn danger" data-act="Escalated">Escalate to ${esc(CASE.escalationOwner || "specialist")}</button></div>`
-      : it.d.verdict === "human" ? `<div class="banner warn">${esc(it.d.reason || "")} The system never guesses.</div><div class="row"><button class="btn dark" data-act="Assigned">Assign to a person</button></div>`
+      ${it.d.verdict === "escalate" ? decideBlock(it, "Escalated")
+      : it.d.verdict === "human" ? humanBlock(it, `<button class="btn solid" data-act="Assigned">Take it</button><button class="btn ghost" data-act="Assigned to a colleague">Pass to a colleague</button>`)
       : `<div><div class="label">Cited source</div><div class="src" style="margin-top:6px"><b>${esc(srcTitle(s))}.</b> ${esc(s?.text || "")}</div></div>
          <div><div class="label" id="draftLabel">Draft reply</div><div class="bubble ai" id="draft" style="margin-top:6px"></div>${CASE.disclosure ? `<p class="meta" style="margin-top:6px">${esc(CASE.disclosure)}</p>` : ""}</div>
          <div class="row"><button class="btn solid" data-act="Sent">Approve and send</button><button class="btn ghost" id="editBtn">Edit</button><button class="btn ghost" data-act="Handed off">Send to a person</button></div>
@@ -870,12 +1069,12 @@ function reviewView(it, V) {
   $("#item").innerHTML = `<div class="split">
     <div class="stack"><div class="doc"><div class="doc-h"><span><b style="color:var(--ink)">${esc(it.who.name)}</b> · ${esc(it.who.channel)} · received ${esc(it.who.ago)}</span><span class="code">${esc(it.who.id)}</span></div>${it.d.verdict === "escalate" ? highlight(it.text, [trig]) : highlight(it.text, ev, (i) => "f" + ((i % 6) + 1))}</div>
       <p class="meta">Highlights show exactly where each field came from. A field with no evidence stays empty.</p></div>
-    <div class="card emph stack assist"><div class="eyebrow">Claim set-up</div>${outcomeHead(it, V)}
-      ${it.d.verdict === "escalate" ? escBanner(it) + `<div class="row"><button class="btn danger" data-act="Sent to specialist">Send to ${esc(CASE.escalationOwner || "specialist")}</button></div>` : `
+    <div class="card emph stack assist">${CASE.panelTitle ? `<div class="eyebrow">${esc(CASE.panelTitle)}</div>` : ""}${outcomeHead(it, V)}
+      ${it.d.verdict === "escalate" ? decideBlock(it, "Sent to specialist") : `
       <div class="row between"><div class="label">${s ? esc(srcTitle(s)) + " fields" : "Fields"}</div><span class="meta" id="aiMeta">${esc(it.ai?.meta || (AI && BUILD.engine !== "rules" ? "" : "Fields found by rule; the rest for you to complete."))}</span></div>
       <div id="extracting"></div>
-      <div class="form" id="form">${fields.map((f, i) => `<div class="frow"><span class="sw" style="background:${["#4a6fa5", "#32854c", "#c9a21a", "#9c4a6b", "#6b5ca5", "#2b7a78"][i % 6]}"></span><label for="f${i}">${esc(f.name)}</label><div><input type="text" id="f${i}" value="${esc(f.value)}" class="${f.value ? "" : "empty"}" placeholder="Not in the notice">${f.evidence ? `<div class="ev">Evidence: "${esc(f.evidence)}"</div>` : `<div class="ev">No evidence in the notice; ask the ${esc(SHAPE.sideIn.toLowerCase())}.</div>`}<label class="conf"><input type="checkbox" class="fconf" ${f.value ? "" : "disabled"}> Confirmed</label></div></div>`).join("")}</div>
-      ${it.d.verdict === "human" ? `<div class="banner warn">${esc(it.d.reason)}</div>` : ""}
+      <div class="form" id="form">${fields.map((f, i) => `<div class="frow"><span class="sw" style="background:${["#4a6fa5", "#32854c", "#c9a21a", "#9c4a6b", "#6b5ca5", "#2b7a78"][i % 6]}"></span><label for="f${i}">${esc(f.name)}</label><div><input type="text" id="f${i}" value="${esc(f.value)}" class="${f.value ? "" : "empty"}" placeholder="Not in the ${esc(SHAPE.noun[0])}">${f.evidence ? `<div class="ev">Evidence: "${esc(f.evidence)}"</div>` : `<div class="ev">Not found in the ${esc(SHAPE.noun[0])}; ask the ${esc(SHAPE.sideIn.toLowerCase())}.</div>`}<label class="conf"><input type="checkbox" class="fconf" ${f.value ? "" : "disabled"}> Confirmed</label></div></div>`).join("")}</div>
+      ${it.d.verdict === "human" ? humanBlock(it, "") : ""}
       <div class="row"><button class="btn solid" data-act="Filed" id="fileBtn" disabled>Confirm and file</button><button class="btn ghost" data-act="Details requested">Request missing details</button><button class="linkbtn" id="confirmAll">Confirm all found fields</button></div>`}</div></div>`;
   wireConfirm();
   if (it.d.verdict !== "escalate" && !it.ai && AI && BUILD.engine !== "rules" && s) extract(it, s);
@@ -906,8 +1105,8 @@ function rankView(it, V) {
     <div class="card"><div class="hh"><span class="av">${initials(it.who.name)}</span><div><h2 style="font-size:22px">${esc(it.who.name)}${CASE.recordSuffix === undefined ? (/household/i.test(it.who.name) ? "" : " household") : (CASE.recordSuffix ? " " + esc(CASE.recordSuffix) : "")}</h2><div class="meta">${esc(it.who.id)} · ${esc(it.who.ago)}</div></div></div>
       <div class="facts" style="margin-top:12px">${facts.map((f) => `<span class="fact">${esc(f)}</span>`).join("")}</div></div>
     ${outcomeHead(it, V)}
-    ${it.d.verdict === "escalate" ? escBanner(it) + `<div class="row"><button class="btn danger" data-act="Sent to supervisor">Send to ${esc(CASE.escalationOwner || "supervisor")}</button></div>`
-      : !actions.length ? `<div class="banner warn">${esc(it.d.reason)}</div><div class="row"><button class="btn dark" data-act="Noted">Add a note</button></div>`
+    ${it.d.verdict === "escalate" ? decideBlock(it, "Sent to supervisor")
+      : !actions.length ? `<div class="banner warn">${esc(reasonText(it.d))}</div><div class="row"><button class="btn dark" data-act="Noted">Add a note</button></div>`
       : actions.map((a, i) => { const s = srcOf(a.source); return `<div class="action ${a.must !== false ? "must" : ""}" id="act${i}"><span class="rank">${i + 1}</span><div class="stack">
           <div class="row between"><h4>${esc(a.title || srcTitle(s))}</h4><span class="pill ${a.must !== false ? "bad" : "plain"}">${a.must !== false ? "Must do" : "Should do"}</span></div>
           <p class="small">${esc(a.why || "")}</p><div class="src"><b>Rule.</b> ${esc(s?.text || "")}</div>
@@ -931,11 +1130,11 @@ function chatView(it, V) {
       <div class="chat" id="chat"></div>
       <div class="compose"><input id="followUp" placeholder="Ask a follow-up as ${esc(it.who.name.split(" ")[0])}" aria-label="Follow-up question"><button class="btn solid sm" id="sendFollow">Send</button></div></div>
     <div class="card emph stack assist"><div class="eyebrow">Behind the answer</div>${outcomeHead(it, V)}
-      ${it.d.verdict === "escalate" ? escBanner(it) : it.d.verdict === "human" ? `<div class="banner warn">${esc(it.d.reason)}</div>` : `<div><div class="label">Cited policy</div><div class="src" style="margin-top:6px"><b>${esc(srcTitle(s))}.</b> ${esc(s?.text || "")}</div></div>`}
+      ${it.d.verdict === "escalate" ? decideBlock(it, "Escalated") : it.d.verdict === "human" ? humanBlock(it, "") : `<div><div class="label">Cited policy</div><div class="src" style="margin-top:6px"><b>${esc(srcTitle(s))}.</b> ${esc(s?.text || "")}</div></div>`}
       <p class="meta" id="aiMeta">${esc(it.ai?.meta || "")}</p></div></div>`;
   renderChat(it);
   if (!it.ai && it.d.verdict === "answer") answerChat(it, it.text, it.d);
-  else if (!it.ai) { turns.push({ who: "ai", text: it.d.verdict === "escalate" ? `This needs a person, so I have passed it to ${CASE.escalationOwner || "a specialist"}. Someone will contact you ${CASE.escalationSla || "soon"}. Your message is kept confidential.` : "I could not find a policy that clearly covers this, so I have opened a ticket with the service desk. They will reply within one business day." }); it.ai = { meta: "No AI answer: routed by rule." }; renderChat(it); }
+  else if (!it.ai) { turns.push({ who: "ai", text: it.d.verdict === "escalate" ? `This needs a person, so I have passed it to ${ownerFor(it)}. Someone will contact you soon. Your message is kept confidential.` : "I could not find a policy that clearly covers this, so I have opened a ticket with the service desk. They will reply within one business day." }); it.ai = { meta: "No AI answer: routed by rule." }; renderChat(it); }
 }
 function renderChat(it) {
   $("#chat").innerHTML = it.turns.map((t) => t.who === "them" ? `<div class="msg"><span class="av sm">${initials(it.who.name)}</span><div class="bubble them">${esc(clean(t.text))}</div></div>`
@@ -956,7 +1155,7 @@ async function followUp() {
   const q = $("#followUp").value.trim(); if (!q) return; const it = OPEN; $("#followUp").value = "";
   it.turns.push({ who: "them", text: q }); const d = ROUTER.decide((it.text.match(/^\[[A-Z]+\]/) || [""])[0] + " " + q);
   if (d.verdict === "answer") return answerChat(it, q, d);
-  it.turns.push({ who: "ai", text: d.verdict === "escalate" ? `This needs a person, so I have passed it to ${CASE.escalationOwner || "a specialist"}.` : "I could not find a policy that clearly covers this, so I have opened a ticket with the service desk." }); renderChat(it);
+  it.turns.push({ who: "ai", text: d.verdict === "escalate" ? `This needs a person, so I have passed it to ${ownerFor({ d })}.` : "I could not find a policy that clearly covers this, so I have opened a ticket with the service desk." }); renderChat(it);
 }
 
 /* New item */
@@ -1020,7 +1219,7 @@ function renderEvalControls() {
   const rows = rowsFor(evalSet), e_ = rows.filter((r) => r.expected === "escalate").length;
   $("#setDev").textContent = `Development set (${GOLDEN.length})`; $("#setHold").textContent = `Sealed holdout (${HOLDOUT.length})`;
   $("#setCustom").hidden = !CUSTOM.length; $("#setCustom").textContent = `Your data and flags (${CUSTOM.length})`;
-  $("#setInfo").textContent = evalSet === "holdout" ? `${rows.length} ${SHAPE.noun[1]} the system never saw while it was built or fixed. The honest score; individual items stay hidden.` : `${rows.length} ${SHAPE.noun[1]}, each labelled with the right outcome before anything was built: ${e_} should escalate, ${rows.filter((r) => r.expected === "answer").length} are ready, ${rows.filter((r) => r.expected === "human").length} need a person.`;
+  $("#setInfo").textContent = evalSet === "holdout" ? `${rows.length} ${SHAPE.noun[1]} never used to build or tune the decision rules. The honest score; individual items stay hidden.` : `${rows.length} ${SHAPE.noun[1]}, each labelled with the right outcome before anything was built: ${e_} should escalate, ${rows.filter((r) => r.expected === "answer").length} are ready, ${rows.filter((r) => r.expected === "human").length} need a person.`;
   $("#engineSeg").innerHTML = ENGINES.map((e) => `<button class="design" data-engine="${e.id}" aria-pressed="${e.id === engine}"><span class="t">Design ${e.letter}: ${e.name}${e.rec ? ' <span class="pill ok">Recommended</span>' : ""}</span><div class="path">${esc(e.path)}</div><p>${esc(e.what)}</p><p><span class="pro">+</span> ${esc(e.pro)}<br><span class="con">-</span> ${esc(e.con)}</p></button>`).join("");
   $("#engineDesc").textContent = engine !== "rules" ? `Model for designs B and C: ${model().short}. Change it in the top bar.` : "Design A uses no model.";
   $("#runTest").disabled = !ROUTER || (engine !== "rules" && !AI);
@@ -1097,12 +1296,12 @@ async function loadSources(files) { let n = SOURCES.filter((x) => x.uploaded).le
 function renderSources() {
   const item = (x) => `<div class="srcitem"><div class="row between"><span class="code">${esc(x.id)}</span>${x.uploaded ? `<span class="row"><span class="pill info">${esc(x.file)}</span><button class="linkbtn" data-rmsrc="${esc(x.id)}">Remove</button></span>` : ""}</div><p>${esc(x.text.slice(0, 160))}${x.text.length > 160 ? "..." : ""}</p></div>`;
   const up = SOURCES.filter((x) => x.uploaded), base = SOURCES.filter((x) => !x.uploaded);
-  $("#srcList").innerHTML = `${up.length ? up.map(item).join("") : `<p class="small muted">No documents added yet.</p>`}<details class="more"><summary>${base.length} approved sources from the working session</summary>${base.map(item).join("")}</details>`;
+  $("#srcList").innerHTML = `${up.length ? up.map(item).join("") : `<p class="small muted">No documents added yet.</p>`}<details class="more"><summary>${base.length} approved sources agreed with your team</summary>${base.map(item).join("")}</details>`;
 }
 function wireDrop(label, input, handler) { input.addEventListener("change", () => input.files.length && handler(input.files)); label.addEventListener("dragover", (e) => { e.preventDefault(); label.classList.add("over"); }); label.addEventListener("dragleave", () => label.classList.remove("over")); label.addEventListener("drop", (e) => { e.preventDefault(); label.classList.remove("over"); if (e.dataTransfer.files.length) handler(e.dataTransfer.files); }); }
 wireDrop($("#caseDrop"), $("#caseFile"), (fs) => loadCases(fs[0])); wireDrop($("#srcDrop"), $("#srcFile"), (fs) => loadSources([...fs]));
 
-/* ---------- Data and tools: the client's systems, recommended at gate L; connections are simulated ---------- */
+/* ---------- Data and tools: the client's systems, recommended during design; connections are simulated ---------- */
 const CATS = [["channel", "Where work arrives", "The channels that feed the queue."], ["knowledge", "Knowledge", "Approved content the product may cite."], ["record", "Systems of record", "Where the outcome is filed or read from."], ["testing", "Test and labelling data", "What the release gates are measured on."], ["collab", "People and alerts", "Where hand-offs and escalations reach a person."]];
 const LOGO_COLORS = ["#32854c", "#4a6fa5", "#c97d1a", "#9c4a6b", "#2b7a78", "#6b5ca5", "#28323f"];
 const BASE_TOOLS = [
@@ -1140,7 +1339,7 @@ function addTool(name, category) {
 }
 function renderConnectors() {
   const list = CASE.connectors || [];
-  $("#connIntro").textContent = list.length ? `The systems this product reads from and hands off to at ${CASE.client || "the client"}, recommended in the working session. Connections here are simulated on synthetic data; nothing leaves this page.` : "Systems are recommended at gate L of the working session. Until then, bring your own files below.";
+  $("#connIntro").textContent = list.length ? `The systems this product reads from and hands off to at ${CASE.client || "the client"}, recommended during design. Connections here are simulated on synthetic data; nothing leaves this page.` : "Systems are recommended once we agree what data this needs. Until then, bring your own files below.";
   const on = list.filter((c) => c.status === "connected").length;
   $("#connTiles").innerHTML = [["ok", on, "Connected (simulated)"], ["warn", list.filter((c) => c.status !== "connected").length, "Planned"], ["", list.filter((c) => c.access !== "read-write").length, "Read-only"], ["", list.filter((c) => c.pii === "masked").length, "Personal data masked"]].map(([k, n, l]) => `<div class="tile ${k}"><b>${n}</b><span>${l}</span></div>`).join("");
   $("#cntConn").textContent = list.length ? `${on}/${list.length}` : "";
@@ -1183,7 +1382,7 @@ function renderGov() {
   const controls = [["Escalation wins every race", "Rules check every item before anything else; on a hit nothing is prepared", `${counts().escalate} in today's queue`], ["Approved knowledge only", "Nothing proceeds without an approved source", `${SOURCES.length} approved sources`], ["A person decides", `${CASE.autonomy || "Draft with approval"}; ${(CASE.persona || {}).role || CASE.approverRole || "the reviewer"} decides`, `${LOG.length} logged actions`], ["Never list enforced", `${(CASE.neverList || []).length} forbidden actions, tested by labelled items`, "Forbidden-topics gate"], ["Every action logged", "Item, outcome, action, who, time, version", `${LOG.length} entries`], ["Release gated by evals", "Bars set before the build; a sealed holdout scores every fix", `${gateDefs().length} gates; ${HOLDOUT.length} sealed items`]];
   $("#controls").innerHTML = controls.map(([c, h, e]) => `<tr><td><strong>${esc(c)}</strong></td><td>${esc(h)}</td><td class="muted">${esc(e)}</td></tr>`).join("");
   const st = (s = "") => (s.toLowerCase().startsWith("answered") ? "ok" : s.toLowerCase().startsWith("assumed") ? "warn" : "bad");
-  $("#govRows").innerHTML = items.length ? items.map((i) => `<tr><td><span class="pill plain">${esc(i.gate)}</span></td><td>${esc(i.question)}</td><td>${esc(i.answer)}</td><td><span class="pill ${st(i.status)}">${esc(i.status)}</span></td><td>${esc(i.owner || "")}</td></tr>`).join("") : `<tr><td colspan="5" class="muted">Checks appear here as each gate answers them.</td></tr>`;
+  $("#govRows").innerHTML = items.length ? items.map((i) => `<tr><td><span class="pill plain">${esc(stepName(i.gate))}</span></td><td>${esc(i.question)}</td><td>${tagAssumed(esc(i.answer))}</td><td><span class="pill ${st(i.status)}">${esc(i.status)}</span></td><td>${esc(i.owner || "")}</td></tr>`).join("") : `<tr><td colspan="5" class="muted">Checks appear here as each gate answers them.</td></tr>`;
 }
 function renderLog() { $("#logRows").innerHTML = LOG.length ? LOG.map((r) => `<tr><td class="num">${esc(new Date(r.at).toLocaleTimeString())}</td><td>${esc(r.item)}</td><td><span class="pill ${VSTYLE[r.verdict] || "plain"}">${esc(r.verdict)}</span></td><td>${esc(r.action)}</td><td>${esc(r.by)}</td><td>${r.edited ? "Yes" : "No"}</td><td>${esc(r.ai)}</td></tr>`).join("") : `<tr><td colspan="7" class="muted">No actions yet. Open an item from Today and act on it.</td></tr>`; }
 function renderHow() {
@@ -1191,7 +1390,7 @@ function renderHow() {
   $("#howIntro").textContent = c.scenario || c.promise || "";
   const steps = [["", "Arrives", c.inputLabel || "From the channel."], ["guard", "Escalation guard", `Rules check first: ${v.escalate?.desc || ""}`], ["", "Match", `Uses one of ${SOURCES.length} approved sources; otherwise a person.`], ["", "Prepare", BUILD.engine === "rules" ? "Assembled by rule." : `${model().short} prepares it from the approved source only.`], ["person", "Person decides", `${(c.persona || {}).role || c.approverRole || "The reviewer"}: ${c.autonomy || "draft with approval"}.`], ["", "Logged", "Who, what, when and which version."]];
   $("#flow").innerHTML = steps.map(([k, t, d], i) => `<div class="step ${k}"><div class="n">${i + 1}</div><strong>${esc(t)}</strong><p class="small muted">${esc(d)}</p></div>`).join("");
-  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(d.gate)}</span></td><td>${esc(d.decision)}${d.revised ? ` <span class="pill warn">Revised</span><div class="meta">Was: ${esc(d.was || "")}</div>` : ""}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Decisions appear as each gate is decided.</td></tr>`;
+  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(stepName(d.gate))}</span></td><td>${esc(d.decision)}${d.revised ? ` <span class="pill warn">Revised</span><div class="meta">Was: ${esc(d.was || "")}</div>` : ""}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Decisions appear as each gate is decided.</td></tr>`;
   $("#gateRows").innerHTML = gateDefs().map((g) => `<tr><td>${esc(g.q)}</td><td class="muted">${esc(barText(g))}</td></tr>`).join("");
   $("#sourceRows").innerHTML = SOURCES.map((s) => `<tr><td class="num">${esc(s.id)}</td><td>${esc(s.text)}</td></tr>`).join("");
 }
@@ -1201,10 +1400,13 @@ function renderFaq() { $("#faqList").innerHTML = (CASE.faq || []).map((f) => `<d
 document.addEventListener("click", async (e) => {
   const tr = e.target.closest("tr[data-run]"); if (tr) { selRun = Number(tr.dataset.run); return renderBoard(); }
   const t = e.target.closest("button"); if (!t) return;
-  if (t.dataset.go) return go(t.dataset.go);
+  if (t.dataset.go) { document.body.classList.remove("more-open"); return go(t.dataset.go); }
   if (t.dataset.qtab) { qTab = t.dataset.qtab; return renderQueue(); }
   if (t.dataset.find) { FIND_DONE.add(t.dataset.find); LOG.unshift({ at: new Date().toISOString(), item: "Overnight finding", verdict: "", action: "Finding reviewed", by: (CASE.persona || {}).name || "Reviewer", edited: false, ai: "none" }); $("#cntLog").textContent = LOG.length; return renderAway(); }
   if (t.id === "wrongOpen") { $("#wrongForm").hidden = false; t.hidden = true; return; }
+  if (t.dataset.why) { const box = t.closest(".decide").querySelector(".why-box"); box.hidden = !box.hidden; t.setAttribute("aria-expanded", String(!box.hidden)); return; }
+  if (t.dataset.notesc) { const f = $("#wrongForm"); if (f) { f.hidden = false; $("#wrongOpen").hidden = true; $("#wrongV").value = "human"; f.scrollIntoView({ block: "center", behavior: "smooth" }); } return; }
+  if (t.dataset.tab) { if (t.dataset.tab === "more") { document.body.classList.toggle("more-open"); return; } document.body.classList.remove("more-open"); return go(t.dataset.tab); }
   if (t.id === "wrongSave") { const it = OPEN, v = $("#wrongV").value, src = $("#wrongS").value || null;
     CUSTOM.push({ id: `f${String(CUSTOM.length + 1).padStart(2, "0")}`, text: it.text, expected: v, source: v === "answer" ? src : null, slices: { origin: "reviewer flag", ...(it.row.slices || {}) } });
     logAction(it, `Flagged as wrong: should be ${v}`); it.state = "open"; renderEvalControls();

@@ -2,7 +2,7 @@
 name: gate-qc
 description: Quality check after each /valued phase, run in the background so the session never waits. Given the phase just finished, checks that its gate files honour every client answer, that every number traces to a client answer, a cited research fact or an (assumed) mark, that nothing contradicts an earlier gate, that the PRD sections it owns read like a senior PM wrote them, and that the next round's drafted questions do not repeat or overlap. Writes findings to out/qc/<phase>.json with the owning file and the fix. Reports only; never edits.
 tools: Read, Bash, Write
-model: sonnet
+model: haiku
 ---
 
 You check one phase of a live VALUED session, in workspace `<ws>`, while the session moves on. Be fast (under
@@ -23,7 +23,12 @@ Check, in this order:
 3. **Consistent.** No contradiction with an earlier gate or with the case line (volumes, dates, roles, names).
 4. **Reads like a senior PM.** The PRD sections these gates own are specific to this client and industry, have
    no filler, no placeholder, no generic text that would fit any case, and no unexplained jargon.
-5. **Questions (phases 0, 1, 3).** The drafted cards are hypothesis-led, one question each, MECE across the
+5. **One story across every view.** The discovery brief (`out/proto/discovery.html` and `r.json`), the approach
+   card for this phase (`out/gates/approach.json`), the PRD and the prototype (`out/proto/case.json`) tell the same
+   story: the same product and client names, the same numbers, the same decisions, the same recommendation and
+   the same assumptions. Anything stated in one view and contradicted or missing in another is a blocker; name
+   both places.
+6. **Questions (phases 0, 1, 3).** The drafted cards are hypothesis-led, one question each, MECE across the
    round, never repeat an earlier card or the case line, glossing each technical term once.
 
 Write `out/qc/<phase>.json`, keeping the existing `auto` key: `{ "phase": n, "auto": [...], "findings": [{
