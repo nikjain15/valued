@@ -746,7 +746,7 @@ function renderAway() {
 const FIND_DONE = new Set();
 let CLOCK_KEYS = new Set();
 function renderClocks() {
-  const urgent = ITEMS.map((it) => ({ it, c: clockOf(it) })).filter((x) => x.c && x.c.cls).sort((a, b) => a.c.left - b.c.left).slice(0, 3);
+  const urgent = ITEMS.map((it) => ({ it, c: clockOf(it) })).filter((x) => x.c).sort((a, b) => (b.c.cls ? 1 : 0) - (a.c.cls ? 1 : 0) || a.c.left - b.c.left).slice(0, 3); // nearest deadlines first, late or nearly-due on top; never empty while open items have a clock
   CLOCK_KEYS = new Set(urgent.map((x) => x.it.key));
   $("#clocks").innerHTML = urgent.length ? `<div class="qhead"><h3>Close to their clock</h3><span>Sorted by time left</span></div><div class="queue">${urgent.map((x) => qcard(x.it)).join("")}</div>` : "";
 }

@@ -82,9 +82,15 @@ function wrap2(s, max) {
 // Which model a named assistant runs, from gate A pricing.perUseCase (best-effort name match).
 function agentModel(a, name) {
   const rows = A(a.pricing && a.pricing.perUseCase);
-  const n = String(name).toLowerCase(), toks = n.split(/\s+/).filter((w) => w.length > 3);
-  const hit = rows.find((r) => { const j = String(r.job).toLowerCase(); return j === n || j.includes(n) || n.includes(j) || toks.some((t) => j.includes(t)); });
-  return hit ? hit.model : "";
+  const generic = new Set(["model", "agent", "assistant", "check", "checker", "rules", "guard", "draft", "drafter", "the", "and", "with"]);
+  const words = (x) => String(x).toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !generic.has(w));
+  const n = String(name).toLowerCase(), nw = words(name);
+  const exact = rows.find((r) => String(r.job).toLowerCase() === n || String(r.job).toLowerCase().includes(n));
+  if (exact) return exact.model;
+  // Otherwise the row sharing the most meaningful words; generic words like "model" or "check" never decide it.
+  let best = null, score = 0;
+  for (const r of rows) { const jw = new Set(words(r.job)); const sc = nw.filter((w) => jw.has(w)).length; if (sc > score) { best = r; score = sc; } }
+  return best ? best.model : "";
 }
 // A short latency for a step, from gate A sourcing; "(assumed)" when the gate did not supply one.
 function latShort(a, name) {
