@@ -12,6 +12,11 @@ const [src = "out/prd.md", dest = "out/prd.html"] = args.filter((a, i) => !a.sta
 const md = fs.readFileSync(src, "utf8");
 const template = fs.readFileSync(path.join(__dirname, "prd-viewer.html"), "utf8");
 const css = fs.readFileSync(path.join(__dirname, "app", "ff.css"), "utf8");
+// The vendored marked (app/marked.min.js) is inlined so the PRD draws its tables with no CDN; without it the
+// viewer's own GFM fallback still renders pipe tables as HTML tables.
+const markedFile = path.join(__dirname, "app", "marked.min.js");
+const markedJs = fs.existsSync(markedFile) ? fs.readFileSync(markedFile, "utf8").replace(/<\/(script)/gi, "<\\/$1") : "";
+const markedTag = markedJs ? `<script>\n${markedJs}\n</script>` : "";
 // JSON-encode and break any closing script tag so the markdown cannot end the script early.
 const json = JSON.stringify(md).replace(/<\/(script)/gi, "<\\/$1");
 const dataTag = `<script>window.__PRD__ = ${json};${protoUrl ? ` window.__PROTO__ = ${JSON.stringify(protoUrl)};` : ""}</script>`;
@@ -20,6 +25,7 @@ let html;
 if (!artifact) {
   html = template
     .replace('<link rel="stylesheet" href="/ff.css">', () => `<style>\n${css}\n</style>`)
+    .replace('<script src="marked.min.js"></script>', () => markedTag)
     .replace("<!--PRD_DATA-->", () => dataTag);
 } else {
   const style = (template.match(/<style>([\s\S]*?)<\/style>/) || [, ""])[1];
@@ -28,7 +34,7 @@ if (!artifact) {
   html = [
     `<title>${title} PRD</title>`,
     '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap">',
-    '<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>',
+    markedTag,
     `<style>\n:root { color-scheme: light; }\n${css.replace(/^@import[^\n]*\n/m, "")}\n${style}\n</style>`,
     body.replace(/<a class="btn ghost sm hide-sm" id="mdLink"[^>]*>[^<]*<\/a>/, "").replace("<!--PRD_DATA-->", () => dataTag),
   ].join("\n");

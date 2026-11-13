@@ -204,7 +204,7 @@ better supported, the value frame better anchored. Nothing waits for it.
    ```bash
    B=.claude/skills/valued-build; mkdir -p out/proto out/gates out/tools out/research inputs
    printf '#!/bin/sh\nexport PORT=${PORT:-%s}\nexec node .claude/skills/valued/conductor.js "$@"\n' "${PORT:-4317}" > out/tools/c; chmod +x out/tools/c
-   cp $B/app/app.html $B/app/server.js $B/app/ff.css $B/prd-viewer.html $B/eval.js out/proto/
+   cp $B/app/app.html $B/app/server.js $B/app/ff.css $B/app/marked.min.js $B/prd-viewer.html $B/eval.js out/proto/
    echo '{}' > out/proto/case.json; echo '[]' > out/cards.json
    echo "<the case line>" > out/case-line.txt; echo "orchestrated" > out/mode.txt
    node $B/prd-skeleton.js "<the case line>" out/prd.md

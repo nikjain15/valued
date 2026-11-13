@@ -172,19 +172,31 @@ async function browser() {
         r.pending = await ev("(document.body.innerText.match(/Pending:/g)||[]).length");
         expect(r.text > 5000, 5, `PRD viewer rendered only ${r.text} characters`, "out/prd.html");
         expect(r.pending === 0, 5, `PRD viewer shows ${r.pending} Pending lines`, "out/prd.md");
+        r.pipeRows = await ev("(document.querySelector('#doc')?.innerText.match(/^\\s*\\|.*\\|\\s*$/gm)||[]).length");
+        expect(r.pipeRows === 0, 5, `PRD viewer shows ${r.pipeRows} raw pipe-table lines (tables not rendered)`, "out/proto/prd-viewer.html");
+        await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true }); await new Promise((r) => setTimeout(r, 600));
+        r.narrow = await ev("document.documentElement.scrollWidth");
+        expect(r.narrow <= 390, 7, `prd: page is ${r.narrow} px wide at 390 (scrolls sideways)`, "out/proto/prd-viewer.html");
+        await send("Emulation.clearDeviceMetricsOverride");
       } else {
         r.items = await ev("typeof ITEMS!=='undefined'?ITEMS.length:-1");
         r.counts = await ev("typeof counts==='function'?JSON.stringify(counts()):''");
-        expect(r.items === golden.length, 7, `${name}: queue has ${r.items} items, golden set has ${golden.length}`, "out/proto/router.js");
+        // The visible queue is a day's work sampled from the test set: never empty, never more than the set,
+        // and escalations at the case's mix (case.json "mix") or at most 1 in 5.
+        expect(r.items >= 1 && r.items <= golden.length, 7, `${name}: queue has ${r.items} items, golden set has ${golden.length}`, "out/proto/router.js");
+        try { const c = JSON.parse(r.counts || "{}"), tot = (c.escalate || 0) + (c.human || 0) + (c.answer || 0), cap = (CASE.mix && Number(CASE.mix.escalate)) || 0.2;
+          expect(!tot || (c.escalate || 0) <= Math.max(1, Math.ceil(cap * tot + 0.02 * tot)), 3, `${name}: ${c.escalate} of ${tot} queue items escalate, above the ${Math.round(cap * 100)}% mix`, "out/proto/app.html"); } catch {}
         r.greet = await ev("document.querySelector('#greet')?.textContent||''");
         expect(/Good (morning|afternoon|evening), \w+/.test(r.greet || ""), 3, `${name}: Today greeting missing`, "out/proto/app.html");
         r.tiles = await ev("document.querySelectorAll('#tiles .tile').length");
+        r.internal = await ev("(document.querySelector('#p-home').innerText.match(/\\bGate [A-Z]\\b|\\(R\\d-\\d+|\\b(?:R\\d-\\d+|C-\\d+)\\b|\\b[a-z]+_[a-z]+\\b|~ est/) || [''])[0]");
+        expect(!r.internal, 8, `${name}: method internals on the home screen ("${r.internal}")`, "out/proto/case.json");
         r.ready = await ev("document.querySelector('#readyBanner')?.textContent?.trim().slice(0,60)||''");
         r.overnight = await ev("document.querySelector('#overnight')?.textContent?.trim().length||0");
         r.away = await ev("document.querySelectorAll('#away .finding').length");
         r.clocks = await ev("document.querySelectorAll('#clocks .qitem').length");
         r.top = await ev("document.querySelectorAll('#queues .qitem').length");
-        expect(r.tiles === 4, 3, `${name}: ${r.tiles} tiles on Today`, "out/proto/app.html");
+        expect(r.tiles >= 1 && r.tiles <= 3, 3, `${name}: ${r.tiles} stats on Today, expected at most 3`, "out/proto/app.html");
         expect(r.ready, 3, `${name}: no readiness banner`, "out/proto/app.html");
         expect(r.overnight > 40, 3, `${name}: no overnight summary`, "out/proto/app.html");
         expect(r.away >= 2, 3, `${name}: While you were away shows ${r.away} findings`, "out/proto/case.json");
@@ -221,6 +233,18 @@ async function browser() {
         expect(r.govRows >= 6, 4, `${name}: controls page shows ${r.govRows} rows`, "out/proto/case.json");
         await ev("go('faq')"); r.faq = await ev("document.querySelectorAll('#faqList details').length");
         await ev("go('how')"); await ev("go('audit')"); await ev("go('home')");
+        // Phone width: every page at 390 px must fit (scrollWidth <= 390), item views included.
+        // The hosted bundle has no <head>; the artifact host supplies the viewport meta, so add it here as the host would.
+        if (name === "hosted") await ev("document.querySelector('meta[name=viewport]') || document.head.insertAdjacentHTML('beforeend', '<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">')");
+        await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true }); await new Promise((r) => setTimeout(r, 400));
+        r.narrow = {};
+        const escKey = await ev("(ITEMS.find(i=>i.d.verdict==='escalate')||{}).key||''");
+        for (const v of ["home", "queue", "item", "new", "evals", "agents", "gov", "audit", "data", "how", "faq", "obs", "models"]) {
+          await ev(v === "item" ? `go('item', ${JSON.stringify(escKey)})` : `go('${v}')`); await new Promise((r) => setTimeout(r, 150));
+          const sw = await ev("document.documentElement.scrollWidth"); r.narrow[v] = sw;
+          expect(sw <= 390, 7, `${name}: ${v} page is ${sw} px wide at 390 (scrolls sideways)`, "out/proto/app.html");
+        }
+        await send("Emulation.clearDeviceMetricsOverride"); await ev("go('home')");
         r.emdash = await ev("document.body.innerText.includes('\\u2014')");
         expect(!r.emdash, 8, `${name}: em-dash visible on the page`, "out/proto/app.html");
       }
