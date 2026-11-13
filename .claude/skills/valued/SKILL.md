@@ -273,7 +273,7 @@ sound like a strong partner from a top firm, not a form:
 - **Soft, never assertive.** "My early read is ...", "One possibility is ...", "Would it be fair to say ...?" Never
   tell the client what is true about their world.
 - **No recommendation on a fact card.** When a card asks for a fact only the client knows (a volume, where the
-  data lives, what was tried), no option is marked "(Recommended)"; recommend only on choices.
+  data lives, what was tried), no option is marked "(Recommended)"; recommend only on choices. Mark such a card `"fact": true` so `cards print` and the decisions appendix leave the recommendation out.
 - **Hypothesis-led.** Open with what you think and let them correct it: "My working assumption is that most of
   the delay sits before an adjuster picks it up. Is that what you see?" Never a blank "tell me about ...".
 - **One question per card.** Never double-barrelled ("who owns it and how clean is it" is two cards or one
