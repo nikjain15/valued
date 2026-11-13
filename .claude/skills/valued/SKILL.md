@@ -93,8 +93,8 @@ keep running and land through the same revise path.
 phase that needs the result. If a gate is not back when its phase starts, give the client the one-line status
 ("Pricing the problem from your answers, about a minute") and continue with what does not depend on it.
 
-Cards in total: 16 in the two rounds, plus framing (1 to 3)
-and E's "Ship anyway, or fix first?" only when a release is blocked: 17 to 20. Start and end every phase with `out/tools/c clock <phase> start|end`; the start prints
+Cards in total: 22 in the two rounds (14 in Round 1, 8 in Round 2), plus framing (1 to 3)
+and E's "Ship anyway, or fix first?" only when a release is blocked: 23 to 26. Start and end every phase with `out/tools/c clock <phase> start|end`; the start prints
 the header line (`[2] V then A · budget 1 min`). Between phases print nothing else.
 
 **Graceful overrun.** Before each phase starts and whenever a phase feels long, run `out/tools/c clock status`. If the
@@ -277,11 +277,16 @@ as `because`, and one focused question. At most three per session, same reputabl
 Say one line to the client ("I've asked our research to check storm-week volumes; I'll bring it in when it lands"),
 and fold its findings into the next question or the approach card when `out/tools/c research` shows them.
 
-**Launch gates while you ask (background, never waited on here).** The moment C-1, C-2, C-3 and R1-1 are
-answered, launch `valued-value`. Once `v.json` exists and R1-2, R1-3 and C-4 are answered, launch
-`valued-ai-fit`. Once R1-4 and R1-5 are answered **and `a.json` exists**, launch `valued-user-loop`: it builds its triggers and never list on A's assistants, so launching it earlier means re-running it. Each runs as a sub-agent with
+**Launch gates while you ask (background, never waited on here).** The moment C-1, C-2, C-3, C-6 and R1-1 are
+answered, launch `valued-value`. Once `v.json` exists and R1-2, R1-3, C-4, C-7 and C-8 are answered, launch
+`valued-ai-fit`. Once R1-4, R1-5 and C-9 are answered **and `a.json` exists**, launch `valued-user-loop`: it builds its triggers and never list on A's assistants, so launching it earlier means re-running it. Each runs as a sub-agent with
 `run_in_background: true`, reads the answered cards, writes its own JSON and does not render; render after each
 answer as usual and once more when each gate lands.
+
+**Every card carries its PM title.** Each card has a `title` (the product-management term for what it
+establishes, as in the tables: Stakeholders, Baseline, Key outcome, Trade-offs, Go-live bar, Pause point ...). Show it
+as the card's header chip (AskUserQuestion `header`, at most 12 characters), keep it in `cards.json`, and use it
+when you refer back ("On the baseline, you told us ..."). Titles are client-facing: professional, plain, never internal jargon. The PRD's decisions appendix lists it.
 
 **How a consultant asks.** These are the rules that make every round (framing, Round 1, Round 2 and E's card)
 sound like a strong partner from a top firm, not a form:
@@ -330,32 +335,36 @@ answer**, so the approach page, the PRD and the prototype all show it within sec
 
 **Screen one: "Let's make sure we're solving the right problem"**
 
-| Card | Gate | Header role | What it establishes | Options come from |
-|---|---|---|---|---|
-| C-2 | V | operations owner | the size of today's problem, building on the framing answer: volume, time per item or rework, as one number the client can point at | 3 to 4 non-overlapping ranges anchored on a benchmark or the case |
-| R1-1 | V | sponsor | the one outcome that must move | 2 to 3 north-star metrics with what each rewards and can hide |
-| C-1 | V | sponsor | who must say yes for this to go live, and who could slow it down (multi) | this industry's named owner, approver and blocker roles |
-| C-3 | D | sponsor | the commitment window: how soon they need to see something working | 6 to 8 weeks; a quarter; this fiscal year; each with what it allows |
+| Card | Title | Gate | Header role | What it establishes | Options come from |
+|---|---|---|---|---|---|
+| C-2 | **Baseline** | V | operations owner | the size of today's problem, building on the framing answer: volume, time per item or rework, as one number the client can point at | 3 to 4 non-overlapping ranges anchored on a benchmark or the case |
+| R1-1 | **Key outcome** | V | sponsor | the one outcome that must move | 2 to 3 north-star metrics with what each rewards and can hide |
+| C-1 | **Stakeholders** | V | sponsor | who must say yes for this to go live, and who could slow it down (multi) | this industry's named owner, approver and blocker roles |
+| C-3 | **Timeline** | D | sponsor | the commitment window: how soon they need to see something working | 6 to 8 weeks; a quarter; this fiscal year; each with what it allows |
+| C-6 | **Value case** | V | sponsor | what this would need to save or earn to be worth funding | ranges built from their baseline and volume (e.g. a few hundred hours a month; a cost per item; a revenue or loss figure), each with what it implies for scope |
 
 **Screen two: "And the boundaries we design around"**
 
-| Card | Gate | Header role | What it establishes | Options come from |
-|---|---|---|---|---|
-| R1-2 | V | sponsor | hard limits on data, platform, scope or channel (multi); never review or autonomy, which R1-4 owns | e.g. data stays in-house, existing platform only, one channel first, one product line first; each with what it rules out |
-| C-4 | L | data owner | where the data for this lives today, and whether we can start from it or need stand-ins | one system of record; spread across systems; mostly documents and email; start with synthetic stand-ins |
-| R1-3 | A | IT and risk | whether a hosted model may run on synthetic data | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
-| C-5 | D | operations owner | what happened the last time something like this was tried | stalled on adoption; stalled on data; stalled on risk sign-off; new territory; each with what it means for the plan |
+| Card | Title | Gate | Header role | What it establishes | Options come from |
+|---|---|---|---|---|---|
+| R1-2 | **Constraints** | V | sponsor | hard limits on data, platform, scope or channel (multi); never review or autonomy, which R1-4 owns | e.g. data stays in-house, existing platform only, one channel first, one product line first; each with what it rules out |
+| C-4 | **Data sources** | L | data owner | where the data for this lives today, and whether we can start from it or need stand-ins | one system of record; spread across systems; mostly documents and email; start with synthetic stand-ins |
+| R1-3 | **AI approach** | A | IT and risk | whether a hosted model may run on synthetic data | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
+| C-5 | **Past efforts** | D | operations owner | what happened the last time something like this was tried | stalled on adoption; stalled on data; stalled on risk sign-off; new territory; each with what it means for the plan |
+| C-7 | **Trade-offs** | A | sponsor | which of speed, accuracy and running cost they would protect most if one has to give | the three, each with what it means for model choice and cost |
+| C-8 | **Alternatives** | A | IT and risk | what they have looked at buying instead, and what put them off | named product categories in this industry (never real vendors), building in-house, nothing yet; each with what it means for build, buy or partner |
 
-**Screen three: "Last two, on how hands-on you want to be"**
+**Screen three: "Last three, on how hands-on you want to be"**
 
-| Card | Gate | Header role | What it establishes | Options come from |
-|---|---|---|---|---|
-| R1-4 | U | risk owner | how much it may do on its own in the first 90 days | suggest only, draft with approval, act on low-risk actions |
-| R1-5 | U | operations owner | who it loops in on a hard call | the existing path, a specialist team, the risk desk, named for this industry |
+| Card | Title | Gate | Header role | What it establishes | Options come from |
+|---|---|---|---|---|---|
+| R1-4 | **Oversight** | U | risk owner | how much it may do on its own in the first 90 days | suggest only, draft with approval, act on low-risk actions |
+| R1-5 | **Escalation** | U | operations owner | who it loops in on a hard call | the existing path, a specialist team, the risk desk, named for this industry |
+| C-9 | **Transparency** | U | risk owner | whether the people it serves should be told when AI helped prepare an answer | always disclose; disclose on customer-facing output only; internal use, no disclosure needed; each with its regulatory and trust trade-off |
 
 Where the answers go: C-1 becomes V's `stakeholders`; C-2 anchors V's value frame (the client's baseline
 beats our assumption); C-3 bounds A's first wave and sets D's `roadmap`; C-4 sets A's data feasibility and
-L's systems; C-5 sets D's `adoption`. After each answer, set `status` on every assumption that answer tested, judged on the meaning of the answer,
+L's systems; C-5 sets D's `adoption`; C-6 sets V's value threshold and B's business case; C-7 sets A's model choice and pricing trade-off; C-8 sets A's build, buy or partner and its alternatives; C-9 sets U's `disclosure`. In Round 2, R2-7 sets D's `supportModel` and `operatingModel`; R2-8 sets D's roadmap `dependsOn`. After each answer, set `status` on every assumption that answer tested, judged on the meaning of the answer,
 never on a keyword: `"confirmed"` or `"challenged"` (with the client's words in `heardAs`). After the last question, say in one line which assumptions the client changed, and pass all of it on when you
 launch each gate.
 
@@ -382,14 +391,16 @@ every technical term the first time ("a separate bar (a pass mark just for that 
 question per card.
 assistants, the seed groups), append with `"round": 2`, print or auto, record answers:
 
-| Card | Gate | Header role | Question |
-|---|---|---|---|
-| R2-1 | A | sponsor | Of these, which feels like the natural place to start? (A's wave options) |
-| R2-2 | L | operations owner | Is there a type of case you would want us to be extra careful with? |
-| R2-3 | L | data owner | For a first run, what is worth plugging in, and what can stay manual? |
-| R2-4 | E | risk owner | How confident would you need to feel before you are comfortable going live? (0.99 / 0.97 / 0.95) |
-| R2-5 | D | sponsor | Who would be a good small group to try this with first? |
-| R2-6 | D | sponsor | If it is not landing, what would be your sign to pause? |
+| Card | Title | Gate | Header role | Question |
+|---|---|---|---|---|
+| R2-1 | **Phase one** | A | sponsor | Of these, which feels like the natural place to start? (A's wave options) |
+| R2-2 | **Risk focus** | L | operations owner | Is there a type of case you would want us to be extra careful with? |
+| R2-3 | **Integrations** | L | data owner | For a first run, what is worth plugging in, and what can stay manual? |
+| R2-4 | **Go-live bar** | E | risk owner | How confident would you need to feel before you are comfortable going live? (0.99 / 0.97 / 0.95) |
+| R2-5 | **Pilot group** | D | sponsor | Who would be a good small group to try this with first? |
+| R2-6 | **Pause point** | D | sponsor | If it is not landing, what would be your sign to pause? |
+| R2-7 | **Ownership** | D | operations owner | who owns it day to day after launch, and who fixes it when it is wrong |
+| R2-8 | **Dependencies** | D | sponsor | what else in flight this depends on or competes with (multi) |
 
 `out/tools/c cards skip 2` takes the recommended option on every round-2 card and logs it as skipped if the
 client would rather move on. If the client picks a different first wave than A recommended, update `a.json`
