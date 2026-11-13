@@ -259,30 +259,36 @@ function evalResults() {
   const seen = versions > 1 ? `holdout scored against ${versions} router versions; only the last counts, and the earlier attempts may have informed the change` : "";
   return { seen, prov, versions, dev, holdout, devGates: parse(dev), holdGates: parse(holdout), devPass: /RELEASE PASSES ALL GATES/.test(dev), holdPass: /RELEASE PASSES ALL GATES/.test(holdout), independent, goldenN: json(path.join(PROTO, "golden.json"), []).length, holdoutN: json(path.join(PROTO, "holdout.json"), []).length };
 }
-// Group-specific eval rows ("Fairness worst lang=en") share a base name, and dev and holdout can name different
-// groups. The holdout row for a dev row is the same key, else the same base; its own group is shown beside the value.
+// Group-specific eval rows ("Fairness worst lang=en") share a base name; dev and holdout can name different groups.
 const gateBase = (k) => String(k).replace(/\s+\S+=\S+$/, "");
+// The holdout row for a dev row: same key, else the same base, carrying the holdout's own worst group. Every
+// table that shows a holdout value or a pass/blocked pill reads it from here, so the two cannot disagree.
 function holdoutRow(holdGates, k) {
   if (holdGates[k]) return { ...holdGates[k], group: "" };
-  const hit = Object.entries(holdGates).find(([h]) => h !== gateBase(h) && gateBase(h) === gateBase(k));
+  const hit = Object.entries(holdGates).find(([h]) => gateBase(h) === gateBase(k) && h !== gateBase(h));
   return hit ? { ...hit[1], group: hit[0].slice(gateBase(hit[0]).length).trim() } : null;
 }
-const holdoutCell = (holdGates, k) => { const h = holdoutRow(holdGates, k); return h ? `${h.value}${h.group ? ` (${h.group})` : ""}` : ""; };
-// The gate-table row that explains an eval row: an exact name, then a name that contains the key (or the reverse),
-// then the longest shared prefix of at least 10 characters. A fixed 10-character prefix alone matched
-// "Escalation precision" to the "Escalation recall" row and showed the client's bar for an assumed one.
-function gateWhy(rows, k) {
-  const key = String(k).toLowerCase(), names = (x) => [x.metric, x.gate].filter(Boolean).map((n) => String(n).toLowerCase());
-  const shared = (a, b) => { let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i; };
-  const best = rows.find((x) => names(x).includes(key)) || rows.find((x) => names(x).some((n) => key.startsWith(n) || n.startsWith(key)))
-    || rows.map((x) => [x, Math.max(0, ...names(x).map((n) => shared(n, key)))]).filter(([, n]) => n >= 10).sort((p, q) => q[1] - p[1])[0]?.[0];
-  return best ? best.why || "" : "";
+function holdoutCell(holdGates, k) {
+  const h = holdoutRow(holdGates, k);
+  return h ? `${h.value}${h.group ? ` (${h.group})` : ""}` : "";
 }
+// The gate-table row that explains an eval row: exact metric first, then a metric that contains the key (or the
+// reverse), then the longest shared prefix of at least 10 characters. A fixed-length prefix alone matched
+// "Escalation precision" to the "Escalation recall" row.
+function gateWhy(rows, k) {
+  const key = String(k).toLowerCase(), m = (x) => String(x.metric || x.gate || "").toLowerCase();
+  const shared = (a, b) => { let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i; };
+  const best = rows.find((x) => m(x) === key) || rows.find((x) => m(x) && (key.startsWith(m(x)) || m(x).startsWith(key)))
+    || rows.map((x) => [x, shared(m(x), key)]).filter(([, n]) => n >= 10).sort((p, q) => q[1] - p[1])[0]?.[0];
+  return (best || {}).why || "";
+}
+// r.json assumptions are objects ({ text, card, confirmedIf }); the other gates write strings.
+const assumptionText = (x) => typeof x === "string" ? x : x && x.text ? `${x.text}${x.card ? ` (tested by ${x.card})` : ""}` : "";
 
 // ---------- state.md ----------
 function renderState(g) {
   const cs = cards(), open = Object.values(g).filter(Boolean).flatMap((x) => A(x.governance).filter((r) => !/^answered/i.test(r.status || "")).map((r) => [x.gate || "", r.question, r.status, r.owner || "to assign"]));
-  const assumptions = Object.values(g).filter(Boolean).flatMap((x) => A(x.assumptions)).map((a) => (typeof a === "string" ? a : a && a.text) || "").filter(Boolean);
+  const assumptions = Object.values(g).filter(Boolean).flatMap((x) => A(x.assumptions)).map(assumptionText).filter(Boolean);
   const engine = (g.a || {}).engine;
   return ["# State", "", "## Case line", "", clean(caseLine()), "", `Mode: ${read(path.join(OUT, "mode.txt")).trim() || "orchestrated"}. Live PRD: localhost:${process.env.PORT || 4317}/prd.`, "", "## Client decisions", "", tableAll(["Gate", "Card", "Decision", "By"], cs.filter((c) => c.decision).map((c) => [c.gate, c.question, `${byLabel(c.decision)}${c.revised ? " (revised)" : ""}`, byLabel(c.by || c.role)])), "", engine ? `Build engine: ${engine} (chosen by ${(g.a || {}).engineBy || "IT and risk"})` : "", "", "## Assumptions", "", ...assumptions.map((x) => `- ${clean(x)}`), "", "## Governance log", "", table(["Gate", "Item", "Status", "Closes it"], open), "", read(path.join(OUT, "state-notes.md")), ""].join("\n");
 }
@@ -371,7 +377,7 @@ function renderPrd(g, ev, c) {
   s[9] = u ? [table(["Action", "Autonomy (first 90 days)", "Approver", "AI shows", "On failure"], A(u.autonomyTable).map((r) => [r.action, r.level, r.approver, r.shows, r.onFailure])), "", "**Clocks**", "", table(["Outcome", "Respond within", "Regulatory clock"], [["Escalate", `${u.clocks?.escalate?.hours} h`, u.clocks?.escalate?.label], ["Needs a person", `${u.clocks?.human?.hours} h`, u.clocks?.human?.label], ["Prepared for review", `${u.clocks?.answer?.hours} h`, u.clocks?.answer?.label]]), "", "**Learning loop:** any reviewer can mark an outcome wrong; it joins the labelled test set with the right answer and every design is re-scored.", "", `**Disclosure (compliance to confirm):** "${clean(u.disclosure)}".`].join("\n") : (early([["How hands-on you want to be in the first 90 days", dec("R1-4")], ["Who it loops in on a hard call", dec("R1-5")]]) || P("U"));
   s[10] = l ? [table(["Data", "Owner", "Purpose", "Personal data", "Minimisation", "Retention"], A(l.dataPrivacy).map((r) => [r.data, r.owner, r.purpose, r.personal, r.minimisation, r.retention])), "", "**Systems to connect**", "", table(["System", "Category", "Provides", "Access", "Personal data", "Owner", "Pilot status"], A(c.connectors).map((x) => [`${x.name} (${x.vendor || "vendor to confirm"})`, x.category, x.provides, x.access, x.pii, x.owner, x.status])), "", `**Golden set:** ${ev.goldenN} dev rows plus ${ev.holdoutN} sealed holdout rows; groups: ${A(l.groups).map((x) => `${x.key} (${A(x.values).join(", ")})`).join("; ")}. Labelled ${clean(l.labelling?.preferred || A(l.labelling?.options)[0]?.label)}. Synthetic until ${clean((cs.find((x) => /connect/i.test(x.question)) || {}).decision || "the client provides data")}.`].join("\n") : P("L");
   const names = { "Escalation recall": "Riskiest miss", "Escalation precision": "False alarms", "Answers without source": "Approved knowledge only", "Routing accuracy": "Right outcome", "Recall gap": "Equal across groups", "Fairness": "No group below the bar", "Never-list answers": "Forbidden topics", "Verdicts outside allowed": "Only allowed outcomes" };
-  s[11] = e ? [table(["Gate", "Metric", "Bar", "Why this bar", "Latest dev", "Holdout"], Object.entries(ev.devGates).map(([k, r], gi) => [Object.entries(names).find(([n]) => k.toLowerCase().startsWith(n.toLowerCase().slice(0, 12)))?.[1] || k, k, r.bar, gateWhy(A(e.gateTable), k) || (A(e.gateTable)[gi] || {}).why || "", r.value, holdoutCell(ev.holdGates, k)])), "", `**Release status:** ${ev.devPass && ev.holdPass ? (() => { const thin = Object.entries(ev.holdGates).filter(([, r]) => { const b = parseFloat(String(r.bar).replace(/[^\d.]/g, "")); return r.result === "PASS" && b > 0 && !/<|max/i.test(String(r.bar)) && parseFloat(r.value) === b; }).map(([k]) => k.toLowerCase()); return thin.length ? `Meets every pass mark on the practice set and the sealed test set, with no margin on ${thin.length > 1 ? `${thin.slice(0, -1).join(", ")} and ${thin.slice(-1)}` : thin[0]}` : "Meets every pass mark on the practice set and the sealed test set"; })() : `Blocked on ${Object.entries(ev.devGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k).concat(Object.entries(ev.holdGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k + " (holdout)")).join(", ") || "a missing eval"}`}${ev.independent ? "" : `; holdout not independent (${ev.prov.recorded ? `${ev.prov.shared.join(", ")} wrote both the holdout rows and the router` : "no record of who wrote which"})`}${ev.seen ? `; ${ev.seen}` : e.repaired ? "; holdout seen once before a family-level repair" : ""}${e.repaired && A(e.fixes).length ? `. The first eval run was blocked; ${A(e.fixes).length === 1 ? "one repair" : `${A(e.fixes).length} repair rounds`} followed, each disclosed: ${A(e.fixes).map(clean).join("; ")}` : ""}. **LLM judge policy:** ${clean(e.judgePolicy) || "none in the pilot; a judge may score draft quality only after it is validated against labels; escalation never uses one"}.`, "", "**Reproduce:** `node out/proto/eval.js` (dev) and `node out/proto/eval.js holdout.json` (sealed)."].join("\n") : P("E");
+  s[11] = e ? [table(["Gate", "Metric", "Bar", "Why this bar", "Latest dev", "Holdout"], Object.entries(ev.devGates).map(([k, r], gi) => [Object.entries(names).find(([n]) => k.toLowerCase().startsWith(n.toLowerCase().slice(0, 12)))?.[1] || k, k, r.bar, gateWhy(A(e.gateTable), k), r.value, holdoutCell(ev.holdGates, k)])), "", `**Release status:** ${ev.devPass && ev.holdPass ? (() => { const thin = Object.entries(ev.holdGates).filter(([, r]) => { const b = parseFloat(String(r.bar).replace(/[^\d.]/g, "")); return r.result === "PASS" && b > 0 && !/<|max/i.test(String(r.bar)) && parseFloat(r.value) === b; }).map(([k]) => k.toLowerCase()); return thin.length ? `Meets every pass mark on the practice set and the sealed test set, with no margin on ${thin.length > 1 ? `${thin.slice(0, -1).join(", ")} and ${thin.slice(-1)}` : thin[0]}` : "Meets every pass mark on the practice set and the sealed test set"; })() : `Blocked on ${Object.entries(ev.devGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k).concat(Object.entries(ev.holdGates).filter(([, r]) => r.result === "FAIL").map(([k]) => k + " (holdout)")).join(", ") || "a missing eval"}`}${ev.independent ? "" : `; holdout not independent (${ev.prov.recorded ? `${ev.prov.shared.join(", ")} wrote both the holdout rows and the router` : "no record of who wrote which"})`}${ev.seen ? `; ${ev.seen}` : e.repaired ? "; holdout seen once before a family-level repair" : ""}${e.repaired && A(e.fixes).length ? `. The first eval run was blocked; ${A(e.fixes).length === 1 ? "one repair" : `${A(e.fixes).length} repair rounds`} followed, each disclosed: ${A(e.fixes).map(clean).join("; ")}` : ""}. **LLM judge policy:** ${clean(e.judgePolicy) || "none in the pilot; a judge may score draft quality only after it is validated against labels; escalation never uses one"}.`, "", "**Reproduce:** `node out/proto/eval.js` (dev) and `node out/proto/eval.js holdout.json` (sealed)."].join("\n") : P("E");
   s[12] = (() => {
     const menu = table(["Provider", "Model", "In $/1M", "Out $/1M", "Latency", "Best for"], MODEL_MENU.map((m) => [m.provider, m.model + (a?.engine !== "rules" && (m.id === (process.env.VALUED_MODEL || "claude-sonnet-5-5")) ? " (drafts in the prototype)" : ""), `$${m.in}`, `$${m.out}`, m.latency, m.bestFor]));
     const pr = a?.pricing, bc = b?.businessCase;

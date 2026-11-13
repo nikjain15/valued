@@ -639,7 +639,7 @@ addressed by <change>, rejected: <reason>).
 ### S-117
 - Gate: conductor (renderer). Source: review (REV-05) and QC phase 5.
 - Evidence: PRD section 11 matches eval rows to `e.gateTable` on the first 10 characters of the metric, so "Escalation precision" takes the "Escalation recall" row's why-text and calls an assumed 0.80 bar "the client's bar (R2-4)".
-- Status: addressed on branch claude/fix-renderer-bugs (gateWhy: exact name, then contains, then longest shared prefix)
+- Status: addressed on main by PR #29 (gateWhy: exact metric, then contains, then longest shared prefix)
 
 ### S-118
 - Gate: conductor (renderer). Source: review (REV-01) and QC phase 6.
@@ -649,7 +649,7 @@ addressed by <change>, rejected: <reason>).
 ### S-119
 - Gate: conductor (renderer). Source: review (REV-04).
 - Evidence: section 11 fairness row shows the dev worst group (lang=en) with a blank holdout cell when the holdout fails a different group (register=implied 0.67), hiding the failure.
-- Status: addressed on branch claude/fix-renderer-bugs (holdoutRow/holdoutCell in PRD section 11 and the HTML gate table, including its pass pill)
+- Status: addressed: section 11 cell on main by PR #29 (holdoutCell); brief gate table value and pass pill by PR #28 (holdoutRow)
 
 ### S-120
 - Gate: conductor (renderer). Source: gate V, gate B, review (REV-06).
