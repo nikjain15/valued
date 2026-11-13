@@ -1,0 +1,157 @@
+{
+  "dir": "valued-regr-saas",
+  "shape": "rank",
+  "questions": 12,
+  "agents": 4,
+  "sweeps": 3,
+  "systems": 7,
+  "pending": 0,
+  "golden": 40,
+  "holdout": 20,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "pass",
+    "6": "pass",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4409/",
+      "errors": [],
+      "items": 40,
+      "counts": "{\"escalate\":21,\"human\":8,\"answer\":11}",
+      "greet": "Good morning, Priya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 16 controls still open, owned by ",
+      "overnight": 314,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Overview|Queue|New account|Release checks|Observability|Assistants|Governance|Audit trail|Account data3/|Models and cost|How it works|FAQ",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 631
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 415
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 785
+        }
+      },
+      "agentCards": 4,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 7,
+      "govRows": 27,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-regr-saas/out/hosted/index.html",
+      "errors": [],
+      "items": 40,
+      "counts": "{\"escalate\":21,\"human\":8,\"answer\":11}",
+      "greet": "Good morning, Priya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 16 controls still open, owned by ",
+      "overnight": 314,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Overview|Queue|New account|Release checks|Observability|Assistants|Governance|Audit trail|Account data3/|Models and cost|How it works|FAQ",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 631
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 415
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 785
+        }
+      },
+      "agentCards": 4,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 7,
+      "govRows": 27,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4409/prd",
+      "errors": [],
+      "text": 30803,
+      "pending": 0
+    }
+  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 26,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 60,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 11,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 122,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 207,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 34,
+      "over": false
+    }
+  ],
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "(replayed from holdout-runs/590e96f6.txt: this router version was already scored against the sealed set, so it is not re-scored)",
+  "minutes": 7.733333333333333
+}

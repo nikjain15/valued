@@ -32,7 +32,11 @@ const { decide } = withBackstop(router, cache);
 // router fingerprint is the real one: its output is stored and every later run replays it verbatim.
 // A new fingerprint means the router changed, so it is a new attempt, numbered and declared.
 const RUNS = path.join(__dirname, "holdout-runs");
-const fingerprint = () => { const src = fs.readFileSync(path.join(__dirname, "router.js"), "utf8") + JSON.stringify(cache); let h = 0; for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0; return (h >>> 0).toString(16); };
+// R-002/R-003: the fingerprint covers the router's code, not its layout (comments, blank lines and
+// trailing spaces are stripped), plus only the model-cache entries for the holdout texts, so new dev rows
+// that refresh other cache entries do not count as a new router version.
+const stripSource = (src) => src.replace(/^\s*\/\*[\s\S]*?\*\/\s*$/gm, "").split("\n").filter((l) => !/^\s*\/\//.test(l)).map((l) => l.replace(/\s+\/\/[^"'`/]*$/, "").replace(/\s+$/, "")).filter(Boolean).join("\n");
+const fingerprint = () => { const ck = Object.fromEntries(Object.entries(cache || {}).map(([k, v]) => [normKey(k), v])); const slice = [...new Set(rows.map((r) => normKey(r.text)))].sort().filter((k) => ck[k] !== undefined).map((k) => [k, ck[k]]); const src = stripSource(fs.readFileSync(path.join(__dirname, "router.js"), "utf8")) + JSON.stringify(slice); let h = 0; for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0; return (h >>> 0).toString(16); };
 const fp = sealed ? fingerprint() : null;
 const attemptsBefore = () => { try { return fs.readdirSync(RUNS).filter((f) => f.endsWith(".txt")).length; } catch { return 0; } };
 if (sealed) {

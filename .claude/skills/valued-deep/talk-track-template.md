@@ -2,7 +2,7 @@
 
 <date> · <minutes> minutes · start tab: `day.html?mode=today` · everything shown is synthetic; <client> is an invented name.
 
-**Timing:** Current state 5 · Solution architecture 4 · How it works 8 · Prove it 4 · Future state 2 · Roadmap 4 · Trade-offs 1 · PRD 2.
+**Timing:** Current state 5 · Solution architecture 4 · How it works 8 (incl. Prove it 4) · Future state 2 · Roadmap 4 · Trade-offs 1 · PRD 2.
 
 **Opening line:** "<the problem in one sentence, in money and risk>"
 
@@ -27,10 +27,11 @@
 
 ---
 
-<!-- Repeat the block for: 2. Solution architecture, 3. How it works, 4. Prove it (name all its tabs, say the
-     tab count, walk the dashboard sections: Summary, Responsible AI, Fairness, To improve), 5. Future state,
-     6. Roadmap (open the who-does-what journey), 7. Trade-offs, 8. PRD. Every rate names its own
-     denominator. demo-check.js --talk fails if a step or tab is missing or the tab count is wrong. -->
+<!-- Repeat the block for: 2. Solution architecture, 3. How it works, with 3.4 Prove it as its last job
+     (name every tab by its full label, say the tab count, walk the dashboard sections: Summary, Responsible
+     AI, Fairness, To improve), 4. Future state, 5. Roadmap (open the who-does-what journey), 6. Trade-offs,
+     7. PRD. Every rate names its own denominator. demo-check.js --talk fails if a step, "Prove it", "PRD"
+     or a full tab label is missing, or the tab count is missing or wrong. -->
 
 ## Never say
 

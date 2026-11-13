@@ -11,10 +11,15 @@ The 18 audit scenarios, kept as a gate every approved change must pass before a 
 
 ## Run it
 
-1. Fresh workspaces: `rsync -a --exclude out --exclude 'out-*' --exclude .git ~/dev/valued/ ~/dev/valued-audit-<slug>/`
+1. Fresh workspaces, in a new dated folder per run so no old `out/` survives:
+   `rsync -a --exclude out --exclude 'out-*' --exclude .git ~/dev/valued/ ~/dev/valued-regr-<date>-<slug>/`
    for each scenario a change can affect (all 18 for a change to `valued/SKILL.md`, the app or a gate skill).
-2. Launch one subagent per workspace with its brief, at most 6 at once.
-3. `node learning/regression/run.js` (add `--only slug,slug` for a subset, `--static` to skip the browser).
+   To reuse an existing workspace instead, move its old output aside first
+   (`mv out out-old-<date>`), then `rsync -a --delete --exclude 'out-*' --exclude .git ~/dev/valued/ <workspace>/`.
+2. Launch one subagent per workspace with its brief, at most 3 at once.
+3. `node learning/regression/run.js --prefix ~/dev/valued-regr-<date>-` (add `--only slug,slug` for a subset,
+   `--static` to skip the browser). A row whose `out/prd.md` is older than the last commit to `valued-audit/check.js`
+   shows STALE: rerun that workspace; STALE rows are not counted as regressions, and never pass.
 
 The suite passes when every row is all pass and every run is within 28 minutes. Never push on red.
 
@@ -22,11 +27,11 @@ The suite passes when every row is all pass and every run is within 28 minutes. 
 
 | Change | Cheapest check |
 |---|---|
-| Renderer, checker, app or a schema default | Re-render existing runs (`node .claude/skills/valued/conductor.js render` in each workspace), then `audit.js --no-browser`. No new run. |
+| Renderer, checker, app or a schema default | Re-render existing runs (`node .claude/skills/valued/conductor.js render` in each workspace), then `node .claude/skills/valued-audit/check.js . --no-browser`. No new run. |
 | Eval rules, router, guard model | Re-run gate E only in an existing workspace (builder and guard model), then audit. |
 | The A gate's shape table | `node learning/regression/shape-eval.js brief`, one Haiku agent, then `shape-eval.js score <answers>.json`. One agent, no runs. |
 | A gate skill or the conductor | `--smoke` set (6 runs) with `--lean` briefs, Sonnet run agents, at most 3 at once. |
-| `valued-select` or `fact-checker` | `/valued-select --quick --auto --out out/select-dryrun <options file>` (no web; about 10 minutes): `select.json` and `cards.json` must validate, the closing line must print, and the pick must match the deep run's. Then one `fact-checker` batch with a planted wrong claim and a planted relabel (provider cost as plan cost); both must be caught. Gate A's seed step is a no-op without `out/select/select.json`, so the 18 scenarios need no re-run. |
+| `valued-select` or `fact-checker` | `/valued-select --quick --auto --out out/select-dryrun <options file>` (no web; about 10 minutes): `select.json` and `cards.json` must validate (`node .claude/skills/valued-select/validate.js out/select-dryrun` prints `Valid`), the closing line must print, and the pick must match the deep run's. Then one `fact-checker` batch with a planted wrong claim and a planted relabel (provider cost as plan cost); both must be caught. Gate A's seed step is a no-op without `out/select/select.json`, so the 18 scenarios need no re-run. |
 | Before a push | All 18, `--lean`. |
 
 Run agents on Sonnet; scorers and the guard model on Haiku; the builder on Sonnet. Reports stay under 10 lines; details go to `out/run-notes.md`.

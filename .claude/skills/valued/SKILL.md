@@ -70,15 +70,17 @@ never a generic "COO" unless the case says COO. 2 to 4 options per card.
 | 5 E and D in parallel | builder writes the router, evals run; rollout and drive | 6 min | `valued-evals` and `valued-deploy` |
 | 6 B | PRD and prototype rendered from gate data; hosted page; run report | 3 min | `valued-build` |
 
-Cards in total: 11 in the two rounds, plus framing (0 to 4) and E's "Ship anyway, or fix first?" only when a
-release is blocked: 11 to 16. Start and end every phase with `out/tools/c clock <phase> start|end`; the start prints
+Cards in total: 11 in the two rounds, plus framing (1 to 4, and the always-on "Product name" card is one of
+those 4, so at most 3 others) and E's "Ship anyway, or fix first?" only when a release is blocked: 11 + 4 + 1 =
+16 at most, never 17. When framing would need more than 3 cards besides "Product name", drop "Material" first. Start and end every phase with `out/tools/c clock <phase> start|end`; the start prints
 the header line (`[2] V then A · budget 7 min`). Between phases print nothing else.
 
 **Graceful overrun.** Before each phase starts and whenever a phase feels long, run `out/tools/c clock status`. If the
 running phase is past its budget, cut the next item in its cut order (`out/tools/c clock status` prints it), record it
 with `out/tools/c cut <phase> <what>`, which prints the one line to say, and keep going. Cut order: fewer candidates,
 fewer wave options, a smaller golden set (never under 30 dev rows and 20 holdout rows), the harder-rows
-round, shorter prose. **Never cut** governance checks, the evals, the holdout or the never list.
+round (the builder adds the harder dev rows inside its single pass, before it returns; the conductor never
+adds dev rows after the builder, in any mode including `--lean`), shorter prose. **Never cut** governance checks, the evals, the holdout or the never list.
 
 **Parallel work.** Where a phase runs two gates in parallel, launch both as subagents **in one message**
 (each reads its own gate skill, writes only its own files, and does not run `render`), then wait for both and run `out/tools/c render` once. If you cannot launch
@@ -124,7 +126,8 @@ the run always shows what is happening and how long it took, in one line each, w
    nothing is ready; "Documents in inputs/"; "Sample requests or transcripts, de-identified"; "Both";
    format "the material, its rough size and who owns it (e.g. '300 policy PDFs, owned by HR operations')"). If files are in `inputs/`, list them in one
    table instead and print `Grounded in: <n> client files`.
-   **Always ask one more framing card, even when the case line is complete: "Product name": "What would you
+   **Always ask one more framing card, even when the case line is complete (it counts inside the 4 framing
+   cards, so ask at most 3 others): "Product name": "What would you
    like to call this, so your team recognizes it on screen?"** (3 to 4 short, human product names built from
    the case in the client's own words, e.g. "MemberReply", "Harbor Claims Copilot", plus "Other"; format "a
    short product name (e.g. 'MemberReply')"). This name is the title of the prototype and the PRD, so it is
