@@ -101,7 +101,8 @@ the header line (`[2] V then A · budget 1 min`). Between phases print nothing e
 running phase is past its budget, cut the next item in its cut order (`out/tools/c clock status` prints it), record it
 with `out/tools/c cut <phase> <what>`, which prints the one line to say, and keep going. Cut order: fewer candidates,
 fewer wave options, a smaller golden set (never under 30 dev rows and 20 holdout rows), the harder-rows
-round, shorter prose. **Never cut** governance checks, the evals, the holdout or the never list.
+round (the builder adds the harder dev rows inside its single pass, before it returns; the conductor never
+adds dev rows after the builder, in any mode including `--lean`), shorter prose. **Never cut** governance checks, the evals, the holdout or the never list.
 
 **Parallel work.** Where a phase runs two gates in parallel, launch both as subagents **in one message**
 (each reads its own gate skill, writes only its own files, and does not run `render`), then wait for both and run `out/tools/c render` once. If you cannot launch

@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 // valued-deep check: keys resolve, no em-dashes outside quotes, no placeholder names, register counts.
-// Usage: node .claude/skills/valued-deep/check.js <out dir, default out/deep>
+// Usage: node .claude/skills/valued-deep/check.js <out dir, default out/deep> [--client <name>[,<name>]]
 const fs = require('fs'), path = require('path');
-const dir = process.argv[2] || 'out/deep';
+const argv = process.argv.slice(2), ci = argv.indexOf('--client');
+const client = ci >= 0 ? (argv[ci + 1] || '').split(/\s*,\s*/).filter(Boolean) : [];
+const dir = argv.find((a, i) => !a.startsWith('--') && (ci < 0 || i !== ci + 1)) || 'out/deep';
 const read = f => { const p = path.join(dir, f); return fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : null; };
 const reg = read('citations.md');
 if (!reg) { console.error(`no citations.md under ${dir}`); process.exit(2); }
@@ -13,7 +15,7 @@ const placeholder = /\b(Acme|Contoso|Globex|Initech|Example Corp)\b/g;
 const realCo = /\b(Anthem|Aetna|UnitedHealth|Cigna|Humana|JPMorgan|Wells Fargo|Bank of America|Citibank|Capital One|Delta Air|United Airlines|American Airlines|Walmart|Geico|Allstate|State Farm|Kaiser|Mayo Clinic|Cleveland Clinic|CVS|Walgreens|Duke Energy|PG&E|Salesforce)\b/g;
 let realHits = [];
 const notes = read('run-notes.md') || '';
-const allowed = new Set(((notes.match(/^Allowed real names:\s*(.+)$/m) || [])[1] || '').split(/\s*,\s*/).filter(Boolean));
+const allowed = new Set(((notes.match(/^Allowed real names:\s*(.+)$/m) || [])[1] || '').split(/\s*,\s*/).filter(Boolean).concat(client));
 let unresolved = new Set(), dashes = 0, names = [];
 for (const f of docs) {
   const t = read(f);
@@ -30,7 +32,7 @@ for (const f of docs) {
 }
 const counts = {};
 for (const m of reg.matchAll(/^\|[^\n]*\|\s*\*?\*?(P|S|A|J|I|computed|not found)\*?\*?\s*\|/gm)) counts[m[1]] = (counts[m[1]] || 0) + 1;
-if (allowed.size) console.log('allowed real names (run-notes.md): ' + [...allowed].join(', '));
+if (allowed.size) console.log('allowed real names (run-notes.md, --client): ' + [...allowed].join(', '));
 console.log(`${unresolved.size} unresolved keys · ${dashes} em-dashes · ${names.length} placeholder names · ${realHits.length} real-company names outside citations`);
 if (realHits.length) console.log('real names (first 20): ' + realHits.slice(0, 20).join(', '));
 if (unresolved.size) console.log('unresolved: ' + [...unresolved].slice(0, 40).join(', '));

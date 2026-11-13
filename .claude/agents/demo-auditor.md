@@ -15,7 +15,7 @@ talk track, and the build list (`out/<case>-build-list.json`).
 
 | Scope | Files | Check |
 |---|---|---|
-| `story` | Current state, Solution architecture, How it works, Prove it, Future state (their on-screen text is mostly JS strings) | Every claim against the strategy, log and PRD; numbers against a live run of the shared scorer (you may run it with node, never loading the holdout); every test or test set named on screen exists; who decides each step follows the log; nothing implies production, a live model, real data or an independent holdout |
+| `story` | Current state, Solution architecture, How it works, Prove it, Future state (their on-screen text is mostly JS strings) | Every claim against the strategy, log and PRD; numbers against a live run of the shared scorer (Prove it loads the holdout in the browser for counts only; you may run the scorer with node for counts, and never print, quote or read holdout rows); every test or test set named on screen exists; who decides each step follows the log; nothing implies production, a live model, real data or an independent holdout |
 | `roadmap-prd` | Roadmap, Trade-offs, the whole PRD | Phases, work, success, risks, tools and FR numbers match the strategy's delivery rows; the build list is identical in the Roadmap, its journey, the PRD and the strategy; technical one-liners match the functional requirements; trade-off rows match the log; PRD version, date and D-range current |
 | `talk-hygiene` | Talk track, then the whole public folder | Tab names, counts, click paths and every number match the site; vendor names only as market examples, never picks; no em dashes, real company or placeholder names, broken links or dead pages reachable; git authorship is the presenter's only |
 

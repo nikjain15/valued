@@ -26,8 +26,9 @@ dependencies, inside `out/proto/` only.
    Deterministic rules, in this order: escalation triggers first (escalation wins every race,
    including implicit complaints, distress and vulnerability phrasing, in every language the client
    serves); then answer only when exactly one source clearly matches (for the `rank` shape: when at least one rule fires, with the top action as the source); otherwise `human`. Never answer
-   without a source. Keep it under 160 lines of code and readable on a shared screen; 200 is a hard
-   limit the audit enforces. When a case needs more wording than that, the wording belongs in
+   without a source. Keep it under 8000 non-whitespace characters of code (comments excluded) and readable on a
+   shared screen; 10000 is a hard limit the audit enforces (standard 7). The measure is characters, not
+   lines, so packing several phrases onto one line does not help. When a case needs more wording than that, the wording belongs in
    `sources.json` `match` lists or the trigger lexicon, never in more branches.
    The router must be self-contained: no `require`, no file reads, no network. It also runs inside the
    published prototype page, so put the source ids and titles it needs inline.
@@ -59,7 +60,12 @@ dependencies, inside `out/proto/` only.
    escalation recall), never-list answers (count), answers without a source (count), routing
    accuracy, the recall gap across the riskiest slice named in gates.json, verdicts outside the
    allowed set (count). Exit code 1 if any gate fails.
-4. Run `node out/proto/eval.js` once and return its output verbatim plus a two-line summary. Do not fix anything yet: the conductor decides ship or fix and asks you.
+4. Harder dev rows, in this same pass: before returning, add the harder dev rows to `golden.json`
+   yourself (implicit escalations, other languages served, near-miss sources, never-list phrasing; at least
+   5, labelled before you run them), then run `node out/proto/eval.js` once and return its output verbatim
+   plus a two-line summary. Do not fix anything yet: the conductor decides ship or fix and asks you. The
+   conductor does not add dev rows after you return. After the holdout is scored, never touch `router.js`
+   unless asked to fix a failure: any code change is a new sealed attempt.
 
 ## When asked to fix a failure
 
@@ -77,3 +83,6 @@ it after your fix with `node out/proto/eval.js holdout.json`. Fix the general pa
 failure (the kind of phrasing), not the exact sentence, because the holdout will test the kind.
 
 No em-dashes in code comments or output. Synthetic data only.
+
+
+**Before the seal (N-02):** get `router.js` under the size limit (10000 non-whitespace characters outside comments) and pass the dev eval before `conductor.js seal router` or any holdout run; `eval.js` refuses to score the holdout above the limit. Never reformat or compact the router after the holdout is scored.

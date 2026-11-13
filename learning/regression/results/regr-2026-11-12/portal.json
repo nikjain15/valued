@@ -1,0 +1,157 @@
+{
+  "dir": "valued-regr-portal",
+  "shape": "desk",
+  "questions": 13,
+  "agents": 5,
+  "sweeps": 3,
+  "systems": 7,
+  "pending": 0,
+  "golden": 52,
+  "holdout": 20,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "pass",
+    "6": "pass",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4404/",
+      "errors": [],
+      "items": 52,
+      "counts": "{\"escalate\":31,\"human\":9,\"answer\":12}",
+      "greet": "Good morning, Marisol. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
+      "overnight": 312,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Overview|Queue|New message|Triage safety checks|Observability|Triage assistants|Clinical governance|Message audit trail|Patient data and consent4/|Models and cost|How a message is handled|FAQ",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 788
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 606
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1237
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 7,
+      "govRows": 28,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-regr-portal/out/hosted/index.html",
+      "errors": [],
+      "items": 52,
+      "counts": "{\"escalate\":31,\"human\":9,\"answer\":12}",
+      "greet": "Good morning, Marisol. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 15 controls still open, owned by ",
+      "overnight": 312,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Overview|Queue|New message|Triage safety checks|Observability|Triage assistants|Clinical governance|Message audit trail|Patient data and consent4/|Models and cost|How a message is handled|FAQ",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 788
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 606
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1237
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 7,
+      "govRows": 28,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4404/prd",
+      "errors": [],
+      "text": 33166,
+      "pending": 0
+    }
+  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 10,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 75,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 0,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": null,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 209,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 37,
+      "over": false
+    }
+  ],
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "(replayed from holdout-runs/325cabd1.txt: this router version was already scored against the sealed set, so it is not re-scored)",
+  "minutes": 8.65
+}

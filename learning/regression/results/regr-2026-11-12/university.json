@@ -1,0 +1,168 @@
+{
+  "dir": "valued-regr-university",
+  "shape": "desk",
+  "questions": 13,
+  "agents": 5,
+  "sweeps": 3,
+  "systems": 7,
+  "pending": 0,
+  "golden": 37,
+  "holdout": 20,
+  "row": {
+    "1": "pass",
+    "2": "pass",
+    "3": "pass",
+    "4": "pass",
+    "5": "pass",
+    "6": "fail",
+    "7": "pass",
+    "8": "pass"
+  },
+  "failures": [
+    {
+      "std": 6,
+      "msg": "holdout eval does not pass all gates",
+      "file": "out/proto/router.js"
+    },
+    {
+      "std": 6,
+      "msg": "sealed holdout scored against 3 router versions; 1 is clean, 2 is one disclosed repair",
+      "file": "out/proto/holdout-log.jsonl"
+    }
+  ],
+  "browser": {
+    "local": {
+      "url": "http://localhost:4415/",
+      "errors": [],
+      "items": 37,
+      "counts": "{\"escalate\":20,\"human\":4,\"answer\":13}",
+      "greet": "Good morning, Priya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 17 controls still open, owned by ",
+      "overnight": 322,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Overview|Queue|New question|Release checks|Observability|Assistants|Privacy and safeguarding|Audit trail|Student data3/|Models and cost|How it works|FAQ",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 842
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 626
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1252
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 7,
+      "govRows": 37,
+      "faq": 8,
+      "emdash": false
+    },
+    "hosted": {
+      "url": "file:///Users/nikjain/dev/valued-regr-university/out/hosted/index.html",
+      "errors": [],
+      "items": 37,
+      "counts": "{\"escalate\":20,\"human\":4,\"answer\":13}",
+      "greet": "Good morning, Priya. Here is what came in.",
+      "tiles": 4,
+      "ready": "Not ready for go-live yet. 17 controls still open, owned by ",
+      "overnight": 322,
+      "away": 4,
+      "clocks": 3,
+      "top": 3,
+      "sidebar": "Overview|Queue|New question|Release checks|Observability|Assistants|Privacy and safeguarding|Audit trail|Student data3/|Models and cost|How it works|FAQ",
+      "qtabs": 4,
+      "opened": {
+        "escalate": {
+          "trail": 2,
+          "wrong": true,
+          "body": 842
+        },
+        "human": {
+          "trail": 3,
+          "wrong": true,
+          "body": 626
+        },
+        "answer": {
+          "trail": 4,
+          "wrong": true,
+          "body": 1252
+        }
+      },
+      "agentCards": 5,
+      "evalRows": 1,
+      "evalPass": true,
+      "evalGates": 8,
+      "connCards": 7,
+      "govRows": 37,
+      "faq": 8,
+      "emdash": false
+    },
+    "prd": {
+      "url": "http://localhost:4415/prd",
+      "errors": [],
+      "text": 32818,
+      "pending": 0
+    }
+  },
+  "timing": [
+    {
+      "phase": "0 Frame",
+      "budgetMin": 3,
+      "seconds": 6,
+      "over": false
+    },
+    {
+      "phase": "1 Round 1",
+      "budgetMin": 2,
+      "seconds": 14,
+      "over": false
+    },
+    {
+      "phase": "2 V then A",
+      "budgetMin": 7,
+      "seconds": 64,
+      "over": false
+    },
+    {
+      "phase": "3 Round 2",
+      "budgetMin": 2,
+      "seconds": 11,
+      "over": false
+    },
+    {
+      "phase": "4 L and U",
+      "budgetMin": 5,
+      "seconds": 125,
+      "over": false
+    },
+    {
+      "phase": "5 E and D",
+      "budgetMin": 6,
+      "seconds": 253,
+      "over": false
+    },
+    {
+      "phase": "6 Build",
+      "budgetMin": 3,
+      "seconds": 47,
+      "over": false
+    }
+  ],
+  "dev": "RELEASE PASSES ALL GATES",
+  "holdoutLine": "(replayed from holdout-runs/3b66b0fb.txt: this router version was already scored against the sealed set, so it is not re-scored)",
+  "minutes": 8.666666666666666
+}

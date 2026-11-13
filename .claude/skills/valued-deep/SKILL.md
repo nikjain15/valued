@@ -48,7 +48,8 @@ Pace: days. Each command below is one sitting of 30 to 120 minutes. The user run
    (sources, rules, products on the market), never as the client.
    When the real organisation is the audience rather than the client (a hiring panel, a regulator reading the
    plan), write `Allowed real names: <name>, <name>` on one line in `run-notes.md`; `check.js` then exempts
-   exactly those names and prints that it did. No em-dashes anywhere except inside a verbatim
+   exactly those names and prints that it did. On a real-client run, also pass the client's name:
+   `check.js <dir> --client <name>[,<name>]`. No em-dashes anywhere except inside a verbatim
    quote. Tables of at most 12 rows; split with a second table when longer.
 5. **Rule gates versus model metrics.** A rule gate is a code path checked exactly on labelled questions and
    probes, and it passes or fails (0 violations, 100% resolve). A model metric is a rate per group, read only
@@ -207,6 +208,8 @@ word for word by the Roadmap, the PRD and the strategy. Keep the talk track `out
 `talk-track-template.md` and rebuild its PDF with `demo-kit/talktrack.py` after every change. Run its
 "Before showing it" list before the first showing, including `demo-check.js` and the three-scope
 `demo-auditor` sweep (P-010 to P-013).
+`go build` keeps the `out/deep/` layout (or exactly the `--out <dir>` given): no flat `out/<case>-*` copies
+of `plan.md`, `decision-log.md`, `citations.md` or `strategy.md`, so `check.js <that dir>` can still run.
 
 When the demo will be shared by a public link while the brief, thinking pages or real names stay private,
 keep two repos: the private prototype with full history, and a public copy with fresh history. Build the

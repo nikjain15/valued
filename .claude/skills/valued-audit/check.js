@@ -122,13 +122,24 @@ expect(hBy.length > 0 && rBy.length > 0, 6, "out/proto/provenance.json does not 
 if (hBy.length && rBy.length) expect(shared.length === 0, 6, `holdout not independent: ${shared.join(", ")} wrote both the holdout rows and the router`, "out/proto/provenance.json");
 // S-085: one sealed score per router version.
 const hlog = read(path.join(proto, "holdout-log.jsonl")).split("\n").filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
-const versions = [...new Set(hlog.map((x) => x.router))].length;
+// R-004: provenance.json is append-only. Its hash chain must verify and match the seal mirror in holdout-log.jsonl.
+{
+  const H = (w, e) => require("crypto").createHash("sha256").update(JSON.stringify([w, e.seq, e.by, e.at, e.prev])).digest("hex");
+  const ents = ["holdout", "router"].flatMap((w) => (Array.isArray(prov[w]) ? prov[w] : []).map((e) => ({ w, ...e }))).sort((a, b) => (a.seq || 0) - (b.seq || 0));
+  const mirror = hlog.filter((x) => x.kind === "seal");
+  let ok = ents.length === mirror.length, prev = "";
+  ents.forEach((e, i) => { const m = mirror[i] || {}; if (e.seq !== i + 1 || e.prev !== prev || e.hash !== H(e.w, e) || m.hash !== e.hash || m.what !== e.w) ok = false; prev = e.hash; });
+  if (ents.length) expect(ok, 6, "out/proto/provenance.json was edited by hand: its hash chain or the seal entries in holdout-log.jsonl do not match; re-record with `conductor.js seal`", "out/proto/provenance.json");
+}
+const versions = [...new Set(hlog.filter((x) => x.router).map((x) => x.router))].length;
 expect(versions <= 2, 6, `sealed holdout scored against ${versions} router versions; 1 is clean, 2 is one disclosed repair`, "out/proto/holdout-log.jsonl");
 const router = read(path.join(proto, "router.js"));
 expect(router && !/\brequire\(|\bimport\s|readFileSync|fetch\(/.test(router), 7, "router.js is not self-contained (require, import, file read or fetch)", "out/proto/router.js");
 expect(/module\.exports\s*=\s*\{\s*decide/.test(router), 7, "router.js does not end with module.exports = { decide }", "out/proto/router.js");
-const routerLines = router.split("\n").filter((l) => l.trim() && !/^\s*\/\//.test(l)).length;
-expect(routerLines <= 200, 7, `router.js is ${routerLines} lines of code; 160 is the guideline and 200 the limit`, "out/proto/router.js");
+// R-017: size is non-whitespace characters outside comments, so packing phrases onto one line does not help.
+// 8000 is the guideline and 10000 the limit (roughly the old 160 and 200 lines); move wording to sources.json match lists.
+const routerChars = router.replace(/\/\*[\s\S]*?\*\//g, "").split("\n").filter((l) => !/^\s*\/\//.test(l)).join("").replace(/\s/g, "").length;
+expect(routerChars <= 10000, 7, `router.js is ${routerChars} non-whitespace characters of code; 8000 is the guideline and 10000 the limit: move trigger phrases and wording into sources.json match lists`, "out/proto/router.js");
 
 // ---------- 8 Writing ----------
 const scan = [];
@@ -259,7 +270,7 @@ async function browser() {
   const b = await browser().catch((e) => { fail(7, "browser run failed: " + e.message); return {}; });
   const stds = [1, 2, 3, 4, 5, 6, 7, 8];
   const row = Object.fromEntries(stds.map((s) => [s, F.some((f) => f.std === s) ? "fail" : "pass"]));
-  const report = { dir: path.basename(dir), shape: CASE.shape, questions: asked, agents: agents.length, sweeps: sweeps.length, systems: conns.length, pending, golden: golden.length, holdout: holdout.length, row, failures: F, browser: b, timing: meta.phases || meta.gates || meta.timing || null, dev: dev.trim().split("\n").pop(), holdoutLine: hold.trim().split("\n").pop() };
+  const report = { dir: path.basename(dir), shape: CASE.shape, questions: asked, agents: agents.length, sweeps: sweeps.length, systems: conns.length, pending, golden: golden.length, holdout: holdout.length, row, failures: F, browser: b, timing: meta.phases || meta.gates || meta.timing || null, dev: dev.trim().split("\n").pop(), holdoutLine: (hold.match(/^RELEASE (?:PASSES ALL GATES|BLOCKED).*$/m) || [hold.trim().split("\n").pop()])[0] /* R-022: the verdict, not the replay notice */ };
   console.log(`| ${path.basename(dir)} | ${CASE.shape || "?"} | ${stds.map((s) => row[s] === "pass" ? "pass" : "FAIL").join(" | ")} | ${asked} q | ${agents.length} a | ${sweeps.length} s | ${conns.length} sys | ${pending} pend |`);
   for (const f of F) console.log(`  - [${f.std}] ${f.msg}${f.file ? ` (${f.file})` : ""}`);
   if (JSON_OUT) fs.writeFileSync(JSON_OUT, JSON.stringify(report, null, 2));
