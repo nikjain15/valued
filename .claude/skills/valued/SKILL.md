@@ -380,12 +380,11 @@ prototype reflect round 2 at once. `out/tools/c clock 3 end`.
 
 ## Phase 5: E and D in parallel (4 min, one repair live)
 
-`out/tools/c clock 5 start`. Launch `valued-evals` (which launches `prototype-builder` and runs the evals) and
-`valued-deploy` together. If the dev eval is blocked, E asks the one extra card **"Ship anyway, or fix
+`out/tools/c clock 5 start`. Launch `valued-evals` (which launches `prototype-builder` and runs the evals).
+`valued-deploy` is already running (launched in phase 3); if for any reason it is not, launch it now. If the dev eval is blocked, E asks the one extra card **"Ship anyway, or fix
 first?"** (round 3; "Fix first" recommended), fixes the router, never the labels, and runs the holdout.
 **Live, at most one repair round:** if it is still blocked after that, say so plainly ("Blocked on routing; a
-second fix is running in the background"), present, and run the next round in phase 7. `valued-deploy` was
-launched in phase 3; collect it here. When both are back, `out/tools/c render`. `out/tools/c clock 5 end`.
+second fix is running in the background"), present, and run the next round in phase 7.Collect `valued-deploy` here. When both are back, `out/tools/c render`. `out/tools/c clock 5 end`.
 
 **E is the longest and most opaque gate, so narrate its sub-steps.** Before each sub-step of E, run
 `out/tools/c step "<what it is doing>"`: it updates the live "Building now:" line on the PRD and prototype
@@ -398,20 +397,16 @@ sub-steps on top because it alone runs long enough to look stuck.
 
 ## Phase 6: B (2 min, three writers in parallel)
 
-`out/tools/c clock 6 start`. Run `valued-build`: it writes `b.json` (summary, recommendation, requirements, FAQ, sweep
-**Three writers in parallel.** Write `summary`, `recommendation` and `decisionAsked` yourself, then launch three
-`valued-build` writers in one message, each writing one part file: `out/gates/b-req.json` (`requirements`,
-`nfrs`, `tasks`), `out/gates/b-faq.json` (`faq`, `sweepFindings`, `agentSentence`, `stats`), `out/gates/b-risk.json`
-(`risks`, `dependencies`, `openQuestions`). Merge the three parts and your keys into `out/gates/b.json`, render,
-and present. The hosted page, audit and reviewer move to phase 7.
-findings, section 19), runs `out/tools/c render`, `out/tools/c check` until it prints `All checks pass.` (fix the JSON, never
-the rendered files), builds the hosted page, and publishes (or, if publishing is unavailable or not allowed,
-says so in one line and keeps localhost). Then `out/tools/c clock 6 end`, `out/tools/c report` (writes
-`out/run-report.json`: time per phase, questions, revisions, flags, eval blocks and fixes, cuts), and the
-audit: `node .claude/skills/valued-audit/audit.js --port 4317` (the `valued-audit` skill: the eight standards,
-every issue with its owner and fix, `out/observe.html`).
+`out/tools/c clock 6 start`. Write `summary`, `recommendation` and `decisionAsked` yourself, then launch three
+`valued-build` writers in one message, each writing one part file: `out/gates/b-req.json` (`requirements`, `nfrs`,
+`tasks`), `out/gates/b-faq.json` (`faq`, `sweepFindings`, `agentSentence`, `stats`) and `out/gates/b-risk.json`
+(`risks`, `dependencies`, `openQuestions`). Merge the three parts and your keys into `out/gates/b.json` (with
+section 19), run `out/tools/c render` and `out/tools/c check` (fix the JSON, never the rendered files), then
+`out/tools/c clock 6 end` and **present**: the PRD and prototype are ready. Then `out/tools/c report` (writes
+`out/run-report.json`). The hosted page, the audit (`node .claude/skills/valued-audit/audit.js --port 4317`: the
+eight standards, every issue with its owner and fix, `out/observe.html`) and the reviewer run in phase 7.
 
-**Review, fix and learn (the self-improving loop).** The audit checks the run is structurally complete; the
+**Review, fix and learn (the self-improving loop; runs in phase 7, after you present).** The audit checks the run is structurally complete; the
 reviewer checks it does not misrepresent what was built.
 1. **Review.** Launch the `valued-reviewer` subagent (independent context, reports only). It reads the PRD,
    the gate files, the prototype and the **fresh** eval output, and writes `out/review.md`: every claim the
