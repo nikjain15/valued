@@ -52,6 +52,20 @@ A table at the end of each gate file: **question · answer · status**, where st
 **assumed** or **client to confirm**. Every row not answered goes into the "Governance log" in
 `out/state.md`, with the role that should close it.
 
+## Client-ready language (every page the client sees)
+
+The discovery brief, our approach, the PRD, the brief and the prototype are client deliverables. Write them the
+way a senior consultant's team would hand them over:
+- **No internal ids.** Never show card ids (C-2, R2-4), branch ids (B1), fact keys (P3) or gate letters in prose.
+  Say what the client said ("you told us about 25 minutes a claim") and cite sources by name.
+- **No method jargon without a plain gloss.** "Answer key" before "golden set"; "a sealed test set the system never
+  saw" before "holdout"; "pass mark" before "bar".
+- **Soft and collaborative.** Options and early thinking, not verdicts: "we'd suggest", "one option", "our early read".
+- **Professional and specific.** Their industry's terms, their numbers, their roles. No filler, no hype, no
+  exclamation marks, no session or rehearsal framing (never "persona", "auto", "the run").
+- **One story.** Every page renders from the same gate JSON and answers, so a wording fix goes into that source.
+`check` flags internal ids in the PRD body and in the approach cards.
+
 ## Output rules
 
 - Tables over prose, at most 12 rows. Telegraphic, verb-first bullets. No em-dashes, ever.
