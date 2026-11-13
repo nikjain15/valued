@@ -141,6 +141,21 @@
   .design .t { font-weight: 600; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .design .path { font: 500 11.5px var(--font-mono); color: var(--ink-3); margin-top: 8px; background: var(--paper); border-radius: 8px; padding: 6px 8px; }
   .design p { font-size: var(--fs-label); color: var(--ink-2); margin-top: 8px; }
+  .later-opt { border: 1.5px dashed var(--line-2); border-radius: var(--r-card); padding: 14px 16px; min-width: 0; }
+  .later-opt p { font-size: var(--fs-label); color: var(--ink-2); margin-top: 6px; }
+  .later-opt details { margin-top: 10px; } .later-opt details .design { margin-top: 10px; width: 100%; }
+  .rel-tbl td.num, .rel-tbl th.num { text-align: right; white-space: nowrap; }
+  #board tr.pre td { background: var(--paper); }
+  @media (max-width: 720px) {
+    .rel-tbl thead { display: none; }
+    .rel-tbl, .rel-tbl tbody, .rel-tbl tr, .rel-tbl td { display: block; width: auto; }
+    .rel-tbl tr { padding: 10px 12px; border-bottom: 1px solid var(--line-2); }
+    .rel-tbl td, .rel-tbl td.num { border: 0; padding: 2px 0; text-align: left; white-space: normal; }
+    .rel-tbl td:first-child { font-weight: 600; }
+    .rel-tbl td[data-l]::before { content: attr(data-l) ": "; color: var(--ink-3); font-size: 12px; }
+    .rel-tbl td .meta { display: inline; margin-left: 6px; }
+    .tbl table:has(#board) { min-width: 760px; }
+  }
   .pro { color: var(--brand-strong); } .con { color: var(--error); }
   .progress { height: 6px; background: var(--line-2); border-radius: var(--r-pill); overflow: hidden; }
   .progress > div { height: 100%; width: 0; background: var(--brand); transition: width var(--dur-base) var(--ease-out); }
@@ -337,8 +352,8 @@
     <header class="top">
       <h1 id="pageTitle">Today</h1><span class="ctx" id="pageCtx"></span>
       <span class="spacer"></span>
-      <span class="pill plain" id="aiPill">AI: checking</span>
-      <select id="model" aria-label="Model"></select>
+      <span class="pill plain" id="aiPill" hidden>AI: checking</span>
+      <select id="model" aria-label="Model" hidden style="display:none"></select>
       <a class="btn ghost sm" id="prdLink" href="/prd" target="_blank" rel="noopener">PRD</a>
     </header>
 
@@ -379,14 +394,15 @@
       <!-- Evals -->
       <section class="page" id="p-evals" hidden>
         <div class="stack">
-          <div class="card testset"><div><div class="eyebrow">Test-set results</div><p class="small muted" style="margin-top:4px" id="kpiNote"></p></div><div class="tiles" id="kpis"></div><div id="hero"></div></div>
+          <div class="card stack" id="releaseCard" hidden></div>
+          <div class="card testset"><div><div class="eyebrow">Development set results (practice)</div><p class="small muted" style="margin-top:4px" id="kpiNote"></p></div><div class="tiles" id="kpis"></div><div id="hero"></div></div>
           <div class="card emph stack">
             <div class="row between">
-              <div><div class="eyebrow">Release readiness</div><h2 style="margin-top:6px">Is it safe to release?</h2></div>
+              <div><div class="eyebrow">Test it yourself</div><h2 style="margin-top:6px">Run a design on a test set</h2></div>
               <div class="seg" role="group" aria-label="Test set"><button data-set="golden" aria-pressed="true" id="setDev">Development set</button><button data-set="holdout" aria-pressed="false" id="setHold">Sealed holdout</button><button data-set="custom" aria-pressed="false" id="setCustom" hidden>Your data</button></div>
             </div>
             <p class="small muted" id="setInfo"></p>
-            <div><div class="label">Which design are we testing?</div><p class="small muted" style="margin-top:2px">Three ways to build the same product. Run each on the same test set and compare them on the scoreboard.</p></div>
+            <div><div class="label">Which design are we testing?</div><p class="small muted" style="margin-top:2px" id="engineIntro">Three ways to build the same product. Run each on the same test set and compare them on the scoreboard.</p></div>
             <div class="three" id="engineSeg" role="group" aria-label="Design"></div>
             <p class="small muted" id="engineDesc"></p>
             <div class="row"><button class="btn solid" id="runTest">Run test</button><button class="btn ghost sm" id="stopTest" hidden>Stop</button><span class="small muted" id="runNote"></span></div>
@@ -525,6 +541,12 @@ let RAW_CASE = {}, CASE = {}, SOURCES = [], GATES = {}, BUILD = { engine: "rules
 let SHAPE = SHAPES.desk, ITEMS = [], OPEN = null, LOG = [], stats = { approved: 0, edited: 0 };
 let evalSet = "golden", engine = "rules", RUNS = [], selRun = null, ctl = null;
 const model = () => MODELS.find((m) => m.id === $("#model").value) || MODELS.find((m) => m.tier === "default") || MODELS[0];
+/* Builder chrome (model picker, AI status) shows only with ?builder in the address; the client never sees it. */
+const BUILDER = /[?&]builder\b/.test(location.search);
+/* The client's engine decision (case.json "engine", else build.json). Rules only means no AI on screen. */
+const engineOf = () => CASE.engine || BUILD.engine || "";
+const rulesOnly = () => engineOf() === "rules";
+const chosenDesign = () => ({ rules: "rules", "rules+model": "guard", "model-first": "guard" })[engineOf()] || "";
 const rowsFor = (s) => (s === "golden" ? GOLDEN : s === "holdout" ? HOLDOUT : CUSTOM);
 const clean = (t) => String(t || "").replace(/^\[[A-Z]{2,3}\]\s*/, "");
 const initials = (n) => n.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
@@ -560,10 +582,19 @@ const sentence = (t) => { const s = String(t || "").trim(); if (!s) return ""; c
 const listWords = (a) => (a.length <= 1 ? a.join("") : `${a.slice(0, -1).join(", ")} and ${a[a.length - 1]}`);
 
 /* What fired, in plain words, from the router's reason. */
+/* The trigger family an escalation fired on: the router's own field first, then the forms its reason takes
+   ("fam fired on", "fired on "x" (fam)", "(fam, to Owner)", "(fam); route to Owner"), then a must-act finding. */
 function familyOf(d) {
+  if (d?.family) return String(d.family);
   const r = String(d?.reason || "");
-  return (r.match(/^model backstop \(([^)]+)\)/) || r.match(/^([a-z_]+)\s+(?:to\s+[^:]+:\s*)?fired on/i) || r.match(/\(([a-z_]+)\)\s*$/) || [])[1] || "";
+  const hit = (r.match(/^model backstop \(([^)]+)\)/) || r.match(/^([a-z_]+)\s+(?:to\s+[^:]+:\s*)?fired on/i) || r.match(/\(([a-z][a-z0-9_]*)\s*(?:\)|,)/) || [])[1];
+  if (hit) return hit;
+  const must = (d?.actions || []).find((a) => a && a.must && a.source && !srcOf(a.source));
+  return must ? String(must.source) : "";
 }
+const famKey = (k) => String(k || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+/* A team name short enough for a button: no brackets, no "then ..." chain. */
+const teamName = (t) => String(t || "").replace(/\([^)]*\)/g, "").split(/[,;]|\s+then\s+/i)[0].replace(/\s+/g, " ").trim().split(" ").slice(0, 5).join(" ");
 const famWords = (f) => String(f || "").replace(/_/g, " ").trim();
 function reasonText(d) {
   const r = String(d?.reason || "").trim(), fam = famWords(familyOf(d));
@@ -596,10 +627,16 @@ function ownerSegments() {
   }).filter(Boolean);
 }
 const stems = (t) => String(t || "").toLowerCase().split(/[^a-z]+/).filter((w) => w.length > 3 && !/^(and|families|family|mentions|threats?|signals?)$/.test(w)).map((w) => w.slice(0, 5));
+/* Who owns this escalation: the client's owner for its trigger family (keys are the trigger family keys),
+   then the owner the rules named, then the closest family key, then the general owner. */
 function ownerFor(it) {
-  const r = String(it?.d?.reason || ""), fam = familyOf(it?.d);
-  const direct = r.match(/^[a-z_]+\s+to\s+([^:(]+?)\s*(?:\([^)]*\))?:/i); if (direct) return shortOwner(direct[1]);
-  const map = CASE.ownerByFamily || {}; if (fam && map[fam]) return map[fam];
+  const d = it?.d || {}, r = String(d.reason || ""), fam = famKey(familyOf(d));
+  const map = Object.fromEntries(Object.entries(CASE.ownerByFamily || {}).map(([k, v]) => [famKey(k), v]));
+  if (fam && map[fam]) return teamName(map[fam]);
+  const must = (d.actions || []).find((a) => a && a.must && famKey(a.source) === fam && /goes to /i.test(a.why || ""));
+  const direct = r.match(/^[a-z_]+\s+to\s+([^:(]+?)\s*(?:\([^)]*\))?:/i) || r.match(/\([a-z_]+,\s*to\s+([^)]+)\)/i) || r.match(/route to\s+([^.;]+)\s*$/i) || (must && must.why.match(/goes to\s+([^.;]+)/i));
+  if (direct) return teamName(direct[1]);
+  if (fam) { const fs = stems(fam); const k = Object.keys(map).find((x) => x.includes(fam) || fam.includes(x)) || Object.keys(map).find((x) => stems(x).some((w) => fs.includes(w))); if (k) return teamName(map[k]); }
   const segs = ownerSegments();
   if (segs.length > 1 && fam) { const fs = stems(fam); const hit = segs.find((s) => stems(s.fams).some((w) => fs.includes(w))); if (hit) return hit.owner; }
   const short = CASE.ownerShort || CASE.escalationOwnerShort; if (short) return short;
@@ -623,8 +660,8 @@ const withBackstop = (r, raw) => {
     if (!m || d.verdict === "escalate") return d;
     if (m.verdict === "escalate") return { verdict: "escalate", source: null, reason: `model backstop (${m.family || "escalation"}): ${m.reason || ""}`.trim(), backstop: true };
     // Source matching: answer when rules and model agree, or when only the model found one source and is sure; else a person.
-    if (d.verdict === "answer" && m.source !== undefined && m.source !== d.source) return { ...d, verdict: "human", source: null, reason: `rules matched ${d.source}, the model ${m.source || "none"}: a person decides`, backstop: true };
-    if (d.verdict === "human" && m.source && m.sure) return { ...d, verdict: "answer", source: m.source, reason: `matched by the model: ${m.reason || m.source}`, backstop: true };
+    if (d.verdict === "answer" && m.source !== undefined && m.source !== d.source) return { ...d, verdict: "human", source: null, reason: "No approved answer matched clearly, so a person decides", backstop: true };
+    if (d.verdict === "human" && m.source && m.sure) return { ...d, verdict: "answer", source: m.source, reason: `Matches the approved source "${srcTitle(srcOf(m.source)) || "on file"}"`, backstop: true };
     return d;
   } };
 };
@@ -693,8 +730,9 @@ async function boot() {
   if (HOSTED) { const prd = window.__VALUED__.prdUrl; $("#prdLink").hidden = !prd; if (prd) $("#prdLink").href = prd; }
   applyAccent();
   applyLabels();
+  { const mb = document.querySelector('.nav [data-go="models"]'); if (mb) mb.style.display = rulesOnly() && !BUILDER ? "none" : ""; }
   buildQueue(persona);
-  renderHome(persona); renderKpis(); renderHow(); renderFaq(); renderGov(); renderEvalControls(); renderBoard(); renderSources(); renderConnectors(); renderObs(); renderModels();
+  renderHome(persona); renderKpis(); renderHow(); renderFaq(); renderGov(); renderRelease(); renderEvalControls(); renderBoard(); renderSources(); renderConnectors(); renderObs(); renderModels();
 }
 function identity(row, i, verdict) {
   const lang = row.slices?.lang || row.slices?.language || row.slices?.region || "en";
@@ -784,7 +822,7 @@ function renderBuilding() {
     .map((c) => `<div class="finding"><span class="ic">${esc(String(stepName(c.gate) || "·").slice(0, 1))}</span><div><b>${esc(labelFor(c))}</b><p>${esc(c.decision)}${c.skipped ? " · default" : ""}</p></div></div>`).join("");
   const built = SHAPE && CASE.shape ? ` Shape: ${esc(SHAPE.noun ? SHAPE.noun[1] : CASE.shape)}.` : "";
   const now = STATUS && STATUS.running && STATUS.label
-    ? `<div class="banner" style="margin:10px 0;display:flex;align-items:center;gap:8px"><span class="spin" aria-hidden="true"></span><span><strong>Working now:</strong> ${esc(STATUS.label)}${STATUS.phase ? " (phase " + esc(String(STATUS.phase)) + ")" : ""}. The screen updates as each step lands.</span></div>`
+    ? `<div class="banner" style="margin:10px 0;display:flex;align-items:center;gap:8px"><span class="spin" aria-hidden="true"></span><span><strong>Working now:</strong> ${esc(STATUS.label)}. The screen updates as each step lands.</span></div>`
     : "";
   el.innerHTML = `<div class="card" style="margin-top:14px">
     <div class="qhead"><h3>Building ${esc(name)}</h3><span>${client ? "for " + esc(client) + " · " : ""}taking shape from your decisions</span></div>
@@ -896,7 +934,7 @@ function trailFor(it) {
   if (guard) steps.push([guard, it.d.verdict === "escalate" ? "stop" : "rules", it.d.verdict === "escalate" ? `Stopped it. ${reasonText(it.d)}` : "No escalation signal."]);
   if (it.d.verdict !== "escalate") {
     if (rulesSteps[0]) steps.push([rulesSteps[0], "rules", it.d.verdict === "answer" ? `Matched approved knowledge: ${srcTitle(srcOf(it.d.source))}.` : reasonText(it.d)]);
-    if (it.d.verdict === "answer" && mdl) steps.push([mdl, it.ai?.by && !/template|rules/.test(it.ai.by) ? "model" : "rules", it.ai?.meta || (AI && BUILD.engine !== "rules" ? "Working..." : "AI is off here, so it is assembled from the approved source by rule.")]);
+    if (it.d.verdict === "answer" && mdl) steps.push([mdl, it.ai?.by && !/template|rules/.test(it.ai.by) ? "model" : "rules", it.ai?.meta || (AI && !rulesOnly() ? "Working..." : "Assembled from the approved source by rule.")]);
   }
   steps.push([{ name: CASE.shape === "chat" ? "Service desk" : (CASE.persona || {}).name || "You" }, "person", it.state !== "open" ? `${it.state}.` : CASE.shape === "chat" ? (it.d.verdict === "answer" ? "Answered directly; any hand-off reaches the desk." : "Ticket or case opened for a person.") : "Waiting for your decision."]);
   return `<div><div class="label">How this was prepared</div><ol class="trail" style="margin-top:6px">${steps.map(([a, k, txt]) => `<li><span class="k ${k}">${k === "model" ? "AI" : k === "person" ? "P" : k === "stop" ? "!" : "R"}</span><span><b>${esc(a.name)}</b> · ${esc(txt)}</span><span class="meta">${k === "model" ? esc(model().short) : k === "person" ? "you" : "rules"}</span></li>`).join("")}</ol></div>`;
@@ -929,7 +967,7 @@ function obsMetrics() {
 const pctOf = (x) => (x == null ? "-" : Math.round(x * 100) + "%");
 /* Latency shows only when a run measured it; an estimate never fills the tile. */
 function measuredLatency() {
-  if (BUILD.engine === "rules") return "<1 ms";
+  if (rulesOnly()) return "<1 ms";
   const r = (typeof RUNS !== "undefined" ? RUNS : []).find((x) => x && x.model && x.p50);
   return r ? fmtMs(r.p50) : (BUILD.latencyMs ? fmtMs(Number(BUILD.latencyMs)) : "");
 }
@@ -940,16 +978,16 @@ function renderKpis() {
   const lat = measuredLatency();
   const tiles = [["ok", pctOf(m.recall), "Escalations caught"], ["", pctOf(m.routing), "Routed correctly"], ["warn", pctOf(m.toPerson), "Sent to a person"], lat ? ["", lat, "Median latency"] : ["", costK, "Est. cost per 1,000"]];
   $("#kpis").innerHTML = tiles.map(([k, n, l]) => `<div class="tile ${k}"><b>${esc(String(n))}</b><span>${esc(l)}</span></div>`).join("");
-  if ($("#kpiNote")) $("#kpiNote").textContent = m.n ? `Measured on the labelled test set (${m.n} items, deliberately heavy on hard cases). These are not live volumes or a day's mix.` : "Appears once the assistants are built and tested.";
+  if ($("#kpiNote")) $("#kpiNote").textContent = m.n ? `Practice results: the current rules on the development set (${m.n} items, deliberately heavy on hard cases). Release is decided on the sealed test set${CASE.release ? " above" : ""}. These are test-set results, not live volumes.` : "Appears once the assistants are built and tested.";
 }
 function renderObs() {
   const el = $("#obsBody"); if (!el) return;
-  const m = obsMetrics(), mdl = model(), ob = CASE.observability || {};
+  const m = obsMetrics(), mdl = rulesOnly() ? null : model(), ob = CASE.observability || {};
   const groups = [
     ["Quality and safety", [["Escalations caught", pctOf(m.recall)], ["Answers with a citation", pctOf(m.cited)], ["Routed correctly", pctOf(m.routing)]]],
-    ["Cost and tokens", [["Est cost / 1,000", mdl ? fmtUsd(costOf(mdl, 800, 200) * 1000) : "-"], ["Model", mdl ? mdl.short : "-"], ["Per item (est)", mdl ? fmtUsd(costOf(mdl, 800, 200)) : "-"]]],
+    ["Cost and tokens", [["Est cost / 1,000", mdl ? fmtUsd(costOf(mdl, 800, 200) * 1000) : "-"], ["Model", mdl ? mdl.short : rulesOnly() ? "None, rules only" : "-"], ["Per item (est)", mdl ? fmtUsd(costOf(mdl, 800, 200)) : "-"]]],
     ["Speed and volume", [...(measuredLatency() ? [["Median latency", measuredLatency()]] : []), ["Items in test set", String(m.n || 0)]]],
-    ["Human workload", [["To a person", pctOf(m.toPerson)], ["Handled by AI", m.toPerson == null ? "-" : pctOf(1 - m.toPerson)]]],
+    ["Human workload", [["To a person", pctOf(m.toPerson)], [rulesOnly() ? "Handled by rules" : "Handled by AI", m.toPerson == null ? "-" : pctOf(1 - m.toPerson)]]],
   ];
   const sigNote = (g) => { const rows = (ob.signals || []).filter((s) => String(s.group || "").toLowerCase().startsWith(g.toLowerCase().split(" ")[0])); return rows.length ? `<p class="small muted" style="margin-top:8px">Alerts: ${rows.map((s) => `${esc(s.signal)} ${esc(s.alert || "")}`).join("; ")}</p>` : ""; };
   el.innerHTML = `<div class="two">${groups.map(([g, rows]) => `<div class="card stack"><div class="eyebrow">${esc(g)}</div>${rows.map(([l, v]) => `<div class="row between"><span class="small muted">${esc(l)}</span><span class="small"><b>${esc(v)}</b></span></div>`).join("")}${sigNote(g)}</div>`).join("")}</div>`
@@ -1049,7 +1087,7 @@ function deskView(it, V) {
 async function draftReply(it, s) {
   const tmpl = `${CASE.draftOpener || ""} ${s?.text || ""}`.trim();
   if (it.ai?.draft) { $("#draft").textContent = it.ai.draft; $("#aiMeta").textContent = it.ai.meta; return; }
-  if (!AI || BUILD.engine === "rules") { $("#draft").textContent = tmpl; $("#aiMeta").textContent = "Assembled from the cited source by rule."; return; }
+  if (!AI || rulesOnly()) { $("#draft").textContent = tmpl; $("#aiMeta").textContent = "Assembled from the cited source by rule."; return; }
   const m = model(); $("#draft").textContent = "Thinking..."; $("#draftLabel").textContent = `Draft reply · ${m.short} is writing`;
   try {
     const out = await AI.call([`Draft a reply for a ${CASE.user || "colleague"} at ${CASE.client || "the client"} to review before sending.`, "Use only the facts in SOURCE. If it does not answer the message, reply exactly NO_ANSWER.", "Two to four plain sentences, in the language of the message. No promises beyond the source.", CASE.draftOpener ? `Open with: "${CASE.draftOpener}"` : "", "", `SOURCE: ${s?.text}`, "", `MESSAGE: ${it.text}`].join("\n"), m, { onText: ({ text }) => { if (OPEN === it && $("#draft")) $("#draft").textContent = text; } });
@@ -1071,13 +1109,13 @@ function reviewView(it, V) {
       <p class="meta">Highlights show exactly where each field came from. A field with no evidence stays empty.</p></div>
     <div class="card emph stack assist">${CASE.panelTitle ? `<div class="eyebrow">${esc(CASE.panelTitle)}</div>` : ""}${outcomeHead(it, V)}
       ${it.d.verdict === "escalate" ? decideBlock(it, "Sent to specialist") : `
-      <div class="row between"><div class="label">${s ? esc(srcTitle(s)) + " fields" : "Fields"}</div><span class="meta" id="aiMeta">${esc(it.ai?.meta || (AI && BUILD.engine !== "rules" ? "" : "Fields found by rule; the rest for you to complete."))}</span></div>
+      <div class="row between"><div class="label">${s ? esc(srcTitle(s)) + " fields" : "Fields"}</div><span class="meta" id="aiMeta">${esc(it.ai?.meta || (AI && !rulesOnly() ? "" : "Fields found by rule; the rest for you to complete."))}</span></div>
       <div id="extracting"></div>
       <div class="form" id="form">${fields.map((f, i) => `<div class="frow"><span class="sw" style="background:${["#4a6fa5", "#32854c", "#c9a21a", "#9c4a6b", "#6b5ca5", "#2b7a78"][i % 6]}"></span><label for="f${i}">${esc(f.name)}</label><div><input type="text" id="f${i}" value="${esc(f.value)}" class="${f.value ? "" : "empty"}" placeholder="Not in the ${esc(SHAPE.noun[0])}">${f.evidence ? `<div class="ev">Evidence: "${esc(f.evidence)}"</div>` : `<div class="ev">Not found in the ${esc(SHAPE.noun[0])}; ask the ${esc(SHAPE.sideIn.toLowerCase())}.</div>`}<label class="conf"><input type="checkbox" class="fconf" ${f.value ? "" : "disabled"}> Confirmed</label></div></div>`).join("")}</div>
       ${it.d.verdict === "human" ? humanBlock(it, "") : ""}
       <div class="row"><button class="btn solid" data-act="Filed" id="fileBtn" disabled>Confirm and file</button><button class="btn ghost" data-act="Details requested">Request missing details</button><button class="linkbtn" id="confirmAll">Confirm all found fields</button></div>`}</div></div>`;
   wireConfirm();
-  if (it.d.verdict !== "escalate" && !it.ai && AI && BUILD.engine !== "rules" && s) extract(it, s);
+  if (it.d.verdict !== "escalate" && !it.ai && AI && !rulesOnly() && s) extract(it, s);
 }
 function wireConfirm() {
   const upd = () => { const boxes = [...document.querySelectorAll(".fconf:not(:disabled)")]; const btn = $("#fileBtn"); if (btn) btn.disabled = !boxes.length || !boxes.every((b) => b.checked) || OPEN.d.verdict !== "answer"; };
@@ -1111,7 +1149,7 @@ function rankView(it, V) {
           <div class="row between"><h4>${esc(a.title || srcTitle(s))}</h4><span class="pill ${a.must !== false ? "bad" : "plain"}">${a.must !== false ? "Must do" : "Should do"}</span></div>
           <p class="small">${esc(a.why || "")}</p><div class="src"><b>Rule.</b> ${esc(s?.text || "")}</div>
           <div><div class="label">Talking point</div><div class="bubble ai" id="tp${i}" style="margin-top:6px">${esc(it.ai?.["tp" + i] || `${a.title || srcTitle(s)}: ${a.why || ""}`)}</div></div>
-          <div class="row"><button class="btn solid sm" data-accept="${i}">Accept</button><select data-dismiss="${i}" aria-label="Dismiss with a reason"><option value="">Dismiss with a reason</option>${(CASE.dismissReasons || ["Already handled", "Client declined", "Not suitable for this client", "Discuss at next review"]).map((r) => `<option>${esc(r)}</option>`).join("")}</select>${AI && BUILD.engine !== "rules" ? `<button class="linkbtn" data-tp="${i}">Draft talking point with ${esc(model().short)}</button>` : ""}</div></div></div>`; }).join("")}
+          <div class="row"><button class="btn solid sm" data-accept="${i}">Accept</button><select data-dismiss="${i}" aria-label="Dismiss with a reason"><option value="">Dismiss with a reason</option>${(CASE.dismissReasons || ["Already handled", "Client declined", "Not suitable for this client", "Discuss at next review"]).map((r) => `<option>${esc(r)}</option>`).join("")}</select>${AI && !rulesOnly() ? `<button class="linkbtn" data-tp="${i}">Draft talking point with ${esc(model().short)}</button>` : ""}</div></div></div>`; }).join("")}
   </div>`;
 }
 async function talkingPoint(i) {
@@ -1143,7 +1181,7 @@ function renderChat(it) {
 async function answerChat(it, q, d) {
   const s = srcOf(d.source), tmpl = s?.text || "", m = model();
   const turn = { who: "ai", text: "Thinking...", cite: srcTitle(s) }; it.turns.push(turn); renderChat(it);
-  if (!AI || BUILD.engine === "rules") { turn.text = tmpl; it.ai = { meta: "Answer assembled from the cited policy by rule." }; renderChat(it); $("#aiMeta").textContent = it.ai.meta; return; }
+  if (!AI || rulesOnly()) { turn.text = tmpl; it.ai = { meta: "Answer assembled from the cited policy by rule." }; renderChat(it); $("#aiMeta").textContent = it.ai.meta; return; }
   try {
     const out = await AI.call(`Answer an employee's question in two or three friendly sentences using only POLICY. If POLICY does not answer it, reply exactly NO_ANSWER. Answer in the language of the question.\nPOLICY: ${tmpl}\nQUESTION: ${q}`, m, { onText: ({ text }) => { turn.text = text; renderChat(it); } });
     turn.text = /NO_ANSWER/.test(out.text) ? "I could not find this in the policy, so I have passed it to the service desk." : out.text.trim();
@@ -1169,7 +1207,7 @@ function addNew() {
 /* ---------- Evals ---------- */
 const norm = (g) => Object.fromEntries(Object.entries(g || {}).map(([k, v]) => [k.replace(/_/g, "").toLowerCase(), v]));
 const ENGINES = [
-  { id: "rules", letter: "A", name: "Rules only", path: "item > rules > outcome", what: "Rules written from the session's triggers and approved knowledge decide everything. No AI.", pro: "Predictable, instant, free, easy to explain.", con: "Misses phrasing nobody wrote a rule for." },
+  { id: "rules", letter: "A", name: "Rules only", path: "item > rules > outcome", what: "Rules written from the agreed warning signs and approved knowledge decide everything. No AI.", pro: "Predictable, instant, free, easy to explain.", con: "Misses phrasing nobody wrote a rule for." },
   { id: "ai", letter: "B", name: "AI only", path: "item > model > outcome", what: "The selected model reads each item and decides on its own.", pro: "Understands any phrasing.", con: "If it misses an escalation, nothing catches it." },
   { id: "guard", letter: "C", name: "AI with rules guard", rec: true, path: "item > rules check > model > source check > outcome", what: "Rules check every item for escalations first and overrule the model; the model handles the rest; nothing proceeds without approved knowledge.", pro: "Flexible like AI, safe like rules.", con: "Cost and latency of a model call on most items." },
 ];
@@ -1220,8 +1258,13 @@ function renderEvalControls() {
   $("#setDev").textContent = `Development set (${GOLDEN.length})`; $("#setHold").textContent = `Sealed holdout (${HOLDOUT.length})`;
   $("#setCustom").hidden = !CUSTOM.length; $("#setCustom").textContent = `Your data and flags (${CUSTOM.length})`;
   $("#setInfo").textContent = evalSet === "holdout" ? `${rows.length} ${SHAPE.noun[1]} never used to build or tune the decision rules. The honest score; individual items stay hidden.` : `${rows.length} ${SHAPE.noun[1]}, each labelled with the right outcome before anything was built: ${e_} should escalate, ${rows.filter((r) => r.expected === "answer").length} are ready, ${rows.filter((r) => r.expected === "human").length} need a person.`;
-  $("#engineSeg").innerHTML = ENGINES.map((e) => `<button class="design" data-engine="${e.id}" aria-pressed="${e.id === engine}"><span class="t">Design ${e.letter}: ${e.name}${e.rec ? ' <span class="pill ok">Recommended</span>' : ""}</span><div class="path">${esc(e.path)}</div><p>${esc(e.what)}</p><p><span class="pro">+</span> ${esc(e.pro)}<br><span class="con">-</span> ${esc(e.con)}</p></button>`).join("");
-  $("#engineDesc").textContent = engine !== "rules" ? `Model for designs B and C: ${model().short}. Change it in the top bar.` : "Design A uses no model.";
+  const chosen = chosenDesign(), ro = rulesOnly();
+  const tag = (e) => e.id === chosen ? ' <span class="pill ok">Your choice</span>' : ro ? ' <span class="pill plain">Later option</span>' : !chosen && e.rec ? ' <span class="pill ok">Recommended</span>' : "";
+  const card = (e) => `<button class="design" data-engine="${e.id}" aria-pressed="${e.id === engine}"><span class="t">Design ${e.letter}: ${e.name}${tag(e)}</span><div class="path">${esc(e.path)}</div><p>${esc(e.what)}</p><p><span class="pro">+</span> ${esc(e.pro)}<br><span class="con">-</span> ${esc(e.con)}</p></button>`;
+  // Rules only: the rules design is the chosen one; designs with a model are a later option, folded away.
+  $("#engineSeg").innerHTML = ro ? card(ENGINES[0]) + `<div class="later-opt"><span class="label">A model, later</span><p>Your team chose rules only, so nothing here uses a model. If you want to compare later, the designs with a model can be run on the same test sets.</p><details${engine !== "rules" ? " open" : ""}><summary class="small">Show the later options</summary>${ENGINES.slice(1).map(card).join("")}</details></div>` : ENGINES.map(card).join("");
+  $("#engineIntro").textContent = ro ? "Your team chose rules only. This is the design we build and test; a model stays a later option." : "Three ways to build the same product. Run each on the same test set and compare them on the scoreboard.";
+  $("#engineDesc").textContent = engine !== "rules" ? `Model for designs B and C: ${model().short}${ro ? ", for comparison only" : ""}.` : "Design A uses no model.";
   $("#runTest").disabled = !ROUTER || (engine !== "rules" && !AI);
   $("#runNote").textContent = engine !== "rules" && !AI ? (HOSTED ? "AI needs this page opened in Claude." : "AI runs in the published version, or here with an API key.") : "";
 }
@@ -1252,18 +1295,46 @@ async function runTest() {
   } catch (e) { $("#runNote").textContent = aiErr(e); }
   $("#runTest").disabled = false; $("#stopTest").hidden = true; $("#prog").hidden = true; renderBoard();
 }
+/* Gate E's recorded results (case.json "release"): the sealed test set decides release, the development set is practice. */
+const relPct = (v) => { const x = Number(v); return !isFinite(x) ? String(v ?? "") : x >= 0 && x <= 1 && /\./.test(String(v)) ? `${Math.round(x * 100)}%` : String(v); };
+const relBar = (b) => { const m = String(b || "").match(/^(>=|<=|=)\s*([\d.]+)$/); if (!m) return String(b || ""); const v = /\./.test(m[2]) ? `${Math.round(Number(m[2]) * 100)}%` : m[2]; return m[1] === ">=" ? `at least ${v}` : m[1] === "<=" ? `at most ${v}` : v; };
+function renderRelease() {
+  const el = $("#releaseCard"), R = CASE.release; if (!el) return;
+  if (!R || !R.status) { el.hidden = true; el.innerHTML = ""; return; }
+  const S = R.sealed || {}, D = R.dev || {}, noun = SHAPE.noun[1];
+  const lower = (t) => String(t).charAt(0).toLowerCase() + String(t).slice(1);
+  const head = R.status === "passes" ? `<div class="banner ok"><strong>Passes.</strong> Every check meets its pass mark on the sealed test set: ${S.n || ""} ${noun} the system never saw while it was built.</div>`
+    : R.status === "blocked" ? `<div class="banner bad"><strong>Blocked on ${esc(listWords((R.blockedOn || []).map(lower)))}.</strong> Measured on the sealed test set: ${S.n || ""} ${noun} the system never saw while it was built. Not ready to release.</div>`
+    : `<div class="banner warn"><strong>Not yet tested on the sealed test set.</strong> Only practice results so far.</div>`;
+  const names = [...new Set([...(S.gates || []).map((g) => g.name.replace(/ \(weakest.*$/, "")), ...(D.gates || []).map((g) => g.name.replace(/ \(weakest.*$/, ""))])];
+  const cellOf = (set, n, l) => { const g = (set.gates || []).find((x) => x.name.replace(/ \(weakest.*$/, "") === n); if (!g) return `<td class="num muted" data-l="${l}">-</td>`; const w = (g.name.match(/\(weakest: ([^)]+)\)/) || [])[1]; return `<td class="num" data-l="${l}"><span class="pill ${g.pass ? "ok" : "bad"}">${esc(relPct(g.value))}</span>${w ? `<div class="meta">${esc(w)}</div>` : ""}</td>`; };
+  const barOf = (n) => { const g = [...(S.gates || []), ...(D.gates || [])].find((x) => x.name.replace(/ \(weakest.*$/, "") === n); return g ? relBar(g.bar) : ""; };
+  el.hidden = false;
+  el.innerHTML = `<div><div class="eyebrow">Release status</div><h2 style="margin-top:6px">Is it safe to release?</h2></div>${head}
+    <div class="tbl"><table class="rel-tbl"><thead><tr><th>Check</th><th>Pass mark</th><th class="num">Sealed test set (${S.n || 0}), decides release</th><th class="num">Development set (${D.n || 0}), practice</th></tr></thead><tbody>${names.map((n) => `<tr><td>${esc(n)}</td><td class="muted" data-l="Pass mark">${esc(barOf(n))}</td>${cellOf(S, n, "Sealed")}${cellOf(D, n, "Practice")}</tr>`).join("")}</tbody></table></div>
+    <p class="small muted">These are test-set results, labelled before anything was built and deliberately heavy on hard cases; they are not live volumes. The development set is the practice set the rules were built from, so it reads higher than the sealed set.${R.note ? " " + esc(R.note) : ""}</p>`;
+}
+function recordedRow(set) {
+  const R = CASE.release; if (!R) return "";
+  const X = set === "holdout" ? R.sealed : set === "golden" ? R.dev : null; if (!X || !(X.gates || []).length) return "";
+  const g = (re) => (X.gates.find((x) => re.test(x.name)) || {}).value;
+  const unsafe = (Number(g(/^Never acts/)) || 0) + (Number(g(/^Stays off/)) || 0);
+  const e = ENGINES.find((x) => x.id === chosenDesign());
+  return `<tr class="pre"><td><strong>${e ? `Design ${e.letter}: ${esc(e.name)}` : "The built design"}</strong><div class="meta">Recorded test, ${set === "holdout" ? "sealed set" : "practice set"}</div></td><td><span class="pill ${X.pass ? "ok" : "bad"}">${X.pass ? "Ready" : "Blocked"}</span></td><td class="num ${X.gates.find((x) => /^Catches every/.test(x.name))?.pass ? "ok-t" : "bad-t"}">${esc(relPct(g(/^Catches every/)))}</td><td class="num">${esc(relPct(g(/^Sends each/)))}</td><td class="num ${unsafe ? "bad-t" : "ok-t"}">${unsafe}</td><td class="num">${rulesOnly() ? "&lt;1 ms" : "-"}</td><td class="num">-</td><td class="num">-</td></tr>`;
+}
 const runName = (r) => { const e = ENGINES.find((x) => x.id === r.engine); return `Design ${e.letter}: ${e.name}${r.model ? ` · ${r.model.short}` : ""}`; };
 function renderBoard() {
   const runs = RUNS.filter((r) => r.set === evalSet);
-  $("#board").innerHTML = runs.length ? runs.map((r) => `<tr class="click ${r.id === selRun ? "sel" : ""}" data-run="${r.id}"><td><strong>${esc(runName(r))}</strong><div class="meta">${r.at.toLocaleTimeString()}</div></td><td><span class="pill ${r.pass ? "ok" : "bad"}">${r.pass ? "Ready" : "Blocked"}</span></td><td class="num ${r.caught === r.escN ? "ok-t" : "bad-t"}">${r.caught} / ${r.escN}</td><td class="num">${r.correct} / ${r.n}</td><td class="num ${r.unsafe ? "bad-t" : "ok-t"}">${r.unsafe}</td><td class="num">${fmtMs(r.p50)}</td><td class="num">${fmtMs(r.p95)}</td><td class="num">${r.model ? fmtUsd(r.per1000) : "$0"}</td></tr>`).join("")
-    : `<tr><td colspan="8" class="muted">No runs yet. Pick a design and click Run test: A first, then B, then C.</td></tr>`;
+  const pre = recordedRow(evalSet);
+  $("#board").innerHTML = pre + (runs.length || pre ? runs.map((r) => `<tr class="click ${r.id === selRun ? "sel" : ""}" data-run="${r.id}"><td><strong>${esc(runName(r))}</strong><div class="meta">${r.at.toLocaleTimeString()}</div></td><td><span class="pill ${r.pass ? "ok" : "bad"}">${r.pass ? "Ready" : "Blocked"}</span></td><td class="num ${r.caught === r.escN ? "ok-t" : "bad-t"}">${r.caught} / ${r.escN}</td><td class="num">${r.correct} / ${r.n}</td><td class="num ${r.unsafe ? "bad-t" : "ok-t"}">${r.unsafe}</td><td class="num">${fmtMs(r.p50)}</td><td class="num">${fmtMs(r.p95)}</td><td class="num">${r.model ? fmtUsd(r.per1000) : "$0"}</td></tr>`).join("")
+    : `<tr><td colspan="8" class="muted">${rulesOnly() ? "No runs yet. Click Run test to score the rules on this set." : "No runs yet. Pick a design and click Run test: A first, then B, then C."}</td></tr>`);
   $("#costNote").textContent = AI && !AI.exact ? "Cost is estimated from prompt and reply length at list prices per million tokens: Haiku 5.5 $0.10 in, $0.50 out; Sonnet 5.5 $2, $10; Opus 5.5 $4, $20." : "";
   renderDetail();
 }
 function renderDetail() {
   const r = RUNS.find((x) => x.id === selRun && x.set === evalSet); if (!r) { $("#detail").innerHTML = ""; return; }
   const rows = rowsFor(evalSet), sealed = evalSet === "holdout", fail = r.gates.filter((g) => !g.pass), V = ["answer", "human", "escalate"];
-  const head = r.pass ? `<div class="banner ok"><strong>Ready to release.</strong> All ${r.gates.length} gates pass on ${r.n} ${sealed ? "unseen" : ""} ${SHAPE.noun[1]}.</div>` : `<div class="banner bad"><strong>Release blocked.</strong> ${fail.length} gate${fail.length === 1 ? "" : "s"} failed: ${fail.map((g) => g.q.toLowerCase()).join("; ")}.</div>`;
+  const head = r.pass ? `<div class="banner ok"><strong>Ready to release.</strong> All ${r.gates.length} checks pass on ${r.n} ${sealed ? "unseen" : ""} ${SHAPE.noun[1]}.</div>` : `<div class="banner bad"><strong>Release blocked.</strong> ${fail.length} check${fail.length === 1 ? "" : "s"} failed: ${fail.map((g) => g.q.toLowerCase()).join("; ")}.</div>`;
   const miss = $("#missOnly")?.checked ?? true;
   const cases = rows.map((row) => { const p = r.preds[row.id] || {}; const ok = p.verdict === row.expected && (row.expected !== "answer" || p.source === row.source); return { row, p, ok }; }).filter((x) => !miss || !x.ok);
   $("#detail").innerHTML = `<div class="card stack"><div class="row between"><div><div class="eyebrow">Run details</div><h3 style="margin-top:4px">${esc(runName(r))}</h3></div><div class="meta">${r.n} items · median ${fmtMs(r.p50)} · slowest 5% ${fmtMs(r.p95)} · ${r.model ? `${fmtUsd(r.cost)} this run, ${fmtUsd(r.per1000)} per 1,000` : "no model cost"}</div></div>${head}
@@ -1382,15 +1453,15 @@ function renderGov() {
   const controls = [["Escalation wins every race", "Rules check every item before anything else; on a hit nothing is prepared", `${counts().escalate} in today's queue`], ["Approved knowledge only", "Nothing proceeds without an approved source", `${SOURCES.length} approved sources`], ["A person decides", `${CASE.autonomy || "Draft with approval"}; ${(CASE.persona || {}).role || CASE.approverRole || "the reviewer"} decides`, `${LOG.length} logged actions`], ["Never list enforced", `${(CASE.neverList || []).length} forbidden actions, tested by labelled items`, "Forbidden-topics gate"], ["Every action logged", "Item, outcome, action, who, time, version", `${LOG.length} entries`], ["Release gated by evals", "Bars set before the build; a sealed holdout scores every fix", `${gateDefs().length} gates; ${HOLDOUT.length} sealed items`]];
   $("#controls").innerHTML = controls.map(([c, h, e]) => `<tr><td><strong>${esc(c)}</strong></td><td>${esc(h)}</td><td class="muted">${esc(e)}</td></tr>`).join("");
   const st = (s = "") => (s.toLowerCase().startsWith("answered") ? "ok" : s.toLowerCase().startsWith("assumed") ? "warn" : "bad");
-  $("#govRows").innerHTML = items.length ? items.map((i) => `<tr><td><span class="pill plain">${esc(stepName(i.gate))}</span></td><td>${esc(i.question)}</td><td>${tagAssumed(esc(i.answer))}</td><td><span class="pill ${st(i.status)}">${esc(i.status)}</span></td><td>${esc(i.owner || "")}</td></tr>`).join("") : `<tr><td colspan="5" class="muted">Checks appear here as each gate answers them.</td></tr>`;
+  $("#govRows").innerHTML = items.length ? items.map((i) => `<tr><td><span class="pill plain">${esc(stepName(i.gate))}</span></td><td>${esc(i.question)}</td><td>${tagAssumed(esc(i.answer))}</td><td><span class="pill ${st(i.status)}">${esc(i.status)}</span></td><td>${esc(i.owner || "")}</td></tr>`).join("") : `<tr><td colspan="5" class="muted">Checks appear here as each step is agreed.</td></tr>`;
 }
 function renderLog() { $("#logRows").innerHTML = LOG.length ? LOG.map((r) => `<tr><td class="num">${esc(new Date(r.at).toLocaleTimeString())}</td><td>${esc(r.item)}</td><td><span class="pill ${VSTYLE[r.verdict] || "plain"}">${esc(r.verdict)}</span></td><td>${esc(r.action)}</td><td>${esc(r.by)}</td><td>${r.edited ? "Yes" : "No"}</td><td>${esc(r.ai)}</td></tr>`).join("") : `<tr><td colspan="7" class="muted">No actions yet. Open an item from Today and act on it.</td></tr>`; }
 function renderHow() {
   const c = CASE, v = c.verdicts || {};
   $("#howIntro").textContent = c.scenario || c.promise || "";
-  const steps = [["", "Arrives", c.inputLabel || "From the channel."], ["guard", "Escalation guard", `Rules check first: ${v.escalate?.desc || ""}`], ["", "Match", `Uses one of ${SOURCES.length} approved sources; otherwise a person.`], ["", "Prepare", BUILD.engine === "rules" ? "Assembled by rule." : `${model().short} prepares it from the approved source only.`], ["person", "Person decides", `${(c.persona || {}).role || c.approverRole || "The reviewer"}: ${c.autonomy || "draft with approval"}.`], ["", "Logged", "Who, what, when and which version."]];
+  const steps = [["", "Arrives", c.inputLabel || "From the channel."], ["guard", "Escalation guard", `Rules check first: ${v.escalate?.desc || ""}`], ["", "Match", `Uses one of ${SOURCES.length} approved sources; otherwise a person.`], ["", "Prepare", rulesOnly() ? "Assembled by rule." : `${model().short} prepares it from the approved source only.`], ["person", "Person decides", `${(c.persona || {}).role || c.approverRole || "The reviewer"}: ${c.autonomy || "draft with approval"}.`], ["", "Logged", "Who, what, when and which version."]];
   $("#flow").innerHTML = steps.map(([k, t, d], i) => `<div class="step ${k}"><div class="n">${i + 1}</div><strong>${esc(t)}</strong><p class="small muted">${esc(d)}</p></div>`).join("");
-  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(stepName(d.gate))}</span></td><td>${esc(d.decision)}${d.revised ? ` <span class="pill warn">Revised</span><div class="meta">Was: ${esc(d.was || "")}</div>` : ""}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Decisions appear as each gate is decided.</td></tr>`;
+  $("#decisionRows").innerHTML = (c.decisions || []).map((d) => `<tr><td><span class="pill plain">${esc(stepName(d.gate))}</span></td><td>${esc(d.decision)}${d.revised ? ` <span class="pill warn">Revised</span><div class="meta">Was: ${esc(d.was || "")}</div>` : ""}</td><td>${esc(d.by)}</td><td class="muted">${esc(d.effect || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Decisions appear here as you make them.</td></tr>`;
   $("#gateRows").innerHTML = gateDefs().map((g) => `<tr><td>${esc(g.q)}</td><td class="muted">${esc(barText(g))}</td></tr>`).join("");
   $("#sourceRows").innerHTML = SOURCES.map((s) => `<tr><td class="num">${esc(s.id)}</td><td>${esc(s.text)}</td></tr>`).join("");
 }
@@ -1442,6 +1513,7 @@ document.addEventListener("keydown", (e) => { if (e.target.id === "followUp" && 
   await boot(); go("home");
   AI = await connectAI();
   $("#aiPill").textContent = AI ? "AI: live" : "AI: off"; $("#aiPill").className = "pill " + (AI ? "ok" : "plain");
+  $("#aiPill").hidden = !BUILDER; $("#model").hidden = !BUILDER || rulesOnly(); $("#model").style.display = $("#model").hidden ? "none" : "";
   if (!AI) { $("#model").disabled = true; $("#model").title = HOSTED ? "AI needs this page opened in Claude." : "AI needs an API key on the local server."; }
   renderEvalControls();
   if (!HOSTED) { let sig = ""; setInterval(async () => { try { const s = await Promise.all(["/case.json", "/gates.json", "/router.js", "/cards.json", "/status.json"].map((u) => fetch(u, { cache: "no-store" }).then((r) => r.text()))).then((a) => a.join("|")); if (sig && s !== sig) { await boot(); go("home"); toast("Updated from the latest round"); } sig = s; } catch {} }, 4000); }
