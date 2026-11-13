@@ -87,7 +87,7 @@ keep running and land through the same revise path.
 | 4 L and U | L applies the round-2 groups, seals the holdout; U finishes | 3 min | `holdout-sealer` once `u.json` exists |
 | 5 E and D | router, evals, at most **one** repair live; D finishes | 4 min | `prototype-builder`, `guard-model` |
 | 6 Build | three writers in parallel, then merge and render; present | 2 min | three `valued-build` writers |
-| 7 Improve | reviewer, audit, `gate-qc` sweep, a second repair if needed; fixes land via `valued-revise` | background | after you present; never blocks |
+| 7 Improve | reviewer, audit, `gate-qc` sweep, a second repair if needed; fixes land via `valued-feedback` | background | after you present; never blocks |
 
 **Background launches are non-blocking.** Launch with `run_in_background: true`, keep asking, and collect at the
 phase that needs the result. If a gate is not back when its phase starts, give the client the one-line status
@@ -161,7 +161,7 @@ lead assumptions from `r.json` with their live status. Use `rule` on the `align`
 that shapes the design most. Every field is optional; leave out what you do not have yet.
 
 **Tweaks during the session.** When the client (or interviewer) asks to change anything, at any point, run
-`valued-revise` with their words: it changes the answer and the owning gate at the source, updates the approach
+`valued-feedback` with their words: it changes the answer and the owning gate at the source, updates the approach
 card, re-renders every view and checks they agree. Never patch one view by hand. Set `current` to the stage just written. **How it sounds:** a senior consultant thinking out
 loud with the client, never telling them.
 - **Soft, never assertive.** Offer options and early thinking: "One option might be ...", "Our early read is ...",
@@ -304,7 +304,13 @@ of asking it: use a fact the research already holds if one supports the default;
 within about 90 seconds, tell the product lead in the chat, once: "Still confirming a source. Working assumption:
 <assumption>, because <why>. Keep it, ask the client, or change it?" and mark it "Being checked". When a source
 lands, set `basis` and render. If research finds nothing, say so and ask the card instead. Any assumption can be
-replaced by the client's answer through `valued-revise`; the answer always wins.
+replaced by the client's answer through `valued-feedback`; the answer always wins.
+
+**Explore, ranked for this case.** Once the five core questions are answered, run `valued-explore` (read
+`.claude/skills/valued-explore/SKILL.md`): it prints the three or four most important open topics, ranked by
+criticality, industry and the answers so far, as talking points for the product lead, then one card to choose which
+to explore (with "Other" for more detail). Ask the chosen ones; the rest stay as researched assumptions. Run it again
+once V and A have landed, for the Round 2 topics. This replaces walking through every conditional card in order.
 
 **A pause between topics.** After every three or four questions asked, stop and add a `recap` (two or three short
 bullets of what we have heard, in the client's words) to the current approach card, render, and say it: "Here is
@@ -508,7 +514,7 @@ reviewer checks it does not misrepresent what was built.
 Print `out/tools/c clock status`, the audit's standards row and open issues, the reviewer's verdict line, and
 the closing line, nothing else:
 
-`Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Run: out/observe.html · Review: out/review.md · Audit: /valued-audit · Feedback: /valued-revise <what to change>`
+`Brief: out/brief.html · PRD: out/prd.html · Prototype: http://localhost:4317 · Run: out/observe.html · Review: out/review.md · Audit: /valued-audit · Feedback: /valued-feedback <what to change>`
 
 Under `--no-open` skip every `open`; otherwise `open out/brief.html`.
 
@@ -516,7 +522,7 @@ Under `--no-open` skip every `open`; otherwise `open out/brief.html`.
 
 Say: "That's the first full version. While we talk it through, the quality checks keep running, and anything they
 find will update here." Then launch in the background: the audit, the `valued-reviewer`, a `gate-qc` sweep over
-every phase, and any second repair round E deferred. Apply each confirmed finding through `valued-revise` (source
+every phase, and any second repair round E deferred. Apply each confirmed finding through `valued-feedback` (source
 first, then render and `verify`), so every page updates together while the client watches. Never hand-edit a
 rendered file. Close with the closing line once they are done.
 
@@ -532,6 +538,6 @@ rendered file. Close with the closing line once they are done.
   "client to confirm", "owner": "<role that closes it>" }`. Render puts open rows in the Governance log.
 - **Say it.** `sayIt`: three first-person lines the product lead can say out loud.
 - **Assumptions.** `assumptions`: one-line strings, each fact marked (assumed).
-- **Revisions.** If the client changes an earlier answer mid-run, use `valued-revise`, then resume. After the
-  run, all feedback goes through `/valued-revise`, and each revision is a learning signal (see
+- **Revisions.** If the client changes an earlier answer mid-run, use `valued-feedback`, then resume. After the
+  run, all feedback goes through `/valued-feedback`, and each revision is a learning signal (see
   `.claude/skills/valued-learn/SKILL.md`).

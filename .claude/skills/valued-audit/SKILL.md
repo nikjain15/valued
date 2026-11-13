@@ -23,7 +23,7 @@ Works in the case workspace (the folder with `out/` and `.claude/`). Prints only
    `Audit <n>: <k> open, <m> closed · out/audit/report.md · out/observe.html`.
 3. If issues are open, offer the fixes with option cards, at most 4 at a time, worst standard first:
    "Fix now (Recommended)" applies the issue's fix through its owning gate (change the gate JSON or use
-   `/valued-revise`, then `conductor.js render`), never by hand-editing a rendered file and never by editing
+   `/valued-feedback`, then `conductor.js render`), never by hand-editing a rendered file and never by editing
    labels; "Leave open" keeps it on the list with the reason. After fixes, run the audit again.
 4. Log every open issue as a learning signal (`/valued-learn log`), source "audit", with the issue ID, the
    gate and the evidence, so the framework fixes the cause and not only this run.
