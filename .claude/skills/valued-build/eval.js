@@ -20,7 +20,7 @@ const withBackstop = (r, raw) => {
     if (m.verdict === "escalate") return { verdict: "escalate", source: null, reason: `model backstop (${m.family || "escalation"}): ${m.reason || ""}`.trim(), backstop: true };
     // Source matching: answer when rules and model agree, or when only the model found one source and is sure; else a person.
     if (d.verdict === "answer" && m.source !== undefined && m.source !== d.source) return { ...d, verdict: "human", source: null, reason: `rules matched ${d.source}, the model ${m.source || "none"}: a person decides`, backstop: true };
-    if (d.verdict === "human" && m.source && m.sure) return { ...d, verdict: "answer", source: m.source, reason: `matched by the model: ${m.reason || m.source}`, backstop: true };
+    if (d.verdict === "human" && m.source && m.sure && !d.never && !/never|forbidden|not allowed|promise|guarantee|identity|verify/i.test(String(d.reason || ""))) return { ...d, verdict: "answer", source: m.source, reason: `matched by the model: ${m.reason || m.source}`, backstop: true };
     return d;
   } };
 };
@@ -42,7 +42,7 @@ const RUNS = path.join(__dirname, "holdout-runs");
 // trailing commas are stripped, so a reflow or repack is the same router), plus only the model-cache entries for the holdout texts, so new dev rows
 // that refresh other cache entries do not count as a new router version.
 const stripSource = (src) => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`\\])\/\/[^\n]*/g, "$1").replace(/\s+/g, "").replace(/,([\]}\)])/g, "$1");
-const fingerprint = () => { const ck = Object.fromEntries(Object.entries(cache || {}).map(([k, v]) => [normKey(k), v])); const slice = [...new Set(rows.map((r) => normKey(r.text)))].sort().filter((k) => ck[k] !== undefined).map((k) => [k, ck[k]]); const src = stripSource(fs.readFileSync(path.join(__dirname, "router.js"), "utf8")) + JSON.stringify(slice); let h = 0; for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0; return (h >>> 0).toString(16); };
+const fingerprint = () => { const ck = Object.fromEntries(Object.entries(cache || {}).map(([k, v]) => [normKey(k), v])); const slice = [...new Set(rows.map((r) => normKey(r.text)))].sort().filter((k) => ck[k] !== undefined).map((k) => [k, ck[k]]); const src = stripSource(fs.readFileSync(path.join(__dirname, "router.js"), "utf8")) + JSON.stringify(slice) + (() => { try { return fs.readFileSync(path.join(__dirname, "gates.json"), "utf8"); } catch { return ""; } })(); let h = 0; for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0; return (h >>> 0).toString(16); };
 // N-02: the size limit is enforced before the sealed holdout is scored, so compaction never follows the seal.
 if (sealed) { const n = fs.readFileSync(path.join(__dirname, "router.js"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "").split("\n").filter((l) => !/^\s*\/\//.test(l)).join("").replace(/\s/g, "").length;
   if (n > 10000) { console.log(`HOLDOUT NOT SCORED: router.js is ${n} non-whitespace characters (limit 10000). Move wording into sources.json match lists, rerun the dev eval, then score the holdout.`); process.exit(1); } }
