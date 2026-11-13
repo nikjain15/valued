@@ -15,6 +15,16 @@ const STAGES = [
   ["align", "Align", "Ownership, stakeholders"],
 ];
 
+// Each stage adds something new: its own rows, so no two stages read alike.
+const STAGE_ROWS = [
+  ["prize", "The size of the prize", "c2"], ["hypothesis", "Our hypothesis", "c2"], ["wrongIf", "What would prove us wrong", "c3"],
+  ["aiDoes", "AI could do", "c2"], ["rulesDo", "Fixed rules do", "c1"], ["peopleDo", "People decide", "c1"], ["sourcing", "Build, buy or partner", "c2"],
+  ["owner", "Who owns it", "c1"], ["signOff", "Who signs off", "c1"], ["never", "It should never", "c3"],
+  ["answerKey", "The answer key", "c1"], ["passMark", "Pass mark", "c2"], ["unseen", "Tested on cases it never saw", "c1"],
+  ["pilot", "The pilot", "c2"], ["watch", "What we watch", "c1"], ["pause", "When we'd pause", "c3"],
+];
+const norm = (t) => String(t || "").replace(/\*\*/g, "").toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, " ").trim();
+
 function renderApproach(ap, cards, title, client, r) {
   const assumed = A(cards).filter((x) => x.assumed && x.decision);
   ap = ap || {}; r = r || {};
@@ -31,11 +41,12 @@ function renderApproach(ap, cards, title, client, r) {
     return `<div class="stage" data-stage="${key}"${key === nowKey ? "" : " hidden"}><div class="card">
 <div class="k">${esc(STAGES[idx][1])}</div>
 <h2>${bold(c.headline)}</h2>
-${A(c.recap).length ? `<div class="row why"><span class="chip c1">So far</span><ul class="as">${A(c.recap).slice(0, 3).map((x) => `<li>${bold(x)}</li>`).join("")}</ul></div>` : ""}
+${key === nowKey && A(c.recap).length ? `<div class="row why"><span class="chip c1">So far</span><ul class="as">${A(c.recap).slice(0, 3).map((x) => `<li>${bold(x)}</li>`).join("")}</ul></div>` : ""}
 ${c.heard ? `<div class="row"><span class="chip c1">What we heard</span><p>${bold(c.heard)}</p></div>` : ""}
 ${c.breaks ? `<div class="row"><span class="chip c3">Where it breaks</span><p>${bold(c.breaks)}</p></div>` : ""}
 ${A(c.evidence).slice(0, 2).map((e) => `<div class="row"><span class="chip c1">The research says</span><p>${bold(e.text)}${citeF(e.fact)}</p></div>`).join("")}
 ${key === "discover" && A(r.assumptions).filter((a) => a.status !== "challenged").length ? `<div class="row why"><span class="chip c0">We're assuming</span><ul class="as">${A(r.assumptions).filter((a) => a.status !== "challenged").slice(0, 3).map((a) => `<li><span class="st2 ${a.status === "confirmed" ? "ok" : a.status === "challenged" ? "chk" : ""}">${a.status === "confirmed" ? "Confirmed" : a.status === "challenged" ? "Worth a closer look" : "To discuss"}</span>${bold(a.short || a.text)}</li>`).join("")}</ul></div>` : ""}
+${STAGE_ROWS.filter(([f]) => c[f]).map(([f, label, tone]) => `<div class="row"><span class="chip ${tone}">${label}</span>${Array.isArray(c[f]) ? `<ul class="as">${c[f].slice(0, 3).map((x) => `<li>${bold(x)}</li>`).join("")}</ul>` : `<p>${bold(c[f])}</p>`}</div>`).join("")}
 ${c.rule ? `<div class="row"><span class="chip c1">Rules to respect</span><p>${bold(c.rule)}</p></div>` : ""}
 ${c.option ? `<div class="row"><span class="chip c2">One way to start</span><p>${bold(c.option)}</p></div>` : ""}
 ${reasons ? `<div class="row why"><span class="chip c2">Why it might work</span><ol>${reasons}</ol></div>` : ""}
@@ -137,9 +148,11 @@ ${cited.size ? `<p class="src">Sources: ${[...cited].map((k) => { const x = srcs
 // Soft, consultant language: these phrasings read as assertive on a shared screen.
 const ASSERTIVE = /\b(we will|you must|you need to|must|obviously|clearly|definitely|guarantee[ds]?|the only way|the right answer|always)\b/i;
 function approachIssues(ap) {
-  const out = [];
+  const out = []; const seen = new Map();
   for (const s of A(ap?.stages)) {
-    const texts = [s.headline, s.heard, s.option, s.tradeoff, s.checkIn, s.breaks, s.rule, ...A(s.reasons), ...A(s.evidence).map((e) => e.text)].filter(Boolean);
+    const extra = STAGE_ROWS.flatMap(([f]) => (Array.isArray(s[f]) ? s[f] : [s[f]])).filter(Boolean);
+    const texts = [s.headline, s.heard, s.option, s.tradeoff, s.checkIn, s.breaks, s.rule, ...A(s.reasons), ...A(s.evidence).map((e) => e.text), ...extra].filter(Boolean);
+    for (const t of texts) { const k = norm(t); if (k.split(" ").length < 3) continue; if (seen.has(k) && seen.get(k) !== s.stage) out.push(`approach ${s.stage}: "${t}" already appears on the ${seen.get(k)} card; each stage must add something new, so rewrite it for this stage`); else seen.set(k, s.stage); }
     for (const t of texts) {
       if (ASSERTIVE.test(t)) out.push(`approach ${s.stage}: assertive wording "${String(t).match(ASSERTIVE)[0]}" in "${t}"; soften it (an option, our early thinking)`);
       if (t !== s.headline && t !== s.checkIn && String(t).replace(/\*\*/g, "").split(/\s+/).length > 14) out.push(`approach ${s.stage}: "${t}" is over 14 words; make it a bullet you can read in one breath`);
