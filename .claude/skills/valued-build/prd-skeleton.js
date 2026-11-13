@@ -27,12 +27,13 @@ const SECTIONS = [
 ];
 const d = new Date(), today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const out = [
-  "# (use case, from gate V): product requirements",
+  "# (use case, to be named): product requirements",
   "",
   `<!-- Case: ${caseLine.replace(/\s+--\S+/g, "").trim()} -->`,
   "",
-  `**Client:** (from gate V) · **Version:** 0.1, live draft · **Owner:** product lead · **Date:** ${today} · **Source:** VALUED run`,
+  `**Client:** (client to be named) · **Version:** 0.1, live draft · **Owner:** product lead · **Date:** ${today} · **Source:** built step by step with your team`,
   "",
+  // "Pending: fills at gate X" is a machine marker: the PRD viewer swaps it for the step name and never shows it.
   ...SECTIONS.flatMap(([n, title, gate]) => [`## ${n}. ${title}`, "", `> Pending: fills at gate ${gate}.`, ""]),
   "## Appendix: client decisions",
   "",

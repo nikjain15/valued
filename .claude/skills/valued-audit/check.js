@@ -150,6 +150,14 @@ const realCo = /\b(Acme|Contoso|Globex|Initech|Example Corp|Anthem|Aetna|UnitedH
 const modelVendors = /\b(Anthropic|OpenAI|Google|Microsoft|Amazon|Meta|Mistral|Cohere|xAI|DeepSeek|Alibaba|Nvidia|AWS|Azure)\b/g;
 for (const p of scan.filter((p) => /case\.json|golden\.json|holdout\.json|sources\.json|prd\.md|\d-.*\.md|state\.md/.test(p))) { const t = read(p).replace(/\(assumed\)/g, "").replace(/e\.g\.[^)\n]*\)?/g, "").replace(modelVendors, ""); const m = t.match(realCo); if (m && !/vendor|assumed/i.test(t.slice(Math.max(0, t.indexOf(m[0]) - 60), t.indexOf(m[0]) + 60))) fail(8, `real company name "${m[0]}" in ${path.relative(dir, p)}`, path.relative(dir, p)); }
 
+// Method internals a client must never read: gate letters, card ids, router traces, session framing, builder chrome.
+const INTERNAL_RE = /\b[Gg]ate [A-Z]\b|\b(?:R\d-\d{1,2}|C-\d{1,2})\b|rules matched \S+|the model none|\bthe session'?s\b|\bsession's triggers\b|\(phase \d\)|\bpersona\b|\bAI: (?:off|live|checking)\b|gate file|\bVALUED run\b/;
+// Every PRD line, not only the body prose ("Pending: fills at gate X" is a machine marker the viewer replaces).
+prd.split("\n").forEach((l, i) => { if (/^>\s*Pending: fills at gate \w\.?\s*$/.test(l) || /^<!--/.test(l)) return; const m = l.match(INTERNAL_RE); if (m) fail(8, `method internals in the PRD, line ${i + 1}: "${m[0]}"`, "out/prd.md"); });
+// Escalation owners keyed by the exact trigger families, so no family falls back to another team.
+{ const fk = (k) => String(k || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, ""); const owners = Object.keys(CASE.ownerByFamily || {}).map(fk);
+  for (const f of (CASE.triggerFamilies || []).map(fk)) expect(owners.includes(f), 4, `trigger family "${f}" has no escalation owner (case.json ownerByFamily)`, "out/gates/u.json"); }
+
 // ---------- 7 Browser ----------
 async function browser() {
   if (NO_BROWSER) return { skipped: true };
@@ -200,7 +208,7 @@ async function browser() {
         r.greet = await ev("document.querySelector('#greet')?.textContent||''");
         expect(/Good (morning|afternoon|evening), \w+/.test(r.greet || ""), 3, `${name}: Today greeting missing`, "out/proto/app.html");
         r.tiles = await ev("document.querySelectorAll('#tiles .tile').length");
-        r.internal = await ev("(document.querySelector('#p-home').innerText.match(/\\bGate [A-Z]\\b|\\(R\\d-\\d+|\\b(?:R\\d-\\d+|C-\\d+)\\b|\\b[a-z]+_[a-z]+\\b|~ est/) || [''])[0]");
+        r.internal = await ev("(document.querySelector('#p-home').innerText.match(/\\bGate [A-Z]\\b|\\(R\\d-\\d+|\\b(?:R\\d-\\d{1,2}|C-\\d{1,2})\\b|\\b[a-z]+_[a-z]+\\b|~ est/) || [''])[0]");
         expect(!r.internal, 8, `${name}: method internals on the home screen ("${r.internal}")`, "out/proto/case.json");
         r.ready = await ev("document.querySelector('#readyBanner')?.textContent?.trim().slice(0,60)||''");
         r.overnight = await ev("document.querySelector('#overnight')?.textContent?.trim().length||0");
@@ -256,6 +264,27 @@ async function browser() {
           expect(sw <= 390, 7, `${name}: ${v} page is ${sw} px wide at 390 (scrolls sideways)`, "out/proto/app.html");
         }
         await send("Emulation.clearDeviceMetricsOverride"); await ev("go('home')");
+        // Rendered strings on every page (and one item of each outcome): no method internals, wherever they came from.
+        r.internalAll = {};
+        for (const v of ["home", "queue", "evals", "agents", "gov", "audit", "data", "how", "faq", "obs", "models", "item:escalate", "item:human", "item:answer"]) {
+          if (v.startsWith("item:")) { const k = await ev(`(ITEMS.find(i=>i.d.verdict==='${v.slice(5)}')||{}).key||''`); if (!k) continue; await ev(`go('item', ${JSON.stringify(k)})`); } else await ev(`go('${v}')`);
+          await new Promise((res) => setTimeout(res, 150));
+          const txt = await ev("[...document.querySelectorAll('.top, .content, .side')].map(e=>e.innerText).join('\\n')") || "";
+          const m = txt.match(INTERNAL_RE); if (m) (r.internalAll[m[0]] ||= []).push(v);
+        }
+        // Card ids are C-1 to C-99; a customer id such as C-26118 is sample data, not an internal.
+        for (const [m, pages] of Object.entries(r.internalAll)) fail(8, `${name}: method internals ("${m}") on ${pages.join(", ")}`, "out/proto/app.html");
+        // Rules only: no model picker and no AI design recommended; the release page leads with the sealed result.
+        await ev("go('evals')");
+        if (CASE.engine === "rules") {
+          r.rulesAi = await ev("(() => { const vis = (e) => e && e.offsetParent !== null; return [vis(document.querySelector('#model')) && 'model picker', [...document.querySelectorAll('#engineSeg .pill')].some(p => vis(p) && /Recommended/.test(p.textContent)) && 'AI design recommended'].filter(Boolean).join(', '); })()");
+          expect(!r.rulesAi, 3, `${name}: rules-only case shows ${r.rulesAi}`, "out/proto/app.html");
+        }
+        if (CASE.release && CASE.release.status) {
+          r.release = await ev("(() => { const c = document.querySelector('#releaseCard'); const first = document.querySelector('#p-evals .stack > .card:not([hidden])'); return c && !c.hidden && first === c ? c.innerText.slice(0, 80) : ''; })()");
+          expect(r.release, 6, `${name}: release page does not lead with the sealed result`, "out/proto/app.html");
+        }
+        await ev("go('home')");
         r.emdash = await ev("document.body.innerText.includes('\\u2014')");
         expect(!r.emdash, 8, `${name}: em-dash visible on the page`, "out/proto/app.html");
       }

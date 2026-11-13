@@ -1,6 +1,6 @@
 # <Use case name>: product requirements
 
-**Client:** <client> · **Version:** 0.1, draft for client review · **Owner:** product lead · **Date:** <today> · **Source:** VALUED run, every decision traceable to a gate file in `out/`
+**Client:** <client> · **Version:** 0.1, draft for client review · **Owner:** product lead · **Date:** <today> · **Source:** built step by step with your team; every decision is traceable to the record
 
 > **Recommendation.** <One sentence: what we build first, for whom, and the outcome it moves.>
 > **Decision asked of the client.** <The one sign-off this document needs, and from which role.>
@@ -61,7 +61,7 @@
 
 ## 6. Solution overview
 
-**Engine (gate A, client decision):** <Rules only | Rules decide, model drafts | Model proposes, rules guard>, because <reason>.
+**Engine (your decision):** <Rules only | Rules decide, model drafts | Model proposes, rules guard>, because <reason>.
 
 | Component | Rung | Build, buy or partner | Why | What would change our mind |
 |---|---|---|---|---|
@@ -203,7 +203,7 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 | NFR-02 | Cost per resolved task | <ceiling (assumed)> |
 | NFR-03 | Availability; fail closed to a person | <target> |
 | NFR-04 | Security: no secrets in code, keys from environment, synthetic data in non-production | Always |
-| NFR-05 | Audit log retention | <period, from gate U> |
+| NFR-05 | Audit log retention | <period, from the oversight decisions> |
 | NFR-06 | Accessibility of the reviewer UI | WCAG 2.2 AA |
 
 ## 14. Rollout and operations
@@ -227,9 +227,9 @@ In every shape, a refusal or error falls back to a person, never to a guess. Mod
 |---|---|---|
 | <name to confirm> | <role> | <stage or artifact> |
 
-| Gate | Question | Answer | Status | Closes it |
+| Step | Question | Answer | Status | Closes it |
 |---|---|---|---|---|
-| <gate> | <question> | <answer> | <answered / assumed / client to confirm> | <role> |
+| <step> | <question> | <answer> | <answered / assumed / client to confirm> | <role> |
 
 ## 16. Risks and mitigations
 
@@ -309,12 +309,12 @@ Start with T-01.
 
 ## Appendix: client decisions
 
-| Gate | Decision | Chosen by | Our recommendation |
+| Step | Decision | Chosen by | Our recommendation |
 |---|---|---|---|
-| <gate> | <decision> | <role> | <recommended option> |
+| <step> | <decision> | <role> | <recommended option> |
 
 ## Appendix: document history
 
 | Version | Date | Change | Requested by | Sections |
 |---|---|---|---|---|
-| 0.1 | <date> | First draft, built gate by gate in the working session | Product lead | All |
+| 0.1 | <date> | First draft, built step by step with your team | Product lead | All |
