@@ -15,8 +15,11 @@ const STAGES = [
   ["align", "Align", "Ownership, stakeholders"],
 ];
 
-function renderApproach(ap, cards, title, client) {
-  ap = ap || {};
+function renderApproach(ap, cards, title, client, r) {
+  ap = ap || {}; r = r || {};
+  const srcs = A(r.sources); const srcN = Object.fromEntries(srcs.map((x, i) => [x.key, i + 1]));
+  const factOf = Object.fromEntries(A(r.facts).map((f) => [f.key, f])); const cited = new Set();
+  const citeF = (k) => { const f = factOf[k]; const sk = f ? f.source : k; if (!srcN[sk]) return ""; cited.add(sk); return `<a class="cite" href="/research#src-${esc(sk)}">${srcN[sk]}</a>`; };
   const byStage = Object.fromEntries(A(ap.stages).map((s) => [s.stage, s]));
   const nowKey = ap.current || [...STAGES].reverse().find(([k]) => byStage[k])?.[0] || "discover";
   const nowIdx = STAGES.findIndex(([k]) => k === nowKey);
@@ -27,6 +30,10 @@ function renderApproach(ap, cards, title, client) {
 <div class="k">${esc(STAGES[nowIdx][1])}</div>
 <h2>${bold(c.headline)}</h2>
 ${c.heard ? `<div class="row"><span class="chip c1">What we heard</span><p>${bold(c.heard)}</p></div>` : ""}
+${c.breaks ? `<div class="row"><span class="chip c3">Where it breaks</span><p>${bold(c.breaks)}</p></div>` : ""}
+${A(c.evidence).slice(0, 2).map((e) => `<div class="row"><span class="chip c1">The research says</span><p>${bold(e.text)}${citeF(e.fact)}</p></div>`).join("")}
+${nowKey === "discover" && A(r.assumptions).length ? `<div class="row why"><span class="chip c0">We're assuming</span><ul class="as">${A(r.assumptions).slice(0, 3).map((a) => `<li><span class="st2 ${a.status === "confirmed" ? "ok" : a.status === "challenged" ? "chk" : ""}">${a.status === "confirmed" ? "Confirmed" : a.status === "challenged" ? "Worth a closer look" : "To discuss"}</span>${bold(a.short || a.text)}</li>`).join("")}</ul></div>` : ""}
+${c.rule ? `<div class="row"><span class="chip c1">Rules to respect</span><p>${bold(c.rule)}</p></div>` : ""}
 ${c.option ? `<div class="row"><span class="chip c2">One way to start</span><p>${bold(c.option)}</p></div>` : ""}
 ${reasons ? `<div class="row why"><span class="chip c2">Why it might work</span><ol>${reasons}</ol></div>` : ""}
 ${c.tradeoff ? `<div class="row"><span class="chip c3">What we'd give up</span><p>${bold(c.tradeoff)}</p></div>` : ""}
@@ -71,12 +78,19 @@ h1{font-family:var(--font-display);font-size:26px;margin:4px 0 0}
 .ask .q{flex:none;width:30px;height:30px;border-radius:15px;background:var(--brand);display:grid;place-items:center;font-weight:700}
 .ask .l{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9fd3b0;font-weight:700;display:block}
 .ask p{margin:2px 0 0;font-size:19px}
+.c0{background:var(--paper);color:var(--ink-3)}
+.as{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:19px}
+.st2{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;margin-right:10px;background:var(--paper);color:var(--ink-3);vertical-align:2px}
+.st2.ok{background:var(--brand-tint);color:var(--brand-strong)}.st2.chk{background:var(--amber-bg);color:var(--amber-strong)}
+.cite{display:inline-block;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:9px;background:var(--brand-tint);color:var(--brand-strong);font-size:11px;font-weight:700;margin-left:5px;vertical-align:3px;text-decoration:none}
+.src{font-size:12px;color:var(--ink-4);margin:12px 4px 0}.src a{color:var(--brand-strong)}
 .fresh{animation:fresh 2.4s ease-out}@keyframes fresh{from{box-shadow:0 0 0 4px var(--brand-soft)}to{box-shadow:var(--shadow-float)}}
 @media (max-width:720px){.stepper{flex-wrap:wrap;row-gap:12px}.stepper:before{display:none}.st{flex:0 0 33%}.row{grid-template-columns:1fr;gap:6px}.row p,.row ol{font-size:18px}.card h2{font-size:23px}}
 </style></head><body><div class="wrap">
 <div class="top"><div><div class="eyebrow">Our approach</div><h1>${esc(title || "Working session")}</h1></div>${client ? `<span class="client">${esc(client)}</span>` : ""}</div>
 <div class="stepper">${stepper}</div>
 ${card}
+${cited.size ? `<p class="src">Sources: ${[...cited].map((k) => { const x = srcs.find((y) => y.key === k); return `${srcN[k]}. ${esc(x.publisher)}, ${esc(x.title)}, ${esc(x.year)}`; }).join(" · ")} · <a href="/research">Full research</a></p>` : ""}
 </div>
 <script>
 (function () {
@@ -100,7 +114,7 @@ const ASSERTIVE = /\b(we will|you must|you need to|must|obviously|clearly|defini
 function approachIssues(ap) {
   const out = [];
   for (const s of A(ap?.stages)) {
-    const texts = [s.headline, s.heard, s.option, s.tradeoff, s.checkIn, ...A(s.reasons)].filter(Boolean);
+    const texts = [s.headline, s.heard, s.option, s.tradeoff, s.checkIn, s.breaks, s.rule, ...A(s.reasons), ...A(s.evidence).map((e) => e.text)].filter(Boolean);
     for (const t of texts) {
       if (ASSERTIVE.test(t)) out.push(`approach ${s.stage}: assertive wording "${String(t).match(ASSERTIVE)[0]}" in "${t}"; soften it (an option, our early thinking)`);
       if (t !== s.headline && t !== s.checkIn && String(t).replace(/\*\*/g, "").split(/\s+/).length > 14) out.push(`approach ${s.stage}: "${t}" is over 14 words; make it a bullet you can read in one breath`);

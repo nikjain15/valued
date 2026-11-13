@@ -157,7 +157,7 @@ function whyArch(a) {
 }
 
 const G = (k) => json(path.join(GATES, `${k}.json`), null);
-const writeApproach = () => write(path.join(PROTO, "approach.html"), renderApproach(json(path.join(GATES, "approach.json"), {}), cards(), productName() || G("v")?.useCase || G("r")?.title, G("v")?.client ? `${G("v").client}` : ""));
+const writeApproach = () => write(path.join(PROTO, "approach.html"), renderApproach(json(path.join(GATES, "approach.json"), {}), cards(), productName() || G("v")?.useCase || G("r")?.title, G("v")?.client ? `${G("v").client}` : "", G("r")));
 // One source of truth: every page renders from the gate JSON and cards.json. The only hand-written client text is the
 // approach cards and the gate prose, so this checks that their names and numbers match what the client said or the
 // research cited, and that the four views agree on the product, the client and the decisions.
@@ -337,7 +337,7 @@ function renderPrd(g, ev, c) {
   const s = {};
   s[1] = b ? table(["", ""], [["Problem", b.summary?.problem], ["Who it serves", b.summary?.who], ["What we build", b.summary?.build], ["What it never does", b.summary?.never || A(u?.neverList)[0]], ["How we know it works", b.summary?.works], ["First milestone", b.summary?.milestone]]) : P("B");
   const rs = Object.fromEntries(A(g.r?.sources).map((x) => [x.key, x]));
-  const ctx = A(g.r?.facts).length ? ["", "**Industry context (published sources; full brief at /discovery)**", "", table(["Figure", "What it means here", "Source"], A(g.r.facts).slice(0, 8).map((f) => [f.figure, f.fact, rs[f.source] ? `${rs[f.source].publisher}, ${rs[f.source].year} (${rs[f.source].url})` : "source missing"]))].join("\n") : "";
+  const ctx = A(g.r?.facts).length ? ["", "**Industry context (published sources; full research at /research)**", "", table(["Figure", "What it means here", "Source"], A(g.r.facts).slice(0, 8).map((f) => [f.figure, f.fact, rs[f.source] ? `${rs[f.source].publisher}, ${rs[f.source].year} (${rs[f.source].url})` : "source missing"]))].join("\n") : "";
   s[2] = v ? [clean(v.problem), "", table(["Value driver", "Today (baseline)", "Target", "How measured"], A(v.valueDrivers).map((r) => [r.driver, r.today, r.target, r.measured])), ctx].join("\n") : (ctx ? [P("V"), ctx].join("\n") : P("V"));
   const dec = (id) => byLabel((cs.find((x) => x.id === id) || {}).decision || "");
   const early = (rows) => { const r = rows.filter(([, d]) => d); return r.length ? ["**From our conversation so far** (the full section fills in as we work through it)", "", tableAll(["", "You told us"], r)].join("\n") : ""; };
@@ -547,7 +547,7 @@ if (cmd === "clock") {
   for (const f of [path.join(OUT, "prd.md"), ...fs.readdirSync(GATES).map((x) => path.join(GATES, x))]) if (/—/.test(read(f))) issues.push(`em-dash in ${path.relative(OUT, f)}`);
   for (const row of A(g.v?.valueFrame)) if (/\d/.test(`${row.volumePerMonth}${row.costPerItem}`) && !/assumed|client|R1-|C-\d|\b[PRA]\d\b/i.test(JSON.stringify(row))) issues.push(`value frame row "${clean(row.item)}" has a number with no source: mark it (assumed), the client's answer, or a fact key`);
   const port = process.env.PORT || 4317;
-  for (const u of ["/discovery", "/prd", "/"]) { const r = spawnSync("curl", ["-s", "-o", "/dev/null", "-w", "%{http_code}", "--max-time", "3", `http://localhost:${port}${u}`], { encoding: "utf8" }); if (r.stdout !== "200") issues.push(`localhost:${port}${u} not serving (HTTP ${r.stdout || "none"}): restart the server`); }
+  for (const u of ["/approach", "/research", "/prd", "/"]) { const r = spawnSync("curl", ["-s", "-o", "/dev/null", "-w", "%{http_code}", "--max-time", "3", `http://localhost:${port}${u}`], { encoding: "utf8" }); if (r.stdout !== "200") issues.push(`localhost:${port}${u} not serving (HTTP ${r.stdout || "none"}): restart the server`); }
   const prev = json(path.join(OUT, "qc", `${ph}.json`), {});
   writeJson(path.join(OUT, "qc", `${ph}.json`), { ...prev, phase: ph, auto: issues, autoAt: today() });
   console.log(issues.length ? `QC after phase ${ph}: ${issues.length} to fix before moving on:\n${issues.map((x) => `  - ${x}`).join("\n")}` : `QC after phase ${ph}: mechanical checks clean.`);

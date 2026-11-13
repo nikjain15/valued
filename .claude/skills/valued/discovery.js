@@ -4,57 +4,31 @@
 const A = (x) => (Array.isArray(x) ? x : []);
 const esc = (s) => String(s ?? "").replace(/—/g, ", ").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
+// The live research page (/research, also /discovery): what the research agents are doing and what they found,
+// for the client to watch. Hypotheses, assumptions and questions live on the approach page, not here.
 function renderDiscovery(r, cards, client, qc) {
   r = r || {};
   const src = Object.fromEntries(A(r.sources).map((s, i) => [s.key, { ...s, n: i + 1 }]));
-  const factSrc = Object.fromEntries(A(r.facts).map((f) => [f.key, f.source]));
-  const cite = (k) => { const s = src[k] || src[factSrc[k]]; return s ? `<a class="cite" href="#src-${esc(s.key)}" title="${esc(s.publisher)}, ${esc(s.year)}">${s.n}</a>` : ""; };
-  const cites = (ks) => A(ks).map(cite).join("");
-  const byId = Object.fromEntries(A(cards).map((c) => [c.id, c]));
-  const tree = r.tree || {};
-  const driver = Object.fromEntries(A(tree.branches).map((b) => [b.id, b.driver]));
-  // Client view: internal ids never show. Fact keys become citation chips, branch ids become their names.
-  const human = (t) => esc(String(t || "")
-    .replace(/^\s*tests?\s+B\d+\s*:\s*/i, "")
-    .replace(/\b(?:C|R\d)-\d+\b/g, "")
-    .replace(/\bB\d+\b/g, (m) => driver[m] ? `"${driver[m]}"` : ""))
-    .replace(/\(?\b((?:S[PRA]?)?[PRA]?\d{1,2})\b\)?/g, (m, k) => (factSrc[k] || src[k]) ? cite(k) : m)
-    .replace(/\(\s*\)/g, "").replace(/\s{2,}/g, " ").trim();
-  const said = (d) => esc(String(d || "").replace(/\s*\((persona|auto|recommended)\)/gi, ""));
-
-  const STR = [["process", "How the work runs"], ["regulation", "Rules and risk"], ["ai", "Where AI has worked"]];
-  const landed = new Set(A(r.strands));
-  const status = STR.map(([k, l]) => `<span class="stat${landed.has(k) ? " ok" : ""}">${landed.has(k) ? "&#10003;" : "&#9679;"} ${l}${landed.has(k) ? "" : A(r.thin).includes(k) ? ", still confirming" : ", researching"}</span>`).join("");
-  const names = ["Framing", "Discovery", "Value and AI fit", "Your steers", "Answer key and guardrails", "Evals and launch", "PRD and prototype"];
-  const checks = A(qc).map((q) => { const n = A(q.auto).length + A(q.findings).filter((f) => f.severity !== "minor" && !f.fixed).length; return `<span class="stat${n ? "" : " ok"}">${n ? "&#9679;" : "&#10003;"} Checked: ${names[q.phase] || q.phase}${n ? ", refining" : ""}</span>`; }).join("");
-
-  const branches = A(tree.branches).slice(0, 4).map((b) => {
-    const qs = A(b.questions).map((id) => byId[id]).filter(Boolean); const done = qs.filter((c) => c.decision).length;
-    return `<div class="row"><span class="chip c2">${esc(b.driver)}</span><p>${A(b.hypotheses).slice(0, 2).map((h) => `${esc(h.text)}${cites(h.facts)}`).join("<br>")}</p><span class="state${qs.length && done === qs.length ? " ok" : ""}">${qs.length ? (done === qs.length ? "Discussed" : done ? "In discussion" : "To explore") : ""}</span></div>`;
+  const cite = (k) => { const s = src[k]; return s ? `<a class="cite" href="#src-${esc(k)}" title="${esc(s.publisher)}, ${esc(s.year)}">${s.n}</a>` : ""; };
+  const STR = [["process", "How the work runs", "Volumes, cycle times, cost and where the process breaks"], ["regulation", "Rules and risk", "The rules that govern this work and what goes wrong when they are missed"], ["ai", "Where AI has worked", "Documented deployments in this industry, what was measured, what went wrong"]];
+  const runs = Object.fromEntries(A(r.runs).map((x) => [x.strand, x]));
+  const blocked = A(r.notes).length && !A(r.facts).length;
+  const strands = STR.map(([k, name, what]) => {
+    const x = runs[k] || {}; const facts = A(r.facts).filter((f) => (f.key || "")[0] === { process: "P", regulation: "R", ai: "A" }[k]);
+    const state = x.done ? (x.thin ? ["c3", "Still confirming"] : ["c2", "Done"]) : x.note ? ["c0", "Not reachable"] : ["c1", "Researching"];
+    const log = A(x.log).slice(-5).map((l) => `<li>${esc(l.step || l)}</li>`).join("");
+    return `<div class="strand"><div class="sh"><b>${name}</b><span class="chip ${state[0]}">${state[1]}</span></div><p class="what">${what}</p><div class="nums"><span><b>${facts.length}</b> findings</span><span><b>${new Set(facts.map((f) => f.source)).size}</b> sources</span></div>${log ? `<ul class="log">${log}</ul>` : ""}</div>`;
   }).join("");
-
-  const assumptions = A(r.assumptions).slice(0, 8).map((a) => {
-    const c = a.card && byId[a.card]; const st = a.status === "confirmed" ? "ok" : a.status === "challenged" ? "check" : "open";
-    const lab = { ok: "Confirmed", check: "Worth a closer look", open: "To discuss" }[st];
-    return `<div class="row"><span class="chip ${st === "ok" ? "c2" : st === "check" ? "c3" : "c0"}">${lab}</span><p>${esc(a.text)}${cites(a.facts)}${c && c.decision ? `<span class="sub">You said: ${said(c.decision)}</span>` : ""}</p></div>`;
-  }).join("");
-
-  const facts = A(r.facts).slice(0, 6).map((f) => `<div class="fact"><div class="fig">${esc(f.figure)}</div><p>${esc(f.fact)}</p><div class="by">${src[f.source] ? `${esc(src[f.source].publisher)}, ${esc(src[f.source].year)}` : ""}${cite(f.source)}</div></div>`).join("");
+  const facts = A(r.facts).map((f) => `<div class="fact"><div class="fig">${esc(f.figure)}</div><p>${esc(f.fact)}</p><div class="by">${src[f.source] ? `${esc(src[f.source].publisher)}, ${esc(src[f.source].year)} <span class="tag">${src[f.source].tag === "P" ? "Primary" : "Secondary"}</span>` : ""}${cite(f.source)}</div></div>`).join("");
   const flow = A(r.process).slice(0, 7).map((p, i) => `<li class="step${p.breaks ? " hot" : ""}"><span class="n">${i + 1}</span><b>${esc(p.step)}</b><span>${esc(p.plain)}</span>${p.breaks ? `<em>Where it breaks: ${esc(p.breaks)}</em>` : ""}</li>`).join("");
-
-  const groups = A(tree.branches).slice(0, 4).map((b) => {
-    const rows = A(b.questions).map((id) => byId[id]).filter(Boolean).map((c) => `<li class="ask${c.decision ? " done" : ""}"><p class="q">${human(c.question)}</p>${c.why ? `<p class="why">Why we ask: ${human(c.why)}</p>` : ""}${c.decision ? `<p class="said">You said: ${said(c.decision)}</p>` : ""}</li>`).join("");
-    return rows ? `<div class="group"><h3>${esc(b.driver)}</h3><ul>${rows}</ul></div>` : "";
-  }).join("");
-
-  const terms = A(r.terms).slice(0, 10).map((t) => `<div class="term"><b>${esc(t.term)}</b><span>${esc(t.plain)}</span></div>`).join("");
   const regs = A(r.regulation).slice(0, 6).map((g) => `<div class="row"><span class="chip c1">${esc(g.rule)}</span><p>${esc(g.plain)}${cite(g.source)}</p></div>`).join("");
-  const sources = A(r.sources).map((s) => `<li id="src-${esc(s.key)}"><span class="sn">${src[s.key].n}</span>${esc(s.publisher)}, <i>${esc(s.title)}</i>, ${esc(s.year)} <span class="stag">${s.tag === "P" ? "Primary" : "Secondary"}</span> <a href="${esc(s.url)}" target="_blank" rel="noopener">Open</a></li>`).join("");
+  const terms = A(r.terms).slice(0, 10).map((t) => `<div class="term"><b>${esc(t.term)}</b><span>${esc(t.plain)}</span></div>`).join("");
+  const sources = A(r.sources).map((s) => `<li id="src-${esc(s.key)}"><span class="sn">${src[s.key].n}</span>${esc(s.publisher)}, <i>${esc(s.title)}</i>, ${esc(s.year)} <span class="tag">${s.tag === "P" ? "Primary" : "Secondary"}</span> <a href="${esc(s.url)}" target="_blank" rel="noopener">Open</a></li>`).join("");
+  const nP = A(r.sources).filter((x) => x.tag === "P").length;
   const section = (k, h, sub, body) => body ? `<section class="card"><div class="k">${k}</div><h2>${h}</h2>${sub ? `<p class="lede2">${sub}</p>` : ""}${body}</section>` : "";
-
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Discovery brief</title><link rel="stylesheet" href="/ff.css">
+<title>Research</title><link rel="stylesheet" href="/ff.css">
 <style>
 body{background:var(--paper);color:var(--ink);font-family:var(--font-sans);margin:0}
 .wrap{max-width:940px;margin:0 auto;padding:32px 20px 56px}
@@ -62,53 +36,51 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-sans);margi
 .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-strong);font-weight:700}
 h1{font-family:var(--font-display);font-size:26px;margin:4px 0 0;line-height:1.2}
 .client{font-size:13px;color:var(--ink-3);background:var(--white);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
-.lede{color:var(--ink-2);font-size:17px;line-height:1.5;margin:14px 0 10px;max-width:760px}
-.status{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 22px}
-.stat{font-size:12px;border-radius:999px;padding:3px 10px;background:var(--white);border:1px solid var(--line);color:var(--ink-3)}
-.stat.ok{background:var(--brand-tint);border-color:var(--brand-soft);color:var(--brand-strong)}
+.lede{color:var(--ink-2);font-size:16px;line-height:1.5;margin:12px 0 18px;max-width:760px}
+.totals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 16px}
+.tot{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:12px 16px}.tot b{font-family:var(--font-display);font-size:26px;display:block}.tot span{font-size:13px;color:var(--ink-3)}
 .card{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:24px 28px;box-shadow:var(--shadow-float);margin:0 0 16px}
 .card .k{font-size:12px;color:var(--brand-strong);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .card h2{font-family:var(--font-display);font-size:24px;margin:6px 0 4px;letter-spacing:-.01em}
-.lede2{color:var(--ink-3);margin:0 0 10px;font-size:14px}
-.row{display:grid;grid-template-columns:190px 1fr auto;gap:16px;align-items:center;padding:12px 0;border-top:1px solid var(--line-2)}
-.row:first-of-type{border-top:0}
-.chip{justify-self:start;font-size:12.5px;font-weight:700;border-radius:10px;padding:5px 11px}
+.lede2{color:var(--ink-3);margin:0 0 12px;font-size:14px}
+.strands{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.strand{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.sh{display:flex;justify-content:space-between;align-items:center;gap:8px}.sh b{font-size:15px}
+.what{margin:0;font-size:13px;color:var(--ink-3)}
+.nums{display:flex;gap:14px;font-size:13px;color:var(--ink-3)}.nums b{color:var(--ink);font-size:16px}
+.log{list-style:none;margin:4px 0 0;padding:8px 0 0;border-top:1px solid var(--line-2);font-size:12.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:4px}
+.log li:before{content:"";display:inline-block;width:6px;height:6px;border-radius:3px;background:var(--brand-soft);margin-right:8px;vertical-align:2px}
+.chip{justify-self:start;font-size:12px;font-weight:700;border-radius:10px;padding:4px 10px;white-space:nowrap}
 .c0{background:var(--paper);color:var(--ink-3)}.c1{background:var(--blue-bg);color:var(--blue)}.c2{background:var(--brand-tint);color:var(--brand-strong)}.c3{background:var(--amber-bg);color:var(--amber-strong)}
+.row{display:grid;grid-template-columns:220px 1fr;gap:16px;align-items:center;padding:12px 0;border-top:1px solid var(--line-2)}.row:first-of-type{border-top:0}
 .row p{margin:0;font-size:16px;line-height:1.45}
-.row .sub{display:block;font-size:13px;color:var(--ink-3);margin-top:3px}
-.state{font-size:12px;color:var(--ink-4)}.state.ok{color:var(--brand-strong);font-weight:600}
-.root{display:inline-block;background:var(--dark);color:#fff;border-radius:10px;padding:8px 14px;font-family:var(--font-display);font-size:17px;margin:8px 0 6px}
 .cite{display:inline-block;min-width:17px;height:17px;line-height:17px;text-align:center;border-radius:9px;background:var(--brand-tint);color:var(--brand-strong);font-size:10.5px;font-weight:700;text-decoration:none;margin-left:4px;padding:0 4px;vertical-align:2px}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:8px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
 .fact{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--paper)}
 .fig{font-family:var(--font-display);font-size:26px;color:var(--brand-strong);line-height:1.15}
-.fact p{margin:6px 0;color:var(--ink-2);font-size:14px}
-.by{font-size:12px;color:var(--ink-4)}
-.flow{list-style:none;padding:0;margin:8px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.fact p{margin:6px 0;color:var(--ink-2);font-size:14px}.by{font-size:12px;color:var(--ink-4)}
+.tag{font-size:10.5px;border:1px solid var(--line);border-radius:6px;padding:0 5px;margin:0 2px;color:var(--ink-3)}
+.flow{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
 .step{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--ink-3)}
 .step b{color:var(--ink);font-size:14px}.step .n{font-size:11px;color:var(--ink-4);font-weight:700}
 .step.hot{border-color:var(--amber);background:var(--amber-bg)}.step em{font-style:normal;color:var(--amber-strong);font-weight:600;font-size:12px}
-.group{margin-top:12px}.group h3{font-size:14px;margin:0 0 6px;color:var(--brand-strong)}
-.group ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
-.ask{border:1px solid var(--line);border-radius:12px;padding:12px 14px}.ask.done{border-color:var(--brand-soft)}
-.ask p{margin:0}.ask .q{font-size:16px;font-weight:500}.ask .why{font-size:13px;color:var(--ink-3);margin-top:4px}.ask .said{font-size:13.5px;color:var(--brand-strong);margin-top:6px;font-weight:600}
-.terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;margin-top:8px}
+.terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}
 .term{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}.term span{font-size:13px;color:var(--ink-3)}
-.sources{list-style:none;padding:0;margin:8px 0 0;font-size:13px;color:var(--ink-3);display:flex;flex-direction:column;gap:6px}
-.sn{display:inline-block;width:22px;color:var(--brand-strong);font-weight:700}.stag{font-size:11px;border:1px solid var(--line);border-radius:6px;padding:0 5px;margin:0 4px}
-.fresh{animation:fresh 2.4s ease-out}@keyframes fresh{from{box-shadow:0 0 0 4px var(--brand-soft)}to{box-shadow:var(--shadow-float)}}
-@media (max-width:720px){.row{grid-template-columns:1fr;gap:6px}.card{padding:18px}}
+.sources{list-style:none;padding:0;margin:0;font-size:13px;color:var(--ink-3);display:flex;flex-direction:column;gap:6px}
+.sn{display:inline-block;width:22px;color:var(--brand-strong);font-weight:700}
+.note{font-size:14px;color:var(--ink-3);background:var(--white);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin:0 0 16px}
+.fresh{animation:fresh 2.4s ease-out}@keyframes fresh{from{box-shadow:0 0 0 4px var(--brand-soft)}to{box-shadow:none}}
+@media (max-width:720px){.strands,.totals{grid-template-columns:1fr}.row{grid-template-columns:1fr;gap:6px}.card{padding:18px}}
 </style></head><body><div class="wrap">
-<div class="top"><div><div class="eyebrow">Discovery brief</div><h1>${esc(r.title || "Understanding your world")}</h1></div>${client ? `<span class="client">${esc(client)}</span>` : ""}</div>
-${r.summary ? `<p class="lede">${esc(r.summary)}</p>` : ""}
-<div class="status">${A(r.notes).length && !A(r.facts).length ? `<span class="stat">Published research is not reachable from this machine; everything below comes from our conversation</span>` : status}${checks}</div>
-${section("Our early thinking", "Where we think the value is", "Working hypotheses; each one is tested in our conversation.", branches ? `${tree.problem ? `<div class="root">${esc(tree.problem)}</div>` : ""}${branches}` : "")}
-${section("Stated up front", "What we're assuming", "So you can correct us early.", assumptions)}
-${section("Published evidence", "What the research says", "Figures as published; each links to its source.", facts ? `<div class="facts">${facts}</div>` : "")}
-${section("Today", "How the work runs now", "The industry's own steps, and where they tend to break.", flow ? `<ol class="flow">${flow}</ol>` : "")}
-${section("Our conversation", "Questions we're exploring", "Grouped by the hypothesis each one tests.", groups)}
-${section("Shared language", "Terms we'll use", "", terms ? `<div class="terms">${terms}</div>` : "")}
+<div class="top"><div><div class="eyebrow">Research, live</div><h1>What the published evidence says</h1></div>${client ? `<span class="client">${esc(client)}</span>` : ""}</div>
+<p class="lede">While we talk, three research agents read published sources on your industry: regulators, standards bodies, filings, peer-reviewed work and named studies. Every figure links to the source it came from; nothing here is estimated.</p>
+${blocked ? `<p class="note">Published sources are not reachable from this machine right now, so this page stays empty; everything in our approach comes from what you told us.</p>` : ""}
+<div class="totals"><div class="tot"><b>${A(r.facts).length}</b><span>findings</span></div><div class="tot"><b>${A(r.sources).length}</b><span>sources</span></div><div class="tot"><b>${nP}</b><span>primary sources</span></div></div>
+${section("Live", "Three research streams", "Running in the background; they never hold up our conversation.", `<div class="strands">${strands}</div>`)}
+${section("Findings", "What we found", "Figures as published, with what each means for you.", facts ? `<div class="facts">${facts}</div>` : "")}
+${section("Today", "How the work typically runs", "The industry's own steps, and where they tend to break.", flow ? `<ol class="flow">${flow}</ol>` : "")}
 ${section("Boundaries", "Rules that shape the design", "", regs)}
+${section("Shared language", "Terms we'll use", "", terms ? `<div class="terms">${terms}</div>` : "")}
 ${section("References", "Sources", "", sources ? `<ol class="sources">${sources}</ol>` : "")}
 </div>
 <script>
@@ -119,11 +91,11 @@ ${section("References", "Sources", "", sources ? `<ol class="sources">${sources}
       const html = await (await fetch(location.pathname, { cache: "no-store" })).text();
       const next = new DOMParser().parseFromString(html, "text/html").querySelector(".wrap");
       if (!next || next.innerHTML === last) return;
-      const seen = new Set([...document.querySelectorAll(".row,.ask,.fact")].map((e) => e.textContent));
+      const seen = new Set([...document.querySelectorAll(".fact,.row,.log li")].map((e) => e.textContent));
       const y = window.scrollY; document.querySelector(".wrap").innerHTML = next.innerHTML; last = next.innerHTML; window.scrollTo(0, y);
-      document.querySelectorAll(".row,.ask,.fact").forEach((e) => { if (!seen.has(e.textContent)) e.classList.add("fresh"); });
+      document.querySelectorAll(".fact,.row,.log li").forEach((e) => { if (!seen.has(e.textContent)) e.classList.add("fresh"); });
     } catch (e) {}
-  }, 4000);
+  }, 3000);
 })();
 </script></body></html>
 `;
@@ -138,6 +110,7 @@ function mergeResearch(strands, prev) {
   }
   r.notes = strands.filter((s) => s.note).map((s) => `${s.strand}: ${s.note}`);
   r.strands = strands.filter((s) => s.done && !s.thin).map((s) => s.strand);
+  r.runs = strands.map((s) => ({ strand: s.strand, done: !!s.done, thin: !!s.thin, note: s.note || "", log: A(s.log) }));
   r.thin = strands.filter((s) => s.done && s.thin).map((s) => s.strand);
   return r;
 }
