@@ -171,7 +171,7 @@ Fields: **Signals** · **Gate** · **Problem** · **Options** · **Preference** 
 - Change: fresh workspaces in new dated folders; run.js marks rows older than the checker STALE and never counts them as pass; one concurrency number (3); one checker name; `valued-select/validate.js` with every select path under `--out`, gate "S" in the enum and quick-mode counts defined.
 - Status: accepted by Nik, 2026-11-13 (Apply)
 
-| P-014 | 2026-11-13 | holdout integrity | S-118 to S-120, S-138 | approved | pending |
-| P-015 | 2026-11-13 | cards and builder | S-117, S-131 to S-134 | approved | pending |
-| P-016 | 2026-11-13 | deep-path tooling | S-121 to S-129, S-139, S-140 | approved | pending |
-| P-017 | 2026-11-13 | regression suite and select | S-130, S-135 to S-137 | approved | pending |
+| P-014 | 2026-11-13 | holdout integrity | S-118 to S-120, S-138 | approved | ad16879 |
+| P-015 | 2026-11-13 | cards and builder | S-117, S-131 to S-134 | approved | ad16879 |
+| P-016 | 2026-11-13 | deep-path tooling | S-121 to S-129, S-139, S-140 | approved | ad16879 |
+| P-017 | 2026-11-13 | regression suite and select | S-130, S-135 to S-137 | approved | ad16879 |
