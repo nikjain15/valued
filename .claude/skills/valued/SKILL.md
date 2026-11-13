@@ -81,7 +81,7 @@ keep running and land through the same revise path.
 | Phase | Work | Budget | Who, and what launches in the background |
 |---|---|---|---|
 | 0 Frame | workspace, server, the four pages; framing (who and what hurts, product name); first tree and assumptions; Discover card | 1 min | you; `discovery-researcher` × 3 |
-| 1 Round 1 | 10 hypothesis-led cards, **one at a time**; the approach card updates after every answer; research read out as it lands | 5 min | client; **V once C-1, C-2, C-3 and R1-1 are answered**, **A once V is back and R1-2, R1-3, C-4 are answered**, **U once R1-4 and R1-5 are answered** |
+| 1 Round 1 | 10 hypothesis-led cards, **one at a time**; the approach card updates after every answer; research read out as it lands | 5 min | client; **V once C-1, C-2, C-3 and R1-1 are answered**, **A once V is back and R1-2, R1-3, C-4 are answered**, **U once `a.json` exists and R1-4 and R1-5 are answered** (U uses A's assistants and trigger families) |
 | 2 V then A | collect V and A, render, write the Frame and Shape cards | 1 min | usually already done |
 | 3 Round 2 | 6 cards | 2 min | client; **L starts its golden set from A** while you ask; **D launches** once R2-5 and R2-6 are answered |
 | 4 L and U | L applies the round-2 groups, seals the holdout; U finishes | 3 min | `holdout-sealer` once `u.json` exists |
@@ -264,7 +264,7 @@ Facts and sources stay exactly as the researchers wrote them: never add, round o
 
 **Launch gates while you ask (background, never waited on here).** The moment C-1, C-2, C-3 and R1-1 are
 answered, launch `valued-value`. Once `v.json` exists and R1-2, R1-3 and C-4 are answered, launch
-`valued-ai-fit`. Once R1-4 and R1-5 are answered, launch `valued-user-loop`. Each runs as a sub-agent with
+`valued-ai-fit`. Once R1-4 and R1-5 are answered **and `a.json` exists**, launch `valued-user-loop`: it builds its triggers and never list on A's assistants, so launching it earlier means re-running it. Each runs as a sub-agent with
 `run_in_background: true`, reads the answered cards, writes its own JSON and does not render; render after each
 answer as usual and once more when each gate lands.
 
