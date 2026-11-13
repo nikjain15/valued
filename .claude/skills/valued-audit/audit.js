@@ -81,7 +81,7 @@ const md = [`# Audit ${n}: ${audit.pass ? "all eight standards pass" : `${open.l
   "## Open issues", "", open.length ? ["| ID | Standard | Issue | File at fault | Owner | Fix |", "|---|---|---|---|---|---|", ...open.map((x) => `| ${x.id} | ${x.std} ${cell(x.standard)} | ${cell(x.issue)} | ${cell(x.file)} | gate ${x.gate} (${x.skill}) | ${cell(x.fix)} |`)].join("\n") : "None.", "",
   "## Closed since the first audit", "", closed.length ? closed.map((x) => `- ${x.id} closed in audit ${x.closedIn}: ${cell(x.issue)}`).join("\n") : "- None yet.", "",
   "## Evals", "", "```", `dev:     ${res.dev}`, `holdout: ${res.holdoutLine}`, "```", "",
-  "Work an issue: `/valued-revise <the fix>` (or edit the gate JSON and render), then `/valued-audit` again. The issue closes when the audit no longer finds it.", ""].join("\n");
+  "Work an issue: `/valued-feedback <the fix>` (or edit the gate JSON and render), then `/valued-audit` again. The issue closes when the audit no longer finds it.", ""].join("\n");
 fs.writeFileSync(path.join(AUD, "report.md"), md);
 
 // Trace and the cross-run ledger.

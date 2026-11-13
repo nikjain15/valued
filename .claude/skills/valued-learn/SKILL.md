@@ -10,7 +10,7 @@ Works in the framework repo (`~/dev/valued`), never in a case workspace. Nik app
 ## Logging a signal
 
 `/valued-learn log <feedback>`, and automatically at the end of every run and revision:
-- After every `/valued-revise`: one signal (source "revise"), gate = the owning gate, evidence = old and new decision.
+- After every `/valued-feedback`: one signal (source "revise"), gate = the owning gate, evidence = old and new decision.
 - After every run: read `out/run-report.json`; one signal per item flagged "This is wrong" (source "flag"),
   per eval block (source "eval block", with the fix), per conductor cut (source "overrun"), and per
   `checks` entry still open (source "check").
