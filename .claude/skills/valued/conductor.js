@@ -354,7 +354,7 @@ function renderCase(g, ev) {
 function renderPrd(g, ev, c) {
   // Canonical IDs: whatever the model called a story, the PRD says US-01, US-02 ...
   const storyIds = Object.fromEntries(A(g.v?.stories).map((x, i) => [String(x.id || ""), `US-${String(i + 1).padStart(2, "0")}`]));
-  const storyId = (x) => String(x || "").split(/[,;\s]+/).filter(Boolean).map((t) => storyIds[t] || t).join(", ");
+  const storyId = (x) => { const toks = String(x || "").split(/[,;\s]+/).filter(Boolean); return toks.some((t) => storyIds[t]) ? toks.filter((t) => storyIds[t]).map((t) => storyIds[t]).join(", ") : clean(x); };
   const v = g.v, a = g.a, l = g.l, u = g.u, e = g.e, d = g.d, b = g.b;
   const P = (gate) => {
     const answered = cards().filter((x) => x.gate === gate && x.decision);
@@ -411,14 +411,14 @@ function renderPrd(g, ev, c) {
   const prev = read(path.join(OUT, "prd.md"));
   const history = (prev.match(/## Appendix: document history[\s\S]*$/) || [""])[0].trim();
   const version = (prev.match(/\*\*Version:\*\* ([^·]+)·/) || [, b ? "0.1, draft for client review " : "0.1, live draft "])[1].trim().replace(/live draft/, b ? "draft for client review" : "live draft");
-  const md = [`# ${productName() || v?.useCase || "(use case, from gate V)"}: product requirements`, "", `<!-- Case: ${clean(caseLine())} -->`, "", `**Client:** ${v?.client || "(from gate V)"} · **Version:** ${version} · **Owner:** product lead · **Date:** ${today()} · **Source:** VALUED run, every decision traceable to a gate file in \`out/\``, "",
+  const md = [`# ${productName() || v?.useCase || "(use case, from gate V)"}: product requirements`, "", `<!-- Case: ${clean(caseLine())} -->`, "", `**Client:** ${v?.client || "(from gate V)"} · **Version:** ${version} · **Owner:** product lead · **Date:** ${today()} · **Source:** built step by step with your team; every decision is traceable to the record`, "",
     ...(b ? [`> **Recommendation.** ${clean(b.recommendation)}`, `> **Decision asked of the client.** ${clean(b.decisionAsked)}`, ""] : []),
     ...Object.entries(titles).flatMap(([n, t]) => [`## ${n}. ${t}`, "", s[n], ""]),
-    "## Appendix: client decisions", "", cs.some((x) => x.decision) ? tableAll(["Gate", "Card", "Decision", "Answer source", "Our recommendation"], cs.map((x) => [x.gate, clean(x.question), x.decision ? `${byLabel(x.decision)}${x.revised ? " (revised)" : ""}` : "open", x.decision ? (x.skipped ? "recommended default (round skipped)" : x.auto ? "recommended option" : `client: ${byLabel(x.by || x.role)}`) : "not answered", byLabel(A(x.options)[0]?.label)])) : P("B"), "",
+    "## Appendix: client decisions", "", cs.some((x) => x.decision) ? tableAll(["Gate", "Card", "Decision", "Answer source", "Our recommendation"], cs.map((x) => [x.gate, clean(x.question), x.decision ? `${byLabel(x.decision)}${x.revised ? " (revised)" : ""}` : "open", x.decision ? (x.skipped ? "recommended default (round skipped)" : x.auto ? "recommended option" : `client: ${byLabel(x.by || x.role)}`) : "not answered", x.fact ? "" : byLabel(A(x.options)[0]?.label)])) : P("B"), "",
     history || ["## Appendix: document history", "", "| Version | Date | Change | Requested by | Sections |", "|---|---|---|---|---|", `| 0.1 | ${today()} | First draft, built gate by gate through the VALUED gates | Product lead | All |`].join("\n"), ""].join("\n");
   // Client-ready: bracketed question references stay in the decisions appendix, not in the client's prose.
   const cut = md.indexOf("## Appendix: client decisions");
-  const clientMd = cut > 0 ? md.slice(0, cut).replace(/\s*\((?:\s*(?:C-\d+|R\d-\d+)\s*[,;]?\s*)+\)/g, "").replace(/\s*\((?:C-\d+|R\d-\d+)[,;]\s*([^)]*)\)/g, " ($1)").replace(/\(([^)]*?)[,;]\s*(?:C-\d+|R\d-\d+)\)/g, "($1)") + md.slice(cut) : md;
+  const clientMd = cut > 0 ? md.slice(0, cut).replace(/\s*\((?:\s*(?:C-\d{1,2}|R\d-\d{1,2})\s*[,;]?\s*)+\)/g, "").replace(/\s*\((?:C-\d{1,2}|R\d-\d{1,2})[,;]\s*([^)]*)\)/g, " ($1)").replace(/\(([^)]*?)[,;]\s*(?:C-\d{1,2}|R\d-\d{1,2})\)/g, "($1)") + md.slice(cut) : md;
   write(path.join(OUT, "prd.md"), clientMd);
 }
 
@@ -454,12 +454,12 @@ function check(g, ev, c, quiet) {
   for (const m of consistency()) need(false, 4, m);
   { // Client-ready language: internal ids never reach a client view (the decisions appendix keeps its gate column).
     const body = read(path.join(OUT, "prd.md")).split("## Appendix")[0];
-    const ids = body.match(/\b(?:C-\d+|R\d-\d+|[PRA]\d{1,2}(?=[\s,).;])|B\d(?=[\s,).;:]))/g) || [];
+    const ids = body.match(/\b(?:C-\d{1,2}|R\d-\d{1,2}|[PRA]\d{1,2}(?=[\s,).;])|B\d(?=[\s,).;:]))/g) || [];
     need(!ids.length, 8, `PRD body shows internal ids (${[...new Set(ids)].slice(0, 5).join(", ")}): say what the client said or cite the source in words`);
     const ap = JSON.stringify(json(path.join(GATES, "approach.json"), {}));
-    need(!/\b(?:C-\d+|R\d-\d+|B\d)\b/.test(ap), 8, "approach cards show internal ids: write them for the client");
+    need(!/\b(?:C-\d{1,2}|R\d-\d{1,2}|B\d)\b/.test(ap), 8, "approach cards show internal ids: write them for the client");
     const cj = JSON.stringify({ ...json(path.join(PROTO, "case.json"), {}), decisions: undefined });
-    const leak = cj.match(/\bGate [VALUED]\b|\b(?:C-\d+|R\d-\d+)\b|\([^)]*recommended[^)]*\)/gi) || [];
+    const leak = cj.match(/\bGate [VALUED]\b|\b(?:C-\d{1,2}|R\d-\d{1,2})\b|\([^)]*recommended[^)]*\)/gi) || [];
     need(!leak.length, 8, `prototype text shows method internals (${[...new Set(leak)].slice(0, 4).join(", ")}): write it for the user of the product`);
     for (const a of A(g.r?.assumptions)) { const c = cards().find((x) => x.id === a.card); if (c && c.decision) need(["confirmed", "challenged"].includes(a.status), 1, `assumption "${String(a.text).slice(0, 50)}" was tested by an answer but has no status (confirmed or challenged)`); }
   }
@@ -564,7 +564,7 @@ if (cmd === "clock") {
   const cs = cards(); const round = Number(rest[1]);
   const mine = cs.filter((c) => Number(c.round) === round);
   if (rest[0] === "auto" || rest[0] === "skip") { const skip = rest[0] === "skip"; for (const c of mine) { c.decision = A(c.options)[0]?.label; c.auto = true; if (skip) c.skipped = true; c.by = skip ? "client (skipped, recommended taken)" : c.role; trace({ kind: "decision", id: c.id, gate: c.gate, role: c.role, question: c.question, decision: c.decision, auto: true, skipped: skip }); } writeJson(path.join(OUT, "cards.json"), cs); console.log(skip ? `Round ${round} skipped: ${mine.length} cards took the recommended option so we can move on; the PRD records them as client defaults.` : `Round ${round}: ${mine.length} cards answered with the recommended option (auto).`); }
-  else for (const c of mine) { console.log(`\n**"${c.role}": "${c.question}"** If none fits, answer with: ${c.format}`); if (c.why) console.log(`Why we ask: ${clean(c.why)}`); A(c.options).forEach((o, i) => console.log(`${i + 1}. ${o.label}${i === 0 && !/\(Recommended\)/i.test(o.label || "") ? " (Recommended)" : ""}: ${clean(o.tradeoff)}`)); }
+  else for (const c of mine) { console.log(`\n**"${c.role}": "${c.question}"** If none fits, answer with: ${c.format}`); if (c.why) console.log(`Why we ask: ${clean(c.why)}`); A(c.options).forEach((o, i) => console.log(`${i + 1}. ${o.label}${i === 0 && !c.fact && !/\(Recommended\)/i.test(o.label || "") ? " (Recommended)" : ""}: ${clean(o.tradeoff)}`)); }
 } else if (cmd === "verify") {
   // Fast, deterministic QC after a phase: only what that phase and the ones before it own. The gate-qc agent
   // does the judgement checks in the background; this catches the mechanical ones in a second.
