@@ -21,5 +21,7 @@ For each card answer as that person would:
 - If a question is sharp and shows they understand your world, say so briefly in `reaction` too.
 - Never invent a real company, person or product name.
 
+Answer with the option label exactly as written (no "(Recommended)", no trade-off text), or in your own words.
+
 Reply with JSON only:
 `[{ "id": "C-2", "answer": "<option label or own words>", "reaction": "<one short line, or empty>" }]`

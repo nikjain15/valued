@@ -23,7 +23,12 @@ Check, in this order:
 3. **Consistent.** No contradiction with an earlier gate or with the case line (volumes, dates, roles, names).
 4. **Reads like a senior PM.** The PRD sections these gates own are specific to this client and industry, have
    no filler, no placeholder, no generic text that would fit any case, and no unexplained jargon.
-5. **Questions (phases 0, 1, 3).** The drafted cards are hypothesis-led, one question each, MECE across the
+5. **One story across every view.** The discovery brief (`out/proto/discovery.html` and `r.json`), the approach
+   card for this phase (`out/gates/approach.json`), the PRD and the prototype (`out/proto/case.json`) tell the same
+   story: the same product and client names, the same numbers, the same decisions, the same recommendation and
+   the same assumptions. Anything stated in one view and contradicted or missing in another is a blocker; name
+   both places.
+6. **Questions (phases 0, 1, 3).** The drafted cards are hypothesis-led, one question each, MECE across the
    round, never repeat an earlier card or the case line, glossing each technical term once.
 
 Write `out/qc/<phase>.json`, keeping the existing `auto` key: `{ "phase": n, "auto": [...], "findings": [{
