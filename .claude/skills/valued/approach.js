@@ -16,6 +16,7 @@ const STAGES = [
 ];
 
 function renderApproach(ap, cards, title, client, r) {
+  const assumed = A(cards).filter((x) => x.assumed && x.decision);
   ap = ap || {}; r = r || {};
   const srcs = A(r.sources); const srcN = Object.fromEntries(srcs.map((x, i) => [x.key, i + 1]));
   const factOf = Object.fromEntries(A(r.facts).map((f) => [f.key, f])); const cited = new Set();
@@ -30,6 +31,7 @@ function renderApproach(ap, cards, title, client, r) {
     return `<div class="stage" data-stage="${key}"${key === nowKey ? "" : " hidden"}><div class="card">
 <div class="k">${esc(STAGES[idx][1])}</div>
 <h2>${bold(c.headline)}</h2>
+${A(c.recap).length ? `<div class="row why"><span class="chip c1">So far</span><ul class="as">${A(c.recap).slice(0, 3).map((x) => `<li>${bold(x)}</li>`).join("")}</ul></div>` : ""}
 ${c.heard ? `<div class="row"><span class="chip c1">What we heard</span><p>${bold(c.heard)}</p></div>` : ""}
 ${c.breaks ? `<div class="row"><span class="chip c3">Where it breaks</span><p>${bold(c.breaks)}</p></div>` : ""}
 ${A(c.evidence).slice(0, 2).map((e) => `<div class="row"><span class="chip c1">The research says</span><p>${bold(e.text)}${citeF(e.fact)}</p></div>`).join("")}
@@ -42,6 +44,7 @@ ${c.tradeoff ? `<div class="row"><span class="chip c3">What we'd give up</span><
 ${c.checkIn ? `<div class="ask"><div class="q">?</div><div><span class="l">Check in</span><p>"${esc(c.checkIn)}"</p></div></div>` : ""}</div>`;
   };
   const written = STAGES.map(([k]) => k).filter((k) => byStage[k]);
+  const assumeBlock = assumed.length ? `<details class="assume"><summary>We've made a few working assumptions to keep things moving · <span>see them</span></summary><ul>${assumed.map((x) => { const f = factOf[x.basis]; const sk = f ? f.source : x.basis; return `<li><b>${esc(x.title || "")}</b> ${esc(String(x.decision).replace(/\s*\((persona|auto|recommended)\)/gi, ""))}${srcN[sk] ? citeF(x.basis) : x.basis === "pending" ? ` <span class="chk2">being checked</span>` : ""}${x.why ? `<em>${esc(x.why)}</em>` : ""}</li>`; }).join("")}</ul></details>` : "";
   const card = written.length ? written.map(cardFor).join("") + `<p class="back" hidden><a href="#" data-back>Back to where we are</a></p>` :
     `<div class="card"><div class="k">Getting started</div><h2>We'll shape this together as we go</h2><p class="muted">Each stage fills in here as we learn more about your world.</p></div>`;
 
@@ -90,12 +93,14 @@ h1{font-family:var(--font-display);font-size:26px;margin:4px 0 0}
 .st2.ok{background:var(--brand-tint);color:var(--brand-strong)}.st2.chk{background:var(--amber-bg);color:var(--amber-strong)}
 .cite{display:inline-block;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:9px;background:var(--brand-tint);color:var(--brand-strong);font-size:11px;font-weight:700;margin-left:5px;vertical-align:3px;text-decoration:none}
 .src{font-size:12px;color:var(--ink-4);margin:12px 4px 0}.src a{color:var(--brand-strong)}
+.assume{margin:12px 4px 0;font-size:14px;color:var(--ink-3)}.assume summary{cursor:pointer}.assume summary span{color:var(--brand-strong);text-decoration:underline}.assume ul{margin:8px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:6px}.assume b{color:var(--ink-2);margin-right:4px}.assume em{display:block;font-style:normal;font-size:12.5px;color:var(--ink-4)}.chk2{font-size:11px;background:var(--amber-bg);color:var(--amber-strong);border-radius:999px;padding:1px 8px;margin-left:6px}
 .fresh{animation:fresh 2.4s ease-out}@keyframes fresh{from{box-shadow:0 0 0 4px var(--brand-soft)}to{box-shadow:var(--shadow-float)}}
 @media (max-width:720px){.stepper{flex-wrap:wrap;row-gap:12px}.stepper:before{display:none}.st{flex:0 0 33%}.row{grid-template-columns:1fr;gap:6px}.row p,.row ol{font-size:18px}.card h2{font-size:23px}}
 </style></head><body><div class="wrap">
 <div class="top"><div><div class="eyebrow">Our approach</div><h1>${esc(title || "Our approach")}</h1></div>${client ? `<span class="client">${esc(client)}</span>` : ""}</div>
 <div class="stepper">${stepper}</div>
 ${card}
+${assumeBlock}
 ${cited.size ? `<p class="src">Sources: ${[...cited].map((k) => { const x = srcs.find((y) => y.key === k); return `${srcN[k]}. ${esc(x.publisher)}, ${esc(x.title)}, ${esc(x.year)}`; }).join(" · ")} · <a href="/research">Full research</a></p>` : ""}
 </div>
 <script>
@@ -120,7 +125,7 @@ ${cited.size ? `<p class="src">Sources: ${[...cited].map((k) => { const x = srcs
       const html = await (await fetch(location.pathname, { cache: "no-store" })).text();
       const next = new DOMParser().parseFromString(html, "text/html").querySelector(".wrap");
       if (!next || next.innerHTML === last) return;
-      const y = window.scrollY; document.querySelector(".wrap").innerHTML = next.innerHTML; last = next.innerHTML; apply(); window.scrollTo(0, y);
+      const y = window.scrollY; const wasOpen = !!(document.querySelector(".assume") || {}).open; document.querySelector(".wrap").innerHTML = next.innerHTML; last = next.innerHTML; apply(); const asm = document.querySelector(".assume"); if (asm && wasOpen) asm.open = true; window.scrollTo(0, y);
       const c = document.querySelector(".stage:not([hidden]) .card"); if (c) c.classList.add("fresh");
     } catch (e) {}
   }, 3000);

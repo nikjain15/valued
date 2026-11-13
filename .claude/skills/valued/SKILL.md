@@ -207,10 +207,16 @@ better supported, the value frame better anchored. Nothing waits for it.
    else (`mv out "out-prev-$(date +%Y%m%d-%H%M%S)"`; `out-*` is git-ignored) and never read from it again: no
    answer, number, name or case detail from an earlier session may appear in this one. Stop anything already
    listening on the port.
-   **No case line? Let them say it in their own words.** If `/valued` came with no case, do not show option cards
-   first. Print one warm line and wait for a typed reply: "Tell me about the client and the problem in a
-   sentence or two: who they are, what hurts today, and what they would like to see by when." Build the case line
-   from that reply, then ask framing cards only for what it still lacks (and the product name).
+   **The opening: three short cards, then the product name.** Ask only what the case line does not already say,
+   one card at a time, each with "Other" for the client's own words:
+   - **Context** (`F-1`, gate Frame): "Could you tell me a little about your organisation, and the area this work
+     focuses on?" Options are single industries, one per option (e.g. Insurance; Banking; Healthcare; Public
+     sector). Never assume an internal team or external customers.
+   - **Key outcome** (`R1-1`): "What would you most like to improve?" (e.g. Turnaround time; Accuracy and
+     compliance; Cost to serve; Customer experience).
+   - **Timeline** (`C-3`): "By when would you like to see a first result?" (Within a month; Within a quarter;
+     Within six months; Later this year). Never assume a timeframe.
+   Build the case line from these answers. Key outcome and Timeline are then settled and never asked again.
 1. Write the wrapper first (step 2's first two lines), then `out/tools/c clock 0 start`. If `out/select/select.json` exists (a `/valued-select` run), take the preferred option as the use case, its audience and assumptions as framing, and print `Case from out/select/select.json: <option>`; ask no framing card that file already answers.
    **Framing asks only what research needs to start: who the client is and what hurts.** Success measures,
    timelines, data and constraints belong to Round 1, so never ask them here (asking them twice is the most
@@ -262,6 +268,48 @@ better supported, the value frame better anchored. Nothing waits for it.
    `out/tools/c render`. Say: "Here's how I'm thinking about it: the problem splits into these branches, here is
    what I'm assuming, and every question I ask tests one of them." `out/tools/c clock 0 end`.
 
+## Ask or assume: five core questions, the rest only when they matter
+
+**Always asked:** Context, Key outcome, Timeline (the opening), then **Baseline** (`C-2`) and **AI approach**
+(`R1-3`: "For a first pilot, how comfortable would you be with an AI model working on data that has personal
+details removed?"). Every other card is asked **only when its trigger fires**; otherwise it is answered by a quick,
+researched assumption and not asked. A typical session asks 5 to 8 questions.
+
+| Card | Asked when | Otherwise assumed (from research) |
+|---|---|---|
+| C-1 Stakeholders | the work touches customers, money or regulated decisions | the usual sign-off roles for this industry |
+| C-6 Value case | cost or funding comes up, or Key outcome is cost | a benchmark-based improvement range |
+| R1-2 Constraints | the industry is regulated, or the AI approach answer was cautious | personal data stays within the organisation |
+| C-4 Data sources | the context did not say where the data lives | the industry's typical system of record |
+| C-5 Past efforts | an answer hints at a past attempt ("last time", "a vendor", "tried") | nothing tried before |
+| C-7 Trade-offs | the AI approach answer allows a model | accuracy protected first |
+| C-8 Alternatives | buying a product or vendors come up | build on existing platforms |
+| R1-4 Oversight | decisions affect customers, money or health | people review every suggestion |
+| R1-5 Escalation | Oversight is anything other than reviewing every suggestion | the usual escalation path |
+| C-9 Transparency | responses reach customers or the public | internal use; no disclosure needed |
+| R2-1 Phase one | two or more starting points from A score within about 10% | A's top starting point |
+| R2-2 Risk focus | regulated or vulnerable groups, or research flags a risky segment | the segment research flags |
+| R2-3 Integrations | two or more systems are named | the one system named |
+| R2-4 Go-live bar | a miss could cause serious harm (health, money, legal) | the published benchmark for this kind of work |
+| R2-5 Pilot group | several teams, regions or products are mentioned | one team |
+| R2-6 Pause point | a past attempt failed, or the risk is high | a correction-rate threshold |
+| R2-7 Ownership | more than one possible owner has come up | the operations owner |
+| R2-8 Dependencies | the timeline is a quarter or less, or other projects come up | none known |
+
+**How an assumption is made (quick, grounded, never invented).** Draft the card in full as usual, then instead
+of asking it: use a fact the research already holds if one supports the default; otherwise launch a background
+`discovery-researcher` follow-up (`followup-<n>`, topic "Assumption: <title>", one focused question, about 60 to
+90 seconds; up to six assumption checks per session). Record it on the card: `"assumed": true`, `"decision"`
+(the assumption), `"basis"` (the fact key, or `"pending"`), `"why"` (one line of reasoning). If no source has landed
+within about 90 seconds, tell the product lead in the chat, once: "Still confirming a source. Working assumption:
+<assumption>, because <why>. Keep it, ask the client, or change it?" and mark it "Being checked". When a source
+lands, set `basis` and render. If research finds nothing, say so and ask the card instead. Any assumption can be
+replaced by the client's answer through `valued-revise`; the answer always wins.
+
+**A pause between topics.** After every three or four questions asked, stop and add a `recap` (two or three short
+bullets of what we have heard, in the client's words) to the current approach card, render, and say it: "Here is
+what we've heard so far..." Let the conversation breathe; continue when the product lead does.
+
 ## Phase 1: Round 1, discovery (4 min)
 
 `out/tools/c clock 1 start`. **Before each question, run `out/tools/c research`.** It prints only what is new
@@ -273,7 +321,7 @@ Facts and sources stay exactly as the researchers wrote them: never add, round o
 **Research follows the conversation.** When an answer opens an angle the three standing strands do not
 cover (a storm surge, a regulator letter, a second channel, a system nobody mentioned), launch one
 `discovery-researcher` in the background with strand `followup-<n>`, a short `topic`, the answer that prompted it
-as `because`, and one focused question. At most three per session, same reputable-sources rule, never waited on.
+as `because`, and one focused question. At most three per session (plus the assumption checks below), same reputable-sources rule, never waited on.
 Say one line to the client ("I've asked our research to check storm-week volumes; I'll bring it in when it lands"),
 and fold its findings into the next question or the approach card when `out/tools/c research` shows them.
 
@@ -349,7 +397,7 @@ answer**, so the approach page, the PRD and the prototype all show it within sec
 |---|---|---|---|---|---|
 | R1-2 | **Constraints** | V | sponsor | hard limits on data, platform, scope or channel (multi); never review or autonomy, which R1-4 owns | e.g. data stays in-house, existing platform only, one channel first, one product line first; each with what it rules out |
 | C-4 | **Data sources** | L | data owner | where the data for this lives today, and whether we can start from it or need stand-ins | one system of record; spread across systems; mostly documents and email; start with synthetic stand-ins |
-| R1-3 | **AI approach** | A | IT and risk | whether a hosted model may run on synthetic data | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
+| R1-3 | **AI approach** | A | IT and risk | how comfortable they are with an AI model working on data that has personal details removed (plain words; never "de-identified" or "synthetic") | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
 | C-5 | **Past efforts** | D | operations owner | what happened the last time something like this was tried | stalled on adoption; stalled on data; stalled on risk sign-off; new territory; each with what it means for the plan |
 | C-7 | **Trade-offs** | A | sponsor | which of speed, accuracy and running cost they would protect most if one has to give | the three, each with what it means for model choice and cost |
 | C-8 | **Alternatives** | A | IT and risk | what they have looked at buying instead, and what put them off | named product categories in this industry (never real vendors), building in-house, nothing yet; each with what it means for build, buy or partner |
