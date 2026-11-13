@@ -284,9 +284,9 @@ answered, launch `valued-value`. Once `v.json` exists and R1-2, R1-3, C-4, C-7 a
 answer as usual and once more when each gate lands.
 
 **Every card carries its PM title.** Each card has a `title` (the product-management term for what it
-establishes, as in the tables: Baseline, North star, Stakeholders, Trade-offs, Launch bar, Kill rule ...). Show it
+establishes, as in the tables: Stakeholders, Baseline, Key outcome, Trade-offs, Go-live bar, Pause point ...). Show it
 as the card's header chip (AskUserQuestion `header`, at most 12 characters), keep it in `cards.json`, and use it
-when you refer back ("On baseline, you told us ..."). The PRD's decisions appendix lists it.
+when you refer back ("On the baseline, you told us ..."). Titles are client-facing: professional, plain, never internal jargon. The PRD's decisions appendix lists it.
 
 **How a consultant asks.** These are the rules that make every round (framing, Round 1, Round 2 and E's card)
 sound like a strong partner from a top firm, not a form:
@@ -338,19 +338,19 @@ answer**, so the approach page, the PRD and the prototype all show it within sec
 | Card | Title | Gate | Header role | What it establishes | Options come from |
 |---|---|---|---|---|---|
 | C-2 | **Baseline** | V | operations owner | the size of today's problem, building on the framing answer: volume, time per item or rework, as one number the client can point at | 3 to 4 non-overlapping ranges anchored on a benchmark or the case |
-| R1-1 | **North star** | V | sponsor | the one outcome that must move | 2 to 3 north-star metrics with what each rewards and can hide |
+| R1-1 | **Key outcome** | V | sponsor | the one outcome that must move | 2 to 3 north-star metrics with what each rewards and can hide |
 | C-1 | **Stakeholders** | V | sponsor | who must say yes for this to go live, and who could slow it down (multi) | this industry's named owner, approver and blocker roles |
 | C-3 | **Timeline** | D | sponsor | the commitment window: how soon they need to see something working | 6 to 8 weeks; a quarter; this fiscal year; each with what it allows |
-| C-6 | **Value bar** | V | sponsor | what this would need to save or earn to be worth funding | ranges built from their baseline and volume (e.g. a few hundred hours a month; a cost per item; a revenue or loss figure), each with what it implies for scope |
+| C-6 | **Value case** | V | sponsor | what this would need to save or earn to be worth funding | ranges built from their baseline and volume (e.g. a few hundred hours a month; a cost per item; a revenue or loss figure), each with what it implies for scope |
 
 **Screen two: "And the boundaries we design around"**
 
 | Card | Title | Gate | Header role | What it establishes | Options come from |
 |---|---|---|---|---|---|
 | R1-2 | **Constraints** | V | sponsor | hard limits on data, platform, scope or channel (multi); never review or autonomy, which R1-4 owns | e.g. data stays in-house, existing platform only, one channel first, one product line first; each with what it rules out |
-| C-4 | **Data** | L | data owner | where the data for this lives today, and whether we can start from it or need stand-ins | one system of record; spread across systems; mostly documents and email; start with synthetic stand-ins |
-| R1-3 | **Build** | A | IT and risk | whether a hosted model may run on synthetic data | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
-| C-5 | **Lessons** | D | operations owner | what happened the last time something like this was tried | stalled on adoption; stalled on data; stalled on risk sign-off; new territory; each with what it means for the plan |
+| C-4 | **Data sources** | L | data owner | where the data for this lives today, and whether we can start from it or need stand-ins | one system of record; spread across systems; mostly documents and email; start with synthetic stand-ins |
+| R1-3 | **AI approach** | A | IT and risk | whether a hosted model may run on synthetic data | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
+| C-5 | **Past efforts** | D | operations owner | what happened the last time something like this was tried | stalled on adoption; stalled on data; stalled on risk sign-off; new territory; each with what it means for the plan |
 | C-7 | **Trade-offs** | A | sponsor | which of speed, accuracy and running cost they would protect most if one has to give | the three, each with what it means for model choice and cost |
 | C-8 | **Alternatives** | A | IT and risk | what they have looked at buying instead, and what put them off | named product categories in this industry (never real vendors), building in-house, nothing yet; each with what it means for build, buy or partner |
 
@@ -358,9 +358,9 @@ answer**, so the approach page, the PRD and the prototype all show it within sec
 
 | Card | Title | Gate | Header role | What it establishes | Options come from |
 |---|---|---|---|---|---|
-| R1-4 | **Autonomy** | U | risk owner | how much it may do on its own in the first 90 days | suggest only, draft with approval, act on low-risk actions |
+| R1-4 | **Oversight** | U | risk owner | how much it may do on its own in the first 90 days | suggest only, draft with approval, act on low-risk actions |
 | R1-5 | **Escalation** | U | operations owner | who it loops in on a hard call | the existing path, a specialist team, the risk desk, named for this industry |
-| C-9 | **Disclosure** | U | risk owner | whether the people it serves should be told when AI helped prepare an answer | always disclose; disclose on customer-facing output only; internal use, no disclosure needed; each with its regulatory and trust trade-off |
+| C-9 | **Transparency** | U | risk owner | whether the people it serves should be told when AI helped prepare an answer | always disclose; disclose on customer-facing output only; internal use, no disclosure needed; each with its regulatory and trust trade-off |
 
 Where the answers go: C-1 becomes V's `stakeholders`; C-2 anchors V's value frame (the client's baseline
 beats our assumption); C-3 bounds A's first wave and sets D's `roadmap`; C-4 sets A's data feasibility and
@@ -393,13 +393,13 @@ assistants, the seed groups), append with `"round": 2`, print or auto, record an
 
 | Card | Title | Gate | Header role | Question |
 |---|---|---|---|---|
-| R2-1 | **MVP scope** | A | sponsor | Of these, which feels like the natural place to start? (A's wave options) |
-| R2-2 | **Risk segment** | L | operations owner | Is there a type of case you would want us to be extra careful with? |
+| R2-1 | **Phase one** | A | sponsor | Of these, which feels like the natural place to start? (A's wave options) |
+| R2-2 | **Risk focus** | L | operations owner | Is there a type of case you would want us to be extra careful with? |
 | R2-3 | **Integrations** | L | data owner | For a first run, what is worth plugging in, and what can stay manual? |
-| R2-4 | **Launch bar** | E | risk owner | How confident would you need to feel before you are comfortable going live? (0.99 / 0.97 / 0.95) |
-| R2-5 | **Pilot** | D | sponsor | Who would be a good small group to try this with first? |
-| R2-6 | **Kill rule** | D | sponsor | If it is not landing, what would be your sign to pause? |
-| R2-7 | **Run owner** | D | operations owner | who owns it day to day after launch, and who fixes it when it is wrong |
+| R2-4 | **Go-live bar** | E | risk owner | How confident would you need to feel before you are comfortable going live? (0.99 / 0.97 / 0.95) |
+| R2-5 | **Pilot group** | D | sponsor | Who would be a good small group to try this with first? |
+| R2-6 | **Pause point** | D | sponsor | If it is not landing, what would be your sign to pause? |
+| R2-7 | **Ownership** | D | operations owner | who owns it day to day after launch, and who fixes it when it is wrong |
 | R2-8 | **Dependencies** | D | sponsor | what else in flight this depends on or competes with (multi) |
 
 `out/tools/c cards skip 2` takes the recommended option on every round-2 card and logs it as skipped if the
