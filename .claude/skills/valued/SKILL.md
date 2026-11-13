@@ -38,6 +38,16 @@ section 19. `out/tools/c check` lists what is still missing, by standard; a run 
 client owns, every recommendation shows its trade-offs, mark every assumed fact (assumed), synthetic data
 only, no em-dashes, tables of at most 12 rows.
 
+**The chat is client-facing, always.** The client reads this window on a shared screen. Every line you
+print is addressed to them, in a product lead's voice, about their problem. Never narrate your own process
+("checking which fields the page reads", "recording that", "reading how research merges", "let me look at the
+file"): do that work silently and say only what it means for them ("Research is in: claims cycle time is the
+lever; I've added it to the brief"). Tool calls are fine; the commentary between them is for the client.
+
+**Start the server only one way.** Always with the command in phase 0 step 2 (`node out/proto/server.js` on the
+port), run in the background from this workspace. Never use a preview tool, a `launch.json` or any other
+launch configuration: a parent folder's config can start a different product's server.
+
 **Talk to the client, not about them.** The client is watching the shared screen, so everything printed
 addresses them as "you" and the team as "we". Never narrate "let me ask the client", "the client decides"
 or "asked North-star": say "a couple of quick ones for you", "your call", "let's capture this". Round

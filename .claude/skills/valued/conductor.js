@@ -522,7 +522,8 @@ if (cmd === "clock") {
   for (const f of fresh) { const sx = srcs[f.source] || {}; console.log(`Just confirmed · ${clean(f.figure)} · ${clean(f.fact)} (${clean(sx.publisher)}, ${clean(sx.year)})`); seen.add(f.key); }
   for (const g of A(r.regulation)) { const k = `reg:${g.rule}`; if (!seen.has(k)) { console.log(`Rule to design around · ${clean(g.rule)}: ${clean(g.plain)}`); seen.add(k); } }
   if (fs.existsSync(dir)) writeJson(seenFile, [...seen]);
-  const open = ["process", "regulation", "ai"].filter((k) => !A(r.strands).includes(k));
+  const open = ["process", "regulation", "ai"].filter((k) => !A(r.strands).includes(k) && !A(r.thin).includes(k));
+  if (A(r.thin).length) console.log(`Still confirming: ${r.thin.join(", ")} (evidence so far is thin; treat it as a lead, not a finding).`);
   console.log(fresh.length ? `Research: ${r.facts.length} facts from ${r.sources.length} sources so far${open.length ? `; still reading: ${open.join(", ")}` : "; all three strands in"}.` : open.length ? `Research still reading: ${open.join(", ")}. Carry on; it joins when it lands.` : "Research complete.");
   write(path.join(PROTO, "discovery.html"), renderDiscovery(r, cards(), G("v")?.client || r.client, qcAll()));
 } else if (cmd === "seed") seed(rest[0]);
