@@ -32,6 +32,10 @@ function renderDiscovery(r, cards, client) {
   const regs = A(r.regulation).slice(0, 6).map((g) => `<tr><td><b>${esc(g.rule)}</b></td><td>${esc(g.plain)}</td><td>${cite(g.source)}</td></tr>`).join("");
   const sources = A(r.sources).map((s, i) => `<li id="src-${esc(s.key)}"><span class="sn">${i + 1}</span>${esc(s.publisher)}, <i>${esc(s.title)}</i>, ${esc(s.year)}. <span class="stag">${s.tag === "P" ? "Primary" : "Secondary"}</span> <a href="${esc(s.url)}" target="_blank" rel="noopener">source</a></li>`).join("");
   const nP = A(r.sources).filter((s) => s.tag === "P").length;
+  const STR = [["process", "How the work runs"], ["regulation", "Rules and risk"], ["ai", "Where AI has worked"]];
+  const landed = new Set(A(r.strands));
+  const status = STR.map(([k, l]) => `<span class="strand${landed.has(k) ? " done" : ""}">${landed.has(k) ? "&#10003;" : "&#9679;"} ${l}${landed.has(k) ? "" : ": researching"}</span>`).join("");
+  const assumptions = A(r.assumptions).slice(0, 8).map((a) => { const c = a.card && byId[a.card]; const st = c && c.decision ? (a.confirmedIf && new RegExp(a.confirmedIf, "i").test(c.decision) ? "ok" : "check") : "open"; return `<li class="as ${st}"><span class="dot"></span><div><b>${esc(a.text)}</b><span>${a.facts && A(a.facts).length ? `Based on ${cites(a.facts)}` : "Our assumption, from experience"}${c ? ` · tested by ${esc(c.id)}${c.decision ? `: you said "${esc(c.decision)}"` : ""}` : ""}</span></div></li>`; }).join("");
 
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -88,12 +92,25 @@ tr:first-child td{border-top:0}
 .sources{list-style:none;padding:0;font-size:13px;color:var(--ink-3);display:flex;flex-direction:column;gap:6px}
 .sn{display:inline-block;width:22px;color:var(--brand-strong);font-weight:600}
 .stag{font-size:11px;border:1px solid var(--line);border-radius:6px;padding:0 5px}
+.strands{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.strand{font-size:12px;border-radius:var(--r-pill);padding:3px 10px;background:var(--amber-bg);color:var(--amber-strong);border:1px solid #f0dcbc}
+.strand.done{background:var(--brand-tint);color:var(--brand-strong);border-color:var(--brand-soft)}
+.assume{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:8px}
+.as{display:flex;gap:10px;background:var(--white);border:1px solid var(--line);border-radius:var(--r-card);padding:12px}
+.as b{display:block;font-weight:500}
+.as span{font-size:12px;color:var(--ink-3)}
+.as .dot{flex:none;width:10px;height:10px;border-radius:5px;margin-top:5px;background:var(--ink-4)}
+.as.ok .dot{background:var(--brand)}.as.check .dot{background:var(--amber)}
+.fresh{animation:fresh 2.4s ease-out}
+@keyframes fresh{from{box-shadow:0 0 0 3px var(--brand-soft)}to{box-shadow:none}}
 @media (max-width:760px){.tree{grid-template-columns:1fr}.branches{border-left:0;padding-left:0}.branch{grid-template-columns:1fr}.branch:before{display:none}.qs{justify-content:flex-start}}
 </style></head><body><div class="wrap">
 <div class="eyebrow">Discovery brief${client ? ` · ${esc(client)}` : ""}</div>
 <h1>${esc(r.title || "What we already know about your world")}</h1>
 <p class="lede">${esc(r.summary || "")}</p>
 <div class="meta"><span class="pill">${A(r.sources).length} sources, ${nP} primary</span><span class="pill">${A(r.facts).length} cited facts</span><span class="pill">${answered} of ${A(cards).filter((c) => Number(c.round) === 1).length} questions answered</span></div>
+<div class="strands">${status}</div>
+${assumptions ? `<h2>What we are assuming</h2><p class="sub">Stated up front so you can correct us. Each one is tested by a question.</p><ul class="assume">${assumptions}</ul>` : ""}
 ${facts ? `<h2>What the evidence says</h2><p class="sub">Published figures only; every number links to its source.</p><div class="facts">${facts}</div>` : ""}
 ${flow ? `<h2>How the work runs today</h2><p class="sub">The industry's own steps, and where they typically break.</p><ol class="flow">${flow}</ol>` : ""}
 ${branches ? `<h2>Where we think the value is</h2><p class="sub">Our working hypotheses. Each question below tests one branch.</p><div class="tree"><div class="root"><small>The problem</small>${esc(tree.problem || "")}</div><div class="branches">${branches}</div></div>` : ""}
@@ -101,7 +118,23 @@ ${groups ? `<h2>Questions for you</h2><p class="sub">Grouped by the hypothesis e
 ${terms ? `<h2>Terms we'll use</h2><p class="sub">Your industry's words, and what each means in one line.</p><div class="terms">${terms}</div>` : ""}
 ${regs ? `<h2>Rules that shape the design</h2><table>${regs}</table>` : ""}
 ${sources ? `<h2>Sources</h2><ol class="sources">${sources}</ol>` : ""}
-</div></body></html>
+</div>
+<script>
+// Live: re-read this page every 4s and swap the content in place when research or answers land.
+(function () {
+  let last = document.querySelector(".wrap").innerHTML;
+  setInterval(async () => {
+    try {
+      const html = await (await fetch(location.pathname, { cache: "no-store" })).text();
+      const doc = new DOMParser().parseFromString(html, "text/html"); const next = doc.querySelector(".wrap");
+      if (!next || next.innerHTML === last) return;
+      const seen = new Set([...document.querySelectorAll(".fact,.ask,.as,.branch")].map((e) => e.textContent));
+      const y = window.scrollY; document.querySelector(".wrap").innerHTML = next.innerHTML; last = next.innerHTML; window.scrollTo(0, y);
+      document.querySelectorAll(".fact,.ask,.as,.branch").forEach((e) => { if (!seen.has(e.textContent)) e.classList.add("fresh"); });
+    } catch (e) {}
+  }, 4000);
+})();
+</script></body></html>
 `;
 }
 
@@ -113,6 +146,7 @@ function mergeResearch(strands, prev) {
     for (const s of strands) for (const x of A(s[k])) { const id = k === "terms" ? String(x.term || "").toLowerCase() : k === "sources" ? x.url || x.key : JSON.stringify(x); if (id && !seen.has(id)) { seen.add(id); r[k].push(x); } }
   }
   r.notes = strands.filter((s) => s.note).map((s) => `${s.strand}: ${s.note}`);
+  r.strands = strands.filter((s) => s.done).map((s) => s.strand);
   return r;
 }
 
