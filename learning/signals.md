@@ -633,3 +633,45 @@ addressed by <change>, rejected: <reason>).
 - S-112: addressed by P-011 (applied 2026-11-12)
 - S-113, S-115: addressed by P-012 (applied 2026-11-12)
 - S-114: addressed by P-013 (applied 2026-11-12)
+
+## Rehearsal 2026-11-13 (insurance claims intake, persona, valued-live clone at PR 14)
+
+### S-117
+- Gate: conductor (renderer). Source: review (REV-05) and QC phase 5.
+- Evidence: PRD section 11 matches eval rows to `e.gateTable` on the first 10 characters of the metric, so "Escalation precision" takes the "Escalation recall" row's why-text and calls an assumed 0.80 bar "the client's bar (R2-4)".
+- Status: addressed on branch claude/fix-renderer-bugs (2026-11-13, conductor.js: gateWhy, holdoutCell, repair-count sentence, assumptionText); not merged
+
+### S-118
+- Gate: conductor (renderer). Source: review (REV-01) and QC phase 6.
+- Evidence: section 11 always prints "passed after one disclosed repair" plus `e.fixes[0]` when `e.repaired`, though this run had two repair rounds; contradicts the PRD's own summary.
+- Status: addressed on branch claude/fix-renderer-bugs (2026-11-13, conductor.js: gateWhy, holdoutCell, repair-count sentence, assumptionText); not merged
+
+### S-119
+- Gate: conductor (renderer). Source: review (REV-04).
+- Evidence: section 11 fairness row shows the dev worst group (lang=en) with a blank holdout cell when the holdout fails a different group (register=implied 0.67), hiding the failure.
+- Status: addressed on branch claude/fix-renderer-bugs (2026-11-13, conductor.js: gateWhy, holdoutCell, repair-count sentence, assumptionText); not merged
+
+### S-120
+- Gate: conductor (renderer). Source: gate V, gate B, review (REV-06).
+- Evidence: `renderState` prints r.json assumptions (objects with text, card, confirmedIf, as SKILL.md specifies) as "[object Object]" under Assumptions in state.md.
+- Status: addressed on branch claude/fix-renderer-bugs (2026-11-13, conductor.js: gateWhy, holdoutCell, repair-count sentence, assumptionText); not merged
+
+### S-121
+- Gate: E. Source: QC phase 5 and review (REV-01, REV-02).
+- Evidence: after holdout attempt 1 blocked, the E sub-agent ran a second "family-level" router repair using the holdout's printed family and groups; holdout result unchanged, but the holdout is spent. The skill allows one dev repair, then the holdout; it should forbid any repair informed by holdout output.
+- Status: open
+
+### S-122
+- Gate: conductor (rehearsal). Source: QC phase 0.
+- Evidence: the conductor passed the persona's private backstory (chatbot pilot misrouted claims) to the AI researcher and into r.json as fact before the client said it. Under --persona, the conductor must only use the case line and answered cards.
+- Status: open
+
+### S-123
+- Gate: conductor (round 2 drafting). Source: QC phase 3.
+- Evidence: round-2 cards carried no `why` or `branch`, R2-1 options restated settled answers (C-3, R1-4, R1-3), R2-3 overlapped C-4, and urgent-claim tolerance was set in three cards. Round 2 needs the same hypothesis-led and no-repeat rules as round 1.
+- Status: open
+
+### S-124
+- Gate: conductor (clock). Source: run report.
+- Evidence: 52m of 30m. V then A 13m 46s (budget 7), L and U 11m 51s (5), E and D 13m 26s (6), Build 6m 7s (3); each gate sub-agent took 4 to 13 minutes re-reading skill files and inputs. Phase budgets are not met in the default sub-agent mode.
+- Status: open
