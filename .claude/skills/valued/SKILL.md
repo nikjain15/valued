@@ -305,7 +305,16 @@ sound like a strong partner from a top firm, not a form:
   key if any) and `branch`. Before each question print one line, in client language:
   `This tests whether most of the delay sits at intake (B1).` The discovery page shows the same thing live.
 
-Append all ten cards to `out/cards.json` with `"round": 1`, then `out/tools/c cards print 1` (or
+**Each question is written just before it is asked, from every answer so far.** The table below is the
+plan of what Round 1 must establish, not fixed wording. Before each question:
+- re-read every answer so far and write this card's final question and options from them: use the client's own
+  words and numbers ("You said about 25 minutes a claim; is most of that before or after an adjuster picks it
+  up?"), set ranges around the figures they gave, name the roles and systems they named;
+- if an earlier answer already settles it, skip it (record it as pre-filled, as above);
+- if the last answer surprised you or overturned a hypothesis, let this question follow that thread first
+  (still one of the ten, so a later card that the answer made moot is dropped instead);
+- update the branch and assumption it tests in `r.json`, so the approach page shows the reasoning move.
+Append each card to `out/cards.json` with `"round": 1` as you write it, then `out/tools/c cards print 1` (or
 `out/tools/c cards auto 1` under `--auto`; under `--persona` the persona answers one card at a time). Ask them
 **one at a time**, in the order of the three themes below, each with a short warm lead-in when the theme changes.
 Record each answer as `decision` and `by`, update the approach card, then **`out/tools/c render` after every
@@ -360,7 +369,7 @@ and runs `out/tools/c render`. `out/tools/c clock 2 end`.
 `out/tools/c clock 3 start`. Draft six cards from the rendered gate files (V's priced problem, A's waves and While you ask this round, launch `valued-labels` in the background as soon as `a.json` exists (it drafts the
 golden set from A and applies the round-2 groups when they land), and launch `valued-deploy` the moment R2-5 and
 R2-6 are answered.
-Round 2 follows the same consultant rules as Round 1: build on what they already said and never re-ask it (R2-3
+Round 2 follows the same consultant rules as Round 1, including writing each question just before it is asked from every answer so far: build on what they already said and never re-ask it (R2-3
 asks what to connect *first* from the systems they named in C-4; it never asks again where the data lives), gloss
 every technical term the first time ("a separate bar (a pass mark just for that group)"), soft wording, one
 question per card.
