@@ -37,3 +37,11 @@ per ranked topic (its title, the why as the description), plus "Other" for more 
   `valued-feedback` so every page updates.
 - Topics not chosen keep their researched assumption; they can be explored later with `/valued-explore`.
 Then `out/tools/c render`.
+
+## Memory between calls
+
+Keep `out/explore.json` as `{ "offered": [topic titles], "picked": [topic titles] }`. Read it before ranking: never offer a
+topic already answered, already picked, or offered twice before without being picked. Write it after every call. On a
+second call, word the card differently ("Anything else worth a closer look?") so it never repeats the first card's text.
+Explore cards use ids `X-<n>` and do not count toward the card total. Match "Other" text to topics: put each part of it
+on the card it answers (in the client's words), and keep the whole text only once, on the explore card.

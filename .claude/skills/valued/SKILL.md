@@ -8,6 +8,10 @@ description: Run a client AI case end to end through the six VALUED gates (Value
 The argument is a one-line case, for example `/valued regional bank, 2M customers, contact centre cost
 pressure, 30 GenAI ideas, COO wants a plan in six weeks`.
 
+**"I don't know, you tell me" on a fact card:** use a cited research fact if one has landed (mark it assumed, with
+its source); if none has, record "client to confirm" with no figure and say so once in chat. Never write an
+unsourced number.
+
 **With no argument (plain `/valued`), never ask an open question** such as "tell me about the client". Do phase 0
 step 0 (start fresh), then go straight to the opening cards (Context, then Key outcome, then Timeline), one card at a
 time with the AskUserQuestion tool, each with "Other" for the client's own words, and build the case line from the
@@ -434,7 +438,15 @@ answer**, so the approach page, the PRD and the prototype all show it within sec
 Where the answers go: C-1 becomes V's `stakeholders`; C-2 anchors V's value frame (the client's baseline
 beats our assumption); C-3 bounds A's first wave and sets D's `roadmap`; C-4 sets A's data feasibility and
 L's systems; C-5 sets D's `adoption`; C-6 sets V's value threshold and B's business case; C-7 sets A's model choice and pricing trade-off; C-8 sets A's build, buy or partner and its alternatives; C-9 sets U's `disclosure`. In Round 2, R2-7 sets D's `supportModel` and `operatingModel`; R2-8 sets D's roadmap `dependsOn`. After each answer, set `status` on every assumption that answer tested, judged on the meaning of the answer,
-never on a keyword: `"confirmed"` or `"challenged"` (with the client's words in `heardAs`). After the last question, say in one line which assumptions the client changed, and pass all of it on when you
+never on a keyword: `"confirmed"` or `"challenged"` (with the client's words in `heardAs`). A challenged assumption
+leaves the "We're assuming" list at once (the approach page hides it): the client's answer replaces it. If the research
+benchmark differs from what the client said, put the comparison in the `evidence` row as context, never as a correction
+("Industry benchmark is 30 to 60 minutes a file; you are well under that").
+**When an answer contradicts an earlier decision** (for example "let the AI approve payments under $500" after "no
+payment made by AI", or a volume that differs from an earlier one), never overwrite either: ask one conflict card
+(id `K-<n>`, title "Trade-offs") that names both answers in the client's words and offers keep the earlier one, take the
+new one, or a bounded middle (for example "in the pilot, revisit after 90 days"). Conflict cards do not count toward
+the card total. After the last question, say in one line which assumptions the client changed, and pass all of it on when you
 launch each gate.
 
 Recommend: the outcome tied to the sponsor's stated goal; the constraint that de-risks a first wave; a hosted

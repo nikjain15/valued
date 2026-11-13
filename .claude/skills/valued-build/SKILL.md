@@ -39,7 +39,7 @@ in the orchestrator). This step fills what needs every gate at once. Target: 3 m
      why this first; what it never does; what happens when it is unsure; how we know it is safe (the
      client's bar and the latest result); the model and what happens if it is down or declines; who approves
      and what is logged; what data it uses and what is masked; what would make us stop. `from` names the
-     gate, the decision and who made it ("Gate U: draft with approval (Risk)").
+     decision and who made it in plain words, never a gate letter ("Decision: draft with approval (Risk)").
    - `requirements` with IDs, each naming its story and a Given / When / Then acceptance; `nfrs`, `risks`,
      `dependencies`, `openQuestions`, and `tasks` for section 19 (concrete, in order, each with the
      requirement it implements and the command that proves it done). Every number comes from a gate file or
@@ -49,7 +49,9 @@ in the orchestrator). This step fills what needs every gate at once. Target: 3 m
      `runCostPerYear` from gate A's `pricing.runCost` scaled to annual volume; `paybackMonths` roughly
      build cost over the monthly net saving. Then `commercialModel`, a recommendation on how the solution
      could be priced to the business (per-seat, per-resolved-item, flat), our preference first with
-     trade-offs. Every figure (assumed) until the client gives real volumes and a rate.
+     trade-offs. When the client sells to or serves its own customers with this (a product, a paid service, a SaaS
+     feature), also `customerPricing`: how the client could price it to its customers (per seat, per usage, per
+     outcome, bundled), same recommendation shape. Every figure (assumed) until the client gives real volumes and a rate.
 3. **Render and check.** `node .claude/skills/valued/conductor.js render` writes every PRD section,
    `case.json` (connectors topped up to 6 from the library, sweeps with findings, FAQ, samples, decisions,
    governance), `out/prd.html` and `out/brief.html`. Then `node .claude/skills/valued/conductor.js check`;

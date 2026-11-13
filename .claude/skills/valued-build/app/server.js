@@ -36,7 +36,7 @@ const withBackstop = (r, raw) => {
     if (m.verdict === "escalate") return { verdict: "escalate", source: null, reason: `model backstop (${m.family || "escalation"}): ${m.reason || ""}`.trim(), backstop: true };
     // Source matching: answer when rules and model agree, or when only the model found one source and is sure; else a person.
     if (d.verdict === "answer" && m.source !== undefined && m.source !== d.source) return { ...d, verdict: "human", source: null, reason: `rules matched ${d.source}, the model ${m.source || "none"}: a person decides`, backstop: true };
-    if (d.verdict === "human" && m.source && m.sure) return { ...d, verdict: "answer", source: m.source, reason: `matched by the model: ${m.reason || m.source}`, backstop: true };
+    if (d.verdict === "human" && m.source && m.sure && !d.never && !/never|forbidden|not allowed|promise|guarantee|identity|verify/i.test(String(d.reason || ""))) return { ...d, verdict: "answer", source: m.source, reason: `matched by the model: ${m.reason || m.source}`, backstop: true };
     return d;
   } };
 };

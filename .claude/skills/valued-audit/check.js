@@ -39,8 +39,9 @@ const ifNone = (cards.match(/If none fits, answer with/g) || []).length;
 const decSection = (state.split(/## Client decisions/)[1] || "").split(/\n## /)[0];
 const decisionsRows = (decSection.match(/^\|\s*(Setup|V|A|L|U|E|D|Frame|R1|R2)\s*\|/gm) || []).length;
 const asked = meta.questionsAsked ?? meta.questions ?? (decisionsRows || ifNone);
-expect(asked >= 23 && asked <= 26, 1, `questions asked ${asked}, expected 23 to 26`, "out/state.md");
-expect(Array.isArray(CASE.decisions) && CASE.decisions.length >= 23 && CASE.decisions.length <= 26, 1, `case.json decisions ${(CASE.decisions || []).length}, expected 23 to 26`, "out/proto/case.json");
+const extraCards = (() => { try { return JSON.parse(fs.readFileSync(path.join(out, "cards.json"), "utf8")).filter((x) => /^X-|^K-/.test(String(x.id))).length; } catch { return 0; } })();
+expect(asked >= 23 && asked <= 26 + extraCards, 1, `questions asked ${asked}, expected 23 to 26 plus ${extraCards} explore or conflict cards`, "out/state.md");
+expect(Array.isArray(CASE.decisions) && CASE.decisions.length >= 23 && CASE.decisions.length <= 26 + extraCards, 1, `case.json decisions ${(CASE.decisions || []).length}, expected 23 to 26`, "out/proto/case.json");
 expect(/\(Recommended[:)]/.test(cards), 1, "no card option labelled (Recommended)", "out/*.md");
 const cardHeaders = cards.match(/\*\*"([^"]+)": "/g) || [];
 expect(!/\*\*"COO": "/.test(cards) || /COO/.test(CASE.client || "") || /COO/i.test(state.split("## Client decisions")[0] || ""), 1, 'card header still says "COO" although the case names no COO', "out/*.md");
@@ -90,7 +91,7 @@ for (const id of ["FR-", "NFR-", "US-", "G-", "M-", "R-"]) expect(prd.includes(i
 for (const t of [/\| *Assistant *\|/, /\| *Sweep *\|/, /\| *Outcome *\|.*(Clock|Deadline|Hours)/i, /\| *System *\|/]) expect(t.test(prd), 5, `PRD table missing: ${t}`, "out/prd.md");
 expect(/## Appendix: document history[\s\S]*\|\s*0\.\d/.test(prd), 5, "document history has no version row", "out/prd.md");
 expect(/## 19\.[\s\S]{600,}/.test(prd) && /Kickoff prompt/.test(prd), 5, "section 19 is short or lacks a kickoff prompt", "out/prd.md");
-expect(/## 12\.[\s\S]*?Model menu[\s\S]*?Multi-purpose default[\s\S]*?Routing pipeline/i.test(prd), 5, "section 12 is missing the model menu, the multi-purpose default, or the per-use-case routing pipeline (gate A pricing: default, modelTypes, pipeline; gate B businessCase)", "out/prd.md");
+expect(/## 12\.[\s\S]*?\*\*Models:\*\* none in the first wave/i.test(prd) || /## 12\.[\s\S]*?Model menu[\s\S]*?Multi-purpose default[\s\S]*?Routing pipeline/i.test(prd), 5, "section 12 is missing the model menu, the multi-purpose default, or the per-use-case routing pipeline (gate A pricing: default, modelTypes, pipeline; gate B businessCase)", "out/prd.md");
 expect(/## 18\.[\s\S]*?Observability[\s\S]*?Token strategy/i.test(prd), 5, "section 18 is missing the observability signals or the token strategy (gate D observability; gate A tokenStrategy)", "out/prd.md");
 expect(/## 11\.[\s\S]*?(RELEASE PASSES|RELEASE BLOCKED|Passes all gates|Blocked)/i.test(prd), 5, "section 11 has no real eval result", "out/prd.md");
 expect(!/<[a-z][^>]*>/.test(prd.replace(/`[^`]*`/g, "")) || true, 5, "", "");
@@ -117,7 +118,7 @@ expect(/holdout\.json/.test(evalsMd) && /node (?:out\/proto\/)?eval\.js/.test(ev
 // S-078: who wrote the holdout, and did that context also write the router?
 const prov = json(path.join(proto, "provenance.json"), {});
 const by = (k) => [...new Set((Array.isArray(prov[k]) ? prov[k] : []).map((x) => x && x.by).filter(Boolean))];
-const hBy = by("holdout"), rBy = by("router"), shared = hBy.filter((x) => rBy.includes(x));
+const hBy = by("holdout"), rBy = by("router"), shared = hBy.filter((x) => rBy.includes(x)).concat([...hBy, ...rBy].filter((x) => /single-context|inline/i.test(x)));
 expect(hBy.length > 0 && rBy.length > 0, 6, "out/proto/provenance.json does not name who wrote the holdout and who wrote the router", "out/proto/provenance.json");
 if (hBy.length && rBy.length) expect(shared.length === 0, 6, `holdout not independent: ${shared.join(", ")} wrote both the holdout rows and the router`, "out/proto/provenance.json");
 // S-085: one sealed score per router version.

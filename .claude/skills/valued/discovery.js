@@ -113,7 +113,8 @@ ${section("References", "Sources", "", sources ? `<ol class="sources">${sources}
 function mergeResearch(strands, prev) {
   const r = { ...(prev || {}) };
   for (const k of ["facts", "process", "regulation", "terms", "hypotheses", "sources"]) {
-    const seen = new Set(); r[k] = [];
+    const seen = new Set(); const kept = k === "terms" ? A(prev && prev.terms) : []; r[k] = [];
+    for (const x of kept) { const id = String(x.term || "").toLowerCase(); if (id && !seen.has(id)) { seen.add(id); r[k].push(x); } }
     for (const s of strands) for (const x of A(s[k])) { const id = k === "terms" ? String(x.term || "").toLowerCase() : k === "sources" ? x.url || x.key : JSON.stringify(x); if (id && !seen.has(id)) { seen.add(id); r[k].push(x); } }
   }
   r.notes = strands.filter((s) => s.note).map((s) => `${s.strand}: ${s.note}`);
