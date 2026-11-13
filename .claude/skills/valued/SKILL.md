@@ -62,16 +62,16 @@ never a generic "COO" unless the case says COO. 2 to 4 options per card.
 
 | Phase | Work | Budget | Who |
 |---|---|---|---|
-| 0 Frame | framing cards only for what is missing; workspace, server, live PRD | 3 min | you |
-| 1 Round 1 | 5 cards: outcome, hard constraint, hosted model, autonomy, escalation owner | 2 min | client |
+| 0 Frame | framing cards only for what is missing; workspace, server, live PRD | 2 min | you |
+| 1 Round 1 | discovery: 10 cards in three screens (people, today's cost, outcome, commitment; constraint, data, hosted model, history; autonomy, escalation owner) | 3 min | client |
 | 2 V then A | value frame; then assistants, shape, sweeps, three scorers in parallel | 7 min | `valued-value`, `valued-ai-fit` |
 | 3 Round 2 | 6 cards: first wave, riskiest group, what to connect, release bar, pilot scope, stop rule | 2 min | client |
 | 4 L and U in parallel | golden set, holdout, systems; autonomy table, never list, clocks | 5 min | `valued-labels` and `valued-user-loop` |
 | 5 E and D in parallel | builder writes the router, evals run; rollout and drive | 6 min | `valued-evals` and `valued-deploy` |
 | 6 B | PRD and prototype rendered from gate data; hosted page; run report | 3 min | `valued-build` |
 
-Cards in total: 11 in the two rounds, plus framing (0 to 4) and E's "Ship anyway, or fix first?" only when a
-release is blocked: 11 to 16. Start and end every phase with `out/tools/c clock <phase> start|end`; the start prints
+Cards in total: 16 in the two rounds, plus framing (0 to 4) and E's "Ship anyway, or fix first?" only when a
+release is blocked: 16 to 21. Start and end every phase with `out/tools/c clock <phase> start|end`; the start prints
 the header line (`[2] V then A · budget 7 min`). Between phases print nothing else.
 
 **Graceful overrun.** Before each phase starts and whenever a phase feels long, run `out/tools/c clock status`. If the
@@ -105,7 +105,7 @@ The harness shows each sub-agent's `· took Xs` when it returns, and `out/tools/
 the phase's real elapsed ("[4] L and U · done in 4m 10s"); for E, also emit the `step` sub-updates above. So
 the run always shows what is happening and how long it took, in one line each, without filling the context.
 
-## Phase 0: Frame (3 min)
+## Phase 0: Frame (2 min)
 
 1. Write the wrapper first (step 2's first two lines), then `out/tools/c clock 0 start`. If `out/select/select.json` exists (a `/valued-select` run), take the preferred option as the use case, its audience and assumptions as framing, and print `Case from out/select/select.json: <option>`; ask no framing card that file already answers. Otherwise, if the argument is empty or lacks the client, the business problem, or the success
    measure and deadline, ask only the missing framing cards (round 0), each 3 to 4 typical options.
@@ -147,21 +147,46 @@ the run always shows what is happening and how long it took, in one line each, w
    or the closest) prints the systems, golden-set seeds and sweep templates every later gate starts from.
    `out/tools/c clock 0 end`.
 
-## Phase 1: Round 1 (2 min)
+## Phase 1: Round 1, discovery (3 min)
 
-`out/tools/c clock 1 start` before drafting anything. Draft five cards from the case line alone (no gate has run yet, so options come from
-the case, the industry and the seed library), append them to `out/cards.json` with `"round": 1`, then
-`out/tools/c cards print 1` (or `out/tools/c cards auto 1` under `--auto`) and record each answer as `decision` and `by`.
-If the client would rather not answer a round, run `out/tools/c cards skip 1`: it takes the recommended option on
-every card of the round, logs each as skipped, and lets you move on at once. Say the one line it prints.
+`out/tools/c clock 1 start` before drafting anything. This round is the conversation a consultant has before
+any idea is ranked: who is involved, what today costs, what the commitment looks like, what the data is
+like, and what has been tried. Draft all ten cards from the case line alone (no gate has run yet, so options
+come from the case, the industry and the seed library), append them to `out/cards.json` with `"round": 1`,
+then `out/tools/c cards print 1` (or `out/tools/c cards auto 1` under `--auto`) and record each answer as
+`decision` and `by`. Ask them as three screens (AskUserQuestion takes at most four at a time), each with its
+own warm header. If the client would rather not answer a round, run `out/tools/c cards skip 1`: it takes the
+recommended option on every card of the round, logs each as skipped, and lets you move on at once. Say the
+one line it prints.
+
+**Screen one: "Let's make sure we're solving the right problem"**
 
 | Card | Gate | Header role | Question | Options come from |
 |---|---|---|---|---|
+| C-1 | V | sponsor | Who's involved here: who feels this day to day, who signs off, and who could slow it down? (multi) | the owner, user, approver and blocker roles typical of this industry |
+| C-2 | V | operations owner | How does this work today, and roughly what does it cost you? | 3 baselines, each a rough volume, time per item and rework rate, every figure (assumed) |
 | R1-1 | V | sponsor | If we could move just one thing, what would you most want it to be? | 2 to 3 north-star metrics with what each rewards and can hide |
-| R1-2 | V | sponsor | Anything that is off the table for you, something we should design around from the start? | e.g. nothing customer-facing unreviewed, existing platform only, data stays in; each with what it rules out |
+| C-3 | D | sponsor | What's the shape of the commitment: how soon do you need to see something, and roughly what envelope? | pilot in 6 to 8 weeks on a small budget; a quarter with a funded team; a year-long program; each with what it allows |
+
+**Screen two: "And the boundaries we design around"**
+
+| Card | Gate | Header role | Question | Options come from |
+|---|---|---|---|---|
+| R1-2 | V | sponsor | Anything that is off the table for you, something we should design around from the start? (multi) | e.g. nothing customer-facing unreviewed, existing platform only, data stays in; each with what it rules out |
+| C-4 | L | data owner | What does the data look like today: where it lives, who owns it, how clean it is? | in one system and clean; spread across systems; mostly documents and email; not yet captured |
 | R1-3 | A | IT and risk | Where are you comfortable having this run, can we let it try a hosted model on synthetic data? | "Yes, on synthetic data" (`rules+model`), "Not yet" (`rules`), "Yes, and let it lead" (`model-first`), with the trade-offs in `valued-ai-fit` |
+| C-5 | D | operations owner | Has anything like this been tried before, and who would need to work differently if it lands? | tried and stalled on adoption; tried and stalled on data; new territory; each with what it means for the plan |
+
+**Screen three: "Last two, on how hands-on you want to be"**
+
+| Card | Gate | Header role | Question | Options come from |
+|---|---|---|---|---|
 | R1-4 | U | risk owner | How hands-on do you want to stay in the first 90 days? | suggest only, draft with approval, act on low-risk actions |
 | R1-5 | U | operations owner | When it is a tougher call, who should it loop in? | the existing path, a specialist team, the risk desk |
+
+Where the answers go: C-1 becomes V's `stakeholders`; C-2 anchors V's value frame (the client's baseline
+beats our assumption); C-3 bounds A's first wave to what fits the window and sets D's `roadmap`; C-4 sets
+A's data feasibility and L's systems; C-5 sets D's `adoption`. Pass these on when you launch each gate.
 
 Recommend: the outcome tied to the sponsor's stated goal; the constraint that de-risks a first wave; a hosted
 model on synthetic data whenever a free-text job exists (rules only when the case is mostly rules); draft with

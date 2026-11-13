@@ -19,6 +19,11 @@ gates, in order:
 
 Production misses become new labels, so D loops back to L.
 
+Before any gate, the run opens the way a consultant would: who is involved and who can block, what today
+costs, the commitment window, what the data looks like, and what has been tried before. Those answers land in
+the PRD as stakeholders and decision rights, a roadmap that ends each phase on evidence, a support model,
+an adoption plan, an operating model, responsible-AI controls and the hypotheses the plan rests on.
+
 ## How it runs
 
 ```
