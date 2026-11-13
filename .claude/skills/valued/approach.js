@@ -1,7 +1,7 @@
 // Our approach: out/proto/approach.html, served at localhost:4317/approach.
 // The product lead reads this out loud; the client may see it too, so every word is client-friendly and soft:
 // options and early thinking, never assertions. Rendered from out/gates/approach.json (one card per lifecycle
-// stage, written by the conductor after each phase) and out/cards.json (the client's answers, shown live).
+// stage, written by the conductor after each phase). The page refreshes itself as each card is written.
 const A = (x) => (Array.isArray(x) ? x : []);
 const esc = (s) => String(s ?? "").replace(/—/g, ", ").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const bold = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
@@ -22,8 +22,6 @@ function renderApproach(ap, cards, title, client) {
   const nowIdx = STAGES.findIndex(([k]) => k === nowKey);
   const stepper = STAGES.map(([k, name, sub], i) => `<div class="st${i < nowIdx ? " done" : i === nowIdx ? " now" : ""}"><div class="dot">${i < nowIdx ? "&#10003;" : i + 1}</div><b>${name}</b>${sub}</div>`).join("");
   const c = byStage[nowKey];
-  const answered = A(cards).filter((x) => x.decision && Number(x.round) >= 0).slice(-4).reverse();
-  const heardLive = answered.map((x) => `<span class="pill">${esc(String(x.decision).replace(/\s*\((persona|auto|recommended)\)/gi, ""))}</span>`).join("");
   const reasons = c ? A(c.reasons).slice(0, 3).map((r) => `<li>${bold(r)}</li>`).join("") : "";
   const card = c ? `<div class="card">
 <div class="k">${esc(STAGES[nowIdx][1])}</div>
@@ -78,7 +76,6 @@ h1{font-family:var(--font-display);font-size:26px;margin:4px 0 0}
 </style></head><body><div class="wrap">
 <div class="top"><div><div class="eyebrow">Our approach</div><h1>${esc(title || "Working session")}</h1></div>${client ? `<span class="client">${esc(client)}</span>` : ""}</div>
 <div class="stepper">${stepper}</div>
-${heardLive ? `<div class="live"><span class="l">Latest from you</span>${heardLive}</div>` : ""}
 ${card}
 </div>
 <script>
