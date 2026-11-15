@@ -149,3 +149,8 @@ A method harness, not a product. Synthetic data only; no real client, customer o
 gates evaluate the deterministic decision layer; a model, when the client allows one, drafts behind it
 and never overrides an escalation. A model that leads the decision needs its own eval before release,
 and the PRD says so.
+
+## Also in this repository: Modernization OS
+
+A separate, self-contained skill pack for legacy code modernization (analyze, test, transform, secure,
+document), built to run in any IDE agent and on any model. See [`modernization-os/`](modernization-os/README.md).
