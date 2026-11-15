@@ -27,7 +27,10 @@ Goal: a map the owner can trust, and a plan of small slices in a defensible orde
 7. **Ask the two framing decisions** (target stack; slice by slice or one cut-over), each with your
    recommendation and trade-offs. Record the answer:
    `python3 modernization/mos.py target --stack "..." --strategy "..." --by "<name>"`.
-8. **Propose the slice plan** and write `modernization/plan.md`. Register each agreed slice:
+8. **If the data model or the architecture changes,** stop here and hand back to `modernize` for the
+   design stages (sources, discover, data model, architect). Come back for step 9 once
+   `mos_design.py gate` passes; the build list and the saga designs then drive the slices.
+9. **Propose the slice plan** and write `modernization/plan.md`. Register each agreed slice:
    `python3 modernization/mos.py slice add S1 --title "..." --files a b c`.
 
 ## Slice rules
@@ -52,5 +55,6 @@ Goal: a map the owner can trust, and a plan of small slices in a defensible orde
 
 ## Done when
 
-`inventory.json`, `graph.json`, `hotspots.json` and `plan.md` exist, the target is on record, and at
-least the first slice is registered. Then hand back to `modernize`.
+`inventory.json`, `graph.json` and `hotspots.json` exist and the target is on record; and, once any
+design stages have passed, `plan.md` exists and the first slice is registered. Then hand back to
+`modernize`.

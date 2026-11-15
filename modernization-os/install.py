@@ -6,7 +6,7 @@
   python3 install.py /path/to/legacy-repo --tool claude cursor
   python3 install.py /path/to/legacy-repo --dir some/custom/skills
 
-Copies the skills into the folder your tool reads, puts the gate tool at modernization/mos.py,
+Copies the skills into the folder your tool reads, puts the tools in modernization/ (mos.py, mos_sources.py, mos_design.py),
 and adds a short contract to AGENTS.md so tools and models without skill support can follow it.
 Safe to run again: it replaces its own files and its own AGENTS.md block, nothing else.
 """
@@ -44,7 +44,10 @@ def install(target, dirs, agents_md=True):
         done.append(d)
     ws = os.path.join(target, "modernization")
     os.makedirs(ws, exist_ok=True)
-    shutil.copy2(os.path.join(src, "modernize", "scripts", "mos.py"), os.path.join(ws, "mos.py"))
+    scripts = os.path.join(src, "modernize", "scripts")
+    for name in sorted(os.listdir(scripts)):
+        if name.endswith(".py"):
+            shutil.copy2(os.path.join(scripts, name), os.path.join(ws, name))
     if agents_md:
         with open(os.path.join(HERE, "AGENTS.md"), encoding="utf-8") as f:
             block = f.read().replace("the skills folder", "`%s`" % dirs[0])
@@ -71,7 +74,7 @@ def main(argv=None):
     dirs = a.dir or [TOOLS[t] for t in tools]
     done = install(a.target, dirs, not a.no_agents_md)
     print("Skills installed in: " + ", ".join(done))
-    print("Gate tool:           modernization/mos.py")
+    print("Tools:               modernization/mos.py, mos_sources.py, mos_design.py")
     if not a.no_agents_md:
         print("Contract added to:   AGENTS.md")
     print('\nOpen the repository in your tool and say: "modernize this codebase".')
