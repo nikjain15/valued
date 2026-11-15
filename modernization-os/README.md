@@ -21,10 +21,19 @@ read with a personal token, read-only, or from exports.
 | `modernize-discover` | Profile each workflow | Researches each workflow from code and documents, then asks the owner adaptive questions: only what evidence could not answer, each answer choosing the next | `mos_design.py workflow check` |
 | `modernize-data-model` | Data model | Deep research of the legacy model; target model; the exact list of new schemas, tables and columns, type changes and drops | `mos_design.py model check` |
 | `modernize-architect` | Architecture | Saga design per workflow that crosses services: steps, compensations, point of no return, idempotency, timeouts | `mos_design.py saga check`, `gate` |
+| `modernize-build` | New code from the approved design | Schema scripts, migration, saga steps and orchestrator, tests first: the tests must fail, then pass | `mos_design.py approve`, then `mos.py baseline`, `verify` |
 | `modernize-test` | Automated testing | Pins today's behavior with characterization tests, lists coverage gaps, adds regression tests after | `mos.py baseline` |
 | `modernize-transform` | Systematic transformation | Moves one slice to the target stack in small steps, business rule by business rule | `mos.py verify` |
 | `modernize-secure` | Security and compliance | Finds and patches vulnerabilities; proves the legacy controls survived | `mos.py secure` |
 | `modernize-document` | Documentation | Writes the handover: business rules, interfaces, controls, quirks kept on purpose | `mos.py document`, `approve` |
+
+Three skills run alongside every stage:
+
+| Skill | What it does | Guard |
+|---|---|---|
+| `modernize-memory` | Resume brief, work journal, structured checkpoints, recall. For work that outlives a context window or changes hands | `mos_memory.py checkpoint` refuses a handoff that is out of shape or over 150 lines; the next action is computed from the workspace, never remembered |
+| `modernize-learn` | Turns repeated gate refusals and owner corrections into lessons in a playbook every skill reads; reports whether each lesson is working | A lesson needs real signals behind it and a named approver; it can add care, never remove a guard |
+| `modernize-track` | Comments on, moves and opens Jira issues from recorded evidence | `mos_jira.py push` sends only the previewed outbox, unedited and still current, with a named approver; nothing is sent twice |
 
 Testing runs before transformation, not after as the page lists it: a behavior nobody pinned is a
 behavior nobody can prove was preserved.
@@ -48,8 +57,8 @@ python3 modernization-os/install.py /path/to/legacy-repo --tool <tool>
 
 Folder names are each tool's convention at the time of writing; if yours has moved, use `--dir`.
 
-The installer also puts the three tools in `modernization/` (`mos.py`, `mos_sources.py`,
-`mos_design.py`) and adds a short contract to `AGENTS.md`.
+The installer also puts the tools in `modernization/` (`mos.py`, `mos_sources.py`, `mos_design.py`,
+`mos_memory.py`, `mos_jira.py`) and adds a short contract to `AGENTS.md`.
 A tool or model with no skill support can still follow the method from that file: it names the stage,
 the `SKILL.md` to read and the gate to run.
 
@@ -75,6 +84,30 @@ model is in `mos.py`:
 | Every saga step before the point of no return can be undone; every step after it is retried; a step writes only its own service's data | `mos_design.py saga check` |
 | Tokens never stored | Read from the environment; GET requests only; `sources/` is git-ignored |
 
+## Long-running work
+
+```
+python3 modernization/mos_memory.py resume        # first thing, every session and after any context reset
+python3 modernization/mos_memory.py next          # the next action, computed from the workspace
+python3 modernization/mos_memory.py journal found "rounding is half-up at billing/rates.py:40"
+python3 modernization/mos_memory.py checkpoint --from draft.md
+python3 modernization/mos_memory.py recall rounding
+python3 modernization/mos_memory.py lessons       # patterns to learn from; is each lesson holding
+```
+
+Facts (status, evidence, decisions, what is next) are computed by the tools. Understanding (intent,
+reasoning, dead ends) goes into checkpoints with eight fixed sections: Goal, Where we are, Done since
+last checkpoint, In progress, Next actions, Decisions and why, Open questions, Watch out.
+
+## Updating Jira, after approval
+
+```
+python3 modernization/mos_jira.py setup --base https://jira.yourcompany.example --transition verified="In Review" approved=Done
+python3 modernization/mos_jira.py link S1 PAY-204
+python3 modernization/mos_jira.py plan                         # preview: nothing is sent
+python3 modernization/mos_jira.py push --approved-by "<name>"  # sends exactly what was previewed
+```
+
 ## Reading Jira, Confluence and documents
 
 ```
@@ -96,7 +129,11 @@ calls, export the pages or issues to Word, HTML or CSV and use `add`.
 modernization/
   mos.py            the gate tool
   mos_sources.py    document, Jira and Confluence reader
-  mos_design.py     workflow, data model and saga checks
+  mos_design.py     workflow, data model and saga checks; design approval
+  mos_memory.py     resume, journal, checkpoints, recall, lessons
+  mos_jira.py       approved Jira updates
+  memory/           journal, signals, checkpoints, CURRENT.md, RESUME.md, playbook.md
+  jira/             config, the outbox awaiting approval
   sources/          documents, issues and pages as text, with an index (git-ignored)
   workflows/        one profile per workflow: facts, each with its source
   data/             legacy-schema.json, legacy-notes.md, target-model.json, build-list.md, migration.md
@@ -123,6 +160,12 @@ modernization/
   file layouts and schemas built in code are found by the agent reading the code.
 - The Jira and Confluence reader is tested against a local stand-in server, not a live Atlassian
   site. It tries the Data Center and Cloud endpoint shapes in turn; if neither answers, use exports.
+- Jira updates use the version 2 REST endpoints for comments, transitions and issue creation, tested
+  against a local stand-in server only. Confluence is read, never written.
+- Self-improvement is per project: lessons live in that repository's playbook. Carrying a lesson into
+  the skill pack itself is a manual, approved step.
+- The memory tools make loss of context recoverable; they cannot make an agent run `resume`. The
+  conductor and `AGENTS.md` instruct it to.
 - PDF needs the `pdftotext` program. Old `.doc`, `.xls` and `.ppt` files must be saved in the newer format first.
 - Tested with the unit suite below. Not yet run end to end on a real legacy system in each IDE.
 

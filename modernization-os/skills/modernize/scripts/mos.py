@@ -10,7 +10,7 @@ Python 3.8+. Everything it writes goes under ./modernization/.
   mos.py graph                         dependency graph, cycles, dead-code candidates
   mos.py rank [--top N]                hotspots by complexity, fan-in, churn, impact
   mos.py target --stack S --strategy S --by NAME   the owner's framing decisions
-  mos.py slice add ID --title T --files F [F ...]
+  mos.py slice add ID --title T --files F [F ...] [--kind new] [--jira KEY]
   mos.py baseline ID -- <test command>     tests must pass on the legacy code
   mos.py transformed ID [--files F ...]    the slice's code has changed
   mos.py verify ID [--reason R -- <cmd>]   reruns the baseline command
@@ -21,6 +21,7 @@ Python 3.8+. Everything it writes goes under ./modernization/.
   mos.py status | check
 """
 import argparse
+import glob
 import hashlib
 import json
 import os
@@ -63,9 +64,60 @@ ENTRY_MARK = re.compile(
     r"int\s+main\s*\(|static\s+(?:async\s+)?\w+\s+Main\s*\(")
 
 
+CONTEXT = ""  # the gate being run, so a refusal can be logged as a signal to learn from
+
+
 def die(msg):
+    if CONTEXT:
+        signal(CONTEXT, msg)
     print("BLOCKED: " + msg, file=sys.stderr)
     sys.exit(1)
+
+
+def log(name, entry):
+    """Append one line to a log under modernization/memory/. Logs are append-only."""
+    if not os.path.isdir(WS):
+        return
+    os.makedirs(os.path.join(WS, "memory"), exist_ok=True)
+    with open(os.path.join(WS, "memory", name), "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, sort_keys=True) + "\n")
+
+
+def read_log(name):
+    try:
+        with open(os.path.join(WS, "memory", name), encoding="utf-8") as f:
+            return [json.loads(line) for line in f if line.strip()]
+    except OSError:
+        return []
+
+
+def journal(kind, text):
+    log("journal.jsonl", {"at": now(), "kind": kind, "text": text})
+
+
+def signal(where, text, kind="gate", by="mos"):
+    sid = "G-%d" % (len(read_log("signals.jsonl")) + 1)
+    log("signals.jsonl", {"id": sid, "at": now(), "kind": kind, "where": where,
+                          "text": text, "by": by})
+    return sid
+
+
+def design_digest():
+    """Fingerprint of the design files, so an approval dies with any later change."""
+    h = hashlib.sha256()
+    paths = sorted(glob.glob(wpath("workflows", "*.json")) +
+                   glob.glob(wpath("architecture", "sagas", "*.json")))
+    for p in paths + [wpath("data", "target-model.json")]:
+        if os.path.isfile(p):
+            h.update(p.replace(os.sep, "/").encode())
+            with open(p, "rb") as f:
+                h.update(f.read())
+    return h.hexdigest()
+
+
+def design_approved():
+    d = load(os.path.join("evidence", "design.json"), default={})
+    return bool(d.get("passed") and d.get("approved_by") and d.get("digest") == design_digest())
 
 
 def now():
@@ -137,7 +189,7 @@ def cmd_init(a):
         return
     save("state.json", {
         "version": 1, "created": now(),
-        "target": {"stack": "", "strategy": "", "regimes": []},
+        "target": {"stack": "", "strategy": "", "design": "full", "regimes": []},
         "slices": {}, "decisions": [],
     })
     for d in ("evidence", "docs"):
@@ -436,6 +488,8 @@ def move(state, s, status, by="mos"):
     s["status"] = status
     s["history"].append({"status": status, "at": now(), "by": by})
     save("state.json", state)
+    sid = next((k for k, v in state["slices"].items() if v is s), "?")
+    journal("gate", "slice %s is now %s (by %s)" % (sid, status, by))
 
 
 def run_cmd(sid, phase, cmd):
@@ -453,10 +507,14 @@ def cmd_slice(a):
     if a.id in state["slices"]:
         die("slice %s already exists." % a.id)
     missing = [f for f in a.files if not os.path.isfile(f)]
-    if missing:
+    if a.kind == "legacy" and missing:
         die("files not found: " + ", ".join(missing))
+    if a.kind == "new" and not design_approved():
+        die("a slice of new code needs the design gate passed, approved by the owner, and the "
+            "design unchanged since. Run mos_design.py gate, show the owner, then "
+            "mos_design.py approve --by NAME.")
     state["slices"][a.id] = {"title": a.title, "files": [norm(f) for f in a.files],
-                             "status": "planned",
+                             "status": "planned", "kind": a.kind, "jira": a.jira or "",
                              "history": [{"status": "planned", "at": now(), "by": "mos"}]}
     save("state.json", state)
     print("Slice %s planned (%d files)." % (a.id, len(a.files)))
@@ -470,6 +528,19 @@ def cmd_baseline(a):
     if not cmd:
         die("give the test command after --, for example: mos.py baseline %s -- pytest tests" % a.id)
     ev = run_cmd(a.id, "baseline", cmd)
+    if s.get("kind") == "new":
+        # New code has no legacy behavior to pin. Its tests are written first and must fail,
+        # which proves they test something; verify then needs the same command to pass.
+        if ev["exit"] == 0:
+            die("the tests already pass before the code exists, so they prove nothing. "
+                "Write tests that fail until the slice is built.")
+        if ev["exit"] in (126, 127):
+            die("the test command itself could not run (exit %d). Fix the command." % ev["exit"])
+        s["baseline_cmd"] = cmd
+        s["baseline_hashes"] = {f: sha(f) for f in s["files"]}
+        move(state, s, "baselined")
+        print("Slice %s: tests written and failing, as they should before the code exists." % a.id)
+        return
     if ev["exit"] != 0:
         die("baseline tests failed (exit %d). They must pass on the legacy code before it "
             "changes. See %s" % (ev["exit"], wpath("evidence", a.id, "baseline.json")))
@@ -572,7 +643,7 @@ def cmd_decide(a):
 
 def cmd_target(a):
     state = load("state.json")
-    state["target"].update({"stack": a.stack, "strategy": a.strategy,
+    state["target"].update({"stack": a.stack, "strategy": a.strategy, "design": a.design,
                             "regimes": a.regimes or state["target"].get("regimes", [])})
     state["decisions"].append({"at": now(), "who": a.by, "what":
                                "Target stack: %s. Strategy: %s." % (a.stack, a.strategy)})
@@ -583,11 +654,13 @@ def cmd_target(a):
 def cmd_status(a):
     state = load("state.json")
     t = state["target"]
-    print("Target stack: %s   Strategy: %s\n" % (t["stack"] or "(not set)",
-                                                 t["strategy"] or "(not set)"))
-    table([[sid, s["title"], len(s["files"]), s["status"], s["history"][-1]["at"]]
-           for sid, s in sorted(state["slices"].items())] or [["-", "no slices yet", "", "", ""]],
-          ["Slice", "Title", "Files", "Status", "Since"])
+    print("Target stack: %s   Strategy: %s   Design track: %s\n"
+          % (t["stack"] or "(not set)", t["strategy"] or "(not set)", t.get("design", "full")))
+    table([[sid, s["title"], s.get("kind", "legacy"), len(s["files"]), s["status"],
+            s.get("jira", ""), s["history"][-1]["at"]]
+           for sid, s in sorted(state["slices"].items())]
+          or [["-", "no slices yet", "", "", "", "", ""]],
+          ["Slice", "Title", "Kind", "Files", "Status", "Jira", "Since"])
     print("\nDecisions on record: %d" % len(state["decisions"]))
 
 
@@ -597,7 +670,10 @@ def cmd_check(a):
     for sid, s in sorted(state["slices"].items()):
         rank = ORDER.index(s["status"])
         ev = lambda phase: load(os.path.join("evidence", sid, phase + ".json"), default={})
-        if rank >= 1 and ev("baseline").get("exit") != 0:
+        base = ev("baseline").get("exit")
+        if rank >= 1 and s.get("kind") == "new" and base in (None, 0):
+            bad.append("%s: no evidence its tests failed before the code existed" % sid)
+        if rank >= 1 and s.get("kind") != "new" and base != 0:
             bad.append("%s: no passing baseline evidence" % sid)
         if rank >= 3 and ev("verify").get("exit") != 0:
             bad.append("%s: no passing verify evidence" % sid)
@@ -634,6 +710,8 @@ def main(argv=None):
     p.add_argument("--stack", required=True)
     p.add_argument("--strategy", required=True)
     p.add_argument("--regimes", nargs="*", help="regulations and controls that apply")
+    p.add_argument("--design", choices=["none", "data", "full"], default="full",
+                   help="design stages to run: none, data model only, or data model and sagas")
     p.add_argument("--by", required=True)
     p.set_defaults(fn=cmd_target)
     p = sub.add_parser("slice")
@@ -641,6 +719,9 @@ def main(argv=None):
     p.add_argument("id")
     p.add_argument("--title", required=True)
     p.add_argument("--files", nargs="+", required=True)
+    p.add_argument("--kind", choices=["legacy", "new"], default="legacy",
+                   help="legacy: existing code to transform. new: code the design calls for")
+    p.add_argument("--jira", help="the Jira issue that tracks this slice")
     p.set_defaults(fn=cmd_slice)
     p = sub.add_parser("baseline")
     p.add_argument("id")
@@ -673,6 +754,9 @@ def main(argv=None):
     a = ap.parse_args(argv)
     a.cmd = cmd
     os.chdir(a.root)
+    global CONTEXT
+    if a.command in ("slice", "baseline", "transformed", "verify", "secure", "document", "approve"):
+        CONTEXT = a.command
     a.fn(a)
 
 

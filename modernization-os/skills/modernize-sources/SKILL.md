@@ -57,7 +57,7 @@ code disagree, the code is what runs: record both and raise it with the owner.
 ## Never
 
 - Never use an MCP server, a connector or any service other than the owner's own Jira and Confluence.
-- Never write to Jira or Confluence.
+- Never write to Jira or Confluence from this skill. Approved Jira updates go through `modernize-track`.
 - Never commit `modernization/sources/`. The script adds a `.gitignore` there; leave it.
 - Never copy personal data from a source into a deliverable. Refer to roles, not people.
 - Never treat a document as true because it is written down. Check it against the code.

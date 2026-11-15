@@ -18,14 +18,23 @@ read the matching `SKILL.md` under the skills folder before each stage.
 | 8 | Secure | `modernize-secure` | `secure <slice>` |
 | 9 | Document | `modernize-document` | `document <slice>`, `approve <slice> --by <person>` |
 
+Alongside every stage: `modernize-memory` (resume, journal, checkpoint), `modernize-build` (new code
+from the approved design, tests first), `modernize-track` (Jira updates after approval),
+`modernize-learn` (lessons from refusals and corrections).
+
 Rules that hold in every stage:
+
+- Start every session, and restart after any context reset, with
+  `python3 modernization/mos_memory.py resume`. Do what it says is next. Checkpoint before stopping.
+- Read `modernization/memory/playbook.md` if it exists and follow the lessons for the stage you are in.
 
 - No MCP servers, no connectors: files, a shell and Python only. Tokens stay in the environment.
 - Design before code: stages 2 to 5 apply when the database or the architecture changes.
 - One slice at a time, gates in order. `mos.py` decides whether a gate passed, not the agent.
 - Tests pass on the legacy code before it changes, and the same tests pass after.
 - Never edit a baseline test, `modernization/state.json` or `modernization/evidence/` by hand.
-- Only a named person approves a slice, accepts a risk or agrees to delete code.
+- Only a named person approves a design, a slice, a Jira update or a lesson, accepts a risk or agrees
+  to delete code or data.
 - Ask the owner only for decisions they own. Everything else is a recommendation with trade-offs.
 - Mark anything unverified (assumed).
 <!-- modernization-os:end -->

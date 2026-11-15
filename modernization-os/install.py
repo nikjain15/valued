@@ -6,7 +6,7 @@
   python3 install.py /path/to/legacy-repo --tool claude cursor
   python3 install.py /path/to/legacy-repo --dir some/custom/skills
 
-Copies the skills into the folder your tool reads, puts the tools in modernization/ (mos.py, mos_sources.py, mos_design.py),
+Copies the skills into the folder your tool reads, puts the tools in modernization/ (mos.py and its companions),
 and adds a short contract to AGENTS.md so tools and models without skill support can follow it.
 Safe to run again: it replaces its own files and its own AGENTS.md block, nothing else.
 """
@@ -74,7 +74,7 @@ def main(argv=None):
     dirs = a.dir or [TOOLS[t] for t in tools]
     done = install(a.target, dirs, not a.no_agents_md)
     print("Skills installed in: " + ", ".join(done))
-    print("Tools:               modernization/mos.py, mos_sources.py, mos_design.py")
+    print("Tools:               modernization/mos*.py")
     if not a.no_agents_md:
         print("Contract added to:   AGENTS.md")
     print('\nOpen the repository in your tool and say: "modernize this codebase".')

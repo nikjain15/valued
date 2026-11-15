@@ -6,6 +6,7 @@
   mos_design.py model check        every legacy column has a home; writes the build list
   mos_design.py saga check         every saga can be undone or completed, and stays in its lane
   mos_design.py gate               all three checks; records the result as evidence
+  mos_design.py approve --by NAME  the owner signs the design; any later change voids it
 
 The agent researches and proposes. This tool refuses a design with a hole in it.
 """
@@ -384,6 +385,8 @@ def report(title, bad, notes):
         print("NOTE  " + n)
     for b in bad:
         print("FAIL  " + b)
+    for b in bad[:20]:
+        mos.signal(title.lower() + " check", b)
     print("%s: %s" % (title, "OK" if not bad else "%d to fix" % len(bad)))
     return not bad
 
@@ -417,12 +420,30 @@ def cmd_gate(a):
     ok = all([report("Workflows", wb, wn), report("Data model", mb, mn), report("Sagas", sb, sn)])
     if res:
         write_build_list(res["build"])
+    mos.journal("gate", "design gate %s" % ("passed" if ok else "blocked"))
     mos.save(os.path.join("evidence", "design.json"),
-             {"at": mos.now(), "passed": ok, "failures": wb + mb + sb, "notes": wn + mn + sn,
+             {"at": mos.now(), "passed": ok, "digest": mos.design_digest(), "approved_by": "", "failures": wb + mb + sb, "notes": wn + mn + sn,
               "workflows": sorted(wf), "sagas": len(glob.glob(mos.wpath("architecture", "sagas", "*.json")))})
     print("\nDesign gate: %s. Evidence: %s" % ("PASSED" if ok else "BLOCKED",
                                               mos.wpath("evidence", "design.json")))
     sys.exit(0 if ok else 1)
+
+
+def cmd_approve(a):
+    d = mos.load(os.path.join("evidence", "design.json"), default={})
+    if not d.get("passed"):
+        mos.die("the design gate has not passed. Run: mos_design.py gate")
+    if d.get("digest") != mos.design_digest():
+        mos.die("the design changed after the gate ran. Run mos_design.py gate again, and "
+                "show the owner the design as it now stands.")
+    d["approved_by"], d["approved_at"] = a.by, mos.now()
+    mos.save(os.path.join("evidence", "design.json"), d)
+    state = mos.load("state.json")
+    state["decisions"].append({"at": mos.now(), "who": a.by, "what": "Approved the design: "
+                               "%d workflows, %d sagas" % (len(d["workflows"]), d["sagas"])})
+    mos.save("state.json", state)
+    mos.journal("decision", "design approved by %s" % a.by)
+    print("Design approved by %s. Slices of new code may now be added." % a.by)
 
 
 def main(argv=None):
@@ -438,6 +459,9 @@ def main(argv=None):
         p.add_argument("action", choices=["check"])
         p.set_defaults(fn=fn)
     sub.add_parser("gate").set_defaults(fn=cmd_gate)
+    p = sub.add_parser("approve")
+    p.add_argument("--by", required=True)
+    p.set_defaults(fn=cmd_approve)
     a = ap.parse_args(argv)
     os.chdir(a.root)
     a.fn(a)
